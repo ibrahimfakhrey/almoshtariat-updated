@@ -10054,6 +10054,49 @@ def api_company_ai_chat():
         error_msg = 'خطأ داخلي في الخادم' if language == 'ar' else 'Internal server error'
         return jsonify({'error': error_msg}), 500
 
+@app.route('/api/client_ai_chat', methods=['POST'])
+@csrf.exempt
+@login_required
+def api_client_ai_chat():
+    """API endpoint for client AI chat with separate API key"""
+    try:
+        data = request.get_json()
+        if not data or 'message' not in data:
+            return jsonify({'error': 'Message is required'}), 400
+        
+        message = data['message'].strip()
+        if not message:
+            return jsonify({'error': 'Message cannot be empty'}), 400
+        
+        # Get language from request, default to English
+        language = data.get('language', 'en')
+        
+        # Get conversation history from request (optional)
+        conversation_history = data.get('conversation_history', [])
+        
+        # Import client AI service
+        from client_ai_service import client_ai_service, client_ai_config
+        
+        # Check if client AI is configured
+        if not client_ai_config.is_configured():
+            error_msg = 'خدمة الذكاء الاصطناعي للعملاء غير مُكوّنة. يرجى الاتصال بالمسؤول.' if language == 'ar' else 'Client AI service is not configured. Please contact administrator.'
+            return jsonify({'error': error_msg}), 503
+        
+        # Analyze user data with client AI service
+        result = client_ai_service.analyze_user_data(current_user.id, message, language, conversation_history)
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        app.logger.error(f'Client AI Chat API Error: {str(e)}')
+        language = 'en'
+        try:
+            language = data.get('language', 'en') if data else 'en'
+        except:
+            pass
+        error_msg = 'خطأ داخلي في الخادم' if language == 'ar' else 'Internal server error'
+        return jsonify({'error': error_msg}), 500
+
 @app.route('/api/ai_config', methods=['POST'])
 @login_required
 def api_ai_config():
