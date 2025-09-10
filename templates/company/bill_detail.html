@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ _('Bill Details') }} - {{ bill.bill_number }}</title>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style_0.css') }}">
+    <style>
+        .bill-detail-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .bill-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .bill-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .bill-status {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+        
+        .bill-status.paid {
+            background: #10b981;
+        }
+        
+        .bill-status.pending {
+            background: #f59e0b;
+        }
+        
+        .bill-status.overdue {
+            background: #ef4444;
+        }
+        
+        .bill-content {
+            padding: 2rem;
+        }
+        
+        .bill-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .info-card {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #64748b;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-value {
+            font-size: 1.1rem;
+            color: #1e293b;
+        }
+        
+        .products-section {
+            margin-top: 2rem;
+        }
+        
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        
+        .products-table th,
+        .products-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .products-table th {
+            background: #f1f5f9;
+            font-weight: bold;
+            color: #475569;
+        }
+        
+        .total-section {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 2rem;
+            text-align: right;
+        }
+        
+        .total-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e293b;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            padding: 2rem;
+            background: #f8fafc;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #64748b;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #475569;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+        
+        /* Dark mode styles */
+        [data-theme="dark"] .bill-detail-container {
+            background: #1e293b;
+        }
+        
+        [data-theme="dark"] .bill-content {
+            color: #e2e8f0;
+        }
+        
+        [data-theme="dark"] .info-card {
+            background: #334155;
+        }
+        
+        [data-theme="dark"] .info-label {
+            color: #94a3b8;
+        }
+        
+        [data-theme="dark"] .info-value {
+            color: #e2e8f0;
+        }
+        
+        [data-theme="dark"] .products-table th {
+            background: #334155;
+            color: #e2e8f0;
+        }
+        
+        [data-theme="dark"] .products-table td {
+            color: #e2e8f0;
+            border-bottom-color: #475569;
+        }
+        
+        [data-theme="dark"] .total-section {
+            background: #334155;
+        }
+        
+        [data-theme="dark"] .total-amount {
+            color: #e2e8f0;
+        }
+        
+        [data-theme="dark"] .action-buttons {
+            background: #334155;
+        }
+        
+        @media print {
+            .action-buttons {
+                display: none;
+            }
+            
+            .bill-detail-container {
+                box-shadow: none;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bill-detail-container">
+        <div class="bill-header">
+            <div class="bill-number">{{ bill.bill_number }}</div>
+            <div class="bill-status {{ bill.status }}">{{ _(bill.status.title()) }}</div>
+        </div>
+        
+        <div class="bill-content">
+            <div class="bill-info-grid">
+                <div class="info-card">
+                    <div class="info-label">{{ _('Client') }}</div>
+                    <div class="info-value">{{ (bill.client.name_en or bill.client.name_ar) if bill.client else _('N/A') }}</div>
+                </div>
+                
+                <div class="info-card">
+                    <div class="info-label">{{ _('Issue Date') }}</div>
+                    <div class="info-value">{{ bill.issue_date.strftime('%Y-%m-%d') }}</div>
+                </div>
+                
+                <div class="info-card">
+                    <div class="info-label">{{ _('Due Date') }}</div>
+                    <div class="info-value">{{ bill.due_date.strftime('%Y-%m-%d') }}</div>
+                </div>
+                
+                <div class="info-card">
+                    <div class="info-label">{{ _('Order Reference') }}</div>
+                    <div class="info-value">
+                        {% if bill.order %}
+                            <a href="{{ url_for('order_details', order_id=bill.order.id) }}" class="text-blue-600 hover:underline">
+                                #{{ bill.order.id }}
+                            </a>
+                        {% else %}
+                            {{ _('N/A') }}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            {% if bill.bill_items %}
+            <div class="products-section">
+                <h3>{{ _('Bill Items') }}</h3>
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th>{{ _('Product') }}</th>
+                            <th>{{ _('Quantity') }}</th>
+                            <th>{{ _('Unit Price') }}</th>
+                            <th>{{ _('Total') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in bill.bill_items %}
+                        <tr>
+                            <td>{{ item.product_name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ "%.2f"|format(item.unit_price) }} {{ bill.currency }}</td>
+                            <td>{{ "%.2f"|format(item.total_price) }} {{ bill.currency }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+            
+            <div class="total-section">
+                <div class="total-amount">
+                    {{ _('Total Amount') }}: {{ "%.2f"|format(bill.total_amount) }} {{ bill.currency }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <a href="{{ url_for('company_bills') }}" class="btn btn-secondary">
+                ← {{ _('Back to Bills') }}
+            </a>
+            
+            <a href="{{ url_for('company_bill_pdf', bill_id=bill.id) }}" class="btn btn-primary" target="_blank">
+                📄 {{ _('Download PDF') }}
+            </a>
+            
+            {% if bill.status == 'pending' %}
+            <button onclick="markAsPaid({{ bill.id }})" class="btn btn-success">
+                ✓ {{ _('Mark as Paid') }}
+            </button>
+            {% endif %}
+        </div>
+    </div>
+    
+    <script>
+        function markAsPaid(billId) {
+            if (confirm('{{ _("Are you sure you want to mark this bill as paid?") }}')) {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                fetch(`/api/bills/${billId}/mark-paid`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('{{ _("Error updating bill status") }}');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('{{ _("Error updating bill status") }}');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

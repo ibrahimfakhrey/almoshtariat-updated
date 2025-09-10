@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+  <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+  <title>{% if request.cookies.get('language') == 'ar' %}محادثة إدارية{% else %}Admin Chat{% endif %}</title>
+  <link href="favicon.ico" rel="icon"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+  
+  <!-- Alpine.js -->
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>
+    .chat-container {
+      height: 600px;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.75rem;
+      background-color: #f9fafb;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .dark .chat-container {
+      background-color: #374151;
+      border-color: #4b5563;
+    }
+    
+    .chat-header {
+      padding: 1rem;
+      border-bottom: 1px solid #e5e7eb;
+      background-color: white;
+    }
+    
+    .dark .chat-header {
+      background-color: #1f2937;
+      border-bottom-color: #4b5563;
+    }
+    
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+    }
+    
+    .chat-input {
+      padding: 1rem;
+      border-top: 1px solid #e5e7eb;
+      background-color: white;
+    }
+    
+    .dark .chat-input {
+      background-color: #1f2937;
+      border-top-color: #4b5563;
+    }
+    
+    .message {
+      margin-bottom: 1rem;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      max-width: 70%;
+    }
+    
+    .message.admin {
+      background-color: #dbeafe;
+      color: #1e40af;
+      margin-left: auto;
+    }
+    
+    .message.company {
+      background-color: #f3f4f6;
+      color: #374151;
+    }
+    
+    .dark .message.admin {
+      background-color: #1e3a8a;
+      color: #dbeafe;
+    }
+    
+    .dark .message.company {
+      background-color: #4b5563;
+      color: #f3f4f6;
+    }
+    
+    .action-button {
+      background-color: #2563eb !important;
+      color: white !important;
+      display: inline-flex !important;
+      padding: 0.75rem 1.5rem !important;
+      border-radius: 0.5rem !important;
+      font-size: 0.875rem !important;
+      font-weight: 500 !important;
+      text-decoration: none !important;
+      border: none !important;
+      cursor: pointer !important;
+      transition: all 0.2s !important;
+    }
+    
+    .action-button:hover {
+      background-color: #1d4ed8 !important;
+      transform: translateY(-1px) !important;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+    }
+  </style>
+</head>
+<body :class="{'dark bg-gray-900': darkMode === true}" x-data="{ page: 'orders', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false, 'currentLanguage': '{{ request.cookies.get("language", "en") }}' }" x-init="
+        darkMode = JSON.parse(localStorage.getItem('darkMode'));
+        currentLanguage = localStorage.getItem('language') || '{{ request.cookies.get("language", "en") }}';
+        $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)));
+        $watch('currentLanguage', value => localStorage.setItem('language', value))">
+  
+  <!-- Preloader -->
+  <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => loaded = false, 500)})" x-show="loaded">
+   <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent"></div>
+  </div>
+  
+  <!-- Page Wrapper -->
+  <div class="flex h-screen overflow-hidden">
+        <!-- ===== Sidebar Start ===== -->
+    <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+     <!-- SIDEBAR HEADER -->
+     <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+      <a href="/">
+       <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+        <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+        <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+       </span>
+       <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+      </a>
+     </div>
+     <!-- SIDEBAR HEADER -->
+     <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+      <!-- Sidebar Menu -->
+      <nav x-data="{selected: $persist('Orders')}">
+       <!-- Menu Group -->
+       <div>
+        <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+         <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">
+          {% if request.cookies.get('language') == 'ar' %}القائمة{% else %}MENU{% endif %}
+         </span>
+        <svg :class="sidebarToggle ? 'xl:block hidden' : 'hidden'" class="menu-group-icon mx-auto fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+         <path clip-rule="evenodd" d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.8335 18.9656 13.5051 17.9991 13.5051C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.8335 11.1706 13.5051 11.9991 13.5051C12.8275 13.5051 13.499 12.8335 13.499 12.0051V11.9951Z" fill="currentColor" fill-rule="evenodd">
+         </path>
+        </svg>
+       </h3>
+       <ul class="mb-6 flex flex-col gap-1">
+        <!-- Menu Item Dashboard -->
+          <li>
+         <a :class=" (selected === 'Dashboard') && (page === 'dashboard') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Dashboard' ? '':'Dashboard')" class="menu-item group" href="/admin_dashboard">
+          <svg :class="(selected === 'Dashboard') && (page === 'dashboard') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}لوحة تحكم المدير{% else %}Admin Dashboard{% endif %}
+          </span>
+         </a>
+        </li>
+        
+        <!-- Menu Item Company Management -->
+        <li>
+         <a :class=" (selected === 'Companies') && (page === 'companies') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Companies' ? '':'Companies')" class="menu-item group" href="/admin_companies">
+          <svg :class="(selected === 'Companies') && (page === 'companies') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}إدارة الشركات{% else %}Company Management{% endif %}
+          </span>
+         </a>
+        </li>
+        
+        <!-- Menu Item Register New Company -->
+        <li>
+         <a :class=" (selected === 'RegisterCompany') && (page === 'register_company') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'RegisterCompany' ? '':'RegisterCompany')" class="menu-item group" href="/admin_register_company">
+          <svg :class="(selected === 'RegisterCompany') && (page === 'register_company') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}تسجيل شركة جديدة{% else %}Register New Company{% endif %}
+          </span>
+         </a>
+        </li>
+        
+        <!-- Menu Item User Management -->
+        <li>
+         <a :class=" (selected === 'Users') && (page === 'users') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Users' ? '':'Users')" class="menu-item group" href="/admin_users">
+          <svg :class="(selected === 'Users') && (page === 'users') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A1.5 1.5 0 0 0 18.54 8H17c-.8 0-1.54.37-2.01 1l-1.7 2.26A1.5 1.5 0 0 0 12.5 12H11v8h9zM5.5 6c.83 0 1.5-.67 1.5-1.5S6.33 3 5.5 3 4 3.67 4 4.5 4.67 6 5.5 6zm2.5 6c-.8 0-1.54.37-2.01 1l-1.7 2.26A1.5 1.5 0 0 0 1.5 16H0v6h9v-6H7.5z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}إدارة المستخدمين{% else %}User Management{% endif %}
+          </span>
+         </a>
+        </li>
+        
+        <!-- Menu Item Order Management -->
+        <li>
+         <a :class=" (selected === 'Orders') && (page === 'orders') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Orders' ? '':'Orders')" class="menu-item group" href="/admin_orders">
+          <svg :class="(selected === 'Orders') && (page === 'orders') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}إدارة الطلبات{% else %}Order Management{% endif %}
+          </span>
+         </a>
+        </li>
+        
+        <!-- Menu Item Create Direct Order -->
+        <li>
+         <a :class=" (selected === 'CreateOrder') && (page === 'create_order') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'CreateOrder' ? '':'CreateOrder')" class="menu-item group" href="/admin_create_order">
+          <svg :class="(selected === 'CreateOrder') && (page === 'create_order') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}إنشاء طلب مباشر{% else %}Create Direct Order{% endif %}
+          </span>
+         </a>
+        </li>
+       </ul>
+      </div>
+     </nav>
+    </div>
+   </aside>
+   <!-- ===== Sidebar End ===== -->
+   
+   <!-- Main Content -->
+   <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+    <!-- ===== Content Area Start ===== -->
+    <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+     <!-- Small Device Overlay Start -->
+     <div :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fixed z-50 h-screen w-full bg-gray-900/50">
+     </div>
+     <!-- Small Device Overlay End -->
+     <!-- ===== Header Start ===== -->
+     <header class="sticky top-0 z-99999 flex w-full border-gray-200 bg-white xl:border-b dark:border-gray-800 dark:bg-gray-900" x-data="{menuToggle: false}">
+      <div class="flex grow flex-col items-center justify-between xl:flex-row xl:px-6">
+       <div class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:py-4 xl:justify-normal xl:border-b-0 xl:px-0 dark:border-gray-800">
+        <!-- Hamburger Toggle BTN -->
+        <button :class="sidebarToggle ? 'xl:bg-transparent dark:xl:bg-transparent bg-gray-100 dark:bg-gray-800' : ''" @click.stop="sidebarToggle = !sidebarToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 xl:h-11 xl:w-11 xl:border dark:border-gray-800 dark:text-gray-400">
+         <svg class="hidden fill-current xl:block" fill="none" height="12" viewbox="0 0 16 12" width="16" xmlns="http://www.w3.org/2000/svg">
+          <path clip-rule="evenodd" d="M0.583252 1C0.583252 0.585788 0.919038 0.25 1.33325 0.25H14.6666C15.0808 0.25 15.4166 0.585786 15.4166 1C15.4166 1.41421 15.0808 1.75 14.6666 1.75L1.33325 1.75C0.919038 1.75 0.583252 1.41422 0.583252 1ZM0.583252 11C0.583252 10.5858 0.919038 10.25 1.33325 10.25L14.6666 10.25C15.0808 10.25 15.4166 10.5858 15.4166 11C15.4166 11.4142 15.0808 11.75 14.6666 11.75L4 11.25C3.58579 11.25 3.25 11.5858 3.25 12C3.25 12.4142 3.58579 12.75 4 12.75L12 12.75C12.4142 12.75 12.75 12.4142 12.75 12C12.75 11.5858 12.4142 11.25 12 11.25L4 11.25Z" fill="" fill-rule="evenodd">
+          </path>
+         </svg>
+         <svg :class="sidebarToggle ? 'hidden' : 'block xl:hidden'" class="fill-current xl:hidden" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+          <path clip-rule="evenodd" d="M3.25 6C3.25 5.58579 3.58579 5.25 4 5.25L20 5.25C20.4142 5.25 20.75 5.58579 20.75 6C20.75 6.41421 20.4142 6.75 20 6.75L4 6.75C3.58579 6.75 3.25 6.41422 3.25 6ZM3.25 18C3.25 17.5858 3.58579 17.25 4 17.25L20 17.25C20.4142 17.25 20.75 17.5858 20.75 18C20.75 18.4142 20.4142 18.75 20 18.75L4 18.75C3.58579 18.75 3.25 18.4142 3.25 18ZM4 11.25C3.58579 11.25 3.25 11.5858 3.25 12C3.25 12.4142 3.58579 12.75 4 12.75L12 12.75C12.4142 12.75 12.75 12.4142 12.75 12C12.75 11.5858 12.4142 11.25 12 11.25L4 11.25Z" fill="" fill-rule="evenodd">
+          </path>
+         </svg>
+         <!-- cross icon -->
+         <svg :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+          <path clip-rule="evenodd" d="M6.21967 7.28131C5.92678 6.98841 5.92678 6.51354 6.21967 6.22065C6.51256 5.92775 6.98744 5.92775 7.28033 6.22065L11.999 10.9393L16.7176 6.22078C17.0105 5.92789 17.4854 5.92788 17.7782 6.22078C18.0711 6.51367 18.0711 6.98855 17.7782 7.28144L13.0597 12L17.7782 16.7186C18.0711 17.0115 18.0711 17.4863 17.7782 17.7792C17.4854 18.0721 17.0105 18.0721 16.7176 17.7792L11.999 13.0607L7.28033 17.7794C6.98744 18.0722 6.51256 18.0722 6.21967 17.7794C5.92678 17.4865 5.92678 17.0116 6.21967 16.7187L10.9384 12L6.21967 7.28131Z" fill="" fill-rule="evenodd">
+          </path>
+         </svg>
+        </button>
+        <!-- Hamburger Toggle BTN -->
+       </div>
+       <div class="flex items-center gap-3 2xsm:gap-7">
+        <!-- Dark Mode Toggle -->
+        <button @click="darkMode = !darkMode" class="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white dark:border-gray-800 dark:bg-black">
+         <svg x-show="!darkMode" class="h-4 w-4 fill-current" fill="none" viewBox="0 0 24 24">
+          <path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+         </svg>
+         <svg x-show="darkMode" class="h-4 w-4 fill-current" fill="none" viewBox="0 0 24 24">
+          <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+         </svg>
+        </button>
+       </div>
+      </div>
+     </header>
+     <!-- ===== Header End ===== -->
+     
+     <!-- ===== Main Content Start ===== -->
+     <main class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+      <!-- Breadcrumb -->
+      <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+       <h2 class="text-title-md2 font-bold text-black dark:text-white">
+        {% if request.cookies.get('language') == 'ar' %}محادثة مع {% else %}Chat with {% endif %}{{ chat.company.name_ar or chat.company.name_en if chat.company else 'Company' }}
+       </h2>
+       <nav>
+        <ol class="flex items-center gap-2 font-medium">
+         <li><a href="/admin_orders" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">{% if request.cookies.get('language') == 'ar' %}الطلبات{% else %}Orders{% endif %}</a></li>
+         <li class="text-gray-400">/</li>
+         <li class="text-black dark:text-white">{% if request.cookies.get('language') == 'ar' %}محادثة{% else %}Chat{% endif %}</li>
+        </ol>
+       </nav>
+      </div>
+      
+      <!-- Chat Interface -->
+      <div class="chat-container">
+       <!-- Chat Header -->
+       <div class="chat-header">
+        <div class="flex items-center justify-between">
+         <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">
+           {{ chat.company.name_ar[0] if chat.company and chat.company.name_ar else chat.company.name_en[0] if chat.company and chat.company.name_en else 'C' }}
+          </div>
+          <div>
+           <h3 class="font-semibold text-black dark:text-white">{{ chat.company.name_ar or chat.company.name_en if chat.company else 'Company' }}</h3>
+           <p class="text-sm text-gray-500 dark:text-gray-400">{% if request.cookies.get('language') == 'ar' %}متصل{% else %}Online{% endif %}</p>
+          </div>
+         </div>
+         <span class="text-sm text-gray-500 dark:text-gray-400">Chat #{{ chat.id }}</span>
+        </div>
+       </div>
+       
+       <!-- Messages Area -->
+       <div class="chat-messages">
+        {% if messages %}
+         {% for message in messages %}
+          <div class="message {{ 'admin' if message.sender_type == 'client' else 'company' }}">
+           <div class="flex items-start gap-2">
+            <div class="flex-1">
+             <p class="text-sm">{{ message.content }}</p>
+             <p class="text-xs opacity-70 mt-1">{{ message.created_at.strftime('%Y-%m-%d %H:%M') if message.created_at else '' }}</p>
+            </div>
+           </div>
+          </div>
+         {% endfor %}
+        {% else %}
+         <div class="text-center py-8">
+          <p class="text-gray-500 dark:text-gray-400">{% if request.cookies.get('language') == 'ar' %}لا توجد رسائل بعد{% else %}No messages yet{% endif %}</p>
+         </div>
+        {% endif %}
+       </div>
+       
+       <!-- Message Input -->
+       <div class="chat-input">
+        <form id="messageForm" class="flex gap-3">
+         <input type="text" id="messageInput" placeholder="{% if request.cookies.get('language') == 'ar' %}اكتب رسالتك...{% else %}Type your message...{% endif %}" 
+                class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+         <button type="submit" class="action-button">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+          </svg>
+          {% if request.cookies.get('language') == 'ar' %}إرسال{% else %}Send{% endif %}
+         </button>
+        </form>
+       </div>
+      </div>
+      
+      <!-- Back Button -->
+      <div class="mt-6">
+       <a href="/admin_orders" class="action-button">
+        {% if request.cookies.get('language') == 'ar' %}العودة إلى الطلبات{% else %}Back to Orders{% endif %}
+       </a>
+      </div>
+     </main>
+     <!-- ===== Main Content End ===== -->
+    </div>
+    <!-- ===== Content Area End ===== -->
+   </div>
+  </div>
+  
+  <!-- JavaScript -->
+  <script>
+    // Handle message sending
+    document.getElementById('messageForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const messageInput = document.getElementById('messageInput');
+      const message = messageInput.value.trim();
+      
+      if (message) {
+        fetch(`/admin_send_message/{{ chat.id }}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({message: message})
+        }).then(response => {
+          if (response.ok) {
+            messageInput.value = '';
+            location.reload(); // Refresh to show new message
+          } else {
+            alert('{% if request.cookies.get("language") == "ar" %}حدث خطأ في إرسال الرسالة{% else %}Error sending message{% endif %}');
+          }
+        });
+      }
+    });
+    
+    // Toggle language
+    function toggleLanguage() {
+      const currentLang = document.cookie.includes('language=ar') ? 'en' : 'ar';
+      document.cookie = `language=${currentLang}; path=/; max-age=31536000`;
+      location.reload();
+    }
+    
+    // Auto-scroll to bottom of messages
+    document.addEventListener('DOMContentLoaded', function() {
+      const messagesContainer = document.querySelector('.chat-messages');
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    });
+  </script>
+</body>
+</html>

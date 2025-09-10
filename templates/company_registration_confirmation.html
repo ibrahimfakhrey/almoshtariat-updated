@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}" dir="{{ 'rtl' if get_locale() == 'ar' else 'ltr' }}">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+    <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+    <title>{{ _('Company Registration Submitted') }}</title>
+    <link href="favicon.ico" rel="icon"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+</head>
+<body>
+    <div class="flex h-screen overflow-hidden" x-data="{ 
+        'loaded': true,
+        'darkMode': false, 
+        'stickyMenu': false, 
+        'sidebarToggle': false, 
+        'scrollTop': false
+    }">
+        
+        <!-- Sidebar -->
+        <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+            <!-- SIDEBAR HEADER -->
+            <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+                <a href="/">
+                    <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+                        <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                        <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                    </span>
+                    <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                </a>
+            </div>
+            
+            <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+                <nav x-data="{selected: $persist('Dashboard')}">
+                    <div>
+                        <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+                            <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">
+                                {{ _('MENU') }}
+                            </span>
+                        </h3>
+                        <ul class="mb-6 flex flex-col gap-1">
+                            <li>
+                                <a class="menu-item group" href="/dash">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Dashboard') }}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="menu-item group" href="/profile">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('User Profile') }}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="menu-item group" href="/orders">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('My Orders') }}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="menu-item group" href="/new_purchase">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Create Order') }}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="menu-item group" href="/suppliers">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Suppliers') }}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="menu-item group" href="/chat">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('chats') }}</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+            <!-- Header -->
+            <header class="sticky top-0 z-99999 flex w-full border-gray-200 bg-white xl:border-b dark:border-gray-800 dark:bg-gray-900" x-data="{menuToggle: false}">
+                <div class="flex grow flex-col items-center justify-between xl:flex-row xl:px-6">
+                    <div class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:py-4 xl:justify-normal xl:border-b-0 xl:px-0 dark:border-gray-800">
+                        <button @click.stop="sidebarToggle = !sidebarToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 xl:h-11 xl:w-11 xl:border dark:border-gray-800 dark:text-gray-400">
+                            <svg class="hidden fill-current xl:block" fill="none" height="12" viewbox="0 0 16 12" width="16" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M0.583252 1C0.583252 0.585788 0.919038 0.25 1.33325 0.25H14.6666C15.0808 0.25 15.4166 0.585786 15.4166 1C15.4166 1.41421 15.0808 1.75 14.6666 1.75L1.33325 1.75C0.919038 1.75 0.583252 1.41422 0.583252 1ZM0.583252 11C0.583252 10.5858 0.919038 10.25 1.33325 10.25L14.6666 10.25C15.0808 10.25 15.4166 10.5858 15.4166 11C15.4166 11.4142 15.0808 11.75 14.6666 11.75L1.33325 11.75C0.919038 11.75 0.583252 11.4142 0.583252 11ZM1.33325 5.25C0.919038 5.25 0.583252 5.58579 0.583252 6C0.583252 6.41421 0.919038 6.75 1.33325 6.75L7.99992 6.75C8.41413 6.75 8.74992 6.41421 8.74992 6C8.74992 5.58579 8.41413 5.25 7.99992 5.25L1.33325 5.25Z" fill="" fill-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        
+                        <a class="xl:hidden" href="/">
+                            <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                            <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                        </a>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-y-auto">
+                <div class="mx-auto max-w-4xl p-4 md:p-6">
+                    <!-- Success Message -->
+                    <div class="text-center py-12">
+                        <div class="mx-auto w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6">
+                            <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        
+                        <h1 class="text-3xl font-bold text-gray-800 dark:text-white/90 mb-4">
+                            {{ _('Company Registration Submitted Successfully!') }}
+                        </h1>
+                        
+                        <p class="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
+                            {{ _('Thank you for submitting your company registration. We have received your request and our team will review it carefully.') }}
+                        </p>
+                        
+                        <!-- Processing Time Info -->
+                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-8 max-w-2xl mx-auto">
+                            <div class="flex items-start">
+                                <div class="flex-shrink-0">
+                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-lg font-medium text-blue-800 dark:text-blue-200 mb-2">
+                                        {{ _('Processing Time') }}
+                                    </h3>
+                                    <p class="text-blue-700 dark:text-blue-300">
+                                        {{ _('Please allow 24-48 hours for our team to review your submission. We will notify you via email once the review is complete.') }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Next Steps -->
+                        <div class="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-6 mb-8 max-w-2xl mx-auto">
+                            <h3 class="text-lg font-medium text-gray-800 dark:text-white/90 mb-4">
+                                {{ _('What Happens Next?') }}
+                            </h3>
+                            <ul class="text-left text-gray-600 dark:text-gray-400 space-y-2">
+                                <li class="flex items-center">
+                                    <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                                    {{ _('Our team will review your company information and documents') }}
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                                    {{ _('We may contact you if additional information is needed') }}
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                                    {{ _('You will receive an email notification with the final decision') }}
+                                </li>
+                                <li class="flex items-center">
+                                    <span class="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                                    {{ _('Once approved, your company will be activated in our system') }}
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <a href="/dash" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                                {{ _('Go to Dashboard') }}
+                            </a>
+                            <a href="/company_status" class="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors">
+                                {{ _('View Company Status') }}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>

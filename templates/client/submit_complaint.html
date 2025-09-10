@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}" dir="{{ 'rtl' if get_locale() == 'ar' else 'ltr' }}">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+    <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>{{ _('Submit Complaint') }} - Almoshtariat</title>
+    <link href="favicon.ico" rel="icon"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+    
+    <!-- Alpine.js -->
+    <script defer src="{{ url_for('static', filename='js/alpine.min.js') }}"></script>
+    
+    <!-- Simple preloader script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const preloader = document.getElementById('preloader');
+                if (preloader) {
+                    preloader.style.display = 'none';
+                }
+            }, 500);
+        });
+        
+        // Alpine.js error handling
+        document.addEventListener('alpine:init', () => {
+            console.log('Alpine.js initialized successfully');
+        });
+        
+        document.addEventListener('alpine:error', (error) => {
+            console.error('Alpine.js error:', error);
+        });
+        
+        // Fallback spinner animation
+        function createSpinner() {
+            const spinner = document.querySelector('#preloader .animate-spin');
+            if (spinner) {
+                let rotation = 0;
+                setInterval(() => {
+                    rotation += 10;
+                    spinner.style.transform = `rotate(${rotation}deg)`;
+                }, 50);
+            }
+        }
+        
+        // Initialize spinner when page loads
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', createSpinner);
+        } else {
+            createSpinner();
+        }
+    </script>
+</head>
+<body :class="{'dark bg-gray-900': darkMode === true}" x-data="{ page: 'complaints', 'darkMode': false, 'sidebarToggle': false }" x-init="
+        darkMode = JSON.parse(localStorage.getItem('darkMode') || 'false');
+        $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))">
+    
+    <!-- ===== Preloader Start ===== -->
+    <div id="preloader" class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" style="background-color: white; z-index: 999999;">
+        <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent" style="border-color: #3b82f6; border-top-color: transparent;">
+        </div>
+    </div>
+    <!-- ===== Preloader End ===== -->
+    
+    <!-- ===== Page Wrapper Start ===== -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- ===== Sidebar Start ===== -->
+        <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+            <!-- SIDEBAR HEADER -->
+            <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+                <a href="/">
+                    <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+                        <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                        <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                    </span>
+                    <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                </a>
+            </div>
+            
+            <!-- Sidebar Menu -->
+            <nav x-data="{selected: $persist('Dashboard')}">
+                <div>
+                    <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+                        <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">
+                            {{ _('MENU') }}
+                        </span>
+                    </h3>
+                    <ul class="mb-6 flex flex-col gap-1">
+                        <li>
+                            <a class="menu-item group" href="/dash">
+                                <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                    {{ _('Dashboard') }}
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="menu-item group" href="/profile">
+                                <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                    {{ _('User Profile') }}
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="menu-item group" href="/orders">
+                                <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                    {{ _('My Orders') }}
+                                </span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a class="menu-item group" href="/new_purchase">
+                                <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                    {{ _('create order') }}
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="menu-item group" href="/suppliers">
+                                <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                    {{ _('Suppliers') }}
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="menu-item group" href="/chat">
+                                <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                    {{ _('chats') }}
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a class="menu-item group" href="/company_register">
+                                <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                    {{ _('Company Registration') }}
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+        <!-- ===== Sidebar End ===== -->
+        
+        <!-- ===== Content Area Start ===== -->
+        <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+            <!-- Small Device Overlay Start -->
+            <div :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fixed z-50 h-screen w-full bg-gray-900/50">
+            </div>
+            <!-- Small Device Overlay End -->
+            
+            <!-- ===== Header Start ===== -->
+            <header class="sticky top-0 z-99999 flex w-full border-gray-200 bg-white xl:border-b dark:border-gray-800 dark:bg-gray-900" x-data="{menuToggle: false}">
+                <div class="flex grow flex-col items-center justify-between xl:flex-row xl:px-6">
+                    <div class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:py-4 xl:justify-normal xl:border-b-0 xl:px-0 dark:border-gray-800">
+                        <!-- Hamburger Toggle BTN -->
+                        <button :class="sidebarToggle ? 'xl:bg-transparent dark:xl:bg-transparent bg-gray-100 dark:bg-gray-800' : ''" @click.stop="sidebarToggle = !sidebarToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 xl:h-11 xl:w-11 xl:border dark:border-gray-800 dark:text-gray-400">
+                            <svg class="hidden fill-current xl:block" fill="none" height="12" viewbox="0 0 16 12" width="16" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M0.583252 1C0.583252 0.585788 0.919038 0.25 1.33325 0.25H14.6666C15.0808 0.25 15.4166 0.585786 15.4166 1C15.4166 1.41421 15.0808 1.75 14.6666 1.75L1.33325 1.75C0.919038 1.75 0.583252 1.41422 0.583252 1ZM0.583252 11C0.583252 10.5858 0.919038 10.25 1.33325 10.25L14.6666 10.25C15.0808 10.25 15.4166 10.5858 15.4166 11C15.4166 11.4142 15.0808 11.75 14.6666 11.75L1.33325 11.75C0.919038 11.75 0.583252 11.4142 0.583252 11ZM1.33325 5.25C0.919038 5.25 0.583252 5.58579 0.583252 6C0.583252 6.41421 0.919038 6.75 1.33325 6.75L7.99992 6.75C8.41413 6.75 8.74992 6.41421 8.74992 6C8.74992 5.58579 8.41413 5.25 7.99992 5.25L1.33325 5.25Z" fill="" fill-rule="evenodd">
+                                </path>
+                            </svg>
+                        </button>
+                        
+                        <!-- Search Bar -->
+                        <div class="hidden xl:block">
+                            <form>
+                                <div class="relative">
+                                    <input class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pr-14 pl-12 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden xl:w-[430px] dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30" placeholder="{{ _('Search or type command...') }}" type="text"/>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- User Area -->
+                    <div class="flex items-center space-x-4 px-3 py-3 xl:px-0">
+                        <!-- Dark Mode Toggler -->
+                        <button @click.prevent="darkMode = !darkMode" class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white">
+                            <svg class="hidden dark:block" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M9.99998 1.5415C10.4142 1.5415 10.75 1.87729 10.75 2.2915V3.5415C10.75 3.95572 10.4142 4.2915 9.99998 4.2915C9.58577 4.2915 9.24998 3.95572 9.24998 3.5415V2.2915C9.24998 1.87729 9.58577 1.5415 9.99998 1.5415ZM10.0009 6.79327C8.22978 6.79327 6.79402 8.22904 6.79402 10.0001C6.79402 11.7712 8.22978 13.207 10.0009 13.207C11.772 13.207 13.2078 11.7712 13.2078 10.0001C13.2078 8.22904 11.772 6.79327 10.0009 6.79327ZM5.29402 10.0001C5.29402 7.40061 7.40135 5.29327 10.0009 5.29327C12.6004 5.29327 14.7078 7.40061 14.7078 10.0001C14.7078 12.5997 12.6004 14.707 10.0009 14.707C7.40135 14.707 5.29402 12.5997 5.29402 10.0001ZM15.9813 5.08035C16.2742 4.78746 16.2742 4.31258 15.9813 4.01969C15.6884 3.7268 15.2135 3.7268 14.9207 4.01969L14.0368 4.90357C13.7439 5.19647 13.7439 5.67134 14.0368 5.96423C14.3297 6.25713 14.8045 6.25713 15.0974 5.96423L15.9813 5.08035ZM18.4577 10.0001C18.4577 10.4143 18.1219 10.7501 17.7077 10.7501H16.4577C16.0435 10.7501 15.7077 10.4143 15.7077 10.0001C15.7077 9.58592 16.0435 9.25013 16.4577 9.25013H17.7077C18.1219 9.25013 18.4577 9.58592 18.4577 10.0001ZM14.9207 15.9806C15.2135 16.2735 15.6884 16.2735 15.9813 15.9806C16.2742 15.6877 16.2742 15.2128 15.9813 14.9199L15.0974 14.036C14.8045 13.7431 14.3297 13.7431 14.0368 14.036C13.7439 14.3289 13.7439 14.8038 14.0368 15.0967L14.9207 15.9806ZM9.99998 15.7088C10.4142 15.7088 10.75 16.0445 10.75 16.4588V17.7088C10.75 18.123 10.4142 18.4588 9.99998 18.4588C9.58577 18.4588 9.24998 18.123 9.24998 17.7088V16.4588C9.24998 16.0445 9.58577 15.7088 9.99998 15.7088ZM5.96356 15.0972C6.25646 14.8043 6.25646 14.3295 5.96356 14.0366C5.67067 13.7437 5.1958 13.7437 4.9029 14.0366L4.01902 14.9204C3.72613 15.2133 3.72613 15.6882 4.01902 15.9811C4.31191 16.274 4.78679 16.274 5.07968 15.9811L5.96356 15.0972ZM4.29224 10.0001C4.29224 10.4143 3.95645 10.7501 3.54224 10.7501H2.29224C1.87802 10.7501 1.54224 10.4143 1.54224 10.0001C1.54224 9.58592 1.87802 9.25013 2.29224 9.25013H3.54224C3.95645 9.25013 4.29224 9.58592 4.29224 10.0001ZM4.9029 5.9637C5.1958 6.25659 5.67067 6.25659 5.96356 5.9637C6.25646 5.6708 6.25646 5.19593 5.96356 4.90303L5.07968 4.01915C4.78679 3.72626 4.31191 3.72626 4.01902 4.01915C3.72613 4.31204 3.72613 4.78692 4.01902 5.07981L4.9029 5.9637Z" fill="currentColor" fill-rule="evenodd">
+                                </path>
+                            </svg>
+                            <svg class="dark:hidden" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M17.4547 11.97L18.1799 12.1611C18.265 11.8383 18.1265 11.4982 17.8401 11.3266C17.5538 11.1551 17.1885 11.1934 16.944 11.4207L17.4547 11.97ZM8.0306 2.5459L8.57989 3.05657C8.80718 2.81209 8.84554 2.44682 8.67398 2.16046C8.50243 1.8741 8.16227 1.73559 7.83948 1.82066L8.0306 2.5459ZM12.9154 13.0035C9.64678 13.0035 6.99707 10.3538 6.99707 7.08524H5.49707C5.49707 11.1823 8.81835 14.5035 12.9154 14.5035V13.0035ZM16.944 11.4207C15.8869 12.4035 14.4721 13.0035 12.9154 13.0035V14.5035C14.8657 14.5035 16.6418 13.7499 17.9654 12.5193L16.944 11.4207ZM16.7295 11.7789C15.9437 14.7607 13.2277 16.9586 10.0003 16.9586V18.4586C13.9257 18.4586 17.2249 15.7853 18.1799 12.1611L16.7295 11.7789ZM10.0003 16.9586C6.15734 16.9586 3.04199 13.8433 3.04199 10.0003H1.54199C1.54199 14.6717 5.32892 18.4586 10.0003 18.4586V16.9586ZM3.04199 10.0003C3.04199 6.77289 5.23988 4.05695 8.22173 3.27114L7.83948 1.82066C4.21532 2.77574 1.54199 6.07486 1.54199 10.0003H3.04199ZM6.99707 7.08524C6.99707 5.52854 7.5971 4.11366 8.57989 3.05657L7.48132 2.03522C6.25073 3.35885 5.49707 5.13487 5.49707 7.08524H6.99707Z" fill="currentColor">
+                                </path>
+                            </svg>
+                        </button>
+                        
+                        <!-- User Dropdown -->
+                        <div @click.outside="dropdownOpen = false" class="relative" x-data="{ dropdownOpen: false }">
+                            <a @click.prevent="dropdownOpen = ! dropdownOpen" class="flex items-center text-gray-700 dark:text-gray-400" href="#">
+                                <span class="mr-3 h-11 w-11 overflow-hidden rounded-full">
+                                    <img alt="User" src="https://png.pngtree.com/png-vector/20231019/ourmid/pngtree-user-profile-avatar-png-image_10211467.png "/>
+                                </span>
+                                <span class="text-theme-sm mr-1 block font-medium">
+                                    {{ current_user.username }}
+                                </span>
+                                <svg :class="dropdownOpen && 'rotate-180'" class="stroke-gray-500 dark:stroke-gray-400" fill="none" height="20" viewbox="0 0 18 20" width="18" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4.3125 8.65625L9 13.3437L13.6875 8.65625" stroke="" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">
+                                    </path>
+                                </svg>
+                            </a>
+                            
+                            <!-- Dropdown Start -->
+                            <div class="shadow-theme-lg dark:bg-gray-dark absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 dark:border-gray-800" x-show="dropdownOpen">
+                                <div>
+                                    <span class="text-theme-sm block font-medium text-gray-700 dark:text-gray-400">
+                                        {{ current_user.name }}
+                                    </span>
+                                    <span class="text-theme-xs mt-0.5 block text-gray-500 dark:text-gray-400">
+                                        {{ current_user.email }}
+                                    </span>
+                                </div>
+                                <ul class="flex flex-col gap-1 border-b border-gray-200 pt-4 pb-3 dark:border-gray-800">
+                                    <li>
+                                        <a class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300" href="{{ url_for('profile') }}">
+                                            {{ _('Edit profile') }}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300" href="{{ url_for('chat') }}">
+                                            {{ _('Chat') }}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300" href="{{ url_for('my_orders') }}">
+                                            {{ _('My Orders') }}
+                                        </a>
+                                    </li>
+                                </ul>
+                                <a href="{{ url_for('logout') }}" class="group text-theme-sm mt-3 flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
+                                    {{ _('Sign out') }}
+                                </a>
+                            </div>
+                            <!-- Dropdown End -->
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- ===== Header End ===== -->
+            
+            <!-- ===== Main Content Start ===== -->
+            <main>
+                <div class="mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6">
+                    <div class="grid grid-cols-12 gap-4 md:gap-6">
+                        <div class="col-span-12">
+                            <!-- Page Header -->
+                            <div class="mb-6">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ _('Submit Complaint') }}</h1>
+                                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                            {{ _('Submit a complaint about offer') }} #{{ offer.id }}
+                                        </p>
+                                        <!-- Arabic Title -->
+                                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white mt-2" dir="rtl" lang="ar">تقديم شكوى</h1>
+                                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400" dir="rtl" lang="ar">
+                                            تقديم شكوى بخصوص العرض رقم #{{ offer.id }}
+                                        </p>
+                                    </div>
+                                    
+                                    <!-- Back Button -->
+                                    <a href="{{ url_for('view_complaints') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                        </svg>
+                                        {{ _('Back to Complaints') }}
+                                    </a>
+                                    <!-- Arabic Back Button -->
+                                    <a href="{{ url_for('view_complaints') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 mt-2" dir="rtl" lang="ar">
+                                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                        </svg>
+                                        العودة إلى الشكاوى
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Offer Information Card -->
+                            <div class="mb-6">
+                                <div class="bg-white dark:bg-gray-800 shadow rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                                        {{ _('Offer Information') }}
+                                    </h3>
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4" dir="rtl" lang="ar">
+                                        معلومات العرض
+                                    </h3>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                            <span class="font-medium text-gray-600 dark:text-gray-400">{{ _('Offer ID') }}:</span>
+                                            <span class="ml-2 text-gray-900 dark:text-white">#{{ offer.id }}</span>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium text-gray-600 dark:text-gray-400">{{ _('Company') }}:</span>
+                                            <span class="ml-2 text-gray-900 dark:text-white">{{ offer.company.name or offer.company.name_ar or 'Company #' + offer.company.id|string }}</span>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium text-gray-600 dark:text-gray-400">{{ _('Total Price') }}:</span>
+                                            <span class="ml-2 text-gray-900 dark:text-white">EGP {{ "%.2f"|format(offer.total_price) }}</span>
+                                        </div>
+                                        <div>
+                                            <span class="font-medium text-gray-600 dark:text-gray-400">{{ _('Status') }}:</span>
+                                            <span class="ml-2 text-gray-900 dark:text-white">{{ offer.status.title() }}</span>
+                                        </div>
+                                        
+                                        <!-- Arabic Labels -->
+                                        <div class="col-span-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm" dir="rtl" lang="ar">
+                                                <div>
+                                                    <span class="font-medium text-gray-600 dark:text-gray-400">رقم العرض:</span>
+                                                    <span class="mr-2 text-gray-900 dark:text-white">#{{ offer.id }}</span>
+                                                </div>
+                                                <div>
+                                                    <span class="font-medium text-gray-600 dark:text-gray-400">الشركة:</span>
+                                                    <span class="mr-2 text-gray-900 dark:text-white">{{ offer.company.name_ar or offer.company.name or 'شركة رقم ' + offer.company.id|string }}</span>
+                                                </div>
+                                                <div>
+                                                    <span class="font-medium text-gray-600 dark:text-gray-400">السعر الإجمالي:</span>
+                                                    <span class="mr-2 text-gray-900 dark:text-white">جنيه مصري {{ "%.2f"|format(offer.total_price) }}</span>
+                                                </div>
+                                                <div>
+                                                    <span class="font-medium text-gray-600 dark:text-gray-400">الحالة:</span>
+                                                    <span class="mr-2 text-gray-900 dark:text-white">{{ offer.status.title() }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Complaint Form -->
+                            <div>
+                                <div class="bg-white dark:bg-gray-800 shadow rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+                                        {{ _('Complaint Details') }}
+                                    </h3>
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6" dir="rtl" lang="ar">
+                                        تفاصيل الشكوى
+                                    </h3>
+                                    
+                                    <form method="POST" class="space-y-6">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                        <!-- Title -->
+                                        <div>
+                                            <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                {{ _('Complaint Title') }} <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="text" 
+                                                   id="title" 
+                                                   name="title" 
+                                                   required 
+                                                   placeholder="{{ _('Brief description of the issue') }}"
+                                                   class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                        </div>
+                                        
+                                        <!-- Arabic Title Label -->
+                                        <div dir="rtl" lang="ar">
+                                            <label for="title" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                عنوان الشكوى <span class="text-red-500">*</span>
+                                            </label>
+                                            <input type="text" 
+                                                   id="title_ar" 
+                                                   name="title_ar" 
+                                                   placeholder="وصف مختصر للمشكلة"
+                                                   class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                        </div>
+                                        
+                                        <!-- Description -->
+                                        <div>
+                                            <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                {{ _('Detailed Description') }} <span class="text-red-500">*</span>
+                                            </label>
+                                            <textarea id="description" 
+                                                      name="description" 
+                                                      rows="6" 
+                                                      required 
+                                                      placeholder="{{ _('Please provide a detailed description of your complaint, including any relevant details, dates, and specific issues you encountered.') }}"
+                                                      class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                                {{ _('Be as specific as possible to help us resolve your issue quickly.') }}
+                                            </p>
+                                        </div>
+                                        
+                                        <!-- Arabic Description Label -->
+                                        <div dir="rtl" lang="ar">
+                                            <label for="description_ar" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                الوصف التفصيلي <span class="text-red-500">*</span>
+                                            </label>
+                                            <textarea id="description_ar" 
+                                                      name="description_ar" 
+                                                      rows="6" 
+                                                      placeholder="يرجى تقديم وصف تفصيلي لشكواك، بما في ذلك أي تفاصيل ذات صلة وتواريخ ومشاكل محددة واجهتها."
+                                                      class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                                                كن محددًا قدر الإمكان لمساعدتنا في حل مشكلتك بسرعة.
+                                            </p>
+                                        </div>
+                                        
+                                        <!-- Type and Priority -->
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <!-- Complaint Type -->
+                                            <div>
+                                                <label for="complaint_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                    {{ _('Complaint Type') }}
+                                                </label>
+                                                <select id="complaint_type" 
+                                                        name="complaint_type" 
+                                                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                                    <option value="general">{{ _('General Complaint') }}</option>
+                                                    <option value="quality">{{ _('Quality Issue') }}</option>
+                                                    <option value="delivery">{{ _('Delivery Problem') }}</option>
+                                                    <option value="service">{{ _('Service Issue') }}</option>
+                                                    <option value="communication">{{ _('Communication Problem') }}</option>
+                                                    <option value="pricing">{{ _('Pricing Issue') }}</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <!-- Priority -->
+                                            <div>
+                                                <label for="priority" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                    {{ _('Priority Level') }}
+                                                </label>
+                                                <select id="priority" 
+                                                        name="priority" 
+                                                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                                    <option value="low">{{ _('Low - Minor issue, not urgent') }}</option>
+                                                    <option value="normal" selected>{{ _('Normal - Standard priority') }}</option>
+                                                    <option value="high">{{ _('High - Important issue') }}</option>
+                                                    <option value="urgent">{{ _('Urgent - Critical issue requiring immediate attention') }}</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Arabic Type and Priority -->
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6" dir="rtl" lang="ar">
+                                            <!-- Arabic Complaint Type -->
+                                            <div>
+                                                <label for="complaint_type_ar" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                    نوع الشكوى
+                                                </label>
+                                                <select id="complaint_type_ar" 
+                                                        name="complaint_type_ar" 
+                                                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                                    <option value="general">شكوى عامة</option>
+                                                    <option value="quality">مشكلة في الجودة</option>
+                                                    <option value="delivery">مشكلة في التوصيل</option>
+                                                    <option value="service">مشكلة في الخدمة</option>
+                                                    <option value="communication">مشكلة في التواصل</option>
+                                                    <option value="pricing">مشكلة في التسعير</option>
+                                                </select>
+                                            </div>
+                                            
+                                            <!-- Arabic Priority -->
+                                            <div>
+                                                <label for="priority_ar" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                    مستوى الأولوية
+                                                </label>
+                                                <select id="priority_ar" 
+                                                        name="priority_ar" 
+                                                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                                    <option value="low">منخفض - مشكلة بسيطة، غير عاجلة</option>
+                                                    <option value="normal" selected>عادي - أولوية قياسية</option>
+                                                    <option value="high">عالي - مشكلة مهمة</option>
+                                                    <option value="urgent">عاجل - مشكلة حرجة تتطلب اهتمامًا فوريًا</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Additional Information -->
+                                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                                            <div class="flex">
+                                                <div class="flex-shrink-0">
+                                                    <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    </svg>
+                                                </div>
+                                                <div class="ml-3">
+                                                    <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200">
+                                                        {{ _('What happens next?') }}
+                                                    </h3>
+                                                    <div class="mt-2 text-sm text-blue-700 dark:text-blue-300">
+                                                        <p>{{ _('Your complaint will be reviewed by our team and forwarded to the relevant company. They will respond within 24-48 hours with a resolution plan.') }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Arabic Additional Information -->
+                                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mt-4" dir="rtl" lang="ar">
+                                            <div class="flex">
+                                                <div class="flex-shrink-0">
+                                                    <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    </svg>
+                                                </div>
+                                                <div class="mr-3">
+                                                    <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200">
+                                                        ماذا يحدث بعد ذلك؟
+                                                    </h3>
+                                                    <div class="mt-2 text-sm text-blue-700 dark:text-blue-300">
+                                                        <p>سيتم مراجعة شكواك من قبل فريقنا وإرسالها إلى الشركة المعنية. سيردون عليك خلال 24-48 ساعة مع خطة حل.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Form Actions -->
+                                        <div class="flex justify-center pt-6 border-t border-gray-200 dark:border-gray-700" style="border: 2px solid red !important; background-color: #fef2f2 !important; padding: 20px !important; margin-top: 20px !important;">
+                                            <button type="submit" class="px-16 py-4 text-lg font-medium text-white bg-blue-600 border border-transparent rounded-2xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" style="background-color: #2563eb !important; color: white !important; display: inline-block !important; visibility: visible !important; opacity: 1 !important; min-width: 200px;">
+                                                {{ _('Submit Complaint') }}
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Arabic Submit Button -->
+                                        <div class="flex justify-center mt-4" dir="rtl" lang="ar">
+                                            <button type="submit" class="px-16 py-4 text-lg font-medium text-white bg-blue-600 border border-transparent rounded-2xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" style="background-color: #2563eb !important; color: white !important; display: inline-block !important; visibility: visible !important; opacity: 1 !important; min-width: 200px;">
+                                                تقديم الشكوى
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <!-- ===== Main Content End ===== -->
+        </div>
+        <!-- ===== Content Area End ===== -->
+    </div>
+    <!-- ===== Page Wrapper End ===== -->
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="fixed top-4 right-4 z-50 space-y-2">
+                {% for category, message in messages %}
+                    <div class="px-4 py-3 rounded-md shadow-lg max-w-sm
+                        {% if category == 'error' %}bg-red-500 text-white
+                        {% elif category == 'success' %}bg-green-500 text-white
+                        {% else %}bg-blue-500 text-white{% endif %}">
+                        <div class="flex items-center">
+                            <div class="flex-shrink-0">
+                                {% if category == 'error' %}
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                    </svg>
+                                {% elif category == 'success' %}
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                {% else %}
+                                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                {% endif %}
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm font-medium">{{ message }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+</body>
+</html>

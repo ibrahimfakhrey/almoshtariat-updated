@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}" dir="{{ 'rtl' if get_locale() == 'ar' else 'ltr' }}">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+  <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+    <title>{{ _('Suppliers') }} - {{ _('B2B Platform') }}</title>
+  <link href="favicon.ico" rel="icon"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css', v=version) }}">
+ </head>
+<body :class="{'dark bg-gray-900': darkMode === true}" x-data="{ 
+    page: 'suppliers', 
+    'loaded': true, 
+    'darkMode': false, 
+    'stickyMenu': false, 
+    'sidebarToggle': false, 
+    'scrollTop': false,
+    'user_notifications': [],
+    'unread_notifications_count': 0,
+    'showFilters': false,
+    'filters': {
+        'search': '',
+        'status': '',
+        'sector': '',
+        'location': ''
+    },
+    'sortBy': 'name',
+    'sortOrder': 'asc',
+    'selected': []
+}" x-init="
+         darkMode = JSON.parse(localStorage.getItem('darkMode'));
+    $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)));
+    
+    // Initialize notification data
+    user_notifications = [];
+    unread_notifications_count = 0;
+    
+    // Load notifications
+    fetch('/notifications/get_notifications')
+        .then(response => response.json())
+        .then(data => {
+            user_notifications = data.notifications || [];
+            unread_notifications_count = data.unread_count || 0;
+        })
+        .catch(error => console.error('Error loading notifications:', error));
+">
+    <!-- Preloader -->
+    <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => loaded = false, 500)})" x-show="loaded">
+   <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent"></div>
+   </div>
+
+    <!-- Page Wrapper -->
+  <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+   <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+    <!-- SIDEBAR HEADER -->
+    <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+     <a href="/">
+      <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+       <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+       <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+      </span>
+      <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+     </a>
+    </div>
+            
+            <!-- Sidebar Menu -->
+    <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+                <nav x-data="{selected: $persist('Suppliers')}">
+      <div>
+       <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+                            <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">{{ _('MENU') }}</span>
+       </h3>
+       <ul class="mb-6 flex flex-col gap-1">
+                            <li>
+                                <a :class="(selected === 'Dashboard') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Dashboard'" class="menu-item group" href="/dash">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Dashboard') }}</span>
+         </a>
+        </li>
+                            <li>
+                                <a :class="(selected === 'Profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Profile'" class="menu-item group" href="/profile">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('User Profile') }}</span>
+         </a>
+        </li>
+         <li>
+                                <a :class="(selected === 'Orders') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Orders'" class="menu-item group" href="/orders">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('My Orders') }}</span>
+         </a>
+        </li>
+
+         <li>
+                                <a :class="(selected === 'Deliveries') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Deliveries'" class="menu-item group" href="/my_deliveries">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('My Deliveries') }}</span>
+         </a>
+        </li>
+
+                  <li>
+                                <a :class="(selected === 'CreateOrder') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'CreateOrder'" class="menu-item group" href="/new_purchase">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Create Order') }}</span>
+         </a>
+        </li>
+         <li>
+                                <a :class="(selected === 'Suppliers') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Suppliers'" class="menu-item group" href="/suppliers">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Suppliers') }}</span>
+         </a>
+        </li>
+         <li>
+                                <a :class="(selected === 'Chat') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Chat'" class="menu-item group" href="/chat">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('chats') }}</span>
+         </a>
+        </li>
+        <!-- Balance Menu Item -->
+        <li>
+                                <a :class="(selected === 'Balance') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Balance'" class="menu-item group" href="/balance">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Balance') }}</span>
+         </a>
+        </li>
+        <!-- AI Assistant Menu Item -->
+        <li>
+                                <a :class="(selected === 'AI Assistant') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'AI Assistant'" class="menu-item group" href="/client/ai_chat">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('AI Assistant') }}</span>
+         </a>
+        </li>
+        <!-- Company Registration Menu Item -->
+        <li>
+                                <a :class="(selected === 'Company Registration') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Company Registration'" class="menu-item group" href="/company_register">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Company Registration') }}</span>
+         </a>
+        </li>
+       </ul>
+      </div>
+     </nav>
+    </div>
+   </aside>
+
+        <!-- Main Content -->
+   <div class="relative flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
+            <!-- Header -->
+  <header class="sticky top-0 z-99999 flex w-full border-gray-200 bg-white xl:border-b dark:border-gray-800 dark:bg-gray-900" x-data="{menuToggle: false}">
+     <div class="flex grow flex-col items-center justify-between xl:flex-row xl:px-6">
+      <div class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:py-4 xl:justify-normal xl:border-b-0 xl:px-0 dark:border-gray-800">
+       <!-- Hamburger Toggle BTN -->
+                        <button :class="sidebarToggle ? 'xl:bg-transparent dark:xl:bg-transparent bg-gray-100 dark:bg-gray-800' : ''" @click.stop="sidebarToggle = !sidebarToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 xl:h-11 xl:w-11 xl:border dark:border-gray-800 dark:text-gray-400">
+        <svg class="hidden fill-current xl:block" fill="none" height="12" viewbox="0 0 16 12" width="16" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M0.583252 1C0.583252 0.585788 0.919038 0.25 1.33325 0.25H14.6666C15.0808 0.25 15.4166 0.585786 15.4166 1C15.4166 1.41421 15.0808 1.75 14.6666 1.75L1.33325 1.75C0.919038 1.75 0.583252 1.41422 0.583252 1ZM0.583252 11C0.583252 10.5858 0.919038 10.25 1.33325 10.25L14.6666 10.25C15.0808 10.25 15.4166 10.5858 15.4166 11C15.4166 11.4142 15.0808 11.75 14.6666 11.75L1.33325 11.75C0.919038 11.75 0.583252 11.4142 0.583252 11ZM1.33325 5.25C0.919038 5.25 0.583252 5.58579 0.583252 6C0.583252 6.41421 0.919038 6.75 1.33325 6.75L7.99992 6.75C8.41413 6.75 8.74992 6.41421 8.74992 6C8.74992 5.58579 8.41413 5.25 7.99992 5.25L1.33325 5.25Z" fill="" fill-rule="evenodd"></path>
+        </svg>
+        <svg :class="sidebarToggle ? 'hidden' : 'block xl:hidden'" class="fill-current xl:hidden" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M3.25 6C3.25 5.58579 3.58579 5.25 4 5.25L20 5.25C20.4142 5.25 20.75 5.58579 20.75 6C20.75 6.41421 20.4142 6.75 20 6.75L4 6.75C3.58579 6.75 3.25 6.41422 3.25 6ZM3.25 18C3.25 17.5858 3.58579 17.25 4 17.25L20 17.25C20.4142 17.25 20.75 17.5858 20.75 18C20.75 18.4142 20.4142 18.75 20 18.75L4 18.75C3.58579 18.75 3.25 18.4142 3.25 18ZM4 11.25C3.58579 11.25 3.25 11.5858 3.25 12C3.25 12.4142 3.58579 12.75 4 12.75L12 12.75C12.4142 12.75 12.75 12.4142 12.75 12C12.75 11.5858 12.4142 11.25 12 11.25L4 11.25Z" fill="" fill-rule="evenodd"></path>
+        </svg>
+        <!-- cross icon -->
+        <svg :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M6.21967 7.28131C5.92678 6.98841 5.92678 6.51354 6.21967 6.22065C6.51256 5.92775 6.98744 5.92775 7.28033 6.22065L11.999 10.9393L16.7176 6.22078C17.0105 5.92789 17.4854 5.92788 17.7782 6.22078C18.0711 6.51367 18.0711 6.98855 17.7782 7.28144L13.0597 12L17.7782 16.7186C18.0711 17.0115 18.0711 17.4863 17.7782 17.7792C17.4854 18.0721 17.0105 18.0721 16.7176 17.7792L11.999 13.0607L7.28033 17.7794C6.98744 18.0722 6.51256 18.0722 6.21967 17.7794C5.92678 17.4865 5.92678 17.0116 6.21967 16.7187L10.9384 12L6.21967 7.28131Z" fill="" fill-rule="evenodd"></path>
+        </svg>
+       </button>
+                        
+                        <a class="xl:hidden" href="/">
+                            <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                            <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                        </a>
+                        
+                        <button :class="menuToggle ? 'bg-gray-100 dark:bg-gray-800' : ''" @click.stop="menuToggle = !menuToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 hover:bg-gray-100 xl:hidden dark:text-gray-400 dark:hover:bg-gray-800">
+        <svg class="fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M5.99902 10.4951C6.82745 10.4951 7.49902 11.1667 7.49902 11.9951V12.0051C7.49902 12.8335 6.82745 13.5051 5.99902 13.5051C5.1706 13.5051 4.49902 12.8335 4.49902 12.0051V11.9951C4.49902 11.1667 5.1706 10.4951 5.99902 10.4951ZM17.999 10.4951C18.8275 10.4951 19.499 11.1667 19.499 11.9951V12.0051C19.499 12.8335 18.8275 13.5051 17.999 13.5051C17.1706 13.5051 16.499 12.8335 16.499 12.0051V11.9951C16.499 11.1667 17.1706 10.4951 17.999 10.4951ZM13.499 11.9951C13.499 11.1667 12.8275 10.4951 11.999 10.4951C11.1706 10.4951 10.499 11.1667 10.499 11.9951V12.0051C10.499 12.8335 11.1706 13.5051 11.999 13.5051C12.8275 13.5051 13.499 12.8335 13.499 12.0051V11.9951Z" fill="" fill-rule="evenodd"></path>
+        </svg>
+       </button>
+                        
+       <div class="hidden sm:block">
+        <form action="#" method="POST">
+         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+         <div class="relative">
+          <button class="absolute left-0 top-1/2 -translate-y-1/2">
+           <svg class="fill-gray-400 dark:fill-gray-500 hover:fill-brand-500 dark:hover:fill-brand-400" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                                    <path clip-rule="evenodd" d="M17.7084 18.7918C17.3179 19.1823 16.6847 19.1823 16.2942 18.7918L12.9525 15.4501C11.5909 16.5449 9.84884 17.1668 7.9584 17.1668C3.56703 17.1668 0.00012207 13.5999 0.00012207 9.20849C0.00012207 4.8171 3.56703 1.25018 7.9584 1.25018C12.3498 1.25018 15.9167 4.8171 15.9167 9.20849C15.9167 11.0989 15.2948 12.841 14.2 14.2026L17.5417 17.5443C17.9322 17.9348 17.9322 18.5681 17.5417 18.9586L17.7084 18.7918ZM14.1667 9.20849C14.1667 12.6336 11.3836 15.4168 7.9584 15.4168C4.53322 15.4168 1.75012 12.6336 1.75012 9.20849C1.75012 5.78331 4.53322 3.00018 7.9584 3.00018C11.3836 3.00018 14.1667 5.78331 14.1667 9.20849Z" fill="" fill-rule="evenodd"></path>
+           </svg>
+          </button>
+          <input class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-10 w-full rounded-lg border border-gray-300 bg-transparent px-10 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30" name="searchbar" placeholder="{{ _('Type to search...') }}" type="search"/>
+         </div>
+        </form>
+       </div>
+      </div>
+                    
+      <div :class="menuToggle ? 'flex' : 'hidden'" class="shadow-theme-md w-full items-center justify-between gap-4 px-5 py-4 xl:flex xl:justify-end xl:px-0 xl:shadow-none">
+       <div class="2xsm:gap-3 flex items-center gap-2">
+        <!-- Dark Mode Toggler -->
+        <button :class="darkMode ? 'bg-gray-100 text-brand-600 dark:bg-gray-800' : ''" @click="darkMode = !darkMode" class="relative flex h-10 w-10 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-brand-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-brand-400">
+         <svg :class="darkMode ? 'hidden' : 'block'" class="fill-current" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                            <path clip-rule="evenodd" d="M9.9987 12.5C11.3794 12.5 12.4987 11.3807 12.4987 10C12.4987 8.61929 11.3794 7.5 9.9987 7.5C8.61799 7.5 7.4987 8.61929 7.4987 10C7.4987 11.3807 8.61799 12.5 9.9987 12.5ZM9.9987 14.1667C12.3 14.1667 14.1654 12.3013 14.1654 10C14.1654 7.69873 12.3 5.83333 9.9987 5.83333C7.69742 5.83333 5.83203 7.69873 5.83203 10C5.83203 12.3013 7.69742 14.1667 9.9987 14.1667ZM9.9987 0.833333C10.4589 0.833333 10.832 1.20643 10.832 1.66667V3.33333C10.832 3.79357 10.4589 4.16667 9.9987 4.16667C9.53846 4.16667 9.16536 3.79357 9.16536 3.33333V1.66667C9.16536 1.20643 9.53846 0.833333 9.9987 0.833333ZM9.9987 15.8333C10.4589 15.8333 10.832 16.2064 10.832 16.6667V18.3333C10.832 18.7936 10.4589 19.1667 9.9987 19.1667C9.53846 19.1667 9.16536 18.7936 9.16536 18.3333V16.6667C9.16536 16.2064 9.53846 15.8333 9.9987 15.8333ZM1.66536 10C1.66536 9.53976 2.03846 9.16667 2.4987 9.16667H4.16536C4.6256 9.16667 4.9987 9.53976 4.9987 10C4.9987 10.4602 4.6256 10.8333 4.16536 10.8333H2.4987C2.03846 10.8333 1.66536 10.4602 1.66536 10ZM14.9987 10C14.9987 9.53976 15.3718 9.16667 15.832 9.16667H17.4987C17.9589 9.16667 18.332 9.53976 18.332 10C18.332 10.4602 17.9589 10.8333 17.4987 10.8333H15.832C15.3718 10.8333 14.9987 10.4602 14.9987 10ZM3.57703 3.57735C3.90247 3.25191 4.42985 3.25191 4.75529 3.57735L5.94362 4.76568C6.26906 5.09112 6.26906 5.6185 5.94362 5.94393C5.61819 6.26937 5.09081 6.26937 4.76537 5.94393L3.57703 4.75561C3.2516 4.43017 3.2516 3.90279 3.57703 3.57735ZM16.4204 16.4204C16.0949 16.7458 15.5676 16.7458 15.2421 16.4204L14.0538 15.2321C13.7284 14.9066 13.7284 14.3793 14.0538 14.0538C14.3792 13.7284 14.9066 13.7284 15.2321 14.0538L16.4204 15.2421C16.7458 15.5676 16.7458 16.0949 16.4204 16.4204ZM16.4204 3.57735C16.7458 3.90279 16.7458 4.43017 16.4204 4.75561L15.2321 5.94393C14.9066 6.26937 14.3792 6.26937 14.0538 5.94393C13.7284 5.6185 13.7284 5.09112 14.0538 4.76568L15.2421 3.57735C15.5676 3.25191 16.0949 3.25191 16.4204 3.57735ZM3.57703 16.4204C3.2516 16.0949 3.2516 15.5676 3.57703 15.2421L4.76537 14.0538C5.09081 13.7284 5.61819 13.7284 5.94362 14.0538C6.26906 14.3793 6.26906 14.9066 5.94362 15.2321L4.75529 16.4204C4.42985 16.7458 3.90247 16.7458 3.57703 16.4204Z" fill="" fill-rule="evenodd"></path>
+         </svg>
+         <svg :class="darkMode ? 'block' : 'hidden'" class="fill-current" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                            <path clip-rule="evenodd" d="M7.5 4.58333C7.5 6.95833 9.29167 8.75 11.6667 8.75C13.1167 8.75 14.3917 8.04167 15.1917 6.95833C15.2583 6.86667 15.3333 6.775 15.425 6.69167C17.8833 7.025 19.1667 9.66667 18.1 12.0333C16.8333 14.8 14.1417 16.6667 11.0833 16.6667C6.85 16.6667 3.33333 13.15 3.33333 8.91667C3.33333 5.85833 5.2 3.16667 7.96667 1.9C10.3333 0.833333 12.975 2.11667 13.3083 4.575C13.225 4.66667 13.1333 4.74167 13.0417 4.80833C11.9583 5.60833 11.25 6.88333 11.25 8.33333C11.25 10.7083 13.0417 12.5 15.4167 12.5C15.6167 12.5 15.8083 12.4833 16 12.45C15.625 14.6583 13.55 16.25 11.0833 16.25C7.33333 16.25 4.25 13.1667 4.25 9.41667C4.25 6.95 5.84167 4.875 8.05 4.5C7.725 4.84167 7.5 5.19167 7.5 4.58333Z" fill="" fill-rule="evenodd"></path>
+         </svg>
+        </button>
+                        
+                        <!-- Notification dropdown -->
+        <div @click.outside="open = false" class="relative" x-data="{open: false}">
+         <!-- Notification button -->
+         <button @click="open = !open" :class="open ? 'bg-gray-100 dark:bg-gray-800' : ''" class="relative flex h-10 w-10 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-brand-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-brand-400">
+          <svg class="fill-current" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M8.74996 12.5H11.2499C11.7102 12.5 12.0833 12.8731 12.0833 13.3333C12.0833 13.7936 11.7102 14.1667 11.2499 14.1667H8.74996C8.28973 14.1667 7.91663 13.7936 7.91663 13.3333C7.91663 12.8731 8.28973 12.5 8.74996 12.5ZM5.83329 10.8333H14.1666C14.6268 10.8333 14.9999 11.2064 14.9999 11.6667C14.9999 12.1269 14.6268 12.5 14.1666 12.5H5.83329C5.37306 12.5 4.99996 12.1269 4.99996 11.6667C4.99996 11.2064 5.37306 10.8333 5.83329 10.8333ZM3.33329 9.16667H16.6666C17.1268 9.16667 17.4999 9.53976 17.4999 10C17.4999 10.4602 17.1268 10.8333 16.6666 10.8333H3.33329C2.87306 10.8333 2.49996 10.4602 2.49996 10C2.49996 9.53976 2.87306 9.16667 3.33329 9.16667ZM5.83329 7.5H14.1666C14.6268 7.5 14.9999 7.87309 14.9999 8.33333C14.9999 8.79357 14.6268 9.16667 14.1666 9.16667H5.83329C5.37306 9.16667 4.99996 8.79357 4.99996 8.33333C4.99996 7.87309 5.37306 7.5 5.83329 7.5ZM8.74996 5.83333H11.2499C11.7102 5.83333 12.0833 6.20643 12.0833 6.66667C12.0833 7.1269 11.7102 7.5 11.2499 7.5H8.74996C8.28973 7.5 7.91663 7.1269 7.91663 6.66667C7.91663 6.20643 8.28973 5.83333 8.74996 5.83333Z" fill="" fill-rule="evenodd"></path>
+          </svg>
+          <!-- Notification badge -->
+          <span x-show="unread_notifications_count > 0" x-text="unread_notifications_count" class="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white"></span>
+         </button>
+
+         <!-- Notification dropdown -->
+         <div x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="absolute right-0 z-50 mt-2 w-80 origin-top-right rounded-lg bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-gray-800" style="display: none;">
+          {% include 'partials/notification_dropdown.html' %}
+         </div>
+        </div>
+       </div>
+       
+       <!-- Language Toggle -->
+       <div @click.outside="languageOpen = false" class="relative" x-data="{ languageOpen: false }">
+         <button @click="languageOpen = !languageOpen" class="relative flex h-10 w-10 items-center justify-center rounded-lg text-gray-500 hover:bg-gray-100 hover:text-brand-600 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-brand-400">
+           <svg class="fill-current" fill="none" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+             <path clip-rule="evenodd" d="M10 18.3333C14.6024 18.3333 18.3333 14.6024 18.3333 10C18.3333 5.39763 14.6024 1.66667 10 1.66667C5.39763 1.66667 1.66667 5.39763 1.66667 10C1.66667 14.6024 5.39763 18.3333 10 18.3333ZM10 20C15.5228 20 20 15.5228 20 10C20 4.47715 15.5228 0 10 0C4.47715 0 0 4.47715 0 10C0 15.5228 4.47715 20 10 20ZM10 16.6667C13.6819 16.6667 16.6667 13.6819 16.6667 10C16.6667 6.31811 13.6819 3.33333 10 3.33333C6.31811 3.33333 3.33333 6.31811 3.33333 10C3.33333 13.6819 6.31811 16.6667 10 16.6667ZM10 15C12.7614 15 15 12.7614 15 10C15 7.23858 12.7614 5 10 5C7.23858 5 5 7.23858 5 10C5 12.7614 7.23858 15 10 15ZM10 13.3333C11.8409 13.3333 13.3333 11.8409 13.3333 10C13.3333 8.15905 11.8409 6.66667 10 6.66667C8.15905 6.66667 6.66667 8.15905 6.66667 10C6.66667 11.8409 8.15905 13.3333 10 13.3333ZM10 12.5C10.6904 12.5 11.25 11.9404 11.25 11.25C11.25 10.5596 10.6904 10 10 10C9.30964 10 8.75 10.5596 8.75 11.25C8.75 11.9404 9.30964 12.5 10 12.5Z" fill="" fill-rule="evenodd"></path>
+           </svg>
+         </button>
+         
+         <!-- Language Dropdown -->
+         <div x-show="languageOpen" @click.outside="languageOpen = false" class="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg shadow-lg z-50">
+           <a href="{{ url_for('set_language', language='en') }}" onclick="setLanguageAndReload('en')" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-t-lg">{{ _('English') }}</a>
+           <a href="{{ url_for('set_language', language='ar') }}" onclick="setLanguageAndReload('ar')" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-b-lg">{{ _('العربية') }}</a>
+         </div>
+       </div>
+       
+       <!-- User Settings Dropdown -->
+       <div @click.outside="dropdownOpen = false" class="relative" x-data="{ dropdownOpen: false }">
+        <a @click.prevent="dropdownOpen = ! dropdownOpen" class="flex items-center text-gray-700 dark:text-gray-400" href="#">
+         <span class="mr-3 h-11 w-11 overflow-hidden rounded-full">
+                                    <img alt="User" src="https://png.pngtree.com/png-vector/20231019/ourmid/pngtree-user-profile-avatar-png-image_10211467.png"/>
+         </span>
+                                <span class="text-theme-sm mr-1 block font-medium">{{ current_user.username }}</span>
+                                <svg :class="dropdownOpen && 'rotate-180'" class="stroke-gray-500 dark:stroke-gray-400" fill="none" height="20" viewbox="0 0 18 20" width="18" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4.3125 8.65625L9 13.3437L13.6875 8.65625" stroke="" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+         </svg>
+        </a>
+        <!-- Dropdown Start -->
+        <div class="shadow-theme-lg dark:bg-gray-dark absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 dark:border-gray-800" x-show="dropdownOpen">
+         <div>
+                                    <span class="text-theme-sm block font-medium text-gray-700 dark:text-gray-400">{{ current_user.name if current_user.name else current_user.username }}</span>
+                                    <span class="text-theme-xs mt-0.5 block text-gray-500 dark:text-gray-400">{{ current_user.email }}</span>
+         </div>
+         <ul class="flex flex-col gap-1 border-b border-gray-200 pt-4 pb-3 dark:border-gray-800">
+          <li>
+           <a class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300" href="{{ url_for('profile') }}">
+            <svg class="fill-gray-500 group-hover:fill-gray-700 dark:fill-gray-400 dark:group-hover:fill-gray-300" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                                <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="currentColor" fill-rule="evenodd"></path>
+            </svg>
+            {{ _('Edit profile') }}
+           </a>
+          </li>
+          <li>
+                                        <a class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300" href="{{ url_for('logout') }}">
+            <svg class="fill-gray-500 group-hover:fill-gray-700 dark:fill-gray-400 dark:group-hover:fill-gray-300" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                                <path clip-rule="evenodd" d="M15.1007 19.247C14.6865 19.247 14.3507 18.9112 14.3507 18.497L14.3507 14.245H12.8507V18.497C12.8507 19.7396 13.8581 20.747 15.1007 20.747H18.5007C19.7434 20.747 20.7507 19.7396 20.7507 18.497L20.7507 5.49609C20.7507 4.25345 19.7433 3.24609 18.5007 3.24609H15.1007C13.8581 3.24609 12.8507 4.25345 12.8507 5.49609V9.74501L14.3507 9.74501V5.49609C14.3507 5.08188 14.6865 4.74609 15.1007 4.74609L18.5007 4.74609C18.9149 4.74609 19.2507 5.08188 19.2507 5.49609L19.2507 18.497C19.2507 18.9112 18.9149 19.247 18.5007 19.247H15.1007ZM3.25073 11.9984C3.25073 12.2144 3.34204 12.4091 3.48817 12.546L8.09483 17.1556C8.38763 17.4485 8.86251 17.4487 9.15549 17.1559C9.44848 16.8631 9.44863 16.3882 9.15583 16.0952L5.81116 12.7484L16.0007 12.7484C16.4149 12.7484 16.7507 12.4127 16.7507 11.9984C16.7507 11.5842 16.4149 11.2484 16.0007 11.2484L5.81528 11.2484L9.15585 7.90554C9.44864 7.61255 9.44847 7.13767 9.15547 6.84488C8.86248 6.55209 8.3876 6.55226 8.09481 6.84525L3.52309 11.4202C3.35673 11.5577 3.25073 11.7657 3.25073 11.9984Z" fill="currentColor" fill-rule="evenodd"></path>
+            </svg>
+                                            {{ _('Sign out') }}
+           </a>
+          </li>
+         </ul>
+        </div>
+       </div>
+      </div>
+     </div>
+    </header>
+
+            <!-- Main Content -->
+     <main class="h-full overflow-y-auto p-4 sm:p-6 lg:p-8">
+                <!-- Page Header -->
+                <div class="mb-8">
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">🏭 {{ _('Suppliers Directory') }}</h1>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                {{ _('Browse and connect with verified suppliers') }}
+                            </p>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="flex gap-3">
+                            <button @click="showFilters = !showFilters" :class="showFilters ? 'bg-brand-500 text-white' : 'bg-white text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600'" class="inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors hover:bg-brand-50 dark:hover:bg-gray-700">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z"></path>
+                                </svg>
+                                {{ _('Filters') }}
+                            </button>
+                            
+                            <button class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-600">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                {{ _('Export List') }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters Panel -->
+                <div x-show="showFilters" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 translate-y-0" x-transition:leave-end="opacity-0 -translate-y-2" class="mb-6 rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900" style="display: none;">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+                        <!-- Search -->
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ _('Search Suppliers') }}</label>
+                            <input x-model="filters.search" type="text" placeholder="{{ _('Company name, email...') }}" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-brand-500 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:border-brand-400">
+                        </div>
+                        
+                        <!-- Status Filter -->
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ _('Status') }}</label>
+                            <select x-model="filters.status" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-brand-500 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:border-brand-400">
+<option value="Technology">Technology</option>
+<option value="Electronics">Electronics</option>
+<option value="IT">IT</option>
+<option value="Software">Software</option>
+<option value="Hardware">Hardware</option>
+<option value="General">General</option>
+<option value="Other">Other</option>
+</select>
+                        </div>
+                        
+                        <!-- Location Filter -->
+                        <div>
+                            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">{{ _('Location') }}</label>
+                            <input x-model="filters.location" type="text" placeholder="{{ _('City, country...') }}" class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-brand-500 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:border-brand-400">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Suppliers Table -->
+                <div class="rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                    <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-800">
+                        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h2 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                    {{ _('Suppliers') }} ({{ companies|length }})
+                                </h2>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                    {{ _('Verified and registered suppliers in our platform') }}
+                                </p>
+                            </div>
+                            
+                            <div class="flex items-center gap-2">
+                                <select x-model="sortBy" class="rounded-lg border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-800 dark:text-white">
+<option value="Technology">Technology</option>
+<option value="Electronics">Electronics</option>
+<option value="IT">IT</option>
+<option value="Software">Software</option>
+<option value="Hardware">Hardware</option>
+<option value="General">General</option>
+<option value="Other">Other</option>
+</select>
+                                <button @click="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'" class="rounded-lg border border-gray-300 p-2 dark:border-gray-600 dark:bg-gray-800">
+                                    <svg :class="sortOrder === 'asc' ? 'rotate-0' : 'rotate-180'" class="h-4 w-4 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50 dark:bg-gray-800">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ _('Company') }}</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ _('Contact') }}</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ _('Sector') }}</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ _('Status') }}</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ _('Rating') }}</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">{{ _('Products') }}</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-400">{{ _('Actions') }}</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 bg-white dark:divide-gray-800 dark:bg-gray-900">
+                                {% for company in companies %}
+                                <tr x-show="
+                                    (!filters.search || 
+                                     (company.name_ar && company.name_ar.toLowerCase().includes(filters.search.toLowerCase())) ||
+                                     (company.name_en && company.name_en.toLowerCase().includes(filters.search.toLowerCase())) || 
+                                     company.email.toLowerCase().includes(filters.search.toLowerCase())) &&
+                                    (!filters.status || 
+                                     (filters.status === 'approved' && company.is_approved) ||
+                                     (filters.status === 'pending' && !company.is_approved)) &&
+                                    (!filters.sector || 
+                                     '{{ company.sector or '' }}'.toLowerCase().includes(filters.sector.toLowerCase())) &&
+                                    (!filters.location || 
+                                     '{{ company.registered_address or '' }}'.toLowerCase().includes(filters.location.toLowerCase()))
+                                " class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                                    <!-- Company Info -->
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-start">
+                                            <div class="flex-shrink-0 h-10 w-10">
+                                                <div class="h-10 w-10 rounded-lg bg-brand-100 flex items-center justify-center text-brand-600 font-medium text-sm dark:bg-brand-900 dark:text-brand-400">
+                                                    {{ (company.name_ar or company.name_en or 'C')[0].upper() }}
+                                                </div>
+                                            </div>
+                                            <div class="ml-3">
+                                                <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                    {{ company.name_ar or company.name_en or 'Company' }}
+                                                </div>
+                                                {% if company.website %}
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">
+                                                    <a href="{{ company.website }}" target="_blank" class="hover:text-brand-600 dark:hover:text-brand-400">
+                                                        🌐 {{ company.website }}
+                                                    </a>
+                                                </div>
+                                                {% endif %}
+                                                                                {% if company.commercial_registration %}
+                                <div class="text-xs text-gray-400">
+                                    Reg: {{ company.commercial_registration }}
+                                </div>
+                                {% endif %}
+                                {% if company.founded_year %}
+                                <div class="text-xs text-gray-400">
+                                    📅 Est. {{ company.founded_year }}
+                                </div>
+                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <!-- Contact Info -->
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm text-gray-900 dark:text-gray-100">
+                                            📧 {{ company.email }}
+                                        </div>
+                                        <div class="text-sm text-gray-500 dark:text-gray-400">
+                                            📞 {{ company.office_phone or company.mobile_contact or _('Not provided') }}
+                                        </div>
+                                        {% if company.registered_address %}
+                                        <div class="text-xs text-gray-400 mt-1">
+                                            📍 {{ company.registered_address }}
+                                        </div>
+                                        {% endif %}
+                                    </td>
+
+                                    <!-- Sector -->
+                                    <td class="px-6 py-4">
+                                        {% if company.sector %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                            {{ company.sector|title }}
+                                        </span>
+                                        {% else %}
+                                        <span class="text-xs text-gray-400">{{ _('Not specified') }}</span>
+                                        {% endif %}
+                                    </td>
+
+                                    <!-- Status -->
+                                    <td class="px-6 py-4">
+                                        {% if company.is_approved %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                            ✅ {{ _('Approved') }}
+                                        </span>
+                                        {% else %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                            ⏳ {{ _('Pending') }}
+                                        </span>
+                                        {% endif %}
+                                    </td>
+
+                                    <!-- Rating -->
+                                    <td class="px-6 py-4">
+                                        {% if company.rating and company.rating > 0 %}
+                                        <div class="flex items-center">
+                                            <div class="flex items-center">
+                                                {% for i in range(1, 6) %}
+                                                    {% if i <= company.rating %}
+                                                        <svg class="h-4 w-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                        </svg>
+                                                    {% else %}
+                                                        <svg class="h-4 w-4 text-gray-300 fill-current" viewBox="0 0 20 20">
+                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                        </svg>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ "%.1f"|format(company.rating) }}</span>
+                                        </div>
+                                        {% if company.total_reviews and company.total_reviews > 0 %}
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                                            ({{ company.total_reviews }} review{{ 's' if company.total_reviews != 1 else '' }})
+                                        </div>
+                                        {% endif %}
+                                        {% else %}
+                                        <span class="text-xs text-gray-400">No ratings yet</span>
+                                        {% endif %}
+                                    </td>
+
+                                    <!-- Products Count -->
+                                    <td class="px-6 py-4">
+                                        <div class="text-sm text-gray-900 dark:text-gray-100">
+                                            {{ company.products|length }} Product(s)
+                                        </div>
+                                        {% if company.products %}
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">
+                                            Latest: {{ company.products[-1].name if company.products else 'None' }}
+                                        </div>
+                                        {% endif %}
+                                        {% if company.employees_count %}
+                                        <div class="text-xs text-gray-400 mt-1">
+                                            👥 {{ company.employees_count }} employees
+                                        </div>
+                                        {% endif %}
+                                    </td>
+
+                                    <!-- Actions -->
+                                    <td class="px-6 py-4">
+                                        <div class="flex items-center gap-2">
+                                            <a href="/company/{{ company.id }}/products" class="inline-flex items-center gap-1 rounded-lg bg-blue-50 px-3 py-1.5 text-xs font-medium text-blue-700 hover:bg-blue-100 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800">
+                                                <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4-8-4m16 0v10l-8 4-8-4V7"></path>
+                                                </svg>
+                                                {{ _('View Products') }}
+                                            </a>
+                                            
+                                            <a href="/chat/{{ company.id }}" class="inline-flex items-center gap-1 rounded-lg bg-green-50 px-3 py-1.5 text-xs font-medium text-green-700 hover:bg-green-100 dark:bg-green-900 dark:text-green-200 dark:hover:bg-green-800">
+                                                <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                                </svg>
+                                                {{ _('Chat') }}
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="7" class="px-6 py-12 text-center">
+                                        <div class="text-gray-500 dark:text-gray-400">
+                                            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                            </svg>
+                                            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">{{ _('No suppliers found') }}</h3>
+                                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                                {{ _('No suppliers match your current filters.') }}
+                                            </p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pagination (if needed for large datasets) -->
+                {% if companies|length > 50 %}
+                <div class="mt-6 flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 dark:border-gray-800 dark:bg-gray-900">
+                    <div class="flex flex-1 justify-between sm:hidden">
+                        <a href="#" class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ _('Previous') }}</a>
+                        <a href="#" class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">{{ _('Next') }}</a>
+                    </div>
+                    <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700 dark:text-gray-300">
+                                {{ _('Showing') }} <span class="font-medium">1</span> {{ _('to') }} <span class="font-medium">{{ min(50, companies|length) }}</span> {{ _('of') }} <span class="font-medium">{{ companies|length }}</span> {{ _('results') }}
+                            </p>
+                        </div>
+                        <div>
+                            <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                                <a href="#" class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                                    <span class="sr-only">Previous</span>
+                                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+                                    </svg>
+                                </a>
+                                <a href="#" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">1</a>
+                                <a href="#" class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                                    <span class="sr-only">Next</span>
+                                    <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+                                    </svg>
+                                </a>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </main>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/script_1.js', v=version) }}"></script>
+    
+    <script>
+      // Function to set language and force page reload
+      function setLanguageAndReload(language) {
+        // Set language in session via AJAX
+        fetch(`/set_language/${language}`)
+          .then(() => {
+            // Force page reload with cache busting
+            window.location.reload(true);
+          })
+          .catch(() => {
+            // If AJAX fails, just reload
+            window.location.reload(true);
+          });
+      }
+      
+      // Add cache-busting to all internal links
+      document.addEventListener('DOMContentLoaded', function() {
+        const links = document.querySelectorAll('a[href^="/"]');
+        links.forEach(link => {
+          if (link.href.includes('?')) {
+            link.href += '&v=' + Date.now();
+          } else {
+            link.href += '?v=' + Date.now();
+          }
+        });
+      });
+    </script>
+</body>
+</html>

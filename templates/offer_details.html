@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+    <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+    <title>Offer Details - #{{ offer.id }}</title>
+    <link href="favicon.ico" rel="icon"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+</head>
+<body :class="{'dark bg-gray-900': darkMode === true}" x-data="{ page: 'offerDetails', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false, orderStatus: { progress: 0, status: '{{ offer.status }}' } }" x-init="
+         darkMode = JSON.parse(localStorage.getItem('darkMode'));
+         $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)));
+         
+         // Initialize order status
+         if ('{{ offer.status }}' === 'accepted') {
+             orderStatus.progress = 25;
+         } else if ('{{ offer.status }}' === 'preparing') {
+             orderStatus.progress = 50;
+         } else if ('{{ offer.status }}' === 'out_for_delivery') {
+             orderStatus.progress = 75;
+         } else if ('{{ offer.status }}' === 'delivered') {
+             orderStatus.progress = 100;
+         }">
+    
+    <!-- ===== Preloader Start ===== -->
+    <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => loaded = false, 500)})" x-show="loaded">
+        <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent"></div>
+    </div>
+    <!-- ===== Preloader End ===== -->
+    
+    <!-- ===== Page Wrapper Start ===== -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- ===== Sidebar Start ===== -->
+        <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+            <!-- SIDEBAR HEADER -->
+            <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+                <a href="/">
+                    <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+                        <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                        <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                    </span>
+                    <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                </a>
+            </div>
+            
+            <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+                <!-- Sidebar Menu -->
+                <nav x-data="{selected: $persist('Offers')}">
+                    <!-- Menu Group -->
+                    <div>
+                        <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+                            <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">MENU</span>
+                            <svg :class="sidebarToggle ? 'xl:block hidden' : 'hidden'" class="menu-group-icon mx-auto fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.9716 18.9656 13.7551 17.9991 13.7551C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.9716 11.0326 13.7551 11.9991 13.7551C12.9656 13.7551 13.7491 12.9716 13.7491 12.0051V11.9951Z" fill="currentColor" fill-rule="evenodd"></path>
+                            </svg>
+                        </h3>
+                        <ul class="mb-6 flex flex-col gap-1">
+                            <li>
+                                <a :class=" (selected === 'Dashboard') && (page === 'companyDashboard') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Dashboard' ? '':'Dashboard')" class="menu-item group" href="/company_dashboard">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">Company Dashboard</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_profile">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">Company Profile</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_orders">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">Manage Orders</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_offers">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">My Offers</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_inventory">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">Inventory</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_chat">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">Client Chats</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <!-- Sidebar Menu -->
+            </div>
+        </aside>
+        <!-- ===== Sidebar End ===== -->
+        
+        <!-- ===== Content Area Start ===== -->
+        <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+            <!-- Small Device Overlay Start -->
+            <div :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fixed z-50 h-screen w-full bg-gray-900/50"></div>
+            <!-- Small Device Overlay End -->
+            
+            <!-- ===== Header Start ===== -->
+            <header class="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-black dark:drop-shadow-none">
+                <div class="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
+                    <div class="flex items-center gap-2 sm:gap-4 xl:hidden">
+                        <button @click="sidebarToggle = !sidebarToggle" class="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark xl:hidden">
+                            <span class="relative block h-5.5 w-5.5 cursor-pointer">
+                                <span class="du-block absolute right-0 h-full w-full">
+                                    <span class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[0] duration-200 ease-in-out dark:bg-white"></span>
+                                    <span class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[75] duration-200 ease-in-out dark:bg-white"></span>
+                                    <span class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[150] duration-200 ease-in-out dark:bg-white"></span>
+                                </span>
+                                <span class="absolute right-0 h-full w-full rotate-45">
+                                    <span class="absolute left-2.5 top-0 block h-full w-0.5 rounded-sm bg-black delay-[0] duration-200 ease-in-out dark:bg-white"></span>
+                                    <span class="delay-[75] absolute left-0 top-2.5 block h-0.5 w-full rounded-sm bg-black duration-200 ease-in-out dark:bg-white"></span>
+                                </span>
+                            </span>
+                        </button>
+                        <a class="block flex-shrink-0 xl:hidden" href="/">
+                            <img src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000" alt="Logo" />
+                        </a>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 2xsm:gap-7">
+                        <ul class="flex items-center gap-2 2xsm:gap-4">
+                            <li>
+                                <a class="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border-[0.5px] border-stroke bg-gray hover:text-primary dark:border-strokedark dark:bg-meta-4 dark:text-white" href="#">
+                                    <span class="text-sm font-medium text-black dark:text-white">{{ current_user.username }}</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+            <!-- ===== Header End ===== -->
+            
+            <!-- ===== Main Content Start ===== -->
+            <main>
+                <div class="mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6">
+                    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h2 class="text-title-md2 font-bold text-gray-800 dark:text-white">
+                                Offer Details - #{{ offer.id }}
+                            </h2>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                View complete offer information
+                            </p>
+                        </div>
+                        <div class="flex gap-2">
+                            <a href="/company_offers" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                </svg>
+                                Back to Offers
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Offer Information -->
+                        <div class="lg:col-span-2 space-y-6">
+                            <!-- Offer Details Card -->
+                            <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+                                    Offer Information
+                                </h3>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Offer ID</span>
+                                        <p class="text-sm text-gray-800 dark:text-white">#{{ offer.id }}</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Status</span>
+                                        {% if offer.status == 'pending' %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                            Pending
+                                        </span>
+                                        {% elif offer.status == 'accepted' %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                            Accepted
+                                        </span>
+                                        {% elif offer.status == 'rejected' %}
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                            Rejected
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Price</span>
+                                        <p class="text-lg font-semibold text-gray-800 dark:text-white">EGP {{ "%.2f"|format(offer.total_price) }}</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Delivery Time</span>
+                                        <p class="text-sm text-gray-800 dark:text-white">{{ offer.delivery_time or 'Not specified' }}</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Deduction</span>
+                                        <p class="text-sm text-gray-800 dark:text-white">
+                                            {% if offer.deduction_percentage and offer.deduction_percentage > 0 %}
+                                                <span class="text-green-600 font-semibold">-{{ "%.1f"|format(offer.deduction_percentage) }}%</span>
+                                            {% else %}
+                                                <span class="text-gray-500">No discount</span>
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Transportation Fees</span>
+                                        <p class="text-sm text-gray-800 dark:text-white">
+                                            {% if offer.transportation_fees and offer.transportation_fees > 0 %}
+                                                <span class="text-blue-600 font-semibold">EGP {{ "%.2f"|format(offer.transportation_fees) }}</span>
+                                            {% else %}
+                                                <span class="text-gray-500">Free shipping</span>
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Guarantee</span>
+                                        <p class="text-sm text-gray-800 dark:text-white">
+                                            {% if offer.guarantee %}
+                                                <span class="text-purple-600 font-semibold">{{ offer.guarantee }}</span>
+                                            {% else %}
+                                                <span class="text-gray-500">No guarantee specified</span>
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Submission Date</span>
+                                        <p class="text-sm text-gray-800 dark:text-white">{{ offer.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Company Information Card -->
+                            <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+                                    Company Information
+                                </h3>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Company Name</span>
+                                        <p class="text-sm text-gray-800 dark:text-white">{{ offer.company.name }}</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Company ID</span>
+                                        <p class="text-sm text-gray-800 dark:text-white">#{{ offer.company.id }}</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Email</span>
+                                        <p class="text-sm text-gray-800 dark:text-white">{{ offer.company.email }}</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Phone</span>
+                                        <p class="text-sm text-gray-800 dark:text-white">{{ offer.company.phone }}</p>
+                                    </div>
+                                    
+                                    <div class="md:col-span-2">
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Address</span>
+                                        <p class="text-sm text-gray-800 dark:text-white">{{ offer.company.address }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Product Details Card -->
+                            <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+                                    Product Details
+                                </h3>
+                                
+                                <div class="space-y-4">
+                                    {% for product_offer in offer.product_offers %}
+                                    <div class="border border-gray-200 rounded-lg p-4 dark:border-gray-600">
+                                        <h4 class="font-medium text-gray-800 dark:text-white mb-3">{{ product_offer.purchase.part_name }}</h4>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Quantity</span>
+                                                <p class="text-sm text-gray-800 dark:text-white">{{ product_offer.purchase.quantity }} {{ product_offer.purchase.unit }}</p>
+                                            </div>
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Unit Price</span>
+                                                <p class="text-sm text-gray-800 dark:text-white">EGP {{ "%.2f"|format(product_offer.unit_price) }}</p>
+                                            </div>
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Total Price</span>
+                                                <p class="text-sm text-gray-800 dark:text-white">EGP {{ "%.2f"|format(product_offer.total_price) }}</p>
+                                            </div>
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Supplier Notes</span>
+                                                <p class="text-sm text-gray-800 dark:text-white">{{ product_offer.notes or 'No notes' }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <!-- Payment Terms Card -->
+                            {% if offer.description and '💳 SUPPLIER PAYMENT TERMS:' in offer.description %}
+                            <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+                                    Payment Terms
+                                </h3>
+                                
+                                {% set payment_section = offer.description.split('💳 SUPPLIER PAYMENT TERMS:')[1] %}
+                                {% if payment_section %}
+                                    {% set payment_lines = payment_section.strip().split('\n') %}
+                                    <div class="space-y-4">
+                                        {% for line in payment_lines %}
+                                            {% if line.strip() and line.strip()[0].isdigit() %}
+                                                {% set parts = line.strip().split(' - ') %}
+                                                {% if parts|length >= 3 %}
+                                                <div class="border border-green-200 rounded-lg p-4 bg-green-50 dark:bg-green-900/20 dark:border-green-600">
+                                                    <h4 class="font-medium text-green-800 dark:text-green-200 mb-3">Step {{ parts[0] }}</h4>
+                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                        <div>
+                                                            <span class="text-sm font-medium text-green-600 dark:text-green-400">Method</span>
+                                                            <p class="text-sm text-green-800 dark:text-green-200">{{ parts[1] }}</p>
+                                                        </div>
+                                                        <div>
+                                                            <span class="text-sm font-medium text-green-600 dark:text-green-400">Percentage</span>
+                                                            <p class="text-sm text-green-800 dark:text-green-200">{{ parts[2].split(' (')[0] }}</p>
+                                                        </div>
+                                                        <div>
+                                                            <span class="text-sm font-medium text-green-600 dark:text-green-400">Timing</span>
+                                                            <p class="text-sm text-green-800 dark:text-green-200">{{ parts[2].split(' (')[1].rstrip(')') }}</p>
+                                                        </div>
+                                                        {% if parts|length > 3 %}
+                                                        <div>
+                                                            <span class="text-sm font-medium text-green-600 dark:text-green-400">Notes</span>
+                                                            <p class="text-sm text-green-800 dark:text-green-200">{{ parts[3] }}</p>
+                                                        </div>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Additional Notes Card -->
+                            {% if offer.description and '💳 SUPPLIER PAYMENT TERMS:' not in offer.description %}
+                            <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+                                    Additional Notes
+                                </h3>
+                                <p class="text-sm text-gray-800 dark:text-white">{{ offer.description }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Simple Order Status Slider with Phase Circles -->
+                            <div class="rounded-lg border border-gray-200 bg-white dark:bg-gray-800 dark:border-gray-700 p-4 mb-4">
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+                                    Order Status
+                                </h3>
+                                
+                                <!-- Status Steps with Colored Circles -->
+                                <div class="relative mb-4">
+                                    <!-- Progress Line -->
+                                    <div class="absolute top-6 left-0 w-full h-1 bg-gray-200 dark:bg-gray-700 rounded-full">
+                                        <!-- Blue Progress Line -->
+                                        <div class="h-full bg-blue-500 rounded-full transition-all duration-500 ease-out" 
+                                             style="width: {{ current_progress }}%"></div>
+                                    </div>
+                                    
+                                    <!-- Status Steps with Circles -->
+                                    <div class="relative flex justify-between">
+                                        {% for step in steps %}
+                                        <div class="flex flex-col items-center">
+                                            <div class="w-12 h-12 rounded-full flex items-center justify-center mb-2 transition-all duration-300
+                                                {% if current_progress >= step.progress %}
+                                                    bg-green-500 text-white shadow-md
+                                                {% elif current_progress >= (step.progress - 20) %}
+                                                    bg-blue-500 text-white shadow-lg ring-2 ring-blue-300 scale-110
+                                                {% else %}
+                                                    bg-gray-200 dark:bg-gray-700 text-gray-400
+                                                {% endif %}">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    {% if step.id == 1 or step.id == 5 %}
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    {% elif step.id == 2 %}
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                                    {% elif step.id == 3 %}
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    {% elif step.id == 4 %}
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    {% endif %}
+                                                </svg>
+                                            </div>
+                                            <span class="text-xs font-medium text-center
+                                                {% if current_progress >= step.progress %}
+                                                    text-green-600 dark:text-green-400 font-bold
+                                                {% elif current_progress >= (step.progress - 20) %}
+                                                    text-blue-600 dark:text-blue-400 font-bold
+                                                {% else %}
+                                                    text-gray-500 dark:text-gray-400
+                                                {% endif %}">
+                                                {{ step.name.split()[0] if step.name.split()|length > 1 else step.name }}
+                                            </span>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Current Status -->
+                                <div class="text-center">
+                                    <span class="text-sm font-medium text-blue-600 dark:text-blue-400">
+                                        {% if order_status == 'delivered' %}
+                                            Order Delivered
+                                        {% elif order_status == 'out_for_delivery' %}
+                                            Out for Delivery
+                                        {% elif order_status == 'quality_check' %}
+                                            Quality Check
+                                        {% elif order_status == 'preparing' %}
+                                            Preparing Order
+                                        {% else %}
+                                            Offer Accepted
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+                                    Actions
+                                </h3>
+                                
+                                <!-- Accept Order Button - Smart Display for Clients -->
+                                {% if current_user.role == 'client' %}
+                                    {% if offer.status == 'accepted' %}
+                                        <!-- This offer is already accepted - Show Refuse Button -->
+                                        <div class="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                                            <div class="text-center">
+                                                <h4 class="text-lg font-semibold text-green-800 dark:text-green-200 mb-3">
+                                                    ✅ This Offer is Already Accepted!
+                                                </h4>
+                                                <p class="text-sm text-green-700 dark:text-green-300 mb-4">
+                                                    Congratulations! You have accepted this offer and your order is now in progress.
+                                                </p>
+                                                <div class="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-green-800 bg-green-100 dark:bg-green-900/30 rounded-lg border border-green-300 dark:border-green-700 mb-4">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    Order Accepted - Processing in Progress
+                                                </div>
+                                                
+
+                                                
+                                                <!-- Refuse/Delete Accepted Offer Button -->
+                                                <div class="mt-4 pt-4 border-t border-green-200 dark:border-green-700">
+                                                    <p class="text-sm text-green-700 dark:text-green-300 mb-3">
+                                                        Need to cancel this offer?
+                                                    </p>
+                                                    
+                                                    <!-- MAIN REFUSE BUTTON - Simple HTML Link -->
+                                                    <a href="{{ url_for('refuse_accepted_offer', offer_id=offer.id) }}" 
+                                                       class="inline-flex items-center gap-2 px-8 py-4 text-base font-bold text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-1 cursor-pointer no-underline" 
+                                                       style="background-color: #dc2626 !important; border: 3px solid #b91c1c !important; min-width: 250px; box-shadow: 0 10px 25px rgba(220, 38, 38, 0.3) !important;" 
+                                                       onmouseover="this.style.backgroundColor='#b91c1c'; this.style.transform='translateY(-2px)'" 
+                                                       onmouseout="this.style.backgroundColor='#dc2626'; this.style.transform='translateY(0)'"
+                                                       onclick="return confirm('⚠️ WARNING: Are you sure you want to refuse this accepted offer?\n\nThis will:\n• Reset the offer status to pending\n• Allow you to accept other offers\n• The offer will remain available for reconsideration\n\nThis action can be undone by accepting the offer again.')">
+                                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                        </svg>
+                                                        🔄 REFUSE & RESET OFFER
+                                                    </a>
+                                                    
+                                                    <!-- Simple confirmation message -->
+                                                    <p class="mt-3 text-sm text-gray-600 dark:text-gray-400">
+                                                        Click the button above to refuse this offer and reset it to pending status.
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% elif offer.status == 'pending' %}
+                                        <!-- Offer is pending and can be accepted -->
+                                        <div class="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                                            <div class="text-center">
+                                                <h4 class="text-lg font-semibold text-green-800 dark:text-green-200 mb-3">
+                                                    Ready to Accept This Offer?
+                                                </h4>
+                                                <p class="text-sm text-green-700 dark:text-green-300 mb-4">
+                                                    Review the offer details below and click accept if you're satisfied with the terms.
+                                                </p>
+                                                <a href="{{ url_for('accept_offer', offer_id=offer.id) }}" 
+                                                   class="inline-flex items-center gap-3 px-8 py-4 text-lg font-bold text-white rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 cursor-pointer no-underline" 
+                                                   style="background-color: #16a34a !important; border: 2px solid #15803d !important; min-width: 200px;" 
+                                                   onmouseover="this.style.backgroundColor='#15803d'" 
+                                                   onmouseout="this.style.backgroundColor='#16a34a'"
+                                                   onclick="return confirm('✅ Are you sure you want to accept this offer?\n\nThis will:\n• Accept the offer and lock the order\n• Start the order processing\n• Prevent accepting other offers for this order\n\nThis action will finalize your decision.')">
+                                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    Accept Order Now
+                                                </a>
+                                            </div>
+                                        </div>
+                                    {% elif offer.status == 'rejected' %}
+                                        <!-- This offer was rejected -->
+                                        <div class="mb-6 p-4 bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                                            <div class="text-center">
+                                                <h4 class="text-lg font-semibold text-red-800 dark:text-red-200 mb-3">
+                                                    ❌ This Offer Was Rejected
+                                                </h4>
+                                                <p class="text-sm text-red-700 dark:text-red-300 mb-4">
+                                                    You have previously rejected this offer. It cannot be accepted now.
+                                                </p>
+                                                <div class="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-red-800 bg-red-100 dark:bg-red-900/30 rounded-lg border border-red-300 dark:border-red-700">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                    Offer Rejected - Cannot Accept
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <!-- Order already has an accepted offer from another company -->
+                                        <div class="mb-6 p-4 bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                                            <div class="text-center">
+                                                <h4 class="text-lg font-semibold text-yellow-800 dark:text-yellow-200 mb-3">
+                                                    ⚠️ Order Already Has Accepted Offer
+                                                </h4>
+                                                <p class="text-sm text-yellow-700 dark:text-yellow-300 mb-4">
+                                                    This order already has an accepted offer from another company. You cannot accept multiple offers for the same order.
+                                                </p>
+                                                <div class="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-yellow-800 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg border border-yellow-300 dark:border-yellow-700">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                                    </svg>
+                                                    Order Locked - Cannot Accept More Offers
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                                
+                                <!-- Main Action Buttons - Always Visible -->
+                                <div class="flex flex-col sm:flex-row gap-3 mb-6">
+                                    <!-- Chat with Company Button -->
+                                    <a href="{{ url_for('start_chat', company_id=offer.company.id) }}" class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors shadow-md hover:shadow-lg !bg-blue-600 !opacity-100" style="background-color: #2563eb !important; opacity: 1 !important;">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                        </svg>
+                                        Chat with Company
+                                    </a>
+                                    
+                                    <!-- Complaint Button -->
+                                    <a href="{{ url_for('submit_complaint', offer_id=offer.id) }}" class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors shadow-md hover:shadow-lg !bg-red-600 !opacity-100" style="background-color: #dc2626 !important; opacity: 1 !important;">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                        </svg>
+                                        Submit Complaint
+                                    </a>
+                                </div>
+                                
+                                <!-- Accept/Reject Offer Buttons - Smart Display for Clients -->
+                                {% if current_user.role == 'client' %}
+                                <div class="flex gap-3 mb-4">
+                                    {% if order_has_accepted_offer and offer.status == 'pending' %}
+                                        <!-- Order already has accepted offer - show warning -->
+                                        <div class="w-full text-center py-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                                            <span class="text-yellow-700 dark:text-yellow-400 font-medium">
+                                                ⚠️ Cannot Accept - Order Already Has Accepted Offer
+                                            </span>
+                                        </div>
+                                    {% elif offer.status == 'pending' %}
+                                        <!-- Offer is pending and can be accepted -->
+                                        <button class="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors shadow-md hover:shadow-lg" onclick="acceptOffer({{ offer.id }})">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                            Accept Offer
+                                        </button>
+                                        <button class="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors shadow-md hover:shadow-lg" onclick="rejectOffer({{ offer.id }})">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                            Reject Offer
+                                        </button>
+                                    {% elif offer.status == 'accepted' %}
+                                        <div class="w-full text-center py-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                                            <span class="text-green-700 dark:text-green-400 font-medium">
+                                                ✓ Offer Accepted - Order in Progress
+                                            </span>
+                                        </div>
+                                    {% elif offer.status == 'rejected' %}
+                                        <div class="w-full text-center py-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                                            <span class="text-yellow-700 dark:text-yellow-400 font-medium">
+                                                ✗ Offer Rejected
+                                            </span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                                
+                                {% if offer.status == 'accepted' %}
+                                <div class="space-y-4">
+                                    <!-- Status Update Buttons -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                                        <button class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 rounded-lg transition-colors" onclick="updateOrderStatus('preparing')">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                            </svg>
+                                            Mark as Preparing
+                                        </button>
+                                        
+                                        <button class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors" onclick="updateOrderStatus('quality_check')">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            Quality Check
+                                        </button>
+                                        
+                                        <button class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors" onclick="updateOrderStatus('out_for_delivery')">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            Out for Delivery
+                                        </button>
+                                        
+                                        <button class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors" onclick="updateOrderStatus('delivered')">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                            Mark as Delivered
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Package Creation Section - Show when status is 'out for delivery' -->
+                                    {% if offer.order_status == 'out_for_delivery' %}
+                                    <div class="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                                        <div class="text-center">
+                                            <h4 class="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-3">
+                                                📦 Ready to Create Package?
+                                            </h4>
+                                            <p class="text-sm text-blue-700 dark:text-blue-300 mb-4">
+                                                The order is out for delivery. Create a package to track the shipment.
+                                            </p>
+                                            {% if not offer.package_number %}
+                                            <button onclick="createPackage({{ offer.id }})" 
+                                                   class="inline-flex items-center gap-3 px-8 py-4 text-lg font-bold text-white rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 cursor-pointer" 
+                                                   style="background-color: #2563eb !important; border: 2px solid #1d4ed8 !important; min-width: 200px;">
+                                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                                </svg>
+                                                Create Package
+                                            </button>
+                                            {% else %}
+                                            <div class="space-y-3">
+                                                <div class="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-lg">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    Package Created: {{ offer.package_number }}
+                                                </div>
+                                                <a href="{{ url_for('package_details', package_number=offer.package_number) }}" 
+                                                   class="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:hover:bg-blue-900/30 rounded-lg transition-colors">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                    </svg>
+                                                    View Package Details
+                                                </a>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <!-- Keyboard Shortcuts Info -->
+                                    <div class="text-center mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                        <p class="text-xs text-gray-600 dark:text-gray-400">
+                                            <strong>Keyboard Shortcuts:</strong> Ctrl+1 (Preparing), Ctrl+2 (Quality Check), Ctrl+3 (Out for Delivery), Ctrl+4 (Delivered)
+                                        </p>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                {% if offer.status == 'rejected' %}
+                                <div class="text-center py-4">
+                                    <p class="text-gray-500 dark:text-gray-400">This offer has been rejected.</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Order Information Sidebar -->
+                        <div class="space-y-6">
+                            <!-- Order Details Card -->
+                            <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+                                    Order Information
+                                </h3>
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Order ID</span>
+                                        <p class="text-sm text-gray-800 dark:text-white">#{{ offer.order.id }}</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Order Name</span>
+                                        <p class="text-sm text-gray-800 dark:text-white">{{ offer.order.order_name or 'N/A' }}</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Sector</span>
+                                        <p class="text-sm text-gray-800 dark:text-white">{{ offer.order.sector or 'N/A' }}</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Order Type</span>
+                                        <p class="text-sm text-gray-800 dark:text-white">{{ offer.order.order_type or 'N/A' }}</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Created Date</span>
+                                        <p class="text-sm text-gray-800 dark:text-white">{{ offer.order.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Client</span>
+                                        <p class="text-sm text-gray-800 dark:text-white">{{ offer.order.user.username }}</p>
+                                    </div>
+                                </div>
+                                
+                                {% if offer.order.description %}
+                                <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
+                                    <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Order Description</span>
+                                    <p class="text-sm text-gray-800 dark:text-white mt-1">{{ offer.order.description }}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <!-- ===== Main Content End ===== -->
+        </div>
+        <!-- ===== Content Area End ===== -->
+    </div>
+    <!-- ===== Page Wrapper End ===== -->
+    
+    <script src="{{ url_for('static', filename='js/alpine.min.js') }}"></script>
+    
+    <script>
+        // Enhanced Order status management
+        let currentOrderStatus = '{{ offer.status }}';
+        let orderProgress = 0;
+        
+        // Get order status from database or initialize based on offer status
+        function initializeOrderStatus() {
+            // Try to get the actual order status from the offer
+            const offerStatus = '{{ offer.status }}';
+            const orderStatus = '{{ offer.order_status or "offer_accepted" }}';
+            
+            if (orderStatus === 'delivered') {
+                orderProgress = 100;
+                currentOrderStatus = 'delivered';
+            } else if (orderStatus === 'out_for_delivery') {
+                orderProgress = 80;
+                currentOrderStatus = 'out_for_delivery';
+            } else if (orderStatus === 'quality_check') {
+                orderProgress = 60;
+                currentOrderStatus = 'quality_check';
+            } else if (orderStatus === 'preparing') {
+                orderProgress = 40;
+                currentOrderStatus = 'preparing';
+            } else if (orderStatus === 'offer_accepted' || offerStatus === 'offer_accepted') {
+                orderProgress = 20;
+                currentOrderStatus = 'offer_accepted';
+            } else {
+                orderProgress = 0;
+                currentOrderStatus = 'pending';
+            }
+        }
+        
+        // Initialize on page load
+        initializeOrderStatus();
+        
+        function getProgressWidth() {
+            return orderProgress;
+        }
+        
+        function getStepCircleClass(step) {
+            const stepProgress = step * 20; // 5 steps = 20% each
+            
+            if (orderProgress >= stepProgress) {
+                // Completed steps - Green
+                return 'bg-green-500 text-white shadow-md';
+            } else if (orderProgress >= (stepProgress - 20)) {
+                // Current step - Blue (highlighted)
+                return 'bg-blue-500 text-white shadow-lg ring-2 ring-blue-300 scale-110';
+            } else {
+                // Pending steps - Gray
+                return 'bg-gray-200 dark:bg-gray-700 text-gray-400';
+            }
+        }
+        
+        function getStepClass(step) {
+            const stepProgress = step * 20; // 5 steps = 20% each
+            if (orderProgress >= stepProgress) {
+                return 'bg-gradient-to-r from-blue-500 via-purple-500 to-green-500 text-white shadow-xl scale-110 ring-4 ring-blue-200 dark:ring-blue-800';
+            } else {
+                return 'bg-gray-200 dark:bg-gray-700 text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-300';
+            }
+        }
+        
+        function getStepTextClass(step) {
+            const stepProgress = step * 20;
+            if (orderProgress >= stepProgress) {
+                return 'text-blue-600 dark:text-blue-400 font-bold';
+            } else {
+                return 'text-gray-500 dark:text-gray-400';
+            }
+        }
+        
+        function getCurrentStatusClass() {
+            if (orderProgress >= 100) {
+                return 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg';
+            } else if (orderProgress >= 80) {
+                return 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg';
+            } else if (orderProgress >= 60) {
+                return 'bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-lg';
+            } else if (orderProgress >= 40) {
+                return 'bg-gradient-to-r from-yellow-500 to-orange-600 text-white shadow-lg';
+            } else if (orderProgress >= 20) {
+                return 'bg-gradient-to-r from-green-500 to-teal-600 text-white shadow-lg';
+            } else {
+                return 'bg-gradient-to-r from-gray-500 to-gray-600 text-white shadow-lg';
+            }
+        }
+        
+        function getStatusDotClass() {
+            if (orderProgress >= 100) {
+                return 'bg-green-300';
+            } else if (orderProgress >= 80) {
+                return 'bg-blue-300';
+            } else if (orderProgress >= 60) {
+                return 'bg-purple-300';
+            } else if (orderProgress >= 40) {
+                return 'bg-yellow-300';
+            } else if (orderProgress >= 20) {
+                return 'bg-green-300';
+            } else {
+                return 'bg-gray-300';
+            }
+        }
+        
+        function getCurrentStatusText() {
+            if (orderProgress >= 100) {
+                return 'Order Delivered';
+            } else if (orderProgress >= 80) {
+                return 'Out for Delivery';
+            } else if (orderProgress >= 60) {
+                return 'Quality Check';
+            } else if (orderProgress >= 40) {
+                return 'Preparing Order';
+            } else if (orderProgress >= 20) {
+                return 'Offer Accepted';
+            } else {
+                return 'Offer Pending';
+            }
+        }
+        
+        function updateOrderStatus(status) {
+            let newProgress = orderProgress;
+            let newStatus = currentOrderStatus;
+            
+            switch(status) {
+                case 'preparing':
+                    if (orderProgress >= 20) {
+                        newProgress = 40;
+                        newStatus = 'preparing';
+                        showNotification('Order status updated to: Preparing', 'success');
+                    }
+                    break;
+                case 'quality_check':
+                    if (orderProgress >= 40) {
+                        newProgress = 60;
+                        newStatus = 'quality_check';
+                        showNotification('Order status updated to: Quality Check', 'success');
+                    }
+                    break;
+                case 'out_for_delivery':
+                    if (orderProgress >= 60) {
+                        newProgress = 80;
+                        newStatus = 'out_for_delivery';
+                        showNotification('Order status updated to: Out for Delivery', 'success');
+                    }
+                    break;
+                case 'delivered':
+                    if (orderProgress >= 80) {
+                        newProgress = 100;
+                        newStatus = 'delivered';
+                        showNotification('Order delivered successfully!', 'success');
+                    }
+                    break;
+            }
+            
+            // Animate progress update
+            if (newProgress !== orderProgress) {
+                orderProgress = newProgress;
+                currentOrderStatus = newStatus;
+                
+                // Save to database (you can implement this)
+                saveOrderStatus(newStatus);
+                
+                // Trigger Alpine.js reactivity
+                setTimeout(() => {
+                    Alpine.store('orderStatus', { progress: orderProgress, status: currentOrderStatus });
+                }, 100);
+            }
+        }
+        
+        function saveOrderStatus(status) {
+            // Call the API to save order status
+            const formData = new FormData();
+            formData.append('offer_id', {{ offer.id }});
+            formData.append('status', status);
+            formData.append('csrf_token', '{{ csrf_token() }}');
+            
+            fetch('/update_order_status', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Order status saved:', data.message);
+                    // Update the offer status in the UI if needed
+                    if (data.status === 'delivered') {
+                        // Show completion message
+                        showNotification('Order completed successfully! 🎉', 'success');
+                    }
+                } else {
+                    console.error('Error saving order status:', data.error);
+                    showNotification('Error saving order status: ' + data.error, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error saving order status:', error);
+                showNotification('Error saving order status. Please try again.', 'error');
+            });
+        }
+        
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium transition-all duration-300 transform translate-x-full`;
+            
+            if (type === 'success') {
+                notification.className += ' bg-green-500';
+            } else if (type === 'error') {
+                notification.className += ' bg-red-500';
+            }
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Animate out and remove
+            setTimeout(() => {
+                notification.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+        
+        function acceptOffer(offerId) {
+            if (confirm('Are you sure you want to accept this offer? This action cannot be undone.')) {
+                // Get the button and show loading state
+                const button = event.target.closest('button');
+                const originalText = button.innerHTML;
+                const originalOnClick = button.onclick;
+                
+                // Disable button and show loading
+                button.disabled = true;
+                button.innerHTML = `
+                    <svg class="w-6 h-6 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Accepting Offer...
+                `;
+                button.style.backgroundColor = '#6b7280';
+                button.style.cursor = 'not-allowed';
+                
+                // Create a form to submit the offer acceptance
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/accept_offer/${offerId}`;
+                
+                // Add CSRF token if available
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                if (csrfToken) {
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = 'csrf_token';
+                    csrfInput.value = csrfToken;
+                    form.appendChild(csrfInput);
+                }
+                
+                // Submit the form
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+        
+        function rejectOffer(offerId) {
+            if (confirm('Are you sure you want to reject this offer? This action cannot be undone.')) {
+                // Create a form to submit the offer rejection
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/reject_offer/${offerId}`;
+                
+                // Add CSRF token if available
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                if (csrfToken) {
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = 'csrf_token';
+                    csrfInput.value = csrfToken;
+                    form.appendChild(csrfInput);
+                }
+                
+                // Submit the form
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+        
+        function refuseAcceptedOffer(offerId) {
+            console.log('refuseAcceptedOffer called with offerId:', offerId);
+            
+            if (confirm('⚠️ WARNING: Are you sure you want to refuse and delete this accepted offer?\n\nThis will:\n• Cancel the accepted offer\n• Remove all order relationships\n• Allow you to accept other offers\n\nThis action CANNOT be undone!')) {
+                console.log('User confirmed deletion');
+                
+                // Simple form submission
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/refuse_accepted_offer/${offerId}`;
+                
+                // Submit the form
+                document.body.appendChild(form);
+                form.submit();
+            } else {
+                console.log('User cancelled deletion');
+            }
+        }
+        
+        function createPackage(offerId) {
+            if (confirm('Create a package for this order? This will generate a tracking number and set up delivery tracking.')) {
+                // Get the button and show loading state
+                const button = event.target.closest('button');
+                const originalText = button.innerHTML;
+                
+                // Disable button and show loading
+                button.disabled = true;
+                button.innerHTML = `
+                    <svg class="w-6 h-6 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Creating Package...
+                `;
+                button.style.backgroundColor = '#6b7280';
+                button.style.cursor = 'not-allowed';
+                
+                // Create a form to submit the package creation
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/create_package/${offerId}`;
+                
+                // Add CSRF token if available
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                if (csrfToken) {
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = 'csrf_token';
+                    csrfInput.value = csrfToken;
+                    form.appendChild(csrfInput);
+                }
+                
+                // Submit the form
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+        
+
+        
+        // Test if functions are defined
+        console.log('Functions loaded:');
+        console.log('acceptOffer:', typeof acceptOffer);
+        console.log('rejectOffer:', typeof rejectOffer);
+        console.log('refuseAcceptedOffer:', typeof refuseAcceptedOffer);
+        
+        // Add keyboard shortcuts for status updates
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case '1':
+                        e.preventDefault();
+                        if (orderProgress >= 20) updateOrderStatus('preparing');
+                        break;
+                    case '2':
+                        e.preventDefault();
+                        if (orderProgress >= 40) updateOrderStatus('quality_check');
+                        break;
+                    case '3':
+                        e.preventDefault();
+                        if (orderProgress >= 60) updateOrderStatus('out_for_delivery');
+                        break;
+                    case '4':
+                        e.preventDefault();
+                        if (orderProgress >= 80) updateOrderStatus('delivered');
+                        break;
+                }
+            }
+        });
+        
+
+</body>
+</html>

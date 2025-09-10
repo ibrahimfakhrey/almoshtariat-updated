@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+    <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+    <title>{% if request.cookies.get('language') == 'ar' %}تفاصيل الطرد{% else %}Package Details{% endif %} - {{ package.package_number }}</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link href="favicon.ico" rel="icon"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+</head>
+<body :class="{'dark bg-gray-900': darkMode === true}" x-data="{ page: 'packages', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }" x-init="
+        darkMode = JSON.parse(localStorage.getItem('darkMode'));
+        $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))">
+    <!-- ===== Preloader Start ===== -->
+    <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => loaded = false, 500)})" x-show="loaded">
+        <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent">
+        </div>
+    </div>
+    <!-- ===== Preloader End ===== -->
+    <!-- ===== Page Wrapper Start ===== -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- ===== Sidebar Start ===== -->
+        <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+            <!-- SIDEBAR HEADER -->
+            <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+                <a href="/">
+                    <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+                        <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                        <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                    </span>
+                    <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                </a>
+            </div>
+            <!-- SIDEBAR HEADER -->
+            <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+                <!-- Sidebar Menu -->
+                <nav x-data="{selected: $persist('Packages')}">
+                    <!-- Menu Group -->
+                    <div>
+                        <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+                            <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">
+                                MENU
+                            </span>
+                        </h3>
+                        <ul class="mb-6 flex flex-col gap-1">
+                            {% if current_user.role == 'company' %}
+                            <!-- Company Menu Items -->
+                            <li>
+                                <a class="menu-item group menu-item-inactive" href="/company_dashboard">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {% if request.cookies.get('language') == 'ar' %}لوحة التحكم{% else %}Company Dashboard{% endif %}
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="menu-item group menu-item-inactive" href="/company_profile">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {% if request.cookies.get('language') == 'ar' %}ملف الشركة{% else %}Company Profile{% endif %}
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="menu-item group menu-item-inactive" href="/company_orders">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {% if request.cookies.get('language') == 'ar' %}إدارة الطلبات{% else %}Manage Orders{% endif %}
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="menu-item group menu-item-active" href="/company_packages">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {% if request.cookies.get('language') == 'ar' %}الطرود{% else %}Packages{% endif %}
+                                    </span>
+                                </a>
+                            </li>
+                            {% else %}
+                            <!-- Client Menu Items -->
+                            <li>
+                                <a class="menu-item group menu-item-inactive" href="/dash">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {% if request.cookies.get('language') == 'ar' %}لوحة التحكم{% else %}Dashboard{% endif %}
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="menu-item group menu-item-inactive" href="/profile">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {% if request.cookies.get('language') == 'ar' %}الملف الشخصي{% else %}Profile{% endif %}
+                                    </span>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </nav>
+                <!-- Sidebar Menu -->
+            </div>
+        </aside>
+        <!-- ===== Sidebar End ===== -->
+        <!-- ===== Content Area Start ===== -->
+        <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+            <!-- Small Device Overlay Start -->
+            <div :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fixed z-50 h-screen w-full bg-gray-900/50">
+            </div>
+            <!-- Small Device Overlay End -->
+            <!-- ===== Header Start ===== -->
+            <header class="sticky top-0 z-99999 flex w-full border-gray-200 bg-white xl:border-b dark:border-gray-800 dark:bg-gray-900" x-data="{menuToggle: false}">
+                <div class="flex grow flex-col items-center justify-between xl:flex-row xl:px-6">
+                    <div class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:py-4 xl:justify-normal xl:border-b-0 xl:px-0 dark:border-gray-800">
+                        <!-- Hamburger Toggle BTN -->
+                        <button :class="sidebarToggle ? 'xl:bg-transparent dark:xl:bg-transparent bg-gray-100 dark:bg-gray-800' : ''" @click.stop="sidebarToggle = !sidebarToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 xl:h-11 xl:w-11 xl:border dark:border-gray-800 dark:text-gray-400">
+                            <svg class="hidden fill-current xl:block" fill="none" height="12" viewbox="0 0 16 12" width="16" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M0.583252 1C0.583252 0.585788 0.919038 0.25 1.33325 0.25H14.6666C15.0808 0.25 15.4166 0.585786 15.4166 1C15.4166 1.41421 15.0808 1.75 14.6666 1.75L1.33325 1.75C0.919038 1.75 0.583252 1.41422 0.583252 1ZM0.583252 11C0.583252 10.5858 0.919038 10.25 1.33325 10.25L14.6666 10.25C15.0808 10.25 15.4166 10.5858 15.4166 11C15.4166 11.4142 15.0808 11.75 14.6666 11.75L1.33325 11.75C0.919038 11.75 0.583252 11.4142 0.583252 11ZM1.33325 5.25C0.919038 5.25 0.583252 5.58579 0.583252 6C0.583252 6.41421 0.919038 6.75 1.33325 6.75L7.99992 6.75C8.41413 6.75 8.74992 6.41421 8.74992 6C8.74992 5.58579 8.41413 5.25 7.99992 5.25L1.33325 5.25Z" fill="" fill-rule="evenodd">
+                                </path>
+                            </svg>
+                            <svg :class="sidebarToggle ? 'hidden' : 'block xl:hidden'" class="fill-current xl:hidden" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M3.25 6C3.25 5.58579 3.58579 5.25 4 5.25L20 5.25C20.4142 5.25 20.75 5.58579 20.75 6C20.75 6.41421 20.4142 6.75 20 6.75L4 6.75C3.58579 6.75 3.25 6.41422 3.25 6ZM3.25 18C3.25 17.5858 3.58579 17.25 4 17.25L20 17.25C20.4142 17.25 20.75 17.5858 20.75 18C20.75 18.4142 20.4142 18.75 20 18.75L4 18.75C3.58579 18.75 3.25 18.4142 3.25 18ZM4 11.25C3.58579 11.25 3.25 11.5858 3.25 12C3.25 12.4142 3.58579 12.75 4 12.75L12 12.75C12.4142 12.75 12.75 12.4142 12.75 12C12.75 11.5858 12.4142 11.25 12 11.25L4 11.25Z" fill="" fill-rule="evenodd">
+                                </path>
+                            </svg>
+                            <!-- cross icon -->
+                            <svg :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M6.21967 7.28131C5.92678 6.98841 5.92678 6.51354 6.21967 6.22065C6.51256 5.92775 6.98744 5.92775 7.28033 6.22065L11.999 10.9393L16.7176 6.22078C17.0105 5.92789 17.4854 5.92788 17.7782 6.22078C18.0711 6.51367 18.0711 6.98855 17.7782 7.28144L13.0597 12L17.7782 16.7186C18.0711 17.0115 18.0711 17.4863 17.7782 17.7792C17.4854 18.0721 17.0105 18.0721 16.7176 17.7792L11.999 13.0607L7.28033 17.7794C6.98744 18.0722 6.51256 18.0722 6.21967 17.7794C5.92678 17.4865 5.92678 17.0116 6.21967 16.7187L10.9384 12L6.21967 7.28131Z" fill="" fill-rule="evenodd">
+                                </path>
+                            </svg>
+                        </button>
+                        <!-- Page Title -->
+                        <div class="flex-1">
+                            <h1 class="text-xl font-semibold text-gray-900 dark:text-white">
+                                {% if request.cookies.get('language') == 'ar' %}تفاصيل الطرد{% else %}Package Details{% endif %}
+                            </h1>
+                        </div>
+                        <!-- User Menu -->
+                        <div @click.outside="dropdownOpen = false" class="relative" x-data="{ dropdownOpen: false }">
+                            <a @click.prevent="dropdownOpen = ! dropdownOpen" class="flex items-center text-gray-700 dark:text-gray-400" href="#">
+                                <span class="mr-3 h-8 w-8 overflow-hidden rounded-full">
+                                    <img alt="User" src="https://png.pngtree.com/png-vector/20231019/ourmid/pngtree-user-profile-avatar-png-image_10211467.png"/>
+                                </span>
+                                <span class="text-sm mr-1 block font-medium">
+                                    {{ current_user.username }}
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- ===== Header End ===== -->
+            <!-- ===== Main Content Start ===== -->
+            <main class="flex-1 overflow-y-auto p-6">
+            <!-- Header -->
+            <div class="mb-8">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+                            {% if request.cookies.get('language') == 'ar' %}تفاصيل الطرد{% else %}Package Details{% endif %}
+                        </h1>
+                        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                            {% if request.cookies.get('language') == 'ar' %}رقم الطرد:{% else %}Package Number:{% endif %} {{ package.package_number }}
+                        </p>
+                    </div>
+                    <div class="flex space-x-3">
+                        {% if current_user.role == 'company' %}
+                        <a href="{{ url_for('company_packages') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700">
+                            {% if request.cookies.get('language') == 'ar' %}العودة للطرود{% else %}Back to Packages{% endif %}
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('dash') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700">
+                            {% if request.cookies.get('language') == 'ar' %}العودة للوحة التحكم{% else %}Back to Dashboard{% endif %}
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Package Information Card -->
+            <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden mb-6">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white">
+                        {% if request.cookies.get('language') == 'ar' %}معلومات الطرد{% else %}Package Information{% endif %}
+                    </h2>
+                </div>
+                <div class="px-6 py-4">
+                    <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                {% if request.cookies.get('language') == 'ar' %}رقم الطرد{% else %}Package Number{% endif %}
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white font-mono">
+                                {{ package.package_number }}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                {% if request.cookies.get('language') == 'ar' %}الحالة{% else %}Status{% endif %}
+                            </dt>
+                            <dd class="mt-1">
+                                <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full
+                                    {% if package.status == 'preparing' %}
+                                        bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200
+                                    {% elif package.status == 'shipped' %}
+                                        bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
+                                    {% elif package.status == 'delivered' %}
+                                        bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
+                                    {% else %}
+                                        bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200
+                                    {% endif %}">
+                                    {% if request.cookies.get('language') == 'ar' %}
+                                        {% if package.status == 'preparing' %}قيد التحضير
+                                        {% elif package.status == 'shipped' %}تم الشحن
+                                        {% elif package.status == 'delivered' %}تم التسليم
+                                        {% else %}{{ package.status }}{% endif %}
+                                    {% else %}
+                                        {{ package.status.title() }}
+                                    {% endif %}
+                                </span>
+                            </dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                {% if request.cookies.get('language') == 'ar' %}تاريخ الإنشاء{% else %}Created Date{% endif %}
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                                {{ package.created_at.strftime('%Y-%m-%d %H:%M') if package.created_at else 'N/A' }}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                {% if request.cookies.get('language') == 'ar' %}رقم الطلب{% else %}Order ID{% endif %}
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                                <a href="{{ url_for('order_details', order_id=package.order_id) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                                    #{{ package.order_id }}
+                                </a>
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Order Information Card -->
+            {% if package.order %}
+            <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden mb-6">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white">
+                        {% if request.cookies.get('language') == 'ar' %}معلومات الطلب{% else %}Order Information{% endif %}
+                    </h2>
+                </div>
+                <div class="px-6 py-4">
+                    <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                {% if request.cookies.get('language') == 'ar' %}العميل{% else %}Customer{% endif %}
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                                {{ package.order.user.name or 'N/A' }}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                {% if request.cookies.get('language') == 'ar' %}حالة الطلب{% else %}Order Status{% endif %}
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                                {% set accepted_offers = package.order.offers|selectattr('status', 'equalto', 'accepted')|list %}
+                                {% if accepted_offers|length > 0 %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                        {% if request.cookies.get('language') == 'ar' %}يحتوي على عرض{% else %}Has Offer{% endif %}
+                                    </span>
+                                {% else %}
+                                    {{ package.order.status.title() if package.order.status else 'N/A' }}
+                                {% endif %}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                {% if request.cookies.get('language') == 'ar' %}تاريخ الطلب{% else %}Order Date{% endif %}
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                                {{ package.order.created_at.strftime('%Y-%m-%d %H:%M') if package.order.created_at else 'N/A' }}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                {% if request.cookies.get('language') == 'ar' %}إجمالي المبلغ{% else %}Total Amount{% endif %}
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                                {{ package.total_value or 'N/A' }} {% if request.cookies.get('language') == 'ar' %}ريال{% else %}SAR{% endif %}
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Company Information Card -->
+            {% if package.company %}
+            <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden mb-6">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white">
+                        {% if request.cookies.get('language') == 'ar' %}معلومات الشركة{% else %}Company Information{% endif %}
+                    </h2>
+                </div>
+                <div class="px-6 py-4">
+                    <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                {% if request.cookies.get('language') == 'ar' %}اسم الشركة{% else %}Company Name{% endif %}
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                                {% if request.cookies.get('language') == 'ar' %}
+                                    {{ package.company.name_ar or package.company.name_en }}
+                                {% else %}
+                                    {{ package.company.name_en or package.company.name_ar }}
+                                {% endif %}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                {% if request.cookies.get('language') == 'ar' %}البريد الإلكتروني{% else %}Email{% endif %}
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                                {{ package.company.email }}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                {% if request.cookies.get('language') == 'ar' %}رقم الهاتف{% else %}Phone Number{% endif %}
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                                {{ package.company.phone_number or 'N/A' }}
+                            </dd>
+                        </div>
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                {% if request.cookies.get('language') == 'ar' %}العنوان{% else %}Address{% endif %}
+                            </dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                                {% if request.cookies.get('language') == 'ar' %}
+                                    {{ package.company.address_ar or package.company.address_en or 'N/A' }}
+                                {% else %}
+                                    {{ package.company.address_en or package.company.address_ar or 'N/A' }}
+                                {% endif %}
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Delivery Confirmation (Company Only) -->
+            {% if current_user.role == 'company' and package.status in ['shipped', 'preparing'] %}
+            <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden mb-6">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white">
+                        {% if request.cookies.get('language') == 'ar' %}تأكيد التسليم{% else %}Delivery Confirmation{% endif %}
+                    </h2>
+                </div>
+                <div class="px-6 py-4">
+                    <!-- Mark as Delivered Button -->
+                    <div class="text-center mb-6" x-data="{ showForm: false }">
+                        <button 
+                            @click="showForm = !showForm"
+                            class="inline-flex items-center px-6 py-3 border border-transparent shadow-lg text-lg font-bold rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 transform hover:scale-105" style="background-color: #059669 !important; color: white !important;"
+                        >
+                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            {% if request.cookies.get('language') == 'ar' %}تأكيد التسليم{% else %}Mark as Delivered{% endif %}
+                        </button>
+                        
+                        <!-- Delivery Confirmation Form -->
+                        <div x-show="showForm" x-transition class="mt-6" x-data="{
+                            confirmingDelivery: false,
+                            deliveryCode: '',
+                            confirmDelivery() {
+                    if (!this.deliveryCode.trim()) {
+                        alert('{% if request.cookies.get("language") == "ar" %}يرجى إدخال رمز التأكيد{% else %}Please enter the confirmation code{% endif %}');
+                        return;
+                    }
+                    
+                    this.confirmingDelivery = true;
+                    
+                    fetch(`/confirm_delivery/{{ package.id }}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || ''
+                        },
+                        body: JSON.stringify({
+                            delivery_code: this.deliveryCode
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Redirect to success page
+                            window.location.href = `/delivery_success/${data.package_id}`;
+                        } else {
+                            alert(data.message || '{% if request.cookies.get("language") == "ar" %}رمز التأكيد غير صحيح{% else %}Invalid confirmation code{% endif %}');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('{% if request.cookies.get("language") == "ar" %}حدث خطأ أثناء تأكيد التسليم{% else %}Error confirming delivery{% endif %}');
+                    })
+                    .finally(() => {
+                        this.confirmingDelivery = false;
+                    });
+                }
+            }">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white">
+                        {% if request.cookies.get('language') == 'ar' %}تأكيد التسليم{% else %}Delivery Confirmation{% endif %}
+                    </h2>
+                </div>
+                <div class="px-6 py-4">
+                    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-blue-700 dark:text-blue-300">
+                                    {% if request.cookies.get('language') == 'ar' %}
+                                        للتأكيد على تسليم الطرد، يرجى الحصول على رمز التأكيد من العميل وإدخاله أدناه.
+                                    {% else %}
+                                        To confirm package delivery, please get the confirmation code from the client and enter it below.
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <form @submit.prevent="confirmDelivery()" class="space-y-4">
+                        <div>
+                            <label for="delivery_code" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                {% if request.cookies.get('language') == 'ar' %}رمز التأكيد{% else %}Confirmation Code{% endif %}
+                            </label>
+                            <input 
+                                type="text" 
+                                id="delivery_code"
+                                x-model="deliveryCode" 
+                                maxlength="10"
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                placeholder="{% if request.cookies.get('language') == 'ar' %}أدخل رمز التأكيد{% else %}Enter confirmation code{% endif %}"
+                                required
+                            >
+                        </div>
+                        <div class="flex justify-end">
+                            <button 
+                                type="submit" 
+                                :disabled="confirmingDelivery || !deliveryCode.trim()"
+                                class="inline-flex items-center px-4 py-2 border border-transparent shadow-lg text-sm font-bold rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200" style="background-color: #059669 !important; color: white !important;"
+                            >
+                                <span x-show="!confirmingDelivery">
+                                    {% if request.cookies.get('language') == 'ar' %}تأكيد التسليم{% else %}Confirm Delivery{% endif %}
+                                </span>
+                                <span x-show="confirmingDelivery">
+                                    {% if request.cookies.get('language') == 'ar' %}جاري التأكيد...{% else %}Confirming...{% endif %}
+                                </span>
+                            </button>
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Unconfirm Delivery (Company Only) -->
+            {% if current_user.role == 'company' and package.status == 'delivered' %}
+            <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden mb-6">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white">
+                        {% if request.cookies.get('language') == 'ar' %}إلغاء تأكيد التسليم{% else %}Unconfirm Delivery{% endif %}
+                    </h2>
+                </div>
+                <div class="px-6 py-4">
+                    <div class="text-center" x-data="{
+                        unconfirmingDelivery: false,
+                        unconfirmDelivery() {
+                            if (!confirm('{% if request.cookies.get("language") == "ar" %}هل أنت متأكد من إلغاء تأكيد التسليم؟ سيتم تغيير حالة الطرد إلى تم الشحن.{% else %}Are you sure you want to unconfirm delivery? This will change the package status back to shipped.{% endif %}')) {
+                                return;
+                            }
+                            
+                            this.unconfirmingDelivery = true;
+                            
+                            fetch(`/unconfirm_delivery/{{ package.id }}`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || ''
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    // Reload the page to show updated status
+                                    window.location.reload();
+                                } else {
+                                    alert(data.message || '{% if request.cookies.get("language") == "ar" %}حدث خطأ أثناء إلغاء تأكيد التسليم{% else %}Error unconfirming delivery{% endif %}');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('{% if request.cookies.get("language") == "ar" %}حدث خطأ أثناء إلغاء تأكيد التسليم{% else %}Error unconfirming delivery{% endif %}');
+                            })
+                            .finally(() => {
+                                this.unconfirmingDelivery = false;
+                            });
+                        }
+                    }">
+                        <button 
+                            @click="unconfirmDelivery()"
+                            :disabled="unconfirmingDelivery"
+                            class="inline-flex items-center px-6 py-3 border border-transparent shadow-lg text-lg font-bold rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed" 
+                            style="background-color: #dc2626 !important; color: white !important;"
+                        >
+                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            <span x-show="!unconfirmingDelivery">
+                                {% if request.cookies.get('language') == 'ar' %}إلغاء تأكيد التسليم{% else %}Unconfirm Delivery{% endif %}
+                            </span>
+                            <span x-show="unconfirmingDelivery">
+                                {% if request.cookies.get('language') == 'ar' %}جاري الإلغاء...{% else %}Unconfirming...{% endif %}
+                            </span>
+                        </button>
+                        <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">
+                            {% if request.cookies.get('language') == 'ar' %}
+                                سيؤدي هذا إلى تغيير حالة الطرد من "تم التسليم" إلى "تم الشحن".
+                            {% else %}
+                                This will change the package status from "delivered" back to "shipped".
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+
+            <!-- Tracking Information -->
+            {% if package.order.purchases %}
+            <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden mb-6">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white">
+                        {% if request.cookies.get('language') == 'ar' %}المنتجات{% else %}Products{% endif %}
+                    </h2>
+                </div>
+                <div class="px-6 py-4">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        {% if request.cookies.get('language') == 'ar' %}اسم المنتج{% else %}Product Name{% endif %}
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        {% if request.cookies.get('language') == 'ar' %}الكمية{% else %}Quantity{% endif %}
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        {% if request.cookies.get('language') == 'ar' %}الوحدة{% else %}Unit{% endif %}
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        {% if request.cookies.get('language') == 'ar' %}الوصف{% else %}Description{% endif %}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                {% for purchase in package.order.purchases %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                                        {{ purchase.part_name }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                                        {{ purchase.quantity }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                                        {{ purchase.unit }}
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-300">
+                                        {{ purchase.description or 'N/A' }}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Receiver Information -->
+            <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden mb-6" x-data="{
+                editing: false,
+                saving: false,
+                receiverName: '{{ package.receiver_name or "" }}',
+                receiverPhone: '{{ package.receiver_phone or "" }}',
+                deliveryAddress: '{{ package.receiver_address or "" }}',
+                saveReceiverInfo() {
+                    this.saving = true;
+                    
+                    fetch(`/update_receiver_info/{{ package.order_id }}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('meta[name=csrf-token]')?.getAttribute('content') || ''
+                        },
+                        body: JSON.stringify({
+                            receiver_name: this.receiverName,
+                            receiver_phone: this.receiverPhone,
+                            delivery_address: this.deliveryAddress
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            this.editing = false;
+                            alert('{% if request.cookies.get("language") == "ar" %}تم حفظ المعلومات بنجاح{% else %}Information saved successfully{% endif %}');
+                        } else {
+                            alert('{% if request.cookies.get("language") == "ar" %}حدث خطأ أثناء الحفظ{% else %}Error saving information{% endif %}');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('{% if request.cookies.get("language") == "ar" %}حدث خطأ أثناء الحفظ{% else %}Error saving information{% endif %}');
+                    })
+                    .finally(() => {
+                        this.saving = false;
+                    });
+                }
+            }">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white">
+                        {% if request.cookies.get('language') == 'ar' %}معلومات المستلم{% else %}Receiver Information{% endif %}
+                    </h2>
+                    <button @click="editing = !editing" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-bold rounded text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700 shadow-md transition-all duration-200" style="background-color: #2563eb !important; color: white !important;">
+                        <span x-show="!editing">
+                            {% if request.cookies.get('language') == 'ar' %}تعديل{% else %}Edit{% endif %}
+                        </span>
+                        <span x-show="editing">
+                            {% if request.cookies.get('language') == 'ar' %}إلغاء{% else %}Cancel{% endif %}
+                        </span>
+                    </button>
+                </div>
+                <div class="px-6 py-4">
+                    <!-- View Mode -->
+                    <div x-show="!editing">
+                        <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                    {% if request.cookies.get('language') == 'ar' %}اسم المستلم{% else %}Receiver Name{% endif %}
+                                </dt>
+                                <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                                    <span x-text="receiverName || 'Not specified'" :class="!receiverName ? 'text-gray-400 italic' : ''"></span>
+                                </dd>
+                            </div>
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                    {% if request.cookies.get('language') == 'ar' %}رقم هاتف المستلم{% else %}Receiver Phone{% endif %}
+                                </dt>
+                                <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                                    <span x-text="receiverPhone || 'Not specified'" :class="!receiverPhone ? 'text-gray-400 italic' : ''"></span>
+                                </dd>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                    {% if request.cookies.get('language') == 'ar' %}عنوان التسليم{% else %}Delivery Address{% endif %}
+                                </dt>
+                                <dd class="mt-1 text-sm text-gray-900 dark:text-white">
+                                    <span x-text="deliveryAddress || 'Not specified'" :class="!deliveryAddress ? 'text-gray-400 italic' : ''"></span>
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                    
+                    <!-- Edit Mode -->
+                    <div x-show="editing">
+                        <form @submit.prevent="saveReceiverInfo()" class="space-y-4">
+                            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        {% if request.cookies.get('language') == 'ar' %}اسم المستلم{% else %}Receiver Name{% endif %}
+                                    </label>
+                                    <input type="text" x-model="receiverName" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        {% if request.cookies.get('language') == 'ar' %}رقم هاتف المستلم{% else %}Receiver Phone{% endif %}
+                                    </label>
+                                    <input type="tel" x-model="receiverPhone" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    {% if request.cookies.get('language') == 'ar' %}عنوان التسليم{% else %}Delivery Address{% endif %}
+                                </label>
+                                <textarea x-model="deliveryAddress" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
+                            </div>
+                            <div class="flex justify-end space-x-3">
+                                <button type="button" @click="editing = false" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-md text-sm font-bold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-600 dark:text-white dark:border-gray-500 dark:hover:bg-gray-700 transition-all duration-200" style="background-color: white !important; color: #374151 !important; border: 1px solid #d1d5db !important;">
+                                    {% if request.cookies.get('language') == 'ar' %}إلغاء{% else %}Cancel{% endif %}
+                                </button>
+                                <button type="submit" :disabled="saving" class="inline-flex items-center px-4 py-2 border border-transparent shadow-lg text-sm font-bold rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-all duration-200" style="background-color: #2563eb !important; color: white !important;">
+                                    <span x-show="!saving">{% if request.cookies.get('language') == 'ar' %}حفظ{% else %}Save{% endif %}</span>
+                                    <span x-show="saving">{% if request.cookies.get('language') == 'ar' %}جاري الحفظ...{% else %}Saving...{% endif %}</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+
+
+            <!-- Tracking Information -->
+            <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-white">
+                        {% if request.cookies.get('language') == 'ar' %}معلومات التتبع{% else %}Tracking Information{% endif %}
+                    </h2>
+                </div>
+                <div class="px-6 py-4">
+                    <div class="flow-root">
+                        <ul class="-mb-8">
+                            <li>
+                                <div class="relative pb-8">
+                                    <div class="relative flex space-x-3">
+                                        <div>
+                                            <span class="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center ring-8 ring-white dark:ring-gray-800">
+                                                <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                </svg>
+                                            </span>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <div>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                    {% if request.cookies.get('language') == 'ar' %}تم إنشاء الطرد{% else %}Package Created{% endif %}
+                                                </p>
+                                                <p class="mt-0.5 text-sm text-gray-900 dark:text-white">
+                                                    {{ package.created_at.strftime('%Y-%m-%d %H:%M') if package.created_at else 'N/A' }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            {% if package.status in ['shipped', 'delivered'] %}
+                            <li>
+                                <div class="relative pb-8">
+                                    <div class="relative flex space-x-3">
+                                        <div>
+                                            <span class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center ring-8 ring-white dark:ring-gray-800">
+                                                <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"></path>
+                                                    <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1V8a1 1 0 00-1-1h-3z"></path>
+                                                </svg>
+                                            </span>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <div>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                    {% if request.cookies.get('language') == 'ar' %}تم الشحن{% else %}Shipped{% endif %}
+                                                </p>
+                                                <p class="mt-0.5 text-sm text-gray-900 dark:text-white">
+                                                    {% if request.cookies.get('language') == 'ar' %}الطرد في الطريق{% else %}Package is on the way{% endif %}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            {% endif %}
+                            {% if package.status == 'delivered' %}
+                            <li>
+                                <div class="relative">
+                                    <div class="relative flex space-x-3">
+                                        <div>
+                                            <span class="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center ring-8 ring-white dark:ring-gray-800">
+                                                <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                </svg>
+                                            </span>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <div>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                    {% if request.cookies.get('language') == 'ar' %}تم التسليم{% else %}Delivered{% endif %}
+                                                </p>
+                                                <p class="mt-0.5 text-sm text-gray-900 dark:text-white">
+                                                    {% if request.cookies.get('language') == 'ar' %}تم تسليم الطرد بنجاح{% else %}Package delivered successfully{% endif %}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </main>
+            <!-- ===== Main Content End ===== -->
+        </div>
+        <!-- ===== Content Area End ===== -->
+    </div>
+    <!-- ===== Page Wrapper End ===== -->
+</body>
+</html>

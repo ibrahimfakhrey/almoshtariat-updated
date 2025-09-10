@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="{% if request.cookies.get('language') == 'ar' %}ar{% else %}en{% endif %}" dir="{% if request.cookies.get('language') == 'ar' %}rtl{% else %}ltr{% endif %}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if request.cookies.get('language') == 'ar' %}تسجيل شركة جديدة - لوحة الإدارة{% else %}Register New Company - Admin Panel{% endif %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <style>
+        .dark { background-color: #1a202c; color: #e2e8f0; }
+        .dark .bg-white { background-color: #2d3748; }
+        .dark .text-gray-900 { color: #e2e8f0; }
+        .dark .text-gray-700 { color: #cbd5e0; }
+        .dark .border-gray-300 { border-color: #4a5568; }
+        .dark .bg-gray-50 { background-color: #2d3748; }
+        .rtl { direction: rtl; }
+        .ltr { direction: ltr; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans" x-data="{ darkMode: false, currentStep: 1, totalSteps: 4 }" :class="{ 'dark': darkMode }">
+    <!-- Header -->
+    <header class="bg-blue-600 text-white p-4 shadow-lg">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">{% if request.cookies.get('language') == 'ar' %}تسجيل شركة جديدة{% else %}Register New Company{% endif %}</h1>
+            <div class="flex items-center space-x-4">
+                <!-- Language Toggle -->
+                <button onclick="toggleLanguage()" 
+                        class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors flex items-center"
+                        style="background-color: #2563eb !important; color: white !important;"
+                        onmouseover="this.style.backgroundColor='#1d4ed8'" 
+                        onmouseout="this.style.backgroundColor='#2563eb'">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path>
+                    </svg>
+                    عربي/EN
+                </button>
+                <!-- Dark Mode Toggle -->
+                <button @click="darkMode = !darkMode" class="bg-gray-700 text-white px-3 py-1 rounded hover:bg-gray-600 transition-colors">
+                    <span x-show="!darkMode">🌙</span>
+                    <span x-show="darkMode">☀️</span>
+                </button>
+                <!-- Back to Admin -->
+                <a href="{{ url_for('admin_companies') }}" class="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors">
+                    {% if request.cookies.get('language') == 'ar' %}العودة للشركات{% else %}Back to Companies{% endif %}
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <div class="flex">
+        <aside class="w-64 bg-white dark:bg-gray-800 shadow-lg h-screen sticky top-0">
+            <nav class="p-4">
+                <ul class="space-y-2">
+                    <li><a href="{{ url_for('admin_dashboard') }}" class="block p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">{% if request.cookies.get('language') == 'ar' %}لوحة التحكم{% else %}Dashboard{% endif %}</a></li>
+                    <li><a href="{{ url_for('admin_orders') }}" class="block p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">{% if request.cookies.get('language') == 'ar' %}الطلبات{% else %}Orders{% endif %}</a></li>
+                    <li><a href="{{ url_for('admin_companies') }}" class="block p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">{% if request.cookies.get('language') == 'ar' %}الشركات{% else %}Companies{% endif %}</a></li>
+                    <li><a href="{{ url_for('admin_register_company') }}" class="block p-2 rounded bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">{% if request.cookies.get('language') == 'ar' %}تسجيل شركة جديدة{% else %}Register New Company{% endif %}</a></li>
+                    <li><a href="{{ url_for('admin_users') }}" class="block p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700">{% if request.cookies.get('language') == 'ar' %}المستخدمين{% else %}Users{% endif %}</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="mb-6">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else category }} p-4 mb-4 rounded-lg
+                                        {{ 'bg-red-100 border border-red-400 text-red-700' if category == 'error' else 'bg-green-100 border border-green-400 text-green-700' }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- Progress Bar -->
+            <div class="mb-8">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-blue-700 dark:text-blue-300">{% if request.cookies.get('language') == 'ar' %}خطوة{% else %}Step{% endif %} <span x-text="currentStep"></span> {% if request.cookies.get('language') == 'ar' %}من{% else %}of{% endif %} <span x-text="totalSteps"></span></span>
+                    <span class="text-sm font-medium text-blue-700 dark:text-blue-300" x-text="Math.round((currentStep / totalSteps) * 100) + '%'"></span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                    <div class="bg-blue-600 h-2.5 rounded-full transition-all duration-300" :style="`width: ${(currentStep / totalSteps) * 100}%`"></div>
+                </div>
+            </div>
+
+            <!-- Registration Form -->
+            <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                <!-- Step 1: Basic Company Information -->
+                <div x-show="currentStep === 1" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-bold mb-6 text-gray-900 dark:text-gray-100">{% if request.cookies.get('language') == 'ar' %}المعلومات الأساسية للشركة{% else %}Basic Company Information{% endif %}</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}اسم الشركة (عربي) *{% else %}Company Name (Arabic) *{% endif %}</label>
+                            <input type="text" name="name_ar" required class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}اسم الشركة (إنجليزي){% else %}Company Name (English){% endif %}</label>
+                            <input type="text" name="name_en" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}البريد الإلكتروني *{% else %}Email *{% endif %}</label>
+                            <input type="email" name="email" required class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}نوع الشركة{% else %}Company Type{% endif %}</label>
+                            <select name="company_type" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                                <option value="supplier">{% if request.cookies.get('language') == 'ar' %}مورد{% else %}Supplier{% endif %}</option>
+                                <option value="buyer">{% if request.cookies.get('language') == 'ar' %}مشتري{% else %}Buyer{% endif %}</option>
+                                <option value="both">{% if request.cookies.get('language') == 'ar' %}كلاهما{% else %}Both{% endif %}</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}الشكل القانوني{% else %}Legal Type{% endif %}</label>
+                            <input type="text" name="legal_type" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}الرقم الضريبي{% else %}Tax ID{% endif %}</label>
+                            <input type="text" name="tax_id" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}رقم السجل التجاري{% else %}Commercial Registration{% endif %}</label>
+                            <input type="text" name="commercial_registration" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}رقم ضريبة القيمة المضافة{% else %}VAT Number{% endif %}</label>
+                            <input type="text" name="vat_number" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}العنوان المسجل{% else %}Registered Address{% endif %}</label>
+                            <textarea name="registered_address" rows="3" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"></textarea>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}الموقع الإلكتروني{% else %}Website{% endif %}</label>
+                            <input type="url" name="website" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}القطاع{% else %}Sector{% endif %}</label>
+                            <input type="text" name="sector" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}سنة التأسيس{% else %}Founded Year{% endif %}</label>
+                            <input type="number" name="founded_year" min="1900" max="2024" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}عدد الموظفين{% else %}Employees Count{% endif %}</label>
+                            <select name="employees_count" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                                <option value="">{% if request.cookies.get('language') == 'ar' %}اختر عدد الموظفين{% else %}Select Employees Count{% endif %}</option>
+                                <option value="1-10">1-10</option>
+                                <option value="11-50">11-50</option>
+                                <option value="51-200">51-200</option>
+                                <option value="201-500">201-500</option>
+                                <option value="500+">{% if request.cookies.get('language') == 'ar' %}أكثر من 500{% else %}500+{% endif %}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Contact Information -->
+                <div x-show="currentStep === 2" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-bold mb-6 text-gray-900 dark:text-gray-100">{% if request.cookies.get('language') == 'ar' %}معلومات الاتصال{% else %}Contact Information{% endif %}</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}هاتف المكتب{% else %}Office Phone{% endif %}</label>
+                            <input type="tel" name="office_phone" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}الهاتف المحمول{% else %}Mobile Phone{% endif %}</label>
+                            <input type="tel" name="mobile_contact" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}اسم الشخص المسؤول{% else %}Contact Person{% endif %}</label>
+                            <input type="text" name="contact_person" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}منصب الشخص المسؤول{% else %}Contact Position{% endif %}</label>
+                            <input type="text" name="contact_position" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}اسم المالك{% else %}Owner Name{% endif %}</label>
+                            <input type="text" name="owner_name" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Banking Information -->
+                <div x-show="currentStep === 3" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-bold mb-6 text-gray-900 dark:text-gray-100">{% if request.cookies.get('language') == 'ar' %}المعلومات المصرفية{% else %}Banking Information{% endif %}</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}اسم البنك{% else %}Bank Name{% endif %}</label>
+                            <input type="text" name="bank_name" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}اسم صاحب الحساب{% else %}Account Name{% endif %}</label>
+                            <input type="text" name="account_name" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}رقم الحساب{% else %}Account Number{% endif %}</label>
+                            <input type="text" name="account_number" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}فرع البنك{% else %}Bank Branch{% endif %}</label>
+                            <input type="text" name="bank_branch" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Documents and Admin User -->
+                <div x-show="currentStep === 4" class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-bold mb-6 text-gray-900 dark:text-gray-100">{% if request.cookies.get('language') == 'ar' %}المستندات وإنشاء مستخدم إداري{% else %}Documents and Admin User{% endif %}</h2>
+                    
+                    <!-- Documents Section -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">{% if request.cookies.get('language') == 'ar' %}المستندات{% else %}Documents{% endif %}</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}السجل التجاري{% else %}Commercial Registration{% endif %}</label>
+                                <input type="file" name="commercial_registration_doc" accept=".pdf,.jpg,.jpeg,.png" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}البطاقة الضريبية{% else %}Tax Card{% endif %}</label>
+                                <input type="file" name="tax_card_doc" accept=".pdf,.jpg,.jpeg,.png" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}شهادة الفاتورة الإلكترونية{% else %}E-Invoice Certificate{% endif %}</label>
+                                <input type="file" name="e_invoice_proof_doc" accept=".pdf,.jpg,.jpeg,.png" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}الشعار{% else %}Logo{% endif %}</label>
+                                <input type="file" name="logo_doc" accept=".jpg,.jpeg,.png,.svg" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}ورقة رسمية{% else %}Letterhead{% endif %}</label>
+                                <input type="file" name="letterhead_doc" accept=".pdf,.jpg,.jpeg,.png" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}خطاب البنك{% else %}Bank Letter{% endif %}</label>
+                                <input type="file" name="bank_letter_doc" accept=".pdf,.jpg,.jpeg,.png" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}هوية المالك{% else %}Owner ID{% endif %}</label>
+                                <input type="file" name="owner_id_doc" accept=".pdf,.jpg,.jpeg,.png" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}كتالوج المنتجات{% else %}Product Catalog{% endif %}</label>
+                                <input type="file" name="product_catalog_doc" accept=".pdf,.jpg,.jpeg,.png" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}شهادات الجودة{% else %}Quality Certificates{% endif %}</label>
+                                <input type="file" name="quality_certificates_doc" accept=".pdf,.jpg,.jpeg,.png" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Admin User Section -->
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">{% if request.cookies.get('language') == 'ar' %}إنشاء مستخدم إداري للشركة{% else %}Create Company Admin User{% endif %}</h3>
+                        <div class="mb-4">
+                            <label class="flex items-center">
+                                <input type="checkbox" name="create_admin_user" class="mr-2">
+                                <span class="text-sm text-gray-700 dark:text-gray-300">{% if request.cookies.get('language') == 'ar' %}إنشاء مستخدم إداري للشركة{% else %}Create Company Admin User{% endif %}</span>
+                            </label>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}اسم المستخدم{% else %}Username{% endif %}</label>
+                                <input type="text" name="admin_username" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}الاسم الكامل{% else %}Full Name{% endif %}</label>
+                                <input type="text" name="admin_name" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}البريد الإلكتروني{% else %}Email{% endif %}</label>
+                                <input type="email" name="admin_email" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}كلمة المرور{% else %}Password{% endif %}</label>
+                                <input type="password" name="admin_password" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between items-center mt-8">
+                    <button type="button" @click="currentStep = Math.max(1, currentStep - 1)" 
+                            x-show="currentStep > 1" 
+                            class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors">
+                        {% if request.cookies.get('language') == 'ar' %}السابق{% else %}Previous{% endif %}
+                    </button>
+                    
+                    <button type="button" @click="currentStep = Math.min(totalSteps, currentStep + 1)" 
+                            x-show="currentStep < totalSteps" 
+                            class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                        {% if request.cookies.get('language') == 'ar' %}التالي{% else %}Next{% endif %}
+                    </button>
+                    
+                    <button type="submit" x-show="currentStep === totalSteps" 
+                            class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors">
+                        {% if request.cookies.get('language') == 'ar' %}تسجيل الشركة{% else %}Register Company{% endif %}
+                    </button>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script>
+        function toggleLanguage() {
+            // Get current language from cookie or default to 'ar'
+            const currentLang = getCookie('language') || 'ar';
+            const newLang = currentLang === 'ar' ? 'en' : 'ar';
+            
+            // Set new language cookie
+            setCookie('language', newLang, 30);
+            
+            // Reload page to apply language change
+            location.reload();
+        }
+        
+        function setCookie(name, value, days) {
+            const expires = new Date();
+            expires.setTime(expires.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = name + '=' + value + ';expires=' + expires.toUTCString() + ';path=/';
+        }
+        
+        function getCookie(name) {
+            const nameEQ = name + '=';
+            const ca = document.cookie.split(';');
+            for(let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offers for Order #{{ order.id }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #eef1f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #ff4500;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 28px;
+        }
+        .order-details {
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        .order-details h3 {
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ff4500;
+            padding-bottom: 10px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .info-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ff4500;
+        }
+        .info-label {
+            font-weight: bold;
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .info-value {
+            color: #333;
+            font-size: 14px;
+        }
+        .products-section {
+            margin-top: 25px;
+        }
+        .product-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+        .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .product-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 16px;
+        }
+        .product-quantity {
+            background: #ff4500;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .product-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .detail-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+        }
+        .detail-label {
+            font-size: 11px;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+        .detail-value {
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+        }
+        .offers-section {
+            margin-top: 30px;
+        }
+        .offers-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .offer-card {
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-left: 5px solid #ff4500;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .offer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .offer-id {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        .offer-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status-accepted {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .offer-company {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .offer-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff4500;
+            margin-bottom: 15px;
+        }
+        .offer-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .offer-description {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid #ff4500;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            text-decoration: none;
+            color: #ff4500;
+            font-weight: bold;
+            padding: 10px 20px;
+            border: 2px solid #ff4500;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        .back-link:hover {
+            background: #ff4500;
+            color: white;
+        }
+        .no-offers {
+            color: #dc3545;
+            font-weight: bold;
+            text-align: center;
+            padding: 30px;
+            background: #f8d7da;
+            border-radius: 10px;
+            border: 1px solid #f5c6cb;
+        }
+        .section-divider {
+            border-top: 2px solid #dee2e6;
+            margin: 30px 0;
+        }
+        .btn {
+            display: inline-block;
+            padding: 8px 20px;
+            background: #ff4500;
+            color: white;
+            text-decoration: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            background: #e03d00;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .btn-primary {
+            background: #ff4500;
+        }
+        .btn-primary:hover {
+            background: #e03d00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>📋 Order Details & Offers</h2>
+        
+        <!-- Offers Section - Now Above Order Details -->
+        <div class="offers-section">
+            <h3>💰 Received Offers</h3>
+            
+            {% if offers %}
+                {% for offer in offers %}
+                <div class="offer-card">
+                    <div class="offer-header">
+                        <div class="offer-id">
+                            <a href="{{ url_for('offer_details', offer_id=offer.id) }}" 
+                               style="color: inherit; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                                Offer #{{ offer.id }}
+                                <span style="font-size: 12px; opacity: 0.8;">🔗 Click to view details</span>
+                            </a>
+                        </div>
+                        <div class="offer-status status-{{ offer.status }}">
+                            {{ offer.status|title }}
+                        </div>
+                    </div>
+                    
+                    <div class="offer-company">
+                        <strong>Company:</strong> {{ offer.company.name }}
+                    </div>
+                    
+                    <div class="offer-price">
+                        EGP {{ "%.2f"|format(offer.total_price) }}
+                    </div>
+                    
+                    <div class="offer-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Delivery Time</div>
+                            <div class="detail-value">{{ offer.delivery_time }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Submitted At</div>
+                            <div class="detail-value">{{ offer.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                        </div>
+                    </div>
+                    
+                    {% if offer.description %}
+                    <div class="offer-description">
+                        <div class="detail-label">Additional Notes</div>
+                        <div class="detail-value">
+                            {% if "💳 SUPPLIER PAYMENT TERMS:" in offer.description %}
+                                {% set parts = offer.description.split("💳 SUPPLIER PAYMENT TERMS:") %}
+                                {% if parts[0] %}
+                                    <div class="mb-3">{{ parts[0] }}</div>
+                                {% endif %}
+                                
+                                {% if parts[1] %}
+                                    <div class="border-t border-gray-200 dark:border-gray-600 pt-3">
+                                        <div class="font-medium text-brand-600 dark:text-brand-400 mb-2">💳 Supplier Payment Terms:</div>
+                                        <div class="text-sm">
+                                            {% for line in parts[1].strip().split('\n') %}
+                                                {% if line.strip() %}
+                                                    <div class="p-2 bg-brand-50 dark:bg-brand-900/20 rounded mb-1 border-l-2 border-brand-500">
+                                                        {{ line.strip() }}
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                {{ offer.description }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Product-level offers -->
+                    {% if offer.product_offers %}
+                    <div style="margin-top: 20px;">
+                        <div class="detail-label" style="margin-bottom: 10px;">Product Details:</div>
+                        {% for product_offer in offer.product_offers %}
+                        <div style="background: white; padding: 15px; border-radius: 6px; margin-bottom: 10px; border-left: 3px solid #ff4500;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                <strong>{{ product_offer.purchase.part_name }}</strong>
+                                <span style="color: #ff4500; font-weight: bold;">EGP {{ "%.2f"|format(product_offer.unit_price) }}/unit</span>
+                            </div>
+                            <div style="font-size: 12px; color: #666;">
+                                Quantity: {{ product_offer.purchase.quantity }} | 
+                                Total: EGP {{ "%.2f"|format(product_offer.total_price) }}
+                            </div>
+                            {% if product_offer.notes %}
+                            <div style="margin-top: 8px; padding: 8px; background: #f8f9fa; border-radius: 4px; font-size: 12px;">
+                                <strong>Notes:</strong> {{ product_offer.notes }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Quick Actions -->
+                    <div style="margin-top: 20px; text-align: center;">
+                        <a href="{{ url_for('offer_details', offer_id=offer.id) }}" 
+                           class="btn btn-primary" 
+                           style="display: inline-block; padding: 8px 20px; background: #ff4500; color: white; text-decoration: none; border-radius: 20px; font-size: 14px; font-weight: bold;">
+                            🔍 View Full Details
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-offers">
+                    <h4>📭 No Offers Yet</h4>
+                    <p>No companies have submitted offers for this order yet. Please check back later.</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Order Details Section -->
+        <div class="order-details">
+            <h3>📝 Order Information</h3>
+            
+            <!-- Basic Order Information -->
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Order ID</div>
+                    <div class="info-value">#{{ order.id }}</div>
+                </div>
+                {% if order.order_name %}
+                <div class="info-item">
+                    <div class="info-label">Order Name</div>
+                    <div class="info-value">{{ order.order_name }}</div>
+                </div>
+                {% endif %}
+                {% if order.sector %}
+                <div class="info-item">
+                    <div class="info-label">Sector</div>
+                    <div class="info-value">{{ order.sector }}</div>
+                </div>
+                {% endif %}
+                {% if order.order_type %}
+                <div class="info-item">
+                    <div class="info-label">Order Type</div>
+                    <div class="info-value">{{ order.order_type }}</div>
+                </div>
+                {% endif %}
+                <div class="info-item">
+                    <div class="info-label">Created Date</div>
+                    <div class="info-value">{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Client</div>
+                    <div class="info-value">{{ order.user.username }}</div>
+                </div>
+            </div>
+            
+            <!-- Order Description -->
+            {% if order.description %}
+            <div class="info-item" style="grid-column: 1 / -1;">
+                <div class="info-label">Order Description</div>
+                <div class="info-value">{{ order.description }}</div>
+            </div>
+            {% endif %}
+            
+            <!-- Delivery Information -->
+            {% if order.delivery_date or order.delivery_time or order.delivery_address or order.delivery_notes %}
+            <div class="section-divider"></div>
+            <h3>🚚 Delivery Information</h3>
+            <div class="info-grid">
+                {% if order.delivery_date %}
+                <div class="info-item">
+                    <div class="info-label">Delivery Date</div>
+                    <div class="info-value">{{ order.delivery_date.strftime('%Y-%m-%d') }}</div>
+                </div>
+                {% endif %}
+                {% if order.delivery_time %}
+                <div class="info-item">
+                    <div class="info-label">Delivery Time</div>
+                    <div class="info-value">{{ order.delivery_time }}</div>
+                </div>
+                {% endif %}
+                {% if order.delivery_address %}
+                <div class="info-item">
+                    <div class="info-label">Delivery Address</div>
+                    <div class="info-value">{{ order.delivery_address }}</div>
+                </div>
+                {% endif %}
+                {% if order.delivery_notes %}
+                <div class="info-item">
+                    <div class="info-label">Delivery Notes</div>
+                    <div class="info-value">{{ order.delivery_notes }}</div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Receiver Information -->
+            {% if order.receiver_name or order.receiver_phone %}
+            <div class="section-divider"></div>
+            <h3>👤 Receiver Information</h3>
+            <div class="info-grid">
+                {% if order.receiver_name %}
+                <div class="info-item">
+                    <div class="info-label">Receiver Name</div>
+                    <div class="info-value">{{ order.receiver_name }}</div>
+                </div>
+                {% endif %}
+                {% if order.receiver_phone %}
+                <div class="info-item">
+                    <div class="info-label">Receiver Phone</div>
+                    <div class="info-value">{{ order.receiver_phone }}</div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Payment Information -->
+            {% if order.payment_way or order.payment_steps %}
+            <div class="section-divider"></div>
+            <h3>💳 Payment Information</h3>
+            <div class="info-grid">
+                {% if order.payment_way %}
+                <div class="info-item">
+                    <div class="info-label">Payment Method</div>
+                    <div class="info-value">{{ order.payment_way }}</div>
+                </div>
+                {% endif %}
+                {% if order.payment_steps %}
+                <div class="info-item">
+                    <div class="info-label">Payment Steps</div>
+                    <div class="info-value">
+                        {% set payment_steps = order.payment_steps|from_json if order.payment_steps else [] %}
+                        {% if payment_steps %}
+                            {% for step in payment_steps %}
+                            <div style="margin-bottom: 8px; padding: 8px; background: white; border-radius: 4px; border-left: 3px solid #ff4500;">
+                                <strong>{{ step.method or 'N/A' }}</strong><br>
+                                <small>Timing: {{ step.timing or 'N/A' }} | Percentage: {{ step.percentage or 'N/A' }}%</small>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            No payment steps defined
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Order Settings -->
+            <div class="section-divider"></div>
+            <h3>⚙️ Order Settings</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">Direct Negotiation</div>
+                    <div class="info-value">
+                        <span style="padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; {{ 'background: #d4edda; color: #155724;' if order.direct_negotiation else 'background: #f8d7da; color: #721c24;' }}">
+                            {{ 'Enabled' if order.direct_negotiation else 'Disabled' }}
+                        </span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Accept Unregistered Suppliers</div>
+                    <div class="info-value">
+                        <span style="padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; {{ 'background: #d4edda; color: #155724;' if order.accept_unregistered_suppliers else 'background: #f8d7da; color: #721c24;' }}">
+                            {{ 'Enabled' if order.accept_unregistered_suppliers else 'Disabled' }}
+                        </span>
+                    </div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Maximum Suppliers</div>
+                    <div class="info-value">{{ order.max_suppliers or 'No limit' }}</div>
+                </div>
+            </div>
+            
+            <!-- Products Section -->
+            <div class="section-divider"></div>
+            <h3>📦 Order Items</h3>
+            <div class="products-section">
+                {% for purchase in order.purchases %}
+                <div class="product-card">
+                    <div class="product-header">
+                        <div class="product-name">{{ purchase.part_name }}</div>
+                        <div class="product-quantity">{{ purchase.quantity }} {{ purchase.unit or 'units' }}</div>
+                    </div>
+                    
+                    {% if purchase.description %}
+                    <p style="color: #666; margin-bottom: 15px;">{{ purchase.description }}</p>
+                    {% endif %}
+                    
+                    <div class="product-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Sector</div>
+                            <div class="detail-value">{{ purchase.sector }}</div>
+                        </div>
+                        
+                        {% if purchase.max_price_per_unit %}
+                        <div class="detail-item">
+                            <div class="detail-label">Max Price/Unit</div>
+                            <div class="detail-value">{{ "%.2f"|format(purchase.max_price_per_unit) }} EGP</div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if purchase.product_code %}
+                        <div class="detail-item">
+                            <div class="detail-label">Product Code</div>
+                            <div class="detail-value">{{ purchase.product_code }}</div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if purchase.best_supplier %}
+                        <div class="detail-item">
+                            <div class="detail-label">Preferred Supplier</div>
+                            <div class="detail-value">{{ purchase.best_supplier }}</div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if purchase.technical_specs %}
+                        <div class="detail-item">
+                            <div class="detail-label">Technical Specs</div>
+                            <div class="detail-value">{{ purchase.technical_specs[:100] }}{% if purchase.technical_specs|length > 100 %}...{% endif %}</div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if purchase.uploaded_file %}
+                        <div class="detail-item">
+                            <div class="detail-label">Attached File</div>
+                            <div class="detail-value">
+                                <a href="{{ url_for('download_document', filename=purchase.uploaded_file.split('/')[-1]) }}" 
+                                   style="color: #ff4500; text-decoration: none; font-weight: bold;">
+                                    📎 Download File
+                                </a>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <a href="{{ url_for('index') }}" class="back-link">← Back to Orders</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Notifications - B2B Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+    <!-- Socket.IO for real-time notifications -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='js/realtime_notifications.js') }}"></script>
+</head>
+<body :class="{'dark bg-gray-900': darkMode === true}" x-data="{ 
+    page: 'notifications', 
+    'loaded': true, 
+    'darkMode': false, 
+    'stickyMenu': false, 
+    'sidebarToggle': false, 
+    'scrollTop': false,
+    'notifications': {{ notifications|tojson if notifications else '[]' }},
+    'filteredNotifications': [],
+    'selectedFilter': 'all',
+    'searchQuery': '',
+    'selectedNotifications': [],
+    'showBulkActions': false,
+    'unread_notifications_count': 0,
+    'user_notifications': [],
+    'selectedType': 'all',
+    'selectedPriority': 'all',
+    'dateFrom': '',
+    'dateTo': '',
+    'showAdvancedFilters': false,
+    'loading': false
+}" x-init="
+    darkMode = JSON.parse(localStorage.getItem('darkMode'));
+    $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)));
+    
+    // Initialize filtered notifications
+    filteredNotifications = notifications;
+    
+    // Watch for filter changes to reload notifications
+    $watch(['selectedFilter'], () => {
+        loadNotifications();
+    });
+    
+    // Watch for search query changes to apply client-side filtering
+    $watch('searchQuery', () => {
+        applyClientFilters();
+    });
+    
+    // Initialize with current notifications
+    applyClientFilters();
+    
+    // Update bulk actions visibility
+    $watch('selectedNotifications', () => {
+        showBulkActions = selectedNotifications.length > 0;
+    });
+    
+    // Load notification count
+    fetch('/notifications/unread', {
+        credentials: 'include'
+    })
+        .then(response => response.json())
+        .then(data => {
+            unread_notifications_count = data.unread_count || 0;
+        })
+        .catch(error => console.error('Error loading notification count:', error));
+">
+
+    <!-- Sidebar -->
+    <aside :class="sidebarToggle ? 'translate-x-0' : '-translate-x-full'" class="absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-gray-900 duration-300 ease-linear dark:bg-gray-900 lg:static lg:translate-x-0" @click.outside="sidebarToggle = false">
+        <!-- Sidebar Header -->
+        <div class="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
+            <a href="/company_dashboard">
+                <h2 class="text-2xl font-bold text-white">{{ _('Company Portal') }}</h2>
+            </a>
+            <button class="block lg:hidden" @click.stop="sidebarToggle = !sidebarToggle">
+                <svg class="fill-current" width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 8.175H2.98748L9.36248 1.6875C9.69998 1.35 9.69998 0.825 9.36248 0.4875C9.02498 0.15 8.49998 0.15 8.16248 0.4875L0.399976 8.3625C0.0624756 8.7 0.0624756 9.225 0.399976 9.5625L8.16248 17.4375C8.31248 17.5875 8.53748 17.7 8.76248 17.7C8.98748 17.7 9.17498 17.625 9.36248 17.475C9.69998 17.1375 9.69998 16.6125 9.36248 16.275L3.02498 9.8625H19C19.45 9.8625 19.825 9.4875 19.825 9.0375C19.825 8.55 19.45 8.175 19 8.175Z" fill=""/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+            <nav class="mt-5 py-4 px-4 lg:mt-9 lg:px-6">
+                <div>
+                    <ul class="mb-6 flex flex-col gap-1.5">
+                        <!-- Dashboard -->
+                        <li>
+                            <a :class=" (selected === 'Dashboard') && (page === 'dashboard') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Dashboard' ? '':'Dashboard')" class="menu-item group" href="/company_dashboard">
+                                <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                    {{ _('Company Dashboard') }}
+                                </span>
+                            </a>
+                        </li>
+                        
+                        <!-- Orders -->
+                        <li>
+                            <a :class=" (selected === 'Orders') && (page === 'orders') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Orders' ? '':'Orders')" class="menu-item group" href="/company_orders">
+                                <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                    {{ _('Manage Orders') }}
+                                </span>
+                            </a>
+                        </li>
+                        
+                        <!-- Balance -->
+                        <li>
+                            <a :class=" (selected === 'Balance') && (page === 'balance') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Balance' ? '':'Balance')" class="menu-item group" href="/company_balance">
+                                <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                    {{ _('Balance') }}
+                                </span>
+                            </a>
+                        </li>
+                        
+                        <!-- Notifications -->
+                        <li>
+                            <a :class=" (selected === 'Notifications') && (page === 'notifications') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Notifications' ? '':'Notifications')" class="menu-item group" href="/notifications">
+                                <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                    {{ _('Notifications') }}
+                                </span>
+                            </a>
+                        </li>
+                        
+                        <!-- Settings -->
+                        <li>
+                            <a :class=" (selected === 'Settings') && (page === 'settings') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Settings' ? '':'Settings')" class="menu-item group" href="/company_settings">
+                                <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                    {{ _('Settings') }}
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Content Area -->
+    <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+        <!-- Header -->
+        <header class="sticky top-0 z-99999 flex w-full border-gray-200 bg-white xl:border-b dark:border-gray-800 dark:bg-gray-900">
+            <div class="flex grow flex-col items-center justify-between xl:flex-row xl:px-6">
+                <div class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:py-4 xl:justify-normal xl:border-b-0 xl:px-0 dark:border-gray-800">
+                    <!-- Hamburger Toggle -->
+                    <button :class="sidebarToggle ? 'xl:bg-transparent dark:xl:bg-transparent bg-gray-100 dark:bg-gray-800' : ''" @click.stop="sidebarToggle = !sidebarToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 xl:h-11 xl:w-11 xl:border xl:bg-white xl:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:xl:bg-gray-800">
+                        <svg class="fill-current" width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 8.175H2.98748L9.36248 1.6875C9.69998 1.35 9.69998 0.825 9.36248 0.4875C9.02498 0.15 8.49998 0.15 8.16248 0.4875L0.399976 8.3625C0.0624756 8.7 0.0624756 9.225 0.399976 9.5625L8.16248 17.4375C8.31248 17.5875 8.53748 17.7 8.76248 17.7C8.98748 17.7 9.17498 17.625 9.36248 17.475C9.69998 17.1375 9.69998 16.6125 9.36248 16.275L3.02498 9.8625H19C19.45 9.8625 19.825 9.4875 19.825 9.0375C19.825 8.55 19.45 8.175 19 8.175Z" fill=""/>
+                        </svg>
+                    </button>
+                    
+                    <!-- Page Title -->
+                    <div class="flex items-center gap-3">
+                        <h1 class="text-xl font-semibold text-gray-900 dark:text-white">{{ _('Company Notifications') }}</h1>
+                    </div>
+                    
+                    <!-- User Profile -->
+                    <div class="flex items-center gap-3">
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ current_user.username }}</span>
+                        <div class="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <div class="mx-auto max-w-7xl p-4 md:p-6">
+                <!-- Page Header -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{ _('Notifications') }}</h1>
+                            <p class="mt-2 text-gray-600 dark:text-gray-400">{{ _('Stay updated with your company activities and system updates') }}</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <!-- Notification Count Badge -->
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">{{ _('Total') }}:</span>
+                                <span x-text="notifications.length" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">{{ _('Unread') }}:</span>
+                                <span x-text="notifications.filter(n => !n.is_read).length" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters and Search -->
+                <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                        <!-- Search -->
+                        <div class="flex-1 max-w-md">
+                            <div class="relative">
+                                <input x-model="searchQuery" type="text" placeholder="{{ _('Search notifications...') }}" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        
+                        <!-- Filter Tabs -->
+                        <div class="flex flex-wrap gap-2">
+                            <button @click="selectedFilter = 'all'" :class="selectedFilter === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                {{ _('All') }}
+                            </button>
+                            <button @click="selectedFilter = 'unread'" :class="selectedFilter === 'unread' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                {{ _('Unread') }}
+                            </button>
+                            <button @click="selectedFilter = 'order'" :class="selectedFilter === 'order' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                {{ _('Orders') }}
+                            </button>
+                            <button @click="selectedFilter = 'offer'" :class="selectedFilter === 'offer' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                {{ _('Offers') }}
+                            </button>
+                            <button @click="selectedFilter = 'system'" :class="selectedFilter === 'system' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600'" class="px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                {{ _('System') }}
+                            </button>
+                            <button @click="showAdvancedFilters = !showAdvancedFilters" class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 transition-colors duration-200">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                                </svg>
+                                {{ _('Advanced Filters') }}
+                            </button>
+                        </div>
+                        
+                        <!-- Bulk Actions -->
+                        <div x-show="showBulkActions" x-transition class="flex gap-2">
+                            <button @click="markSelectedAsRead()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium">
+                                {{ _('Mark as Read') }}
+                            </button>
+                            <button @click="deleteSelected()" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
+                                {{ _('Delete') }}
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Advanced Filters -->
+                    <div x-show="showAdvancedFilters" x-transition class="mt-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <!-- Type Filter -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ _('Type') }}</label>
+                                <select x-model="selectedType" @change="loadNotifications()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                                    <option value="all">{{ _('All Types') }}</option>
+                                    <option value="order">{{ _('Order') }}</option>
+                                    <option value="offer">{{ _('Offer') }}</option>
+                                    <option value="chat">{{ _('Chat') }}</option>
+                                    <option value="inventory">{{ _('Inventory') }}</option>
+                                    <option value="system">{{ _('System') }}</option>
+                                    <option value="financial">{{ _('Financial') }}</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Priority Filter -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ _('Priority') }}</label>
+                                <select x-model="selectedPriority" @change="loadNotifications()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                                    <option value="all">{{ _('All Priorities') }}</option>
+                                    <option value="urgent">{{ _('Urgent') }}</option>
+                                    <option value="high">{{ _('High') }}</option>
+                                    <option value="normal">{{ _('Normal') }}</option>
+                                    <option value="low">{{ _('Low') }}</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Date From -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ _('From Date') }}</label>
+                                <input type="date" x-model="dateFrom" @change="loadNotifications()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                            </div>
+                            
+                            <!-- Date To -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ _('To Date') }}</label>
+                                <input type="date" x-model="dateTo" @change="loadNotifications()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+                            </div>
+                        </div>
+                        
+                        <!-- Clear Filters Button -->
+                        <div class="mt-4 flex justify-end">
+                            <button @click="clearFilters()" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-600 dark:text-gray-300 dark:border-gray-500 dark:hover:bg-gray-500 transition-colors duration-200">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                                {{ _('Clear Filters') }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Notifications List -->
+                <div class="space-y-4">
+                    <template x-for="notification in filteredNotifications" :key="notification.id">
+                        <div :class="!notification.is_read ? 'border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-900/20' : 'bg-white dark:bg-gray-800'" class="rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6 transition-all hover:shadow-md">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start gap-4 flex-1">
+                                    <!-- Checkbox -->
+                                    <input type="checkbox" :value="notification.id" x-model="selectedNotifications" class="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    
+                                    <!-- Notification Icon -->
+                                    <div class="flex-shrink-0">
+                                        <div :class="{
+                                            'bg-blue-100 text-blue-600': notification.notification_type === 'order',
+                                            'bg-green-100 text-green-600': notification.notification_type === 'offer',
+                                            'bg-yellow-100 text-yellow-600': notification.notification_type === 'inventory',
+                                            'bg-purple-100 text-purple-600': notification.notification_type === 'chat',
+                                            'bg-gray-100 text-gray-600': notification.notification_type === 'system'
+                                        }" class="w-10 h-10 rounded-full flex items-center justify-center">
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Notification Content -->
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <h3 x-text="notification.title" class="text-lg font-semibold text-gray-900 dark:text-white"></h3>
+                                            <span x-show="!notification.is_read" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                                {{ _('New') }}
+                                            </span>
+                                        </div>
+                                        <p x-text="notification.description" class="text-gray-600 dark:text-gray-400 mb-2"></p>
+                                        <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+                                            <span x-text="new Date(notification.created_at).toLocaleDateString()"></span>
+                                            <span x-text="notification.notification_type" class="capitalize px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded"></span>
+                                            <span x-text="notification.priority" :class="{
+                                                'text-red-600': notification.priority === 'urgent',
+                                                'text-orange-600': notification.priority === 'high',
+                                                'text-blue-600': notification.priority === 'normal',
+                                                'text-gray-600': notification.priority === 'low'
+                                            }" class="capitalize font-medium"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Actions -->
+                                <div class="flex items-center gap-2 ml-4">
+                                    <button x-show="!notification.is_read" @click="markAsRead(notification.id)" class="p-2 text-gray-400 hover:text-blue-600 transition-colors" title="{{ _('Mark as read') }}">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </button>
+                                    <button @click="deleteNotification(notification.id)" class="p-2 text-gray-400 hover:text-red-600 transition-colors" title="{{ _('Delete') }}">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                    
+                    <!-- Empty State -->
+                    <div x-show="filteredNotifications.length === 0" class="text-center py-12">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5-5-5h5v-5a7.5 7.5 0 00-15 0v5h5l-5 5-5-5h5V7a9.5 9.5 0 0119 0v10z"></path>
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">{{ _('No notifications found') }}</h3>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ _('Try adjusting your filters or search terms.') }}</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Mark notification as read
+        function markAsRead(notificationId) {
+            fetch(`/notifications/mark_read/${notificationId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update notification in the list
+                    const notification = this.notifications.find(n => n.id === notificationId);
+                    if (notification) {
+                        notification.is_read = true;
+                    }
+                    // Update unread count
+                    this.unread_notifications_count = Math.max(0, this.unread_notifications_count - 1);
+                }
+            })
+            .catch(error => console.error('Error marking notification as read:', error));
+        }
+        
+        // Delete notification
+        function deleteNotification(notificationId) {
+            if (confirm('{{ _("Are you sure you want to delete this notification?") }}')) {
+                fetch(`/notifications/delete/${notificationId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove notification from the list
+                        this.notifications = this.notifications.filter(n => n.id !== notificationId);
+                        // Update filtered notifications
+                        this.filteredNotifications = this.filteredNotifications.filter(n => n.id !== notificationId);
+                        // Remove from selected if it was selected
+                        this.selectedNotifications = this.selectedNotifications.filter(id => id !== notificationId);
+                    }
+                })
+                .catch(error => console.error('Error deleting notification:', error));
+            }
+        }
+        
+        // Mark selected notifications as read
+        function markSelectedAsRead() {
+            if (this.selectedNotifications.length === 0) return;
+            
+            fetch('/notifications/mark_all_read', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ notification_ids: this.selectedNotifications })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update notifications in the list
+                    this.selectedNotifications.forEach(id => {
+                        const notification = this.notifications.find(n => n.id === id);
+                        if (notification) {
+                            notification.is_read = true;
+                        }
+                    });
+                    // Clear selection
+                    this.selectedNotifications = [];
+                    // Update unread count
+                    this.unread_notifications_count = this.notifications.filter(n => !n.is_read).length;
+                }
+            })
+            .catch(error => console.error('Error marking notifications as read:', error));
+        }
+        
+        // Delete selected notifications
+        function deleteSelected() {
+            if (this.selectedNotifications.length === 0) return;
+            
+            if (confirm(`{{ _("Are you sure you want to delete") }} ${this.selectedNotifications.length} {{ _("notifications?") }}`)) {
+                // Delete each selected notification
+                Promise.all(this.selectedNotifications.map(id => 
+                    fetch(`/notifications/delete/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                ))
+                .then(responses => Promise.all(responses.map(r => r.json())))
+                .then(results => {
+                    // Remove deleted notifications from the list
+                    this.notifications = this.notifications.filter(n => !this.selectedNotifications.includes(n.id));
+                    this.filteredNotifications = this.filteredNotifications.filter(n => !this.selectedNotifications.includes(n.id));
+                    // Clear selection
+                    this.selectedNotifications = [];
+                })
+                .catch(error => console.error('Error deleting notification:', error));
+            }
+        }
+        
+        // Load notifications with filters
+        function loadNotifications() {
+            this.loading = true;
+            
+            // Build query parameters
+            const params = new URLSearchParams();
+            
+            if (this.selectedFilter === 'unread') {
+                params.append('unread_only', 'true');
+            } else if (this.selectedFilter !== 'all') {
+                params.append('type', this.selectedFilter);
+            }
+            
+            if (this.selectedType && this.selectedType !== 'all') {
+                params.append('type', this.selectedType);
+            }
+            
+            if (this.selectedPriority && this.selectedPriority !== 'all') {
+                params.append('priority', this.selectedPriority);
+            }
+            
+            if (this.dateFrom) {
+                params.append('date_from', this.dateFrom);
+            }
+            
+            if (this.dateTo) {
+                params.append('date_to', this.dateTo);
+            }
+            
+            const url = `/notifications/get_notifications${params.toString() ? '?' + params.toString() : ''}`;
+            
+            fetch(url, {
+                credentials: 'include'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    this.notifications = data.notifications || [];
+                    this.filteredNotifications = this.notifications;
+                    this.loading = false;
+                    
+                    // Apply client-side filters for search
+                    this.applyClientFilters();
+                })
+                .catch(error => {
+                    console.error('Error loading notifications:', error);
+                    this.loading = false;
+                });
+        }
+        
+        // Apply client-side filters
+        function applyClientFilters() {
+            let filtered = this.notifications;
+            
+            // Apply search filter
+            if (this.searchQuery.trim()) {
+                const query = this.searchQuery.toLowerCase();
+                filtered = filtered.filter(n => 
+                    n.title.toLowerCase().includes(query) || 
+                    n.description.toLowerCase().includes(query)
+                );
+            }
+            
+            this.filteredNotifications = filtered;
+        }
+        
+        // Clear all filters
+        function clearFilters() {
+            this.selectedFilter = 'all';
+            this.selectedType = 'all';
+            this.selectedPriority = 'all';
+            this.dateFrom = '';
+            this.dateTo = '';
+            this.searchQuery = '';
+            this.loadNotifications();
+        }
+    </script>
+</body>
+</html>

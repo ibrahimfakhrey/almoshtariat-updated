@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}" dir="{{ 'rtl' if get_locale() == 'ar' else 'ltr' }}">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+    <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+    <title>{{ _('Company Registration') }} - {{ _('5-Step Form') }}</title>
+    <link href="favicon.ico" rel="icon"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+
+    <style>
+        /* RTL Support for Language Switching */
+        [dir="rtl"] .language-switcher {
+            direction: rtl;
+        }
+        
+        [dir="rtl"] .sidebar {
+            border-right: none;
+            border-left: 1px solid rgb(229 231 235);
+        }
+        
+        [dir="rtl"] .sidebar-header {
+            flex-direction: row-reverse;
+        }
+        
+        [dir="rtl"] .menu-item-text {
+            text-align: right;
+        }
+        
+        [dir="rtl"] .search-input {
+            padding-left: 3rem;
+            padding-right: 1rem;
+        }
+        
+        [dir="rtl"] .search-icon {
+            left: 1rem;
+            right: auto;
+        }
+        
+        [dir="rtl"] .user-dropdown {
+            margin-left: 0;
+            margin-right: 0.75rem;
+        }
+        
+        [dir="rtl"] .breadcrumb-arrow {
+            transform: rotate(180deg);
+        }
+        
+        [dir="rtl"] .language-switcher .dropdown {
+            right: auto;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== Preloader Start ===== -->
+    <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => loaded = false, 500)})" x-show="loaded">
+        <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent">
+        </div>
+    </div>
+    <!-- ===== Preloader End ===== -->
+    
+    <!-- ===== Page Wrapper Start ===== -->
+            <div class="flex h-screen overflow-hidden" :class="{'dark bg-gray-900': darkMode === true}" x-data="{ 
+        'loaded': true,
+        'darkMode': false, 
+        'stickyMenu': false, 
+        'sidebarToggle': false, 
+        'scrollTop': false,
+        formData: {
+            // Company Information
+            name_ar: '',
+            name_en: '',
+            legal_type: '',
+            sector: '',
+            tax_id: '',
+            commercial_registration: '',
+            vat_number: '',
+            founded_year: '',
+            employees_count: '',
+            email: '',
+            website: '',
+            office_phone: '',
+            mobile_contact: '',
+            registered_address: '',
+            contact_person: '',
+            contact_position: '',
+            owner_name: '',
+            bank_name: '',
+            account_name: '',
+            account_number: '',
+            bank_branch: '',
+            commercial_registration_doc: null,
+            tax_card_doc: null,
+            e_invoice_proof_doc: null,
+            logo_doc: null,
+            letterhead_doc: null,
+            bank_letter_doc: null,
+            owner_id_doc: null,
+            product_catalog_doc: null,
+            quality_certificates_doc: null
+        },
+        
+        // File handling
+        handleFileUpload(event, field) {
+            const file = event.target.files[0];
+            if (file) {
+                this.formData[field] = file;
+            }
+        }
+        }">
+        
+        <!-- Sidebar -->
+        <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+            <!-- SIDEBAR HEADER -->
+            <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+                <a href="/">
+                    <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+                        <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                        <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                    </span>
+                    <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                </a>
+            </div>
+            <!-- SIDEBAR HEADER -->
+            <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+                <!-- Sidebar Menu -->
+                <nav x-data="{selected: $persist('Dashboard')}">
+                    <!-- Menu Group -->
+                    <div>
+                        <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+                            <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">
+                                {{ _('MENU') }}
+                            </span>
+                            <svg :class="sidebarToggle ? 'xl:block hidden' : 'hidden'" class="menu-group-icon mx-auto fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.9716 18.9656 13.7551 17.9991 13.7551C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.9716 11.0326 13.7551 11.9991 13.7551C12.9656 13.7551 13.7491 12.9716 13.7491 12.0051V11.9951Z" fill="currentColor" fill-rule="evenodd"></path>
+                            </svg>
+                        </h3>
+                        <ul class="mb-6 flex flex-col gap-1">
+                            <!-- Menu Item Dashboard -->
+                            <li>
+                                <a :class="(selected === 'Dashboard') && (page === 'dashboard') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Dashboard' ? '':'Dashboard')" class="menu-item group" href="/dash">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Dashboard') }}</span>
+                                </a>
+                            </li>
+                            <!-- Menu Item Profile -->
+                            <li>
+                                <a :class="(selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/profile">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('User Profile') }}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a :class="(selected === 'Orders') && (page === 'orders') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Orders' ? '':'Orders')" class="menu-item group" href="/orders">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('My Orders') }}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a :class="(selected === 'CreateOrder') && (page === 'create_order') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'CreateOrder' ? '':'CreateOrder')" class="menu-item group" href="/new_purchase">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Create Order') }}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a :class="(selected === 'Suppliers') && (page === 'suppliers') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Suppliers' ? '':'Suppliers')" class="menu-item group" href="/suppliers">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Suppliers') }}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a :class="(selected === 'Chat') && (page === 'chat') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Chat' ? '':'Chat')" class="menu-item group" href="/chat">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('chats') }}</span>
+                                </a>
+                            </li>
+                            <!-- Company Menu Item - Dynamic based on user's company status -->
+                            {% if has_company %}
+                            <li>
+                                <a class="menu-item group" href="/company_status">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {{ _('Company Status') }}
+                                    </span>
+                                </a>
+                            </li>
+                            {% else %}
+                            <li>
+                                <a :class="(selected === 'Company Registration') && (page === 'company_register') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Company Registration' ? '':'Company Registration')" class="menu-item group" href="/company_register">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {{ _('Company Registration') }}
+                                    </span>
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </nav>
+                <!-- Sidebar Menu -->
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+            <!-- Small Device Overlay Start -->
+            <div :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fixed z-50 h-screen w-full bg-gray-900/50"></div>
+            <!-- Small Device Overlay End -->
+            
+            <!-- ===== Header Start ===== -->
+            <header class="sticky top-0 z-99999 flex w-full border-gray-200 bg-white xl:border-b dark:border-gray-800 dark:bg-gray-900" x-data="{menuToggle: false}">
+                <div class="flex grow flex-col items-center justify-between xl:flex-row xl:px-6">
+                    <div class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:py-4 xl:justify-normal xl:border-b-0 xl:px-0 dark:border-gray-800">
+                        <!-- Hamburger Toggle BTN -->
+                        <button :class="sidebarToggle ? 'xl:bg-transparent dark:xl:bg-transparent bg-gray-100 dark:bg-gray-800' : ''" @click.stop="sidebarToggle = !sidebarToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 xl:h-11 xl:w-11 xl:border dark:border-gray-800 dark:text-gray-400">
+                            <svg class="hidden fill-current xl:block" fill="none" height="12" viewbox="0 0 16 12" width="16" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M0.583252 1C0.583252 0.585788 0.919038 0.25 1.33325 0.25H14.6666C15.0808 0.25 15.4166 0.585786 15.4166 1C15.4166 1.41421 15.0808 1.75 14.6666 1.75L1.33325 1.75C0.919038 1.75 0.583252 1.41422 0.583252 1ZM0.583252 11C0.583252 10.5858 0.919038 10.25 1.33325 10.25L14.6666 10.25C15.0808 10.25 15.4166 10.5858 15.4166 11C15.4166 11.4142 15.0808 11.75 14.6666 11.75L1.33325 11.75C0.919038 11.75 0.583252 11.4142 0.583252 11ZM1.33325 5.25C0.919038 5.25 0.583252 5.58579 0.583252 6C0.583252 6.41421 0.919038 6.75 1.33325 6.75L7.99992 6.75C8.41413 6.75 8.74992 6.41421 8.74992 6C8.74992 5.58579 8.41413 5.25 7.99992 5.25L1.33325 5.25Z" fill="" fill-rule="evenodd"></path>
+                            </svg>
+                            <svg :class="sidebarToggle ? 'hidden' : 'block xl:hidden'" class="fill-current xl:hidden" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M3.25 6C3.25 5.58579 3.58579 5.25 4 5.25L20 5.25C20.4142 5.25 20.75 5.58579 20.75 6C20.75 6.41421 20.4142 6.75 20 6.75L4 6.75C3.58579 6.75 3.25 6.41422 3.25 6ZM3.25 18C3.25 17.5858 3.58579 17.25 4 17.25L20 17.25C20.4142 17.25 20.75 17.5858 20.75 18C20.75 18.4142 20.4142 18.75 20 18.75L4 18.75C3.58579 18.75 3.25 18.4142 3.25 18ZM4 11.25C3.58579 11.25 3.25 11.5858 3.25 12C3.25 12.4142 3.58579 12.75 4 12.75L12 12.75C12.4142 12.75 12.75 12.4142 12.75 12C12.75 11.5858 12.4142 11.25 12 11.25L4 11.25Z" fill="" fill-rule="evenodd"></path>
+                            </svg>
+                            <!-- cross icon -->
+                            <svg :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M6.21967 7.28131C5.92678 6.98841 5.92678 6.51354 6.21967 6.22065C6.51256 5.92775 6.98744 5.92775 7.28033 6.22065L11.999 10.9393L16.7176 6.22078C17.0105 5.92789 17.4854 5.92788 17.7782 6.22078C18.0711 6.51367 18.0711 6.98855 17.7782 7.28144L13.0597 12L17.7782 16.7186C18.0711 17.0115 18.0711 17.4863 17.7782 17.7792C17.4854 18.0721 17.0105 18.0721 16.7176 17.7792L11.999 13.0607L7.28033 17.7794C6.98744 18.0722 6.51256 18.0722 6.21967 17.7794C5.92678 17.4865 5.92678 17.0116 6.21967 16.7187L10.9384 12L6.21967 7.28131Z" fill="" fill-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        <!-- Hamburger Toggle BTN -->
+                        <a class="xl:hidden" href="/">
+                            <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                            <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                        </a>
+                        <!-- Application nav menu button -->
+                        <button :class="menuToggle ? 'bg-gray-100 dark:bg-gray-800' : ''" @click.stop="menuToggle = !menuToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 hover:bg-gray-100 xl:hidden dark:text-gray-400 dark:hover:bg-gray-800">
+                            <svg class="fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M5.99902 10.4951C6.82745 10.4951 7.49902 11.1667 7.49902 11.9951V12.0051C7.49902 12.8335 6.82745 13.5051 5.99902 13.5051C5.1706 13.5051 4.49902 12.8335 4.49902 12.0051V11.9951C4.49902 11.1667 5.1706 10.4951 5.99902 10.4951ZM17.999 10.4951C18.8275 10.4951 19.499 11.1667 19.499 11.9951V12.0051C19.499 12.8335 18.8275 13.5051 17.999 13.5051C17.1706 13.5051 16.499 12.8335 16.499 12.0051V11.9951C16.499 11.1667 17.1706 10.4951 17.999 10.4951ZM13.499 11.9951C13.499 11.1667 12.8275 10.4951 11.999 10.4951C11.1706 10.4951 10.499 11.1667 10.499 11.9951V12.0051C10.499 12.8335 11.1706 13.5051 11.999 13.5051C12.8275 13.5051 13.499 12.8335 13.499 12.0051V11.9951Z" fill="" fill-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        <!-- Application nav menu button -->
+                        <div class="hidden xl:block">
+                            <form>
+                                <div class="relative">
+                                    <span class="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2">
+                                        <svg class="fill-gray-500 dark:fill-gray-400" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                                            <path clip-rule="evenodd" d="M3.04175 9.37363C3.04175 5.87693 5.87711 3.04199 9.37508 3.04199C12.8731 3.04199 15.7084 5.87693 15.7084 9.37363C15.7084 12.8703 12.8731 15.7053 9.37508 15.7053C5.87711 15.7053 3.04175 12.8703 3.04175 9.37363ZM9.37508 1.54199C5.04902 1.54199 1.54175 5.04817 1.54175 9.37363C1.54175 13.6991 5.04902 17.2053 9.37508 17.2053C11.2674 17.2053 13.003 16.5344 14.357 15.4176L17.177 18.238C17.4699 18.5309 17.9448 18.5309 18.2377 18.238C18.5306 17.9451 18.5306 17.4703 18.2377 17.1774L15.418 14.3573C16.5365 13.0033 17.2084 11.2669 17.2084 9.37363C17.2084 5.04817 13.7011 1.54199 9.37508 1.54199Z" fill="" fill-rule="evenodd"></path>
+                                        </svg>
+                                    </span>
+                                    <input class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pr-14 pl-12 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden xl:w-[430px] dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30" id="search-input" placeholder="{{ _('Search or type command...') }}" type="text"/>
+                                    <button class="absolute top-1/2 right-2.5 inline-flex -translate-y-1/2 items-center gap-0.5 rounded-lg border border-gray-200 bg-gray-50 px-[7px] py-[4.5px] text-xs -tracking-[0.2px] text-gray-500 dark:border-gray-800 dark:bg-white/[0.03] dark:text-gray-400" id="search-button">
+                                        <span>⌘</span>
+                                        <span>K</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div :class="menuToggle ? 'flex' : 'hidden'" class="shadow-theme-md w-full items-center justify-between gap-4 px-5 py-4 xl:flex xl:justify-end xl:px-0 xl:shadow-none">
+                        <div class="2xsm:gap-3 flex items-center gap-2">
+                            <!-- Dark Mode Toggler -->
+                            <button @click.prevent="darkMode = !darkMode" class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white">
+                                <svg class="hidden dark:block" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                                    <path clip-rule="evenodd" d="M9.99998 1.5415C10.4142 1.5415 10.75 1.87729 10.75 2.2915V3.5415C10.75 3.95572 10.4142 4.2915 9.99998 4.2915C9.58577 4.2915 9.24998 3.95572 9.24998 3.5415V2.2915C9.24998 1.87729 9.58577 1.5415 9.99998 1.5415ZM10.0009 6.79327C8.22978 6.79327 6.79402 8.22904 6.79402 10.0001C6.79402 11.7712 8.22978 13.207 10.0009 13.207C11.772 13.207 13.2078 11.7712 13.2078 10.0001C13.2078 8.22904 11.772 6.79327 10.0009 6.79327ZM5.29402 10.0001C5.29402 7.40061 7.40135 5.29327 10.0009 5.29327C12.6004 5.29327 14.7078 7.40061 14.7078 10.0001C14.7078 12.5997 12.6004 14.707 10.0009 14.707C7.40135 14.707 5.29402 12.5997 5.29402 10.0001ZM15.9813 5.08035C16.2742 4.78746 16.2742 4.31258 15.9813 4.01969C15.6884 3.7268 15.2135 3.7268 14.9207 4.01969L14.0368 4.90357C13.7439 5.19647 13.7439 5.67134 14.0368 5.96423C14.3297 6.25713 14.8045 6.25713 15.0974 5.96423L15.9813 5.08035ZM18.4577 10.0001C18.4577 10.4143 18.1219 10.7501 17.7077 10.7501H16.4577C16.0435 10.7501 15.7077 10.4143 15.7077 10.0001C15.7077 9.58592 16.0435 9.25013 16.4577 9.25013H17.7077C18.1219 9.25013 18.4577 9.58592 18.4577 10.0001ZM14.9207 15.9806C15.2135 16.2735 15.6884 16.2735 15.9813 15.9806C16.2742 15.6877 16.2742 15.2128 15.9813 14.9199L15.0974 14.036C14.8045 13.7431 14.3297 13.7431 14.0368 14.036C13.7439 14.3289 13.7439 14.8038 14.0368 15.0967L14.9207 15.9806ZM9.99998 15.7088C10.4142 15.7088 10.75 16.0445 10.75 16.4588V17.7088C10.75 18.123 10.4142 18.4588 9.99998 18.4588C9.58577 18.4588 9.24998 18.123 9.24998 17.7088V16.4588C9.24998 16.0445 9.58577 15.7088 9.99998 15.7088ZM5.96356 15.0972C6.25646 14.8043 6.25646 14.3295 5.96356 14.0366C5.67067 13.7437 5.1958 13.7437 4.9029 14.0366L4.01902 14.9204C3.72613 15.2133 3.72613 15.6882 4.01902 15.9811C4.31191 16.274 4.78679 16.274 5.07968 15.9811L5.96356 15.0972ZM4.29224 10.0001C4.29224 10.4143 3.95645 10.7501 3.54224 10.7501H2.29224C1.87802 10.7501 1.54224 10.4143 1.54224 10.0001C1.54224 9.58592 1.87802 9.25013 2.29224 9.25013H3.54224C3.95645 9.25013 4.29224 9.58592 4.29224 10.0001ZM4.9029 5.9637C5.1958 6.25659 5.67067 6.25659 5.96356 5.9637C6.25646 5.6708 6.25646 5.19593 5.96356 4.90303L5.07968 4.01915C4.78679 3.72626 4.31191 3.72626 4.01902 4.01915C3.72613 4.31204 3.72613 4.78692 4.01902 5.07981L4.9029 5.9637Z" fill="currentColor"></path>
+                                </svg>
+                                <svg class="dark:hidden" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17.4547 11.97L18.1799 12.1611C18.265 11.8383 18.1265 11.4982 17.8401 11.3266C17.5538 11.1551 17.1885 11.1934 16.944 11.4207L17.4547 11.97ZM8.0306 2.5459L8.57989 3.05657C8.80718 2.81209 8.84554 2.44682 8.67398 2.16046C8.50243 1.8741 8.16227 1.73559 7.83948 1.82066L8.0306 2.5459ZM12.9154 13.0035C9.64678 13.0035 6.99707 10.3538 6.99707 7.08524H5.49707C5.49707 11.1823 8.81835 14.5035 12.9154 14.5035V13.0035ZM16.944 11.4207C15.8869 12.4035 14.4721 13.0035 12.9154 13.0035V14.5035C14.8657 14.5035 16.6418 13.7499 17.9654 12.5193L16.944 11.4207ZM16.7295 11.7789C15.9437 14.7607 13.2277 16.9586 10.0003 16.9586V18.4586C13.9257 18.4586 17.2249 15.7853 18.1799 12.1611L16.7295 11.7789ZM10.0003 16.9586C6.15734 16.9586 3.04199 13.8433 3.04199 10.0003H1.54199C1.54199 14.6717 5.32892 18.4586 10.0003 18.4586V16.9586ZM3.04199 10.0003C3.04199 6.77289 5.23988 4.05695 8.22173 3.27114L7.83948 1.82066C4.21532 2.77574 1.54199 6.07486 1.54199 10.0003H3.04199ZM6.99707 7.08524C6.99707 5.52854 7.5971 4.11366 8.57989 3.05657L7.48132 2.03522C6.25073 3.35885 5.49707 5.13487 5.49707 7.08524H6.99707Z" fill="currentColor"></path>
+                                </svg>
+                            </button>
+                            <!-- Dark Mode Toggler -->
+                            
+                            <!-- Language Switcher -->
+                            <div class="relative" x-data="{ languageOpen: false }">
+                                <button @click="languageOpen = !languageOpen" class="hover:text-dark-900 relative flex h-11 items-center justify-center rounded-lg border border-gray-200 bg-white px-3 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white">
+                                    <span class="mr-2 text-sm">{{ get_locale().upper() }}</span>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                                <div x-show="languageOpen" @click.outside="languageOpen = false" class="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg shadow-lg z-50">
+                                    <a href="{{ url_for('set_language', language='en') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-t-lg">English</a>
+                                    <a href="{{ url_for('set_language', language='ar') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-b-lg">العربية</a>
+                                </div>
+                            </div>
+                            <!-- Language Switcher -->
+                            
+                            <!-- Notification Menu Area -->
+                            {% include 'partials/notification_dropdown.html' %}
+                            <!-- User Area -->
+                        </div>
+                        <!-- User Area -->
+                        <div @click.outside="dropdownOpen = false" class="relative" x-data="{ dropdownOpen: false }">
+                            <a @click.prevent="dropdownOpen = ! dropdownOpen" class="flex items-center text-gray-700 dark:text-gray-400" href="#">
+                                <span class="mr-3 h-11 w-11 overflow-hidden rounded-full">
+                                    <img alt="User" src="https://png.pngtree.com/png-vector/20231019/ourmid/pngtree-user-profile-avatar-png-image_10211467.png"/>
+                                </span>
+                                <span class="text-theme-sm mr-1 block font-medium">{{ current_user.username }}</span>
+                                <svg :class="dropdownOpen && 'rotate-180'" class="stroke-gray-500 dark:stroke-gray-400" fill="none" height="20" viewbox="0 0 18 20" width="18" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4.3125 8.65625L9 13.3437L13.6875 8.65625" stroke="" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+                                </svg>
+                            </a>
+                            <!-- Dropdown Start -->
+                            <div class="shadow-theme-lg dark:bg-gray-dark absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 dark:border-gray-800" x-show="dropdownOpen">
+                                <div>
+                                    <span class="text-theme-sm block font-medium text-gray-700 dark:text-gray-400">{{ current_user.name }}</span>
+                                    <span class="text-theme-xs mt-0.5 block text-gray-500 dark:text-gray-400">{{ current_user.email }}</span>
+                                </div>
+                                <ul class="flex flex-col gap-1 border-b border-gray-200 pt-4 pb-3 dark:border-gray-800">
+                                    <li>
+                                        <a class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300" href="{{ url_for('profile') }}">
+                                            <svg class="fill-gray-500 group-hover:fill-gray-700 dark:fill-gray-400 dark:group-hover:fill-gray-300" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                                <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C11.9991 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="" fill-rule="evenodd"></path>
+                                            </svg>
+                                            {{ _('Edit profile') }}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300" href="{{ url_for('logout') }}">
+                                            <svg class="fill-gray-500 group-hover:fill-gray-700 dark:group-hover:fill-gray-300" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                                <path clip-rule="evenodd" d="M15.1007 19.247C14.6865 19.247 14.3507 18.9112 14.3507 18.497L14.3507 14.245H12.8507V18.497C12.8507 19.7396 13.8581 20.747 15.1007 20.747H18.5007C19.7434 20.747 20.7507 19.7396 20.7507 18.497L20.7507 5.49609C20.7507 4.25345 19.7433 3.24609 18.5007 3.24609H15.1007C13.8581 3.24609 12.8507 4.25345 12.8507 5.49609V9.74501L14.3507 9.74501V5.49609C14.3507 5.08188 14.6865 4.74609 15.1007 4.74609L18.5007 4.74609C18.9149 4.74609 19.2507 5.08188 19.2507 5.49609L19.2507 18.497C19.2507 18.9112 18.9149 19.247 18.5007 19.247H15.1007ZM3.25073 11.9984C3.25073 12.2144 3.34204 12.4091 3.48817 12.546L8.09483 17.1556C8.38763 17.4485 8.86251 17.4487 9.15549 17.1559C9.44848 16.8631 9.44863 16.3882 9.15583 16.0952L5.81116 12.7484L16.0007 12.7484C16.4149 12.7484 16.7507 12.4127 16.7507 11.9984C16.7507 11.5842 16.4149 11.2484 16.0007 11.2484L5.81528 11.2484L9.15585 7.90554C9.44864 7.61255 9.44847 7.13767 9.15547 6.84488C8.86248 6.55209 8.3876 6.55226 8.09481 6.84525L3.52309 11.4202C3.35673 11.5577 3.25073 11.7657 3.25073 11.9984Z" fill="" fill-rule="evenodd"></path>
+                                            </svg>
+                                            {{ _('Sign out') }}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!-- Dropdown End -->
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- ===== Header End ===== -->
+            
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-y-auto">
+                        <div class="mx-auto max-w-4xl p-4 md:p-6">
+            <!-- Page Title -->
+            <div class="mb-8">
+                <h1 class="text-2xl font-semibold text-gray-800 dark:text-white/90">{{ _('Company Registration') }}</h1>
+                <p class="text-gray-600 dark:text-gray-400 mt-2">{{ _('Complete company registration form') }}</p>
+            </div>
+            
+            <!-- Form Container -->
+            <form id="company-registration-form" action="{{ url_for('company_register') }}" method="POST" enctype="multipart/form-data" 
+                  class="space-y-6">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+        
+                <!-- Basic Company Information -->
+                <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+                    <div class="px-5 py-4 sm:px-6 sm:py-5">
+                        <h3 class="text-base font-medium text-gray-800 dark:text-white/90">{{ _('Basic Company Information') }}</h3>
+                    </div>
+                                    <!-- Database Error Display -->
+                {% if errors.get('database') %}
+                    <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg dark:bg-red-900/20 dark:border-red-800">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-red-800 dark:text-red-200">
+                                    {{ _('Database Error') }}
+                                </h3>
+                                <div class="mt-2 text-sm text-red-700 dark:text-red-300">
+                                    <p>{{ errors.get('database') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <div class="space-y-6 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-800">
+                    
+                    <!-- Company Name (Arabic) -->
+                    <div class="w-full">
+                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Company Name (Arabic)') }} *</label>
+                        <input type="text" x-model="formData.name_ar" name="name_ar" 
+                               placeholder="{{ _('أدخل اسم الشركة باللغة العربية') }}" required 
+                               class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"/>
+                        {% if errors.get('name_ar') %}
+                            <p class="mt-1 text-sm text-red-600">{{ errors.get('name_ar') }}</p>
+                        {% endif %}
+                    </div>
+
+                        <!-- Company Name (English) -->
+                        <div class="w-full">
+                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Company Name (English)') }}</label>
+                            <input type="text" x-model="formData.name_en" name="name_en" 
+                                   placeholder="{{ _('Enter company name in English') }}"
+                                   class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"/>
+                        </div>
+
+                        <!-- Legal Type and Sector -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Legal Type -->
+                            <div class="w-full">
+                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Legal Type') }} *</label>
+                                <select x-model="formData.legal_type" name="legal_type" required
+                                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                                    <option value="">{{ _('Select Legal Type') }}</option>
+                                    <option value="شركة مساهمة">{{ _('شركة مساهمة') }}</option>
+                                    <option value="شركة ذات مسؤولية محدودة">{{ _('شركة ذات مسؤولية محدودة') }}</option>
+                                    <option value="مؤسسة فردية">{{ _('مؤسسة فردية') }}</option>
+                                    <option value="شركة تضامن">{{ _('شركة تضامن') }}</option>
+                                    <option value="أخرى">{{ _('أخرى') }}</option>
+                                </select>
+                                {% if errors.get('legal_type') %}
+                                    <p class="mt-1 text-sm text-red-600">{{ errors.get('legal_type') }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Sector -->
+                            <div class="w-full">
+                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Sector') }} *</label>
+                                <select x-model="formData.sector" name="sector" required
+                                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                                    <option value="">{{ _('Select Sector') }}</option>
+                                    <option value="الإلكترونيات">{{ _('الإلكترونيات') }}</option>
+                                    <option value="السيارات">{{ _('السيارات') }}</option>
+                                    <option value="البناء">{{ _('البناء') }}</option>
+                                    <option value="الطبي">{{ _('الطبي') }}</option>
+                                    <option value="الأغذية">{{ _('الأغذية') }}</option>
+                                    <option value="النسيج">{{ _('النسيج') }}</option>
+                                    <option value="الكيماويات">{{ _('الكيماويات') }}</option>
+                                    <option value="أخرى">{{ _('أخرى') }}</option>
+                                </select>
+                                {% if errors.get('sector') %}
+                                    <p class="mt-1 text-sm text-red-600">{{ errors.get('sector') }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Founded Year and Employees Count -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Founded Year -->
+                            <div class="w-full">
+                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Founded Year') }}</label>
+                                <input type="number" x-model="formData.founded_year" name="founded_year" 
+                                       placeholder="{{ _('مثال: 2020') }}" min="1900" max="2030"
+                                       class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"/>
+                            </div>
+                            
+                            <!-- Employees Count -->
+                            <div class="w-full">
+                                <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Number of Employees') }}</label>
+                                <select x-model="formData.employees_count" name="employees_count"
+                                        class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                                    <option value="">{{ _('Select Employee Count') }}</option>
+                                    <option value="1-10">{{ _('1-10') }}</option>
+                                    <option value="11-50">{{ _('11-50') }}</option>
+                                    <option value="51-200">{{ _('51-200') }}</option>
+                                    <option value="201-500">{{ _('201-500') }}</option>
+                                    <option value="500+">{{ _('500+') }}</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                        <!-- Legal Information -->
+                        <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+                            <div class="px-5 py-4 sm:px-6 sm:py-5">
+                                <h3 class="text-base font-medium text-gray-800 dark:text-white/90">{{ _('Legal Information') }}</h3>
+                            </div>
+                            <div class="space-y-6 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-800">
+                                
+                                <!-- Tax ID and Commercial Registration -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Tax ID -->
+                                    <div class="w-full">
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Tax ID / VAT') }}</label>
+                                        <input type="text" x-model="formData.tax_id" name="tax_id" 
+                                               placeholder="{{ _('أدخل الرقم الضريبي') }}"
+                                               class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"/>
+                                    </div>
+                                    
+                                    <!-- Commercial Registration -->
+                                    <div class="w-full">
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Commercial Registration Number') }} *</label>
+                                        <input type="text" x-model="formData.commercial_registration" name="commercial_registration" 
+                                               placeholder="{{ _('أدخل رقم السجل التجاري') }}" required
+                                               class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"/>
+                                        {% if errors.get('commercial_registration') %}
+                                            <p class="mt-1 text-sm text-red-600">{{ errors.get('commercial_registration') }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- VAT Number and Founded Year -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- VAT Number -->
+                                    <div class="w-full">
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('VAT Number') }}</label>
+                                        <input type="text" x-model="formData.vat_number" name="vat_number" 
+                                               placeholder="{{ _('Enter VAT Number') }}"
+                                               class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"/>
+                                    </div>
+                                    
+                                    <!-- Founded Year -->
+                                    <div class="w-full">
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Founded Year') }}</label>
+                                        <input type="number" x-model="formData.founded_year" name="founded_year" 
+                                               placeholder="{{ _('مثال: 2020') }}" min="1900" max="2030"
+                                               class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Information -->
+                        <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+                            <div class="px-5 py-4 sm:px-6 sm:py-5">
+                                <h3 class="text-base font-medium text-gray-800 dark:text-white/90">{{ _('Contact Information') }}</h3>
+                            </div>
+                            <div class="space-y-6 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-800">
+                                
+                                <!-- Email and Website -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Email -->
+                                    <div class="w-full">
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Email') }} *</label>
+                                        <input type="email" x-model="formData.email" name="email" 
+                                               placeholder="{{ _('أدخل البريد الإلكتروني') }}" required
+                                               class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"/>
+                                    </div>
+                                    
+                                    <!-- Website -->
+                                    <div class="w-full">
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Website') }}</label>
+                                        <input type="url" x-model="formData.website" name="website" 
+                                               placeholder="{{ _('https://www.example.com') }}"
+                                               class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"/>
+                                    </div>
+                                </div>
+
+                                <!-- Phone Numbers -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Office Phone -->
+                                    <div class="w-full">
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Office Phone') }}</label>
+                                        <input type="tel" x-model="formData.office_phone" name="office_phone" 
+                                               placeholder="{{ _('+966 50 123 4567') }}"
+                                               class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"/>
+                                    </div>
+                                    
+                                    <!-- Mobile Contact -->
+                                    <div class="w-full">
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Mobile Contact') }}</label>
+                                        <input type="tel" x-model="formData.mobile_contact" name="mobile_contact" 
+                                               placeholder="{{ _('+966 50 123 4567') }}"
+                                               class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"/>
+                                    </div>
+                                </div>
+
+                                <!-- Registered Address -->
+                                <div class="w-full">
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Registered Address') }} *</label>
+                                    <textarea x-model="formData.registered_address" name="registered_address" 
+                                              placeholder="{{ _('أدخل العنوان المسجل للشركة') }}" rows="3" required
+                                              class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"></textarea>
+                                    {% if errors.get('registered_address') %}
+                                        <p class="mt-1 text-sm text-red-600">{{ errors.get('registered_address') }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contact Person & Banking Information -->
+                        <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+                            <div class="px-5 py-4 sm:px-6 sm:py-5">
+                                <h3 class="text-base font-medium text-gray-800 dark:text-white/90">{{ _('Contact Person & Banking Information') }}</h3>
+                            </div>
+                            <div class="space-y-6 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-800">
+                                
+                                <!-- Contact Person Information -->
+                                <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                                    <h4 class="text-sm font-medium text-gray-800 dark:text-white/90 mb-4">{{ _('Contact Person Information') }}</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <!-- Contact Person -->
+                                        <div class="w-full">
+                                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Contact Person') }} *</label>
+                                            <input type="text" x-model="formData.contact_person" name="contact_person" 
+                                                   placeholder="{{ _('أدخل اسم الشخص المسؤول') }}" required
+                                                   class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"/>
+                                            {% if errors.get('contact_person') %}
+                                                <p class="mt-1 text-sm text-red-600">{{ errors.get('contact_person') }}</p>
+                                            {% endif %}
+                                        </div>
+                                        
+                                        <!-- Contact Position -->
+                                        <div class="w-full">
+                                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Position') }}</label>
+                                            <input type="text" x-model="formData.contact_position" name="contact_position" 
+                                                   placeholder="{{ _('مثال: مدير عام') }}"
+                                                   class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"/>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Owner Name -->
+                                    <div class="w-full mt-4">
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Owner Name') }}</label>
+                                        <input type="text" x-model="formData.owner_name" name="owner_name" 
+                                               placeholder="{{ _('أدخل اسم صاحب المنشأة') }}"
+                                               class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"/>
+                                    </div>
+                                </div>
+
+                                <!-- Banking Information -->
+                                <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                                    <h4 class="text-sm font-medium text-gray-800 dark:text-white/90 mb-4">{{ _('Banking Information') }}</h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <!-- Bank Name -->
+                                        <div class="w-full">
+                                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Bank Name') }}</label>
+                                            <input type="text" x-model="formData.bank_name" name="bank_name" 
+                                                   placeholder="{{ _('أدخل اسم البنك') }}"
+                                                   class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"/>
+                                        </div>
+                                        
+                                        <!-- Account Name -->
+                                        <div class="w-full">
+                                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Account Name') }}</label>
+                                            <input type="text" x-model="formData.account_name" name="account_name" 
+                                                   placeholder="{{ _('أدخل اسم الحساب') }}"
+                                                   class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"/>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                        <!-- Account Number -->
+                                        <div class="w-full">
+                                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Account Number / IBAN') }}</label>
+                                            <input type="text" x-model="formData.account_number" name="account_number" 
+                                                   placeholder="{{ _('أدخل رقم الحساب أو IBAN') }}"
+                                                   class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"/>
+                                        </div>
+                                        
+                                        <!-- Bank Branch -->
+                                        <div class="w-full">
+                                            <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Bank Branch') }}</label>
+                                            <input type="text" x-model="formData.bank_branch" name="bank_branch" 
+                                                   placeholder="{{ _('أدخل فرع البنك') }}"
+                                                   class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Document Attachments -->
+                        <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+                            <div class="px-5 py-4 sm:px-6 sm:py-5">
+                                <h3 class="text-base font-medium text-gray-800 dark:text-white/90">{{ _('Document Attachments') }}</h3>
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">{{ _('Upload required documents for company registration') }}</p>
+                            </div>
+                            <div class="space-y-6 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-800">
+                                
+                                <!-- Required Documents -->
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Commercial Registration -->
+                                    <div class="w-full">
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Commercial Registration (PDF)') }}</label>
+                                        <input type="file" @change="handleFileUpload($event, 'commercial_registration_doc')" 
+                                               name="commercial_registration_doc" accept=".pdf"
+                                               class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"/>
+                                    </div>
+                                    
+                                    <!-- Tax Card -->
+                                    <div class="w-full">
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Tax Card (PDF)') }}</label>
+                                        <input type="file" @change="handleFileUpload($event, 'tax_card_doc')" 
+                                               name="tax_card_doc" accept=".pdf"
+                                               class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"/>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- E-Invoice Proof -->
+                                    <div class="w-full">
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('E-Invoice Proof (PDF)') }}</label>
+                                        <input type="file" @change="handleFileUpload($event, 'e_invoice_proof_doc')" 
+                                               name="e_invoice_proof_doc" accept=".pdf"
+                                               class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"/>
+                                    </div>
+                                    
+                                    <!-- Logo -->
+                                    <div class="w-full">
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Logo (PNG/SVG)') }}</label>
+                                        <input type="file" @change="handleFileUpload($event, 'logo_doc')" 
+                                               name="logo_doc" accept=".png,.svg,.jpg,.jpeg"
+                                               class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"/>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Letterhead -->
+                                    <div class="w-full">
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Letterhead (PDF/DOCX)') }}</label>
+                                        <input type="file" @change="handleFileUpload($event, 'letterhead_doc')" 
+                                               name="letterhead_doc" accept=".pdf,.docx"
+                                               class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"/>
+                                    </div>
+                                    
+                                    <!-- Bank Letter -->
+                                    <div class="w-full">
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Bank Letter (PDF)') }}</label>
+                                        <input type="file" @change="handleFileUpload($event, 'bank_letter_doc')" 
+                                               name="bank_letter_doc" accept=".pdf"
+                                               class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"/>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Owner ID -->
+                                    <div class="w-full">
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Owner ID (JPG/PDF)') }}</label>
+                                        <input type="file" @change="handleFileUpload($event, 'owner_id_doc')" 
+                                               name="owner_id_doc" accept=".jpg,.jpeg,.pdf"
+                                               class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"/>
+                                    </div>
+                                    
+                                    <!-- Product Catalog -->
+                                    <div class="w-full">
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Product Catalog') }}</label>
+                                        <input type="file" @change="handleFileUpload($event, 'product_catalog_doc')" 
+                                               name="product_catalog_doc" accept=".pdf,.docx,.xlsx"
+                                               class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"/>
+                                    </div>
+                                </div>
+
+                                <!-- Quality Certificates -->
+                                <div class="w-full">
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Quality Certificates / Licenses') }}</label>
+                                    <input type="file" @change="handleFileUpload($event, 'quality_certificates_doc')" 
+                                           name="quality_certificates_doc" accept=".pdf,.jpg,.jpeg"
+                                           class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="flex items-center justify-center pt-6">
+                            <button type="submit" 
+                                    style="background-color: #3b82f6; color: white; padding: 12px 32px; border-radius: 8px; font-weight: 500; font-size: 18px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border: none; cursor: pointer;"
+                                    onmouseover="this.style.backgroundColor='#2563eb'"
+                                    onmouseout="this.style.backgroundColor='#3b82f6'">
+                                {{ _('Submit Company Registration') }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/alpine.min.js') }}"></script>
+    <script>
+        // Form validation and enhancement
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('#company-registration-form');
+            
+            // Populate form with previous data if available
+            {% if form_data %}
+                const formData = {{ form_data | tojson }};
+                Object.keys(formData).forEach(key => {
+                    const field = form.querySelector(`[name="${key}"]`);
+                    if (field) {
+                        field.value = formData[key];
+                    }
+                });
+            {% endif %}
+            
+            form.addEventListener('submit', function(e) {
+                const requiredFields = form.querySelectorAll('[required]');
+                let isValid = true;
+                
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        field.classList.add('border-red-500');
+                        isValid = false;
+                    } else {
+                        field.classList.remove('border-red-500');
+                    }
+                });
+                
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('{{ _("Please fill in all required fields") }}');
+                }
+            });
+            
+            // File size validation
+            const fileInputs = form.querySelectorAll('input[type="file"]');
+            fileInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    const file = this.files[0];
+                    if (file && file.size > 10 * 1024 * 1024) { // 10MB limit
+                        alert('{{ _("File size must be less than 10MB") }}');
+                        this.value = '';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

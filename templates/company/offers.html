@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+    <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+    <title>{% if request.cookies.get('language') == 'ar' %}عروضي{% else %}My Offers{% endif %}</title>
+    <link href="favicon.ico" rel="icon"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+</head>
+<body :class="{'dark bg-gray-900': darkMode === true}" x-data="{ page: 'companyOffers', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false, 'currentLanguage': '{{ request.cookies.get("language", "en") }}' }" x-init="
+         darkMode = JSON.parse(localStorage.getItem('darkMode'));
+         currentLanguage = localStorage.getItem('language') || '{{ request.cookies.get("language", "en") }}';
+         $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)));
+         $watch('currentLanguage', value => localStorage.setItem('language', value))">
+    
+    <!-- ===== Preloader Start ===== -->
+    <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => loaded = false, 500)})" x-show="loaded">
+        <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent"></div>
+    </div>
+    <!-- ===== Preloader End ===== -->
+    
+    <!-- ===== Page Wrapper Start ===== -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- ===== Sidebar Start ===== -->
+   <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+    <!-- SIDEBAR HEADER -->
+    <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+     <a href="/">
+      <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+       <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+       <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+      </span>
+      <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+     </a>
+    </div>
+    <!-- SIDEBAR HEADER -->
+    <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+     <!-- Sidebar Menu -->
+     <nav x-data="{selected: $persist('Dashboard')}">
+      <!-- Menu Group -->
+      <div>
+               <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+         <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">
+          {{ _('MENU') }}
+         </span>
+        <svg :class="sidebarToggle ? 'xl:block hidden' : 'hidden'" class="menu-group-icon mx-auto fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+         <path clip-rule="evenodd" d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.9716 18.9656 13.7551 17.9991 13.7551C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.9716 11.0326 13.7551 11.9991 13.7551C12.9656 13.7551 13.7491 12.9716 13.7491 12.0051V11.9951Z" fill="currentColor" fill-rule="evenodd">
+         </path>
+        </svg>
+       </h3>
+       <ul class="mb-6 flex flex-col gap-1">
+        <!-- Menu Item Dashboard -->
+          <li>
+         <a :class=" (selected === 'Dashboard') && (page === 'dashboard') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Dashboard' ? '':'Dashboard')" class="menu-item group" href="/company_dashboard">
+          <svg :class="(selected === 'Dashboard') && (page === 'dashboard') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Company Dashboard') }}
+          </span>
+         </a>
+        </li>
+        <!-- Menu Item Dashboard -->
+        <!-- AI Assistant Menu Item -->
+        <li>
+         <a :class=" (selected === 'AI Assistant') && (page === 'ai_chat') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'AI Assistant' ? '':'AI Assistant')" class="menu-item group" href="/company/ai_chat">
+          <svg :class="(selected === 'AI Assistant') && (page === 'ai_chat') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('AI Assistant') }}
+          </span>
+         </a>
+        </li>
+        <!-- AI Assistant Menu Item -->
+        <!-- Menu Item Calendar -->
+
+        <!-- Menu Item Calendar -->
+        <!-- Menu Item Profile -->
+        <li>
+         <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_profile">
+          <svg :class="(selected === 'Profile') && (page === 'profile') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Company Profile') }}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Registration') && (page === 'registration') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Registration' ? '':'Registration')" class="menu-item group" href="/company_register">
+          <svg :class="(selected === 'Registration') && (page === 'registration') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Company Registration') }}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_orders">
+<!--          <svg :class="(selected === 'Profile') &amp;&amp; (page === 'profile') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">-->
+<!--           <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="currentColor" fill-rule="evenodd">-->
+<!--           </path>-->
+<!--          </svg>-->
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Manage Orders') }}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_offers">
+<!--          <svg :class="(selected === 'Profile') &amp;&amp; (page === 'profile') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">-->
+<!--           <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="currentColor" fill-rule="evenodd">-->
+<!--           </path>-->
+<!--          </svg>-->
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('My Offers') }}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_inventory">
+<!--          <svg :class="(selected === 'Profile') && (page === 'profile') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">-->
+<!--           <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="currentColor" fill-rule="evenodd">-->
+<!--           </path>-->
+<!--          </svg>-->
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Inventory') }}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_employees">
+<!--          <svg :class="(selected === 'Profile') && (page === 'profile') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">-->
+<!--           <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="currentColor" fill-rule="evenodd">-->
+<!--           </path>-->
+<!--          </svg>-->
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Employee Management') }}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_chat">
+<!--          <svg :class="(selected === 'Profile') && (page === 'profile') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">-->
+<!--           <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="currentColor" fill-rule="evenodd">-->
+<!--           </path>-->
+<!--          </svg>-->
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Client Chats') }}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Balance') && (page === 'balance') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Balance' ? '':'Balance')" class="menu-item group" href="/company_balance">
+          <svg :class="(selected === 'Balance') && (page === 'balance') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Balance') }}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Packages') && (page === 'packages') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Packages' ? '':'Packages')" class="menu-item group" href="/company_packages">
+          <svg :class="(selected === 'Packages') && (page === 'packages') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Packages') }}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Analytics') && (page === 'analytics') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Analytics' ? '':'Analytics')" class="menu-item group" href="/company_analytics">
+          <svg :class="(selected === 'Analytics') && (page === 'analytics') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M3 3v18h18M9 9l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Analytics') }}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Settings') && (page === 'settings') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Settings' ? '':'Settings')" class="menu-item group" href="/company_settings">
+          <svg :class="(selected === 'Settings') && (page === 'settings') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="2"/>
+           <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Settings') }}
+          </span>
+         </a>
+        </li>
+        <!-- Menu Item Profile -->
+        <!-- Menu Item Task -->
+
+        <!-- Menu Item Task -->
+        <!-- Menu Item Forms -->
+
+        <!-- Menu Item Forms -->
+        <!-- Menu Item Tables -->
+
+        <!-- Menu Item Pages -->
+      <!-- Menu Item Pages -->
+       </ul>
+      </div>
+      <!-- Support Group -->
+
+     </nav>
+     <!-- Sidebar Menu -->
+     <!-- Promo Box -->
+     <!-- Promo Box -->
+    </div>
+   </aside>
+        <!-- ===== Sidebar End ===== -->
+        
+        <!-- ===== Content Area Start ===== -->
+        <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+            <!-- Small Device Overlay Start -->
+            <div :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fixed z-50 h-screen w-full bg-gray-900/50"></div>
+            <!-- Small Device Overlay End -->
+            
+            <!-- ===== Header Start ===== -->
+            <header class="sticky top-0 z-99999 flex w-full border-gray-200 bg-white xl:border-b dark:border-gray-800 dark:bg-gray-900" x-data="{menuToggle: false}">
+                <div class="flex grow flex-col items-center justify-between xl:flex-row xl:px-6">
+                    <div class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:py-4 xl:justify-normal xl:border-b-0 xl:px-0 dark:border-gray-800">
+                        <!-- Hamburger Toggle BTN -->
+                        <button :class="sidebarToggle ? 'xl:bg-transparent dark:xl:bg-transparent bg-gray-100 dark:bg-gray-800' : ''" @click.stop="sidebarToggle = !sidebarToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 xl:h-11 xl:w-11 xl:border dark:border-gray-800 dark:text-gray-400">
+                            <svg class="hidden fill-current xl:block" fill="none" height="12" viewbox="0 0 16 12" width="16" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M0.583252 1C0.583252 0.585788 0.919038 0.25 1.33325 0.25H14.6666C15.0808 0.25 15.4166 0.585786 15.4166 1C15.4166 1.41421 15.0808 1.75 14.6666 1.75L1.33325 1.75C0.919038 1.75 0.583252 1.41422 0.583252 1ZM0.583252 11C0.583252 10.5858 0.919038 10.25 1.33325 10.25L14.6666 10.25C15.0808 10.25 15.4166 10.5858 15.4166 11C15.4166 11.4142 15.0808 11.75 14.6666 11.75L1.33325 11.75C0.919038 11.75 0.583252 11.4142 0.583252 11ZM1.33325 5.25C0.919038 5.25 0.583252 5.58579 0.583252 6C0.583252 6.41421 0.919038 6.75 1.33325 6.75L7.99992 6.75C8.41413 6.75 8.74992 6.41421 8.74992 6C8.74992 5.58579 8.41413 5.25 7.99992 5.25L1.33325 5.25Z" fill="" fill-rule="evenodd"></path>
+                            </svg>
+                            <svg :class="sidebarToggle ? 'hidden' : 'block xl:hidden'" class="fill-current xl:hidden" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M3.25 6C3.25 5.58579 3.58579 5.25 4 5.25L20 5.25C20.4142 5.25 20.75 5.58579 20.75 6C20.75 6.41421 20.4142 6.75 20 6.75L4 6.75C3.58579 6.75 3.25 6.41422 3.25 6ZM3.25 18C3.25 17.5858 3.58579 17.25 4 17.25L20 17.25C20.4142 17.25 20.75 17.5858 20.75 18C20.75 18.4142 20.4142 18.75 20 18.75L4 18.75C3.58579 18.75 3.25 18.4142 3.25 18ZM4 11.25C3.58579 11.25 3.25 11.5858 3.25 12C3.25 12.4142 3.58579 12.75 4 12.75L12 12.75C12.4142 12.75 12.75 12.4142 12.75 12C12.75 11.5858 12.4142 11.25 12 11.25L4 11.25Z" fill="" fill-rule="evenodd"></path>
+                            </svg>
+                            <svg :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M6.21967 7.28131C5.92678 6.98841 5.92678 6.51354 6.21967 6.22065C6.51256 5.92775 6.98744 5.92775 7.28033 6.22065L11.999 10.9393L16.7176 6.22078C17.0105 5.92789 17.4854 5.92788 17.7782 6.22078C18.0711 6.51367 18.0711 6.98855 17.7782 7.28144L13.0597 12L17.7782 16.7186C18.0711 17.0115 18.0711 17.4863 17.7782 17.7792C17.4854 18.0721 17.0105 18.0721 16.7176 17.7792L11.999 13.0607L7.28033 17.7794C6.98744 18.0722 6.51256 18.0722 6.21967 17.7794C5.92678 17.4865 5.92678 17.0116 6.21967 16.7187L10.9384 12L6.21967 7.28131Z" fill="" fill-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        
+                        <a class="xl:hidden" href="/">
+                            <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                            <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                        </a>
+                        
+                        <!-- Application nav menu button -->
+                        <button :class="menuToggle ? 'bg-gray-100 dark:bg-gray-800' : ''" @click.stop="menuToggle = !menuToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 hover:bg-gray-100 xl:hidden dark:text-gray-400 dark:hover:bg-gray-800">
+                            <svg class="fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M5.99902 10.4951C6.82745 10.4951 7.49902 11.1667 7.49902 11.9951V12.0051C7.49902 12.8335 6.82745 13.5051 5.99902 13.5051C5.1706 13.5051 4.49902 12.8335 4.49902 12.0051V11.9951C4.49902 11.1667 5.1706 10.4951 5.99902 10.4951ZM17.999 10.4951C18.8275 10.4951 19.499 11.1667 19.499 11.9951V12.0051C19.499 12.8335 18.8275 13.5051 17.999 13.5051C17.1706 13.5051 16.499 12.8335 16.499 12.0051V11.9951C16.499 11.1667 17.1706 10.4951 17.999 10.4951ZM13.499 11.9951C13.499 11.1667 12.8275 10.4951 11.999 10.4951C11.1706 10.4951 10.499 11.1667 10.499 11.9951V12.0051C10.499 12.8335 11.1706 13.5051 11.999 13.5051C12.8275 13.5051 13.499 12.8335 13.499 12.0051V11.9951Z" fill="" fill-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        <!-- Application nav menu button -->
+                    </div>
+                    <div :class="menuToggle ? 'flex' : 'hidden'" class="shadow-theme-md w-full items-center justify-between gap-4 px-5 py-4 xl:flex xl:justify-end xl:px-0 xl:shadow-none">
+                        <div class="2xsm:gap-3 flex items-center gap-2">
+                            <!-- Language Toggle -->
+                            <button @click.prevent="toggleLanguage()" class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white" :title="currentLanguage === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'">
+                                <span x-text="currentLanguage === 'ar' ? 'EN' : 'عربي'" class="text-xs font-medium"></span>
+                            </button>
+                            <!-- Language Toggle -->
+                            
+                            <!-- Dark Mode Toggler -->
+                            <button @click.prevent="darkMode = !darkMode" class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white">
+                                <svg class="hidden dark:block" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                                    <path clip-rule="evenodd" d="M9.99998 1.5415C10.4142 1.5415 10.75 1.87729 10.75 2.2915V3.5415C10.75 3.95572 10.4142 4.2915 9.99998 4.2915C9.58577 4.2915 9.24998 3.95572 9.24998 3.5415V2.2915C9.24998 1.87729 9.58577 1.5415 9.99998 1.5415ZM10.0009 6.79327C8.22978 6.79327 6.79402 8.22904 6.79402 10.0001C6.79402 11.7712 8.22978 13.207 10.0009 13.207C11.772 13.207 13.2078 11.7712 13.2078 10.0001C13.2078 8.22904 11.772 6.79327 10.0009 6.79327ZM5.29402 10.0001C5.29402 7.40061 7.40135 5.29327 10.0009 5.29327C12.6004 5.29327 14.7078 7.40061 14.7078 10.0001C14.7078 12.5997 12.6004 14.707 10.0009 14.707C7.40135 14.707 5.29402 12.5997 5.29402 10.0001ZM15.9813 5.08035C16.2742 4.78746 16.2742 4.31258 15.9813 4.01969C15.6884 3.7268 15.2135 3.7268 14.9207 4.01969L14.0368 4.90357C13.7439 5.19647 13.7439 5.67134 14.0368 5.96423C14.3297 6.25713 14.8045 6.25713 15.0974 5.96423L15.9813 5.08035ZM18.4577 10.0001C18.4577 10.4143 18.1219 10.7501 17.7077 10.7501H16.4577C16.0435 10.7501 15.7077 10.4143 15.7077 10.0001C15.7077 9.58592 16.0435 9.25013 16.4577 9.25013H17.7077C18.1219 9.25013 18.4577 9.58592 18.4577 10.0001ZM14.9207 15.9806C15.2135 16.2735 15.6884 16.2735 15.9813 15.9806C16.2742 15.6877 16.2742 15.2128 15.9813 14.9199L15.0974 14.036C14.8045 13.7431 14.3297 13.7431 14.0368 14.036C13.7439 14.3289 13.7439 14.8038 14.0368 15.0967L14.9207 15.9806ZM9.99998 15.7088C10.4142 15.7088 10.75 16.0445 10.75 16.4588V17.7088C10.75 18.123 10.4142 18.4588 9.99998 18.4588C9.58577 18.4588 9.24998 18.123 9.24998 17.7088V16.4588C9.24998 16.0445 9.58577 15.7088 9.99998 15.7088ZM5.96356 15.0972C6.25646 14.8043 6.25646 14.3295 5.96356 14.0366C5.67067 13.7437 5.1958 13.7437 4.9029 14.0366L4.01902 14.9204C3.72613 15.2133 3.72613 15.6882 4.01902 15.9811C4.31191 16.274 4.78679 16.274 5.07968 15.9811L5.96356 15.0972ZM4.29224 10.0001C4.29224 10.4143 3.95645 10.7501 3.54224 10.7501H2.29224C1.87802 10.7501 1.54224 10.4143 1.54224 10.0001C1.54224 9.58592 1.87802 9.25013 2.29224 9.25013H3.54224C3.95645 9.25013 4.29224 9.58592 4.29224 10.0001ZM4.9029 5.9637C5.1958 6.25659 5.67067 6.25659 5.96356 5.9637C6.25646 5.6708 6.25646 5.19593 5.96356 4.90303L5.07968 4.01915C4.78679 3.72626 4.31191 3.72626 4.01902 4.01915C3.72613 4.31204 3.72613 4.78692 4.01902 5.07981L4.9029 5.9637Z" fill="currentColor" fill-rule="evenodd"></path>
+                                </svg>
+                                <svg class="dark:hidden" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17.4547 11.97L18.1799 12.1611C18.265 11.8383 18.1265 11.4982 17.8401 11.3266C17.5538 11.1551 17.1885 11.1934 16.944 11.4207L17.4547 11.97ZM8.0306 2.5459L8.57989 3.05657C8.80718 2.81209 8.84554 2.44682 8.67398 2.16046C8.50243 1.8741 8.16227 1.73559 7.83948 1.82066L8.0306 2.5459ZM12.9154 13.0035C9.64678 13.0035 6.99707 10.3538 6.99707 7.08524H5.49707C5.49707 11.1823 8.81835 14.5035 12.9154 14.5035V13.0035ZM16.944 11.4207C15.8869 12.4035 14.4721 13.0035 12.9154 13.0035V14.5035C14.8657 14.5035 16.6418 13.7499 17.9654 12.5193L16.944 11.4207ZM16.7295 11.7789C15.9437 14.7607 13.2277 16.9586 10.0003 16.9586V18.4586C13.9257 18.4586 17.2249 15.7853 18.1799 12.1611L16.7295 11.7789ZM10.0003 16.9586C6.15734 16.9586 3.04199 13.8433 3.04199 10.0003H1.54199C1.54199 14.6717 5.32892 18.4586 10.0003 18.4586V16.9586ZM3.04199 10.0003C3.04199 6.77289 5.23988 4.05695 8.22173 3.27114L7.83948 1.82066C4.21532 2.77574 1.54199 6.07486 1.54199 10.0003H3.04199ZM6.99707 7.08524C6.99707 5.52854 7.5971 4.11366 8.57989 3.05657L7.48132 2.03522C6.25073 3.35885 5.49707 5.13487 5.49707 7.08524H6.99707Z" fill="currentColor"></path>
+                                </svg>
+                            </button>
+                            <!-- Dark Mode Toggler -->
+                            <!-- Notification Menu Area -->
+                            {% include 'partials/notification_dropdown.html' %}
+                                   
+                            <!-- Notification Menu Area -->
+                        </div>
+                        <!-- User Area -->
+                        <div @click.outside="dropdownOpen = false" class="relative" x-data="{ dropdownOpen: false }">
+                            <a @click.prevent="dropdownOpen = ! dropdownOpen" class="flex items-center text-gray-700 dark:text-gray-400" href="#">
+                                <span class="mr-3 h-11 w-11 overflow-hidden rounded-full">
+                                    <img alt="User" src="https://png.pngtree.com/png-vector/20231019/ourmid/pngtree-user-profile-avatar-png-image_10211467.png "/>
+                                </span>
+                                <span class="text-theme-sm mr-1 block font-medium">
+{{ current_user.email }}           </span>
+                                <svg :class="dropdownOpen && 'rotate-180'" class="stroke-gray-500 dark:stroke-gray-400" fill="none" height="20" viewbox="0 0 18 20" width="18" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4.3125 8.65625L9 13.3437L13.6875 8.65625" stroke="" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+                                </svg>
+                            </a>
+                            <!-- Dropdown Start -->
+                            <div class="shadow-theme-lg dark:bg-gray-dark absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 dark:border-gray-800" x-show="dropdownOpen">
+                                <div>
+                                    <span class="text-theme-sm block font-medium text-gray-700 dark:text-gray-400">
+                                        {{ current_user.name }}
+                                    </span>
+                                    <span class="text-theme-xs mt-0.5 block text-gray-500 dark:text-gray-400">
+                                        {{ current_user.email }}
+                                    </span>
+                                </div>
+                                <ul class="flex flex-col gap-1 border-b border-gray-200 pt-4 pb-3 dark:border-gray-800">
+                                    <li>
+                                        <a class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300" href="{{ url_for('company_profile') }}">
+                                            <svg class="fill-gray-500 group-hover:fill-gray-700 dark:fill-gray-400 dark:group-hover:fill-gray-300" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                                <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="" fill-rule="evenodd"></path>
+                                            </svg>
+                                            {% if request.cookies.get('language') == 'ar' %}الملف الشخصي للشركة{% else %}Company Profile{% endif %}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300" href="{{ url_for('company_chat') }}">
+                                            <svg class="fill-gray-500 group-hover:fill-gray-700 dark:fill-gray-400 dark:group-hover:fill-gray-300" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                                <path clip-rule="evenodd" d="M10.4858 3.5L13.5182 3.5C13.9233 3.5 14.2518 3.82851 14.2518 4.23377C14.2518 5.9529 16.1129 7.02795 17.602 6.1682C17.9528 5.96567 18.4014 6.08586 18.6039 6.43667L20.1203 9.0631C20.3229 9.41407 20.2027 9.86286 19.8517 10.0655C18.3625 10.9253 18.3625 13.0747 19.8517 13.9345C20.2026 14.1372 20.3229 14.5859 20.1203 14.9369L18.6039 17.5634C18.4013 17.9142 17.9528 18.0344 17.602 17.8318C16.1129 16.9721 14.2518 18.0471 14.2518 19.7663C14.2518 20.1715 13.9233 20.5 13.5182 20.5H10.4858C10.0804 20.5 9.75182 20.1714 9.75182 19.766C9.75182 18.0461 7.88983 16.9717 6.40067 17.8314C6.04945 18.0342 5.60037 17.9139 5.39767 17.5628L3.88167 14.937C3.67903 14.586 3.79928 14.1372 4.15026 13.9346C5.63949 13.0748 5.63946 10.9253 4.15025 10.0655C3.79926 9.86282 3.67901 9.41401 3.88165 9.06303L5.39764 6.43725C5.60034 6.08617 6.04943 5.96581 6.40065 6.16858C7.88982 7.02836 9.75182 5.9539 9.75182 4.23399C9.75182 3.82862 10.0804 3.5 10.4858 3.5ZM13.5182 2L10.4858 2C9.25201 2 8.25182 3.00019 8.25182 4.23399C8.25182 4.79884 7.64013 5.15215 7.15065 4.86955C6.08213 4.25263 4.71559 4.61859 4.0986 5.68725L2.58261 8.31303C1.96575 9.38146 2.33183 10.7477 3.40025 11.3645C3.88948 11.647 3.88947 12.3531 3.40026 12.6355C2.33184 13.2524 1.96578 14.6186 2.58263 15.687L4.09863 18.3128C4.71562 19.3814 6.08215 19.7474 7.15067 19.1305C7.64015 18.8479 8.25182 19.2012 8.25182 19.766C8.25182 20.9998 9.25201 22 10.4858 22H13.5182C14.7519 22 15.7518 20.9998 15.7518 19.7663C15.7518 19.2015 16.3632 18.8487 16.852 19.1309C17.9202 19.7476 19.2862 19.3816 19.9029 18.3134L21.4193 15.6869C22.0361 14.6185 21.6701 13.2523 20.6017 12.6355C20.1125 12.3531 20.1125 11.647 20.6017 11.3645C21.6701 10.7477 22.0362 9.38152 21.4193 8.3131L19.903 5.68667C19.2862 4.61842 17.9202 4.25241 16.852 4.86917C16.3632 5.15138 15.7518 4.79856 15.7518 4.23377C15.7518 3.00024 14.7519 2 13.5182 2ZM9.6659 11.9999C9.6659 10.7103 10.7113 9.66493 12.0009 9.66493C13.2905 9.66493 14.3359 10.7103 14.3359 11.9999C14.3359 13.2895 13.2905 14.3349 12.0009 14.3349C10.7113 14.3349 9.6659 13.2895 9.6659 11.9999ZM12.0009 8.16493C9.88289 8.16493 8.1659 9.88191 8.1659 11.9999C8.1659 14.1179 9.88289 15.8349 12.0009 15.8349C14.1189 15.8349 15.8359 14.1179 15.8359 11.9999C15.8359 9.88191 14.1189 8.16493 12.0009 8.16493Z" fill="" fill-rule="evenodd"></path>
+                                            </svg>
+                                            {% if request.cookies.get('language') == 'ar' %}الدردشة{% else %}Chat{% endif %}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300" href="{{ url_for('company_orders') }}">
+                                            <svg class="fill-gray-500 group-hover:fill-gray-700 dark:fill-gray-400 dark:group-hover:fill-gray-300" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                                <path clip-rule="evenodd" d="M3.5 12C3.5 7.30558 7.30558 3.5 12 3.5C16.6944 3.5 20.5 7.30558 20.5 12C20.5 16.6944 16.6944 20.5 12 20.5C7.30558 20.5 3.5 16.6944 3.5 12ZM12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM11.0991 7.52507C11.0991 8.02213 11.5021 8.42507 11.9991 8.42507H12.0001C12.4972 8.42507 12.9001 8.02213 12.9001 7.52507C12.9001 7.02802 12.4972 6.62507 12.0001 6.62507H11.9991C11.5021 6.62507 11.0991 7.02802 11.0991 7.52507ZM12.0001 17.3714C11.5859 17.3714 11.2501 17.0356 11.2501 16.6214V10.9449C11.2501 10.5307 11.5859 10.1949 12.0001 10.1949C12.4143 10.1949 12.7501 10.5307 12.7501 10.9449V16.6214C12.7501 17.0356 12.4143 17.3714 12.0001 17.3714Z" fill="" fill-rule="evenodd"></path>
+                                            </svg>
+                                            {% if request.cookies.get('language') == 'ar' %}الطلبات{% else %}Orders{% endif %}
+                                        </a>
+                                    </li>
+                                </ul>
+                                <a href="{{ url_for('logout') }}" class="group text-theme-sm mt-3 flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
+                                    <svg class="fill-gray-500 group-hover:fill-gray-700 dark:group-hover:fill-gray-300" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                        <path clip-rule="evenodd" d="M15.1007 19.247C14.6865 19.247 14.3507 18.9112 14.3507 18.497L14.3507 14.245H12.8507V18.497C12.8507 19.7396 13.8581 20.747 15.1007 20.747H18.5007C19.7434 20.747 20.7507 19.7396 20.7507 18.497L20.7507 5.49609C20.7507 4.25345 19.7433 3.24609 18.5007 3.24609H15.1007C13.8581 3.24609 12.8507 4.25345 12.8507 5.49609V9.74501L14.3507 9.74501V5.49609C14.3507 5.08188 14.6865 4.74609 15.1007 4.74609L18.5007 4.74609C18.9149 4.74609 19.2507 5.08188 19.2507 5.49609L19.2507 18.497C19.2507 18.9112 18.9149 19.247 18.5007 19.247H15.1007ZM3.25073 11.9984C3.25073 12.2144 3.34204 12.4091 3.48817 12.546L8.09483 17.1556C8.38763 17.4485 8.86251 17.4487 9.15549 17.1559C9.44848 16.8631 9.44863 16.3882 9.15583 16.0952L5.81116 12.7484L16.0007 12.7484C16.4149 12.7484 16.7507 12.4127 16.7507 11.9984C16.7507 11.5842 16.4149 11.2484 16.0007 11.2484L5.81528 11.2484L9.15585 7.90554C9.44864 7.61255 9.44847 7.13767 9.15547 6.84488C8.86248 6.55209 8.3876 6.55226 8.09481 6.84525L3.52309 11.4202C3.35673 11.5577 3.25073 11.7657 3.25073 11.9984Z" fill="" fill-rule="evenodd"></path>
+                                    </svg>
+                                    {% if request.cookies.get('language') == 'ar' %}تسجيل الخروج{% else %}Sign out{% endif %}
+                                </a>
+                            </div>
+                            <!-- Dropdown End -->
+                        </div>
+                        <!-- User Area -->
+                    </div>
+                </div>
+            </header>
+            <!-- ===== Header End ===== -->
+            
+            <!-- ===== Main Content Start ===== -->
+            <main>
+                <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+                    <!-- Statistics Cards -->
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 xl:grid-cols-4 mb-6">
+                        <!-- Total Offers Card -->
+                        <div class="rounded-2xl border border-gray-200 bg-white px-6 pb-5 pt-6 dark:border-gray-800 dark:bg-white/[0.03]">
+                            <div class="mb-6 flex items-center gap-3">
+                                <div class="h-10 w-10">
+                                    <img alt="offers" src="https://img.icons8.com/?size=100&id=offer&format=png&color=000000"/>
+                                </div>
+                                <div>
+                                    <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+                                        {% if request.cookies.get('language') == 'ar' %}إجمالي العروض{% else %}Total Offers{% endif %}
+                                    </h3>
+                                    <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+                                        {% if request.cookies.get('language') == 'ar' %}جميع العروض المقدمة{% else %}All offers made{% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="flex items-end justify-between">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                                        {{ offers|length }}
+                                    </h4>
+                                </div>
+                                <span class="flex items-center gap-1 rounded-full bg-brand-50 py-0.5 pl-2 pr-2.5 text-sm font-medium text-brand-600 dark:bg-brand-500/15 dark:text-brand-500">
+                                    <svg class="fill-current" fill="none" height="12" viewbox="0 0 12 12" width="12" xmlns="http://www.w3.org/2000/svg">
+                                        <path clip-rule="evenodd" d="M6 2C6.55228 2 7 2.44772 7 3V7C7 7.55228 6.55228 8 6 8C5.44772 8 5 7.55228 5 7V3C5 2.44772 5.44772 2 6 2ZM6 10C6.55228 10 7 10.4477 7 11C7 11.5523 6.55228 12 6 12C5.44772 12 5 11.5523 5 11C5 10.4477 5.44772 10 6 10Z" fill="" fill-rule="evenodd"></path>
+                                    </svg>
+                                    {% if request.cookies.get('language') == 'ar' %}الإجمالي{% else %}Total{% endif %}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Pending Offers Card -->
+                        <div class="rounded-2xl border border-gray-200 bg-white px-6 pb-5 pt-6 dark:border-gray-800 dark:bg-white/[0.03]">
+                            <div class="mb-6 flex items-center gap-3">
+                                <div class="h-10 w-10">
+                                    <img alt="pending" src="https://img.icons8.com/?size=100&id=hu4SFxCb4UXH&format=png&color=000000"/>
+                                </div>
+                                <div>
+                                    <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+                                        {% if request.cookies.get('language') == 'ar' %}العروض في الانتظار{% else %}Pending Offers{% endif %}
+                                    </h3>
+                                    <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+                                        {% if request.cookies.get('language') == 'ar' %}في انتظار الرد{% else %}Awaiting response{% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="flex items-end justify-between">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                                        {{ offers|selectattr('status', 'equalto', 'pending')|list|length }}
+                                    </h4>
+                                </div>
+                                <span class="flex items-center gap-1 rounded-full bg-warning-50 py-0.5 pl-2 pr-2.5 text-sm font-medium text-warning-600 dark:bg-warning-500/15 dark:text-warning-500">
+                                    <svg class="fill-current" fill="none" height="12" viewbox="0 0 12 12" width="12" xmlns="http://www.w3.org/2000/svg">
+                                        <path clip-rule="evenodd" d="M6 2C6.55228 2 7 2.44772 7 3V7C7 7.55228 6.55228 8 6 8C5.44772 8 5 7.55228 5 7V3C5 2.44772 5.44772 2 6 2ZM6 10C6.55228 10 7 10.4477 7 11C7 11.5523 6.55228 12 6 12C5.44772 12 5 11.5523 5 11C5 10.4477 5.44772 10 6 10Z" fill="" fill-rule="evenodd"></path>
+                                    </svg>
+                                    {% if request.cookies.get('language') == 'ar' %}في الانتظار{% else %}Pending{% endif %}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Accepted Offers Card -->
+                        <div class="rounded-2xl border border-gray-200 bg-white px-6 pb-5 pt-6 dark:border-gray-800 dark:bg-white/[0.03]">
+                            <div class="mb-6 flex items-center gap-3">
+                                <div class="h-10 w-10">
+                                    <img alt="accepted" src="https://img.icons8.com/?size=100&id=checkmark&format=png&color=000000"/>
+                                </div>
+                                <div>
+                                    <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+                                        {% if request.cookies.get('language') == 'ar' %}العروض المقبولة{% else %}Accepted Offers{% endif %}
+                                    </h3>
+                                    <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+                                        {% if request.cookies.get('language') == 'ar' %}تم قبولها بنجاح{% else %}Successfully accepted{% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="flex items-end justify-between">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                                        {{ offers|selectattr('status', 'equalto', 'accepted')|list|length }}
+                                    </h4>
+                                </div>
+                                <span class="flex items-center gap-1 rounded-full bg-success-50 py-0.5 pl-2 pr-2.5 text-sm font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500">
+                                    <svg class="fill-current" fill="none" height="12" viewbox="0 0 12 12" width="12" xmlns="http://www.w3.org/2000/svg">
+                                        <path clip-rule="evenodd" d="M9.70714 3.29289C10.0976 3.68342 10.0976 4.31658 9.70714 4.70711L5.41421 9.00004C5.02368 9.39056 4.39052 9.39056 4.00000 9.00004L2.29289 7.29293C1.90237 6.90240 1.90237 6.26924 2.29289 5.87871C2.68342 5.48819 3.31658 5.48819 3.70711 5.87871L4.70711 6.87871L8.29289 3.29293C8.68342 2.90240 9.31658 2.90240 9.70714 3.29289Z" fill="" fill-rule="evenodd"></path>
+                                    </svg>
+                                    {% if request.cookies.get('language') == 'ar' %}مقبول{% else %}Accepted{% endif %}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Rejected Offers Card -->
+                        <div class="rounded-2xl border border-gray-200 bg-white px-6 pb-5 pt-6 dark:border-gray-800 dark:bg-white/[0.03]">
+                            <div class="mb-6 flex items-center gap-3">
+                                <div class="h-10 w-10">
+                                    <img alt="rejected" src="https://img.icons8.com/?size=100&id=cancel&format=png&color=000000"/>
+                                </div>
+                                <div>
+                                    <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+                                        {% if request.cookies.get('language') == 'ar' %}العروض المرفوضة{% else %}Rejected Offers{% endif %}
+                                    </h3>
+                                    <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+                                        {% if request.cookies.get('language') == 'ar' %}لم يتم قبولها{% else %}Not accepted{% endif %}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="flex items-end justify-between">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                                        {{ offers|selectattr('status', 'equalto', 'rejected')|list|length }}
+                                    </h4>
+                                </div>
+                                <span class="flex items-center gap-1 rounded-full bg-danger-50 py-0.5 pl-2 pr-2.5 text-sm font-medium text-danger-600 dark:bg-danger-500/15 dark:text-danger-500">
+                                    <svg class="fill-current" fill="none" height="12" viewbox="0 0 12 12" width="12" xmlns="http://www.w3.org/2000/svg">
+                                        <path clip-rule="evenodd" d="M9.70714 3.29289C10.0976 3.68342 10.0976 4.31658 9.70714 4.70711L5.41421 9.00004C5.02368 9.39056 4.39052 9.39056 4.00000 9.00004L2.29289 7.29293C1.90237 6.90240 1.90237 6.26924 2.29289 5.87871C2.68342 5.48819 3.31658 5.48819 3.70711 5.87871L4.70711 6.87871L8.29289 3.29293C8.68342 2.90240 9.31658 2.90240 9.70714 3.29289Z" fill="" fill-rule="evenodd"></path>
+                                    </svg>
+                                    {% if request.cookies.get('language') == 'ar' %}مرفوض{% else %}Rejected{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Offers Table -->
+                    <div class="rounded-2xl border border-gray-200 bg-white px-5 pb-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-5">
+                        <div class="flex flex-col gap-5 mb-6 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+                                    {% if request.cookies.get('language') == 'ar' %}عروضي{% else %}My Offers{% endif %}
+                                </h3>
+                                <p class="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
+                                    {% if request.cookies.get('language') == 'ar' %}عرض جميع العروض التي قدمتها للعملاء{% else %}View all offers you've made to clients{% endif %}
+                                </p>
+                            </div>
+                            <a href="/new_orders_by_sector" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-500 rounded-lg hover:bg-brand-600 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                {% if request.cookies.get('language') == 'ar' %}تقديم عرض جديد{% else %}Make New Offer{% endif %}
+                            </a>
+                        </div>
+
+                        {% if offers %}
+                            <div class="max-w-full overflow-x-auto">
+                                <table class="w-full table-auto">
+                                    <thead>
+                                        <tr class="bg-gray-2 text-left dark:bg-meta-4">
+                                            <th class="min-w-[220px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11">
+                                                {% if request.cookies.get('language') == 'ar' %}تفاصيل الطلب{% else %}Order Details{% endif %}
+                                            </th>
+                                            <th class="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">
+                                                {% if request.cookies.get('language') == 'ar' %}السعر{% else %}Price{% endif %}
+                                            </th>
+                                            <th class="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
+                                                {% if request.cookies.get('language') == 'ar' %}وقت التسليم{% else %}Delivery Time{% endif %}
+                                            </th>
+                                            <th class="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">
+                                                {% if request.cookies.get('language') == 'ar' %}الشروط الخاصة{% else %}Special Terms{% endif %}
+                                            </th>
+                                            <th class="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
+                                                {% if request.cookies.get('language') == 'ar' %}الحالة{% else %}Status{% endif %}
+                                            </th>
+                                            <th class="min-w-[100px] py-4 px-4 font-medium text-black dark:text-white">
+                                                {% if request.cookies.get('language') == 'ar' %}التاريخ{% else %}Date{% endif %}
+                                            </th>
+                                            <th class="min-w-[120px] py-4 px-4 font-medium text-black dark:text-white">
+                                                {% if request.cookies.get('language') == 'ar' %}الإجراءات{% else %}Actions{% endif %}
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for offer in offers %}
+                                        <tr class="border-b border-[#eee] dark:border-strokedark hover:bg-gray-50 dark:hover:bg-gray-800/50 cursor-pointer transition-all duration-200 hover:shadow-md" onclick="window.location.href='{{ url_for('offer_details', offer_id=offer.id) }}'">
+                                            <td class="py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-10 h-10 bg-brand-100 rounded-lg flex items-center justify-center">
+                                                        <svg class="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <h5 class="font-medium text-black dark:text-white">
+                                                            Order #{{ offer.order.id }}
+                                                        </h5>
+                                                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ offer.order.order_name }}</p>
+                                                        {% if offer.description %}
+                                                        <p class="text-xs text-gray-500 mt-1">{{ offer.description }}</p>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="py-5 px-4 dark:border-strokedark">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-lg font-semibold text-black dark:text-white">EGP {{ "%.2f"|format(offer.total_price) }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="py-5 px-4 dark:border-strokedark">
+                                                <div class="flex items-center gap-2">
+                                                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                    </svg>
+                                                    <span class="text-black dark:text-white">{{ offer.delivery_time or ('غير محدد' if request.cookies.get('language') == 'ar' else 'Not specified') }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="py-5 px-4 dark:border-strokedark">
+                                                <div class="flex flex-col gap-1">
+                                                    {% if offer.deduction_percentage and offer.deduction_percentage > 0 %}
+                                                        <span class="text-xs text-green-600 font-medium">-{{ "%.1f"|format(offer.deduction_percentage) }}%</span>
+                                                    {% endif %}
+                                                    {% if offer.transportation_fees and offer.transportation_fees > 0 %}
+                                                        <span class="text-xs text-blue-600 font-medium">+{{ "%.0f"|format(offer.transportation_fees) }} EGP</span>
+                                                    {% endif %}
+                                                    {% if offer.guarantee %}
+                                                        <span class="text-xs text-purple-600 font-medium">🛡️ {{ offer.guarantee[:20] }}{% if offer.guarantee|length > 20 %}...{% endif %}</span>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                            <td class="py-5 px-4 dark:border-strokedark">
+                                                {% if offer.status == 'pending' %}
+                                                    <span class="inline-flex items-center gap-1 rounded-full bg-warning-50 py-1 px-3 text-sm font-medium text-warning-600 dark:bg-warning-500/15 dark:text-warning-500">
+                                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        {% if request.cookies.get('language') == 'ar' %}في الانتظار{% else %}Pending{% endif %}
+                                                    </span>
+                                                {% elif offer.status == 'accepted' %}
+                                                    <span class="inline-flex items-center gap-1 rounded-full bg-success-50 py-1 px-3 text-sm font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500">
+                                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        {% if request.cookies.get('language') == 'ar' %}مقبول{% else %}Accepted{% endif %}
+                                                    </span>
+                                                {% elif offer.status == 'rejected' %}
+                                                    <span class="inline-flex items-center gap-1 rounded-full bg-danger-50 py-1 px-3 text-sm font-medium text-danger-600 dark:bg-danger-500/15 dark:text-danger-500">
+                                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                                                        </svg>
+                                                        {% if request.cookies.get('language') == 'ar' %}مرفوض{% else %}Rejected{% endif %}
+                                                    </span>
+                                                {% else %}
+                                                    <span class="inline-flex items-center gap-1 rounded-full bg-gray-100 py-1 px-3 text-sm font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                                                        {{ offer.status|title }}
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="py-5 px-4 dark:border-strokedark">
+                                                <div class="flex flex-col">
+                                                    <span class="text-black dark:text-white font-medium">{{ offer.created_at.strftime('%Y-%m-%d') }}</span>
+                                                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ offer.created_at.strftime('%H:%M') }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="py-5 px-4 dark:border-strokedark">
+                                                <div class="flex items-center justify-center">
+                                                    <div class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors dark:bg-blue-900/20 dark:text-blue-300 dark:hover:bg-blue-800/30">
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                        </svg>
+                                                        {% if request.cookies.get('language') == 'ar' %}عرض التفاصيل{% else %}View Details{% endif %}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-12">
+                                <div class="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center dark:bg-gray-800">
+                                    <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">{% if request.cookies.get('language') == 'ar' %}لا توجد عروض بعد{% else %}No offers yet{% endif %}</h3>
+                                <p class="text-gray-500 dark:text-gray-400 mb-6">{% if request.cookies.get('language') == 'ar' %}ابدأ في تقديم العروض على الطلبات المتاحة لرؤيتها هنا.{% else %}Start making offers on available orders to see them here.{% endif %}</p>
+                                <a href="/new_orders_by_sector" class="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white bg-brand-500 rounded-lg hover:bg-brand-600 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    {% if request.cookies.get('language') == 'ar' %}تصفح الطلبات{% else %}Browse Orders{% endif %}
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </main>
+            <!-- ===== Main Content End ===== -->
+        </div>
+        <!-- ===== Content Area End ===== -->
+    </div>
+    <!-- ===== Page Wrapper End ===== -->
+    
+    <script src="{{ url_for('static', filename='js/script_1.js') }}"></script>
+    
+    <!-- Arabic Translation System -->
+    <script>
+    // Language toggle function
+    function toggleLanguage() {
+        const currentLang = document.cookie.includes('language=ar') ? 'en' : 'ar';
+        document.cookie = `language=${currentLang}; path=/; max-age=31536000`;
+        window.location.reload();
+    }
+
+    // Translation dictionary
+    const translations = {
+        'en': {
+            'My Offers': 'My Offers',
+            'Total Offers': 'Total Offers',
+            'All offers made': 'All offers made',
+            'Total': 'Total',
+            'Pending Offers': 'Pending Offers',
+            'Awaiting response': 'Awaiting response',
+            'Pending': 'Pending',
+            'Accepted Offers': 'Accepted Offers',
+            'Successfully accepted': 'Successfully accepted',
+            'Accepted': 'Accepted',
+            'Rejected Offers': 'Rejected Offers',
+            'Not accepted': 'Not accepted',
+            'Rejected': 'Rejected',
+            'View all offers you\'ve made to clients': 'View all offers you\'ve made to clients',
+            'Make New Offer': 'Make New Offer',
+            'Order Details': 'Order Details',
+            'Price': 'Price',
+            'Delivery Time': 'Delivery Time',
+            'Special Terms': 'Special Terms',
+            'Status': 'Status',
+            'Date': 'Date',
+            'Actions': 'Actions',
+            'Not specified': 'Not specified',
+            'View Details': 'View Details',
+            'No offers yet': 'No offers yet',
+            'Start making offers on available orders to see them here.': 'Start making offers on available orders to see them here.',
+            'Browse Orders': 'Browse Orders',
+            'MENU': 'MENU',
+            'Company Dashboard': 'Company Dashboard',
+            'Company Profile': 'Company Profile',
+            'Manage Orders': 'Manage Orders',
+            'Inventory': 'Inventory',
+            'Employee Management': 'Employee Management',
+            'Client Chats': 'Client Chats',
+            'Chat': 'Chat',
+            'Orders': 'Orders',
+            'Sign out': 'Sign out'
+        },
+        'ar': {
+            'My Offers': 'عروضي',
+            'Total Offers': 'إجمالي العروض',
+            'All offers made': 'جميع العروض المقدمة',
+            'Total': 'الإجمالي',
+            'Pending Offers': 'العروض في الانتظار',
+            'Awaiting response': 'في انتظار الرد',
+            'Pending': 'في الانتظار',
+            'Accepted Offers': 'العروض المقبولة',
+            'Successfully accepted': 'تم قبولها بنجاح',
+            'Accepted': 'مقبول',
+            'Rejected Offers': 'العروض المرفوضة',
+            'Not accepted': 'لم يتم قبولها',
+            'Rejected': 'مرفوض',
+            'View all offers you\'ve made to clients': 'عرض جميع العروض التي قدمتها للعملاء',
+            'Make New Offer': 'تقديم عرض جديد',
+            'Order Details': 'تفاصيل الطلب',
+            'Price': 'السعر',
+            'Delivery Time': 'وقت التسليم',
+            'Special Terms': 'الشروط الخاصة',
+            'Status': 'الحالة',
+            'Date': 'التاريخ',
+            'Actions': 'الإجراءات',
+            'Not specified': 'غير محدد',
+            'View Details': 'عرض التفاصيل',
+            'No offers yet': 'لا توجد عروض بعد',
+            'Start making offers on available orders to see them here.': 'ابدأ في تقديم العروض على الطلبات المتاحة لرؤيتها هنا.',
+            'Browse Orders': 'تصفح الطلبات',
+            'MENU': 'القائمة',
+            'Company Dashboard': 'لوحة تحكم الشركة',
+            'Company Profile': 'الملف الشخصي للشركة',
+            'Manage Orders': 'إدارة الطلبات',
+            'Inventory': 'المخزون',
+            'Employee Management': 'إدارة الموظفين',
+            'Client Chats': 'دردشات العملاء',
+            'Chat': 'الدردشة',
+            'Orders': 'الطلبات',
+            'Sign out': 'تسجيل الخروج'
+        }
+    };
+
+    // Function to get translated text
+    function getText(key) {
+        const currentLang = document.cookie.includes('language=ar') ? 'ar' : 'en';
+        return translations[currentLang][key] || key;
+    }
+
+    // Function to translate the page
+    function translatePage() {
+        const currentLang = document.cookie.includes('language=ar') ? 'ar' : 'en';
+        
+        // Update title
+        document.title = getText('My Offers');
+        
+        // Update all translatable elements
+        Object.keys(translations.en).forEach(key => {
+            const elements = document.querySelectorAll(`*:not(script):not(style)`);
+            elements.forEach(element => {
+                if (element.childNodes.length === 1 && element.childNodes[0].nodeType === Node.TEXT_NODE) {
+                    const text = element.textContent.trim();
+                    if (text === translations.en[key]) {
+                        element.textContent = translations[currentLang][key];
+                    }
+                }
+            });
+        });
+    }
+
+    // Apply translations when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        translatePage();
+    });
+
+    // Make functions globally available
+    window.toggleLanguage = toggleLanguage;
+    window.getText = getText;
+    window.translatePage = translatePage;
+    </script>
+</body>
+</html>

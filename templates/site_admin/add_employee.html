@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+  <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+  <title>{% if request.cookies.get('language') == 'ar' %}إضافة موظف{% else %}Add Employee{% endif %}</title>
+  <link href="favicon.ico" rel="icon"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+</head>
+ <body :class="{'dark bg-gray-900': darkMode === true}" x-data="{ page: 'addEmployee', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false, 'currentLanguage': '{{ request.cookies.get("language", "en") }}' }" x-init="
+         darkMode = JSON.parse(localStorage.getItem('darkMode'));
+         currentLanguage = localStorage.getItem('language') || '{{ request.cookies.get("language", "en") }}';
+         $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)));
+         $watch('currentLanguage', value => localStorage.setItem('language', value))">
+  <!-- ===== Preloader Start ===== -->
+  <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => loaded = false, 500)})" x-show="loaded">
+   <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent">
+   </div>
+  </div>
+  <!-- ===== Preloader End ===== -->
+  <!-- ===== Page Wrapper Start ===== -->
+  <div class="flex h-screen overflow-hidden">
+   <!-- ===== Sidebar Start ===== -->
+   <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+    <!-- SIDEBAR HEADER -->
+    <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+     <a href="/">
+      <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+       <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+       <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+      </span>
+      <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+     </a>
+    </div>
+    <!-- SIDEBAR HEADER -->
+    <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+     <!-- Sidebar Menu -->
+     <nav x-data="{selected: $persist('Dashboard')}">
+      <!-- Menu Group -->
+      <div>
+       <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+        <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">
+         {% if request.cookies.get('language') == 'ar' %}القائمة{% else %}MENU{% endif %}
+        </span>
+        <svg :class="sidebarToggle ? 'xl:block hidden' : 'hidden'" class="menu-group-icon mx-auto fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+         <path clip-rule="evenodd" d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.9716 18.9656 13.7551 17.9991 13.7551C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.9716 11.0326 13.7551 11.9991 13.7551C12.9656 13.7551 13.7491 12.9716 13.7491 12.0051V11.9951Z" fill="currentColor" fill-rule="evenodd">
+         </path>
+        </svg>
+       </h3>
+       <ul class="mb-6 flex flex-col gap-1">
+        <!-- Menu Item Dashboard -->
+        <li>
+         <a :class=" (selected === 'Dashboard') && (page === 'dashboard') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Dashboard' ? '':'Dashboard')" class="menu-item group" href="/company_dashboard">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}لوحة تحكم الشركة{% else %}Company Dashboard{% endif %}
+          </span>
+         </a>
+        </li>
+        <!-- Menu Item Profile -->
+        <li>
+         <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_profile">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}الملف الشخصي للشركة{% else %}Company Profile{% endif %}
+          </span>
+         </a>
+        </li>
+        <li>
+         <a :class=" (selected === 'Orders') && (page === 'orders') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Orders' ? '':'Orders')" class="menu-item group" href="/company_orders">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}إدارة الطلبات{% else %}Manage Orders{% endif %}
+          </span>
+         </a>
+        </li>
+        <li>
+         <a :class=" (selected === 'Inventory') && (page === 'inventory') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Inventory' ? '':'Inventory')" class="menu-item group" href="/company_inventory">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}المخزون{% else %}Inventory{% endif %}
+          </span>
+         </a>
+        </li>
+        <li>
+         <a :class=" (selected === 'Employees') && (page === 'employees') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Employees' ? '':'Employees')" class="menu-item group" href="/company_employees">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}إدارة الموظفين{% else %}Employee Management{% endif %}
+          </span>
+         </a>
+        </li>
+        <li>
+         <a :class=" (selected === 'Chat') && (page === 'chat') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Chat' ? '':'Chat')" class="menu-item group" href="/company_chat">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}دردشات العملاء{% else %}Client Chats{% endif %}
+          </span>
+         </a>
+        </li>
+       </ul>
+      </div>
+     </nav>
+     <!-- Sidebar Menu -->
+    </div>
+   </aside>
+   <!-- ===== Sidebar End ===== -->
+   <!-- ===== Content Area Start ===== -->
+   <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+    <!-- Small Device Overlay Start -->
+    <div :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fixed z-50 h-screen w-full bg-gray-900/50">
+    </div>
+    <!-- Small Device Overlay End -->
+    <!-- ===== Header Start ===== -->
+    <header class="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-black dark:drop-shadow-none">
+     <div class="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
+      <div class="flex items-center gap-2 sm:gap-4 lg:hidden">
+       <!-- Hamburger Toggle BTN -->
+       <button @click="sidebarToggle = !sidebarToggle" class="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden">
+        <span class="relative block h-5.5 w-5.5 cursor-pointer">
+         <span class="du-block absolute right-0 h-full w-full">
+          <span class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[0] duration-200 ease-in-out dark:bg-white"></span>
+          <span class="relative left-0 top-2.5 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[75] duration-200 ease-in-out dark:bg-white"></span>
+          <span class="relative left-0 top-5 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[150] duration-200 ease-in-out dark:bg-white"></span>
+         </span>
+         <span class="absolute right-0 h-full w-full rotate-45">
+          <span class="absolute left-2.5 top-0 block h-full w-0.5 rounded-sm bg-black delay-[300] duration-200 ease-in-out dark:bg-white"></span>
+          <span class="absolute left-0 top-2.5 block h-0.5 w-full rounded-sm bg-black delay-[400] duration-200 ease-in-out dark:bg-white"></span>
+         </span>
+        </span>
+       </button>
+       <!-- Hamburger Toggle BTN -->
+       <a class="block flex-shrink-0 lg:hidden" href="/">
+        <img alt="Brand" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+       </a>
+      </div>
+      <div class="flex items-center gap-3 2xsm:gap-7">
+       <ul class="flex items-center gap-2 2xsm:gap-4">
+        <li>
+         <a class="group relative flex cursor-pointer items-center justify-center rounded-[3px] p-1.5 hover:bg-gray hover:text-primary dark:hover:bg-meta-4" href="#">
+          <svg class="fill-current" fill="none" height="22" viewbox="0 0 22 22" width="22" xmlns="http://www.w3.org/2000/svg">
+           <path d="M21 10H19V7C19 5.89543 18.1046 5 17 5H16V3C16 1.89543 15.1046 1 14 1H8C6.89543 1 6 1.89543 6 3V5H5C3.89543 5 3 5.89543 3 7V10H1C0.447715 10 0 10.4477 0 11V13C0 13.5523 0.447715 14 1 14H3V17C3 18.1046 3.89543 19 5 19H6V21C6 22.1046 6.89543 23 8 23H14C15.1046 23 16 22.1046 16 21V19H17C18.1046 19 19 18.1046 19 17V14H21C21.5523 14 22 13.5523 22 13V11C22 10.4477 21.5523 10 21 10ZM8 3H14V5H8V3ZM14 21H8V19H14V21ZM17 17H5V7H17V17Z" fill=""></path>
+          </svg>
+         </a>
+        </li>
+       </ul>
+       <!-- Notification Menu Area -->
+       {% include 'partials/notification_dropdown.html' %}
+       
+       <!-- Language Toggle -->
+       <button @click.prevent="toggleLanguage()" class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white" :title="currentLanguage === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'">
+        <span x-text="currentLanguage === 'ar' ? 'EN' : 'عربي'" class="text-xs font-medium"></span>
+       </button>
+       <!-- Language Toggle -->
+       
+       <!-- User Area -->
+       <div class="relative">
+        <a class="flex items-center gap-4" href="#" @click="dropdownOpen = !dropdownOpen">
+         <span class="hidden text-right lg:block">
+          <span class="block text-sm font-medium text-black dark:text-white">{{ current_user.username }}</span>
+          <span class="block text-xs">{{ current_user.role.title() }}</span>
+         </span>
+         <span class="h-12 w-12 rounded-full">
+          <img alt="User" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+         </span>
+         <svg class="hidden fill-current sm:block" fill="none" height="12" viewbox="0 0 12 12" width="12" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10.293 4.293L6 8.586 1.707 4.293A1 1 0 00.293 5.707l5 5a1 1 0 001.414 0l5-5a1 1 0 00-1.414-1.414z" fill=""></path>
+          <path d="M10.293 4.293L6 8.586 1.707 4.293A1 1 0 00.293 5.707l5 5a1 1 0 001.414 0l5-5a1 1 0 00-1.414-1.414z" fill=""></path>
+         </svg>
+        </a>
+        <!-- Dropdown Start -->
+        <div class="absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark" x-show="dropdownOpen" @click.outside="dropdownOpen = false" x-transition:enter="transition ease-out duration-100 transform" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75 transform" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95">
+         <ul class="flex flex-col gap-2 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
+          <li>
+           <a class="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base" href="/company_profile">
+            {% if request.cookies.get('language') == 'ar' %}ملفي الشخصي{% else %}My Profile{% endif %}
+           </a>
+          </li>
+          <li>
+           <a class="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base" href="/logout">
+            {% if request.cookies.get('language') == 'ar' %}تسجيل الخروج{% else %}Sign Out{% endif %}
+           </a>
+          </li>
+         </ul>
+        </div>
+        <!-- Dropdown End -->
+       </div>
+       <!-- User Area -->
+      </div>
+     </div>
+    </header>
+    <!-- ===== Header End ===== -->
+    <!-- ===== Main Content Start ===== -->
+    <main>
+     <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+      <!-- Breadcrumb Start -->
+      <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+       <h2 class="text-title-md2 font-bold text-black dark:text-white">
+        {% if request.cookies.get('language') == 'ar' %}إضافة موظف جديد{% else %}Add New Employee{% endif %}
+       </h2>
+       <nav>
+        <ol class="flex items-center gap-2">
+         <li>
+                     <a class="font-medium" href="/company_dashboard">{% if request.cookies.get('language') == 'ar' %}لوحة التحكم /{% else %}Dashboard /{% endif %}</a>
+         </li>
+         <li>
+          <a class="font-medium" href="/company_employees">{% if request.cookies.get('language') == 'ar' %}إدارة الموظفين /{% else %}Employee Management /{% endif %}</a>
+         </li>
+         <li class="font-medium text-primary">{% if request.cookies.get('language') == 'ar' %}إضافة موظف{% else %}Add Employee{% endif %}</li>
+        </ol>
+       </nav>
+      </div>
+      <!-- Breadcrumb End -->
+      
+             <!-- Add Employee Form -->
+       <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+        <!-- Form Card -->
+        <div class="rounded-2xl border border-gray-200 bg-white px-6 pb-5 pt-6 dark:border-gray-800 dark:bg-white/[0.03]">
+         <div class="mb-6">
+          <div class="mb-6 flex items-center gap-3">
+           <div class="h-10 w-10">
+            <img alt="add-employee" src="https://img.icons8.com/?size=100&id=add-user-male&format=png&color=000000"/>
+           </div>
+           <div>
+                       <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+            {% if request.cookies.get('language') == 'ar' %}إضافة موظف جديد{% else %}Add New Employee{% endif %}
+           </h3>
+           <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+            {% if request.cookies.get('language') == 'ar' %}إنشاء حساب موظف{% else %}Create employee account{% endif %}
+           </span>
+           </div>
+          </div>
+         </div>
+         
+         <form method="POST" class="space-y-6">
+          <div class="space-y-4">
+           <!-- Username Field -->
+           <div>
+                       <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90" for="username">
+            {% if request.cookies.get('language') == 'ar' %}اسم المستخدم{% else %}Username{% endif %} <span class="text-red-500">*</span>
+           </label>
+            <input class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm font-medium outline-none transition focus:border-brand-500 active:border-brand-500 disabled:cursor-default disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" id="username" name="username" placeholder="{% if request.cookies.get('language') == 'ar' %}أدخل اسم المستخدم{% else %}Enter username{% endif %}" required type="text"/>
+           </div>
+           
+           <!-- Email Field -->
+           <div>
+                       <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90" for="email">
+            {% if request.cookies.get('language') == 'ar' %}البريد الإلكتروني{% else %}Email{% endif %} <span class="text-red-500">*</span>
+           </label>
+            <input class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm font-medium outline-none transition focus:border-brand-500 active:border-brand-500 disabled:cursor-default disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" id="email" name="email" placeholder="{% if request.cookies.get('language') == 'ar' %}أدخل عنوان البريد الإلكتروني{% else %}Enter email address{% endif %}" required type="email"/>
+           </div>
+           
+           <!-- Password Field -->
+           <div>
+                       <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90" for="password">
+            {% if request.cookies.get('language') == 'ar' %}كلمة المرور{% else %}Password{% endif %} <span class="text-red-500">*</span>
+           </label>
+            <input class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm font-medium outline-none transition focus:border-brand-500 active:border-brand-500 disabled:cursor-default disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" id="password" name="password" placeholder="{% if request.cookies.get('language') == 'ar' %}أدخل كلمة المرور{% else %}Enter password{% endif %}" required type="password"/>
+           </div>
+           
+           <!-- Confirm Password Field -->
+           <div>
+                       <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90" for="confirm_password">
+            {% if request.cookies.get('language') == 'ar' %}تأكيد كلمة المرور{% else %}Confirm Password{% endif %} <span class="text-red-500">*</span>
+           </label>
+            <input class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm font-medium outline-none transition focus:border-brand-500 active:border-brand-500 disabled:cursor-default disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" id="confirm_password" name="confirm_password" placeholder="{% if request.cookies.get('language') == 'ar' %}تأكيد كلمة المرور{% else %}Confirm password{% endif %}" required type="password"/>
+           </div>
+          </div>
+          
+          <!-- Submit Buttons -->
+          <div class="flex gap-3 pt-4">
+           <a href="/company_employees" class="flex-1 inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 text-center text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+            {% if request.cookies.get('language') == 'ar' %}إلغاء{% else %}Cancel{% endif %}
+           </a>
+           <button class="flex-1 inline-flex items-center justify-center rounded-lg bg-brand-500 px-4 py-3 text-center text-sm font-medium text-white hover:bg-brand-600" type="submit">
+            <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            {% if request.cookies.get('language') == 'ar' %}إضافة موظف{% else %}Add Employee{% endif %}
+           </button>
+          </div>
+         </form>
+        </div>
+
+        <!-- Info Card -->
+        <div class="space-y-6">
+         <!-- Company Info Card -->
+         <div class="rounded-2xl border border-gray-200 bg-white px-6 pb-5 pt-6 dark:border-gray-800 dark:bg-white/[0.03]">
+          <div class="mb-6 flex items-center gap-3">
+           <div class="h-10 w-10">
+            <img alt="company" src="https://img.icons8.com/?size=100&id=company&format=png&color=000000"/>
+           </div>
+           <div>
+                       <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+            {% if request.cookies.get('language') == 'ar' %}معلومات الشركة{% else %}Company Information{% endif %}
+           </h3>
+           <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+            {% if request.cookies.get('language') == 'ar' %}سيتم إضافة الموظف إلى{% else %}Employee will be added to{% endif %}
+           </span>
+           </div>
+          </div>
+          <div class="space-y-3">
+           <div class="flex items-center justify-between">
+            <span class="text-sm text-gray-600 dark:text-gray-400">{% if request.cookies.get('language') == 'ar' %}اسم الشركة:{% else %}Company Name:{% endif %}</span>
+            <span class="font-medium text-gray-800 dark:text-white/90">{{ company.name }}</span>
+           </div>
+           <div class="flex items-center justify-between">
+            <span class="text-sm text-gray-600 dark:text-gray-400">{% if request.cookies.get('language') == 'ar' %}دور الموظف:{% else %}Employee Role:{% endif %}</span>
+            <span class="inline-flex items-center rounded-full bg-success-50 px-2.5 py-0.5 text-xs font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500">{% if request.cookies.get('language') == 'ar' %}موظف{% else %}Employee{% endif %}</span>
+           </div>
+           <div class="flex items-center justify-between">
+            <span class="text-sm text-gray-600 dark:text-gray-400">{% if request.cookies.get('language') == 'ar' %}مستوى الوصول:{% else %}Access Level:{% endif %}</span>
+            <span class="text-sm text-gray-800 dark:text-white/90">{% if request.cookies.get('language') == 'ar' %}وصول كامل للشركة{% else %}Full Company Access{% endif %}</span>
+           </div>
+          </div>
+         </div>
+
+         <!-- Guidelines Card -->
+         <div class="rounded-2xl border border-gray-200 bg-white px-6 pb-5 pt-6 dark:border-gray-800 dark:bg-white/[0.03]">
+          <div class="mb-6 flex items-center gap-3">
+           <div class="h-10 w-10">
+            <img alt="guidelines" src="https://img.icons8.com/?size=100&id=info&format=png&color=000000"/>
+           </div>
+           <div>
+                       <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+            {% if request.cookies.get('language') == 'ar' %}الإرشادات{% else %}Guidelines{% endif %}
+           </h3>
+           <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+            {% if request.cookies.get('language') == 'ar' %}معلومات مهمة{% else %}Important information{% endif %}
+           </span>
+           </div>
+          </div>
+          <div class="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+           <div class="flex items-start gap-2">
+            <svg class="mt-0.5 h-4 w-4 text-brand-500" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>{% if request.cookies.get('language') == 'ar' %}سيكون لدى الموظف إمكانية الوصول إلى جميع ميزات الشركة{% else %}Employee will have access to all company features{% endif %}</span>
+           </div>
+           <div class="flex items-start gap-2">
+            <svg class="mt-0.5 h-4 w-4 text-brand-500" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>{% if request.cookies.get('language') == 'ar' %}يمكنهم إدارة الطلبات والعروض والمخزون{% else %}They can manage orders, offers, and inventory{% endif %}</span>
+           </div>
+           <div class="flex items-start gap-2">
+            <svg class="mt-0.5 h-4 w-4 text-brand-500" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>{% if request.cookies.get('language') == 'ar' %}يمكنك تعديل أو إزالة وصول الموظف في أي وقت{% else %}You can edit or remove employee access anytime{% endif %}</span>
+           </div>
+           <div class="flex items-start gap-2">
+            <svg class="mt-0.5 h-4 w-4 text-brand-500" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            <span>{% if request.cookies.get('language') == 'ar' %}سيستلم الموظف بيانات تسجيل الدخول عبر البريد الإلكتروني{% else %}Employee will receive login credentials via email{% endif %}</span>
+           </div>
+          </div>
+         </div>
+        </div>
+       </div>
+     </div>
+    </main>
+    <!-- ===== Main Content End ===== -->
+   </div>
+   <!-- ===== Content Area End ===== -->
+  </div>
+  <!-- ===== Page Wrapper End ===== -->
+  <script src="{{ url_for('static', filename='js/script_0.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/script_1.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/inline_scripts.js') }}"></script>
+  
+  <!-- Arabic Translation System -->
+  <script>
+  // Language toggle function
+  function toggleLanguage() {
+      const currentLang = document.cookie.includes('language=ar') ? 'en' : 'ar';
+      document.cookie = `language=${currentLang}; path=/; max-age=31536000`;
+      window.location.reload();
+  }
+
+  // Translation dictionary
+  const translations = {
+      'en': {
+          'Add Employee': 'Add Employee',
+          'Add New Employee': 'Add New Employee',
+          'Create employee account': 'Create employee account',
+          'Username': 'Username',
+          'Enter username': 'Enter username',
+          'Email': 'Email',
+          'Enter email address': 'Enter email address',
+          'Password': 'Password',
+          'Enter password': 'Enter password',
+          'Confirm Password': 'Confirm Password',
+          'Confirm password': 'Confirm password',
+          'Cancel': 'Cancel',
+          'Add Employee': 'Add Employee',
+          'Company Information': 'Company Information',
+          'Employee will be added to': 'Employee will be added to',
+          'Company Name:': 'Company Name:',
+          'Employee Role:': 'Employee Role:',
+          'Employee': 'Employee',
+          'Access Level:': 'Access Level:',
+          'Full Company Access': 'Full Company Access',
+          'Guidelines': 'Guidelines',
+          'Important information': 'Important information',
+          'Employee will have access to all company features': 'Employee will have access to all company features',
+          'They can manage orders, offers, and inventory': 'They can manage orders, offers, and inventory',
+          'You can edit or remove employee access anytime': 'You can edit or remove employee access anytime',
+          'Employee will receive login credentials via email': 'Employee will receive login credentials via email',
+          'Dashboard /': 'Dashboard /',
+          'Employee Management /': 'Employee Management /',
+          'Add Employee': 'Add Employee',
+          'My Profile': 'My Profile',
+          'Sign Out': 'Sign Out',
+          'MENU': 'MENU',
+          'Company Dashboard': 'Company Dashboard',
+          'Company Profile': 'Company Profile',
+          'Manage Orders': 'Manage Orders',
+          'Inventory': 'Inventory',
+          'Employee Management': 'Employee Management',
+          'Client Chats': 'Client Chats'
+      },
+      'ar': {
+          'Add Employee': 'إضافة موظف',
+          'Add New Employee': 'إضافة موظف جديد',
+          'Create employee account': 'إنشاء حساب موظف',
+          'Username': 'اسم المستخدم',
+          'Enter username': 'أدخل اسم المستخدم',
+          'Email': 'البريد الإلكتروني',
+          'Enter email address': 'أدخل عنوان البريد الإلكتروني',
+          'Password': 'كلمة المرور',
+          'Enter password': 'أدخل كلمة المرور',
+          'Confirm Password': 'تأكيد كلمة المرور',
+          'Confirm password': 'تأكيد كلمة المرور',
+          'Cancel': 'إلغاء',
+          'Add Employee': 'إضافة موظف',
+          'Company Information': 'معلومات الشركة',
+          'Employee will be added to': 'سيتم إضافة الموظف إلى',
+          'Company Name:': 'اسم الشركة:',
+          'Employee Role:': 'دور الموظف:',
+          'Employee': 'موظف',
+          'Access Level:': 'مستوى الوصول:',
+          'Full Company Access': 'وصول كامل للشركة',
+          'Guidelines': 'الإرشادات',
+          'Important information': 'معلومات مهمة',
+          'Employee will have access to all company features': 'سيكون لدى الموظف إمكانية الوصول إلى جميع ميزات الشركة',
+          'They can manage orders, offers, and inventory': 'يمكنهم إدارة الطلبات والعروض والمخزون',
+          'You can edit or remove employee access anytime': 'يمكنك تعديل أو إزالة وصول الموظف في أي وقت',
+          'Employee will receive login credentials via email': 'سيستلم الموظف بيانات تسجيل الدخول عبر البريد الإلكتروني',
+          'Dashboard /': 'لوحة التحكم /',
+          'Employee Management /': 'إدارة الموظفين /',
+          'Add Employee': 'إضافة موظف',
+          'My Profile': 'ملفي الشخصي',
+          'Sign Out': 'تسجيل الخروج',
+          'MENU': 'القائمة',
+          'Company Dashboard': 'لوحة تحكم الشركة',
+          'Company Profile': 'الملف الشخصي للشركة',
+          'Manage Orders': 'إدارة الطلبات',
+          'Inventory': 'المخزون',
+          'Employee Management': 'إدارة الموظفين',
+          'Client Chats': 'دردشات العملاء'
+      }
+  };
+
+  // Function to get translated text
+  function getText(key) {
+      const currentLang = document.cookie.includes('language=ar') ? 'ar' : 'en';
+      return translations[currentLang][key] || key;
+  }
+
+  // Function to translate the page
+  function translatePage() {
+      const currentLang = document.cookie.includes('language=ar') ? 'ar' : 'en';
+      
+      // Update title
+      document.title = getText('Add Employee');
+      
+      // Update all translatable elements
+      Object.keys(translations.en).forEach(key => {
+          const elements = document.querySelectorAll(`*:not(script):not(style)`);
+          elements.forEach(element => {
+              if (element.childNodes.length === 1 && element.childNodes[0].nodeType === Node.TEXT_NODE) {
+                  const text = element.textContent.trim();
+                  if (text === translations.en[key]) {
+                      element.textContent = translations[currentLang][key];
+                  }
+              }
+          });
+      });
+  }
+
+  // Apply translations when page loads
+  document.addEventListener('DOMContentLoaded', function() {
+      translatePage();
+  });
+
+  // Make functions globally available
+  window.toggleLanguage = toggleLanguage;
+  window.getText = getText;
+  window.translatePage = translatePage;
+  </script>
+ </body>
+</html> 

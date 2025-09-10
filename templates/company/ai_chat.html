@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+    <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>تحليلات الأعمال الذكية | لوحة تحكم الشركة</title>
+    <link href="favicon.ico" rel="icon"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+    <style>
+        /* Enhanced structured list animations */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        
+        @keyframes shimmer {
+            0% {
+                background-position: -200px 0;
+            }
+            100% {
+                background-position: calc(200px + 100%) 0;
+            }
+        }
+        
+        .slideIn {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        .shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200px 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        
+        .structured-list-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dark .structured-list-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Action Button Styles */
+        .action-button {
+            background-color: #3b82f6 !important;
+            color: white !important;
+            border: none !important;
+            padding: 8px 16px !important;
+            border-radius: 8px !important;
+            text-decoration: none !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            transition: all 0.2s ease !important;
+            transform: scale(1) !important;
+        }
+        
+        .action-button:hover {
+            background-color: #2563eb !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+            transform: scale(1.05) !important;
+        }
+        
+        /* Bill Action Button Styles */
+        .bill-action-btn {
+            transition: all 0.2s ease !important;
+            font-weight: 500 !important;
+            border: none !important;
+            cursor: pointer !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 4px !important;
+        }
+        
+        .bill-action-btn:hover {
+            transform: translateY(-1px) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+        }
+        
+        .bill-action-btn:active {
+            transform: translateY(0) !important;
+        }
+    </style>
+    <script>
+        function chatApp() {
+            return {
+                messages: [],
+                newMessage: '',
+                isLoading: false,
+                sessionId: null,
+                page: 'ai_chat',
+                loaded: true,
+                darkMode: false,
+                stickyMenu: false,
+                sidebarToggle: false,
+                scrollTop: false,
+                isMobile: false,
+                
+                // Check if message contains structured data
+                hasStructuredData(content) {
+                    return content.includes('* **') || (content.includes('*') && content.includes('**'));
+                },
+                
+                // Render structured message with better UI
+                renderStructuredMessage(message) {
+                    const content = message.content;
+                    const lines = content.split('\n');
+                    let html = '';
+                    let inList = false;
+                    let listType = this.detectListType(content);
+                    
+                    lines.forEach(line => {
+                        const trimmedLine = line.trim();
+                        
+                        if (trimmedLine.startsWith('* **') && trimmedLine.includes('**')) {
+                            if (!inList) {
+                                html += '<div class="structured-list mt-3">';
+                                inList = true;
+                            }
+                            
+                            // Extract the content between ** **
+                            const match = trimmedLine.match(/\*\s*\*\*(.+?)\*\*(.*)/); 
+                            if (match) {
+                                const title = match[1].trim();
+                                const description = match[2].replace(/^:?\s*/, '').trim();
+                                
+                                html += this.renderListItem(title, description);
+                            }
+                        } else if (trimmedLine.startsWith('*') && !trimmedLine.includes('**')) {
+                            if (!inList) {
+                                html += '<div class="structured-list mt-3">';
+                                inList = true;
+                            }
+                            
+                            const content = trimmedLine.substring(1).trim();
+                            html += this.renderListItem('', content);
+                        } else {
+                            if (inList) {
+                                html += this.renderActionButton(listType);
+                                html += '</div>';
+                                inList = false;
+                            }
+                            
+                            if (trimmedLine) {
+                                html += `<p class="text-sm text-gray-900 dark:text-white mb-2">${trimmedLine}</p>`;
+                            }
+                        }
+                    });
+                    
+                    if (inList) {
+                        html += this.renderActionButton(listType);
+                        html += '</div>';
+                    }
+                    
+                    html += `<p class="text-xs mt-2 opacity-75">${message.timestamp ? new Date(message.timestamp).toLocaleString('ar-SA') : ''}</p>`;
+                    
+                    return html;
+                },
+                
+                // Detect the type of list content
+                detectListType(content) {
+                    const lowerContent = content.toLowerCase();
+                    
+                    // Check for bills first
+                    if (lowerContent.includes('فاتورة') || lowerContent.includes('فواتير') || lowerContent.includes('bill') || lowerContent.includes('bills') || lowerContent.includes('invoice') || lowerContent.includes('invoices')) {
+                        return 'bills';
+                    } else if (lowerContent.includes('طلب') || lowerContent.includes('طلبات') || lowerContent.includes('order') || lowerContent.includes('orders') || lowerContent.includes('my order') || lowerContent.includes('طلباتي')) {
+                        return 'orders';
+                    } else if (lowerContent.includes('عرض') || lowerContent.includes('عروض') || lowerContent.includes('offer')) {
+                        return 'offers';
+                    } else if (lowerContent.includes('مخزون') || lowerContent.includes('منتج') || lowerContent.includes('منتجات') || lowerContent.includes('inventory') || lowerContent.includes('product')) {
+                        return 'inventory';
+                    } else if (lowerContent.includes('موظف') || lowerContent.includes('موظفين') || lowerContent.includes('employee')) {
+                        return 'employees';
+                    } else if (lowerContent.includes('رصيد') || lowerContent.includes('مالي') || lowerContent.includes('balance') || lowerContent.includes('financial')) {
+                        return 'balance';
+                    } else if (lowerContent.includes('تحليل') || lowerContent.includes('إحصائي') || lowerContent.includes('analytics')) {
+                        return 'analytics';
+                    }
+                    
+                    return 'general';
+                },
+                
+                // Render action button based on list type
+                renderActionButton(listType) {
+                    const buttonConfigs = {
+                        'bills': {
+                            text: 'عرض جميع الفواتير',
+                            icon: '🧾',
+                            route: '/company_bills',
+                            color: 'bg-green-500 hover:bg-green-600'
+                        },
+                        'offers': {
+                            text: 'عرض جميع العروض',
+                            icon: '🎯',
+                            route: '/company_offers',
+                            color: 'bg-blue-500 hover:bg-blue-600'
+                        },
+                        'orders': {
+                            text: 'طلباتي',
+                            icon: '📋',
+                            route: '/company_orders',
+                            color: 'bg-blue-500 hover:bg-blue-600'
+                        },
+                        'inventory': {
+                            text: 'إدارة المخزون',
+                            icon: '📦',
+                            route: '/company_inventory',
+                            color: 'bg-blue-500 hover:bg-blue-600'
+                        },
+                        'employees': {
+                            text: 'إدارة الموظفين',
+                            icon: '👥',
+                            route: '/company_employees',
+                            color: 'bg-blue-500 hover:bg-blue-600'
+                        },
+                        'balance': {
+                            text: 'عرض الرصيد',
+                            icon: '💰',
+                            route: '/company_balance',
+                            color: 'bg-blue-500 hover:bg-blue-600'
+                        },
+                        'analytics': {
+                            text: 'التحليلات المتقدمة',
+                            icon: '📊',
+                            route: '/company_analytics',
+                            color: 'bg-blue-500 hover:bg-blue-600'
+                        }
+                    };
+                    
+                    const config = buttonConfigs[listType];
+                    if (!config) return '';
+                    
+                    return `
+                        <div class="mt-4 pt-3 border-t border-gray-200 dark:border-gray-600">
+                            <a href="${config.route}" class="action-button">
+                                <span>${config.icon}</span>
+                                <span>${config.text}</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    `;
+                },
+                
+                // Render individual list item
+                renderListItem(title, description) {
+                    // Check if this is a bill item by looking for bill ID pattern
+                    const isBillItem = title && (title.includes('فاتورة') || title.includes('Bill') || /\d+/.test(title));
+                    
+                    let billActions = '';
+                    if (isBillItem) {
+                        // Extract bill ID from title if possible
+                        const billIdMatch = title.match(/(\d+)/);
+                        const billId = billIdMatch ? billIdMatch[1] : '';
+                        
+                        billActions = `
+                             <div class="mt-3 flex flex-wrap gap-2">
+                                 <button onclick="window.open('/company_bills/${billId}', '_blank')" class="bill-action-btn bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs">
+                                     📄 عرض التفاصيل
+                                 </button>
+                                 <button onclick="window.open('/company_bills/${billId}/pdf', '_blank')" class="bill-action-btn bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs">
+                                     📥 تحميل PDF
+                                 </button>
+                                 <button onclick="app.markBillAsPaid('${billId}')" class="bill-action-btn bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded text-xs">
+                                     ✅ تسديد
+                                 </button>
+                             </div>
+                         `;
+                    }
+                    
+                    return `
+                        <div class="structured-list-item bg-white dark:bg-gray-700 rounded-lg p-4 mb-3 border border-gray-200 dark:border-gray-600 hover:shadow-md transition-all duration-200 slideIn">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-2 h-2 ${isBillItem ? 'bg-green-500' : 'bg-blue-500'} rounded-full mt-2 pulse"></div>
+                                <div class="flex-1 min-w-0">
+                                    ${title ? `<h4 class="font-semibold text-gray-900 dark:text-white text-sm mb-1">${title}</h4>` : ''}
+                                    ${description ? `<p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">${description}</p>` : ''}
+                                    ${billActions}
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                },
+                
+                sendMessage() {
+                    if (!this.newMessage.trim() || this.isLoading) return;
+                    
+                    const userMessage = {
+                        id: Date.now(),
+                        type: 'user',
+                        content: this.newMessage,
+                        timestamp: new Date()
+                    };
+                    
+                    this.messages.push(userMessage);
+                    const question = this.newMessage;
+                    this.newMessage = '';
+                    this.isLoading = true;
+                    
+                    // Save user message to chat history
+                    this.saveChatHistory(userMessage.content, 'user');
+                    
+                    // Scroll to bottom
+                    setTimeout(() => {
+                        const chatMessages = document.getElementById('chat-messages');
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }, 100);
+                    
+                    // Prepare conversation history (last 6 messages for context)
+                    const conversationHistory = this.messages.slice(-6).map(msg => ({
+                        role: msg.type === 'user' ? 'user' : 'assistant',
+                        content: msg.content
+                    }));
+                    
+                    // Send to AI API
+                    fetch('/api/company_ai_chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                        },
+                        body: JSON.stringify({ 
+                            message: question,
+                            language: 'ar',
+                            conversation_history: conversationHistory
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => Promise.reject(err));
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('AI Response Data:', data); // Debug log
+                        if (data.error) {
+                            throw new Error(data.error);
+                        }
+                        
+                        // Check if response is empty or null
+                        let responseContent = data.response;
+                        if (!responseContent || responseContent.trim() === '') {
+                            console.warn('Empty AI response received:', data);
+                            responseContent = 'تم استلام الطلب ولكن لم يتم الحصول على رد من المساعد الذكي.';
+                        }
+                        
+                        const aiMessage = {
+                            id: Date.now() + 1,
+                            type: 'ai',
+                            content: responseContent,
+                            timestamp: new Date(),
+                            list_data: data.list_data || null,
+                            list_type: data.list_type || null
+                        };
+                        
+                        this.messages.push(aiMessage);
+                        this.isLoading = false;
+                        
+                        // Save AI response to chat history
+                        this.saveChatHistory(aiMessage.content, 'ai');
+                        
+                        // Scroll to bottom
+                        setTimeout(() => {
+                            const chatMessages = document.getElementById('chat-messages');
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }, 100);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        const errorMessage = {
+                            id: Date.now() + 1,
+                            type: 'ai',
+                            content: error.message || 'عذراً، واجهت خطأ. يرجى المحاولة مرة أخرى لاحقاً.',
+                            timestamp: new Date()
+                        };
+                        
+                        this.messages.push(errorMessage);
+                        this.isLoading = false;
+                    });
+                },
+                
+                askQuickQuestion(question) {
+                    // For specific data requests, fetch real data first
+                    if (question.includes('الرصيد') || question.includes('balance') || question.includes('رصيد')) {
+                        this.fetchCompanyBalanceAndAsk();
+                    } else if (question.includes('المبيعات') || question.includes('مبيعات') || question.includes('sales') || question.includes('أداء مبيعات')) {
+                        this.fetchSalesAndAsk();
+                    } else if (question.includes('العروض') || question.includes('offers')) {
+                        this.fetchSalesAndAsk();
+                    } else if (question.includes('المخزون') || question.includes('مخزون') || question.includes('inventory')) {
+                        this.fetchInventoryAndAsk();
+                    } else if (question.includes('المنتجات') || question.includes('منتجات') || question.includes('products')) {
+                        this.fetchProductsAndAsk();
+                    } else if (question.includes('العملاء') || question.includes('عملاء') || question.includes('customers') || question.includes('طلبات عملاء')) {
+                        this.fetchCustomersAndAsk();
+                    } else if (question.includes('الأرباح') || question.includes('أرباح') || question.includes('profits')) {
+                        this.fetchProfitsAndAsk();
+                    } else if (question.includes('الفواتير') || question.includes('فواتير') || question.includes('bills') || question.includes('invoices') || question.includes('آخر الفواتير') || question.includes('last bills')) {
+                        this.fetchBillsAndAsk();
+                    } else {
+                        this.newMessage = question;
+                        this.sendMessage();
+                    }
+                },
+                
+                async fetchCompanyBalanceAndAsk() {
+                    try {
+                        const response = await fetch('/api/company_balance');
+                        const data = await response.json();
+                        
+                        if (data.error) {
+                            this.newMessage = 'ما هو الرصيد الحالي للشركة؟';
+                        } else {
+                            this.newMessage = `رصيد الشركة الحالي هو ${data.current_balance} ${data.currency}. الإيرادات الشهرية: ${data.monthly_revenue} ${data.currency}. المدفوعات المعلقة: ${data.pending_payments} ${data.currency}. حلل الوضع المالي للشركة وقدم توصيات.`;
+                        }
+                    } catch (error) {
+                        this.newMessage = 'ما هو الرصيد الحالي للشركة؟';
+                    }
+                    this.sendMessage();
+                },
+                
+                async fetchSalesAndAsk() {
+                    try {
+                        const response = await fetch('/api/company_sales');
+                        const data = await response.json();
+                        
+                        if (data.error) {
+                            this.newMessage = 'كيف أداء المبيعات والعروض؟';
+                        } else {
+                            const recentOffersText = data.recent_offers.slice(0, 3).map(offer => 
+                                `${offer.order_name}: ${offer.total_price} جنيه (${offer.status})`
+                            ).join('، ');
+                            this.newMessage = `إجمالي العروض: ${data.total_offers}، المقبولة: ${data.accepted_offers}، المعلقة: ${data.pending_offers}. معدل القبول: ${data.acceptance_rate}%. أحدث العروض: ${recentOffersText}. حلل أداء المبيعات وقدم استراتيجيات للتحسين.`;
+                        }
+                    } catch (error) {
+                        this.newMessage = 'كيف أداء المبيعات والعروض؟';
+                    }
+                    this.sendMessage();
+                },
+                
+                async fetchInventoryAndAsk() {
+                    try {
+                        const response = await fetch('/api/company_inventory');
+                        const data = await response.json();
+                        
+                        if (data.error) {
+                            this.newMessage = 'حلل مخزون الشركة وقدم رؤى حول الأداء.';
+                        } else {
+                            const lowStockText = data.low_stock_products.map(p => 
+                                `${p.name}: ${p.stock_quantity} قطعة`
+                            ).join('، ');
+                            
+                            const topCategoriesText = data.top_categories.map(([category, count]) => 
+                                `${category}: ${count} منتج`
+                            ).join('، ');
+                            
+                            this.newMessage = `إجمالي المنتجات: ${data.total_products}، النشطة: ${data.active_products}، غير النشطة: ${data.inactive_products}. المنتجات منخفضة المخزون: ${data.low_stock_count}، نفدت من المخزون: ${data.out_of_stock_count}. قيمة المخزون الإجمالية: ${data.total_stock_value} جنيه. أهم الفئات: ${topCategoriesText}. المنتجات منخفضة المخزون: ${lowStockText}. حلل وضع المخزون وقدم توصيات للتحسين.`;
+                        }
+                    } catch (error) {
+                        this.newMessage = 'حلل مخزون الشركة وقدم رؤى حول الأداء.';
+                    }
+                    this.sendMessage();
+                },
+                
+                async fetchProductsAndAsk() {
+                    try {
+                        const response = await fetch('/api/company_products');
+                        const data = await response.json();
+                        
+                        if (data.error) {
+                            this.newMessage = 'ما هي أفضل منتجات الشركة وكيف أداؤها؟';
+                        } else {
+                            const bestProductsText = data.best_products.map(p => 
+                                `${p.name}: ${p.total_revenue} جنيه إيرادات، معدل قبول ${p.acceptance_rate}%`
+                            ).join('، ');
+                            
+                            const categoryPerformanceText = Object.entries(data.category_performance).slice(0, 3).map(([category, perf]) => 
+                                `${category}: ${perf.total_revenue} جنيه`
+                            ).join('، ');
+                            
+                            this.newMessage = `إجمالي المنتجات: ${data.total_products}، النشطة: ${data.active_products}. إجمالي الإيرادات: ${data.total_revenue} جنيه، متوسط معدل القبول: ${data.average_acceptance_rate.toFixed(1)}%. أفضل المنتجات: ${bestProductsText}. أداء الفئات: ${categoryPerformanceText}. حلل أداء المنتجات وقدم استراتيجيات للتحسين.`;
+                        }
+                    } catch (error) {
+                        this.newMessage = 'ما هي أفضل منتجات الشركة وكيف أداؤها؟';
+                    }
+                    this.sendMessage();
+                },
+                
+                async fetchCustomersAndAsk() {
+                    try {
+                        const response = await fetch('/api/company_customers');
+                        const data = await response.json();
+                        
+                        if (data.error) {
+                            this.newMessage = 'حلل أنماط وسلوك عملاء الشركة.';
+                        } else {
+                            const topCustomersText = data.top_customers.map(c => 
+                                `${c.name}: ${c.total_value} جنيه، ${c.total_orders} طلبات`
+                            ).join('، ');
+                            
+                            const popularCategoriesText = Object.entries(data.popular_categories).slice(0, 3).map(([category, count]) => 
+                                `${category}: ${count} طلب`
+                            ).join('، ');
+                            
+                            this.newMessage = `إجمالي العملاء: ${data.total_customers}، العملاء المتكررون: ${data.repeat_customers}، العملاء عاليو القيمة: ${data.high_value_customers}. معدل الاحتفاظ بالعملاء: ${data.customer_retention_rate.toFixed(1)}%. إجمالي الإيرادات: ${data.total_revenue} جنيه، متوسط قيمة العميل: ${data.average_customer_value.toFixed(2)} جنيه. أهم العملاء: ${topCustomersText}. الفئات الشائعة: ${popularCategoriesText}. حلل أنماط العملاء وقدم استراتيجيات لتحسين العلاقات.`;
+                        }
+                    } catch (error) {
+                        this.newMessage = 'حلل أنماط وسلوك عملاء الشركة.';
+                    }
+                    this.sendMessage();
+                },
+                
+                async fetchProfitsAndAsk() {
+                    try {
+                        const response = await fetch('/api/company_profits');
+                        const data = await response.json();
+                        
+                        if (data.error) {
+                            this.newMessage = 'حلل أرباح الشركة والأداء المالي.';
+                        } else {
+                            const topProductsText = data.top_profitable_products.map(p => 
+                                `${p.name}: ${p.revenue} جنيه من ${p.order_count} طلبات`
+                            ).join('، ');
+                            
+                            this.newMessage = `إجمالي الإيرادات: ${data.total_revenue} جنيه، التكاليف المقدرة: ${data.estimated_costs} جنيه، الربح المقدر: ${data.estimated_profit} جنيه. هامش الربح: ${data.profit_margin}%. إيرادات الشهر الحالي: ${data.current_month_revenue} جنيه، الشهر السابق: ${data.previous_month_revenue} جنيه، معدل النمو: ${data.growth_rate}%. إجمالي الطلبات: ${data.total_orders}، متوسط قيمة الطلب: ${data.avg_order_value} جنيه. رصيد الشركة: ${data.company_balance} جنيه. أكثر المنتجات ربحية: ${topProductsText}. حلل الأداء المالي وقدم توصيات لتحسين الربحية.`;
+                        }
+                    } catch (error) {
+                        this.newMessage = 'حلل أرباح الشركة والأداء المالي.';
+                    }
+                    this.sendMessage();
+                },
+                
+                async fetchBillsAndAsk() {
+                    // Simply ask the AI about bills - it will use the get_bills_summary function
+                    this.newMessage = 'أظهر لي ملخص الفواتير الأخيرة للشركة';
+                    this.sendMessage();
+                },
+                
+                async markBillAsPaid(billId) {
+                    if (!billId) {
+                        alert('معرف الفاتورة غير صحيح');
+                        return;
+                    }
+                    
+                    if (!confirm('هل أنت متأكد من تسديد هذه الفاتورة؟')) {
+                        return;
+                    }
+                    
+                    try {
+                        // Ask the AI to mark the bill as paid
+                        this.newMessage = `قم بتسديد الفاتورة رقم ${billId}`;
+                        this.sendMessage();
+                    } catch (error) {
+                        console.error('Error marking bill as paid:', error);
+                        alert('حدث خطأ أثناء تسديد الفاتورة');
+                    }
+                },
+                
+                generateSessionId() {
+                    return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                },
+                
+                async saveChatHistory(message, messageType) {
+                    if (!this.sessionId) {
+                        this.sessionId = this.generateSessionId();
+                    }
+                    
+                    try {
+                        await fetch('/api/chat_history/save', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                session_id: this.sessionId,
+                                message_content: message,
+                                message_type: messageType,
+                                message_order: this.messages.length
+                            })
+                        });
+                    } catch (error) {
+                        console.error('Error saving chat history:', error);
+                    }
+                },
+                
+                async loadChatHistory() {
+                    if (!this.sessionId) return;
+                    
+                    try {
+                        const response = await fetch(`/api/chat_history/${this.sessionId}`);
+                        const data = await response.json();
+                        
+                        if (data.success && data.history) {
+                            this.messages = data.history.map(msg => ({
+                                id: msg.id,
+                                type: msg.message_type,
+                                content: msg.message_content,
+                                timestamp: new Date(msg.created_at)
+                            }));
+                        }
+                    } catch (error) {
+                        console.error('Error loading chat history:', error);
+                    }
+                },
+                
+                init() {
+                    // Generate session ID for new conversation
+                    this.sessionId = this.generateSessionId();
+                    
+                    // Load existing chat history if available
+                    this.loadChatHistory();
+                },
+                
+                clearConversation() {
+                    this.messages = [];
+                    this.sessionId = this.generateSessionId();
+                    this.init();
+                }
+            };
+        }
+    </script>
+</head>
+<body :class="{'dark bg-gray-900': darkMode === true}" x-data="chatApp()" x-init="init(); darkMode = JSON.parse(localStorage.getItem('darkMode')); $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))">
+    <!-- ===== Preloader Start ===== -->
+    <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => loaded = false, 500)})" x-show="loaded">
+        <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent"></div>
+    </div>
+    <!-- ===== Preloader End ===== -->
+    
+    <!-- ===== Page Wrapper Start ===== -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- ===== Sidebar Start ===== -->
+        <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+            <!-- SIDEBAR HEADER -->
+            <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+                <a href="/">
+                    <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+                        <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                        <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                    </span>
+                    <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                </a>
+            </div>
+            <!-- SIDEBAR HEADER -->
+            
+            <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+                <!-- Sidebar Menu -->
+                <nav x-data="{selected: $persist('AI Analytics')}">
+                    <!-- Menu Group -->
+                    <div>
+                        <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+                            <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">القائمة</span>
+                        </h3>
+                        <ul class="mb-6 flex flex-col gap-1">
+                            <!-- Menu Item Dashboard -->
+                            <li>
+                                <a :class="(selected === 'Dashboard') && (page === 'dashboard') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Dashboard' ? '':'Dashboard')" class="menu-item group" href="/company_dashboard">
+                                    <svg class="menu-item-icon" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/>
+                                    </svg>
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">لوحة تحكم الشركة</span>
+                                </a>
+                            </li>
+                            
+                            <!-- Menu Item Profile -->
+                            <li>
+                                <a :class="(selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_profile">
+                                    <svg class="menu-item-icon" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+                                    </svg>
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">ملف الشركة</span>
+                                </a>
+                            </li>
+                            
+                            <!-- Menu Item Orders -->
+                            <li>
+                                <a :class="(selected === 'Orders') && (page === 'orders') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Orders' ? '':'Orders')" class="menu-item group" href="/company_orders">
+                                    <svg class="menu-item-icon" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M7 4V2C7 1.45 7.45 1 8 1H16C16.55 1 17 1.45 17 2V4H20C20.55 4 21 4.45 21 5S20.55 6 20 6H19V19C19 20.1 18.1 21 17 21H7C5.9 21 5 20.1 5 19V6H4C3.45 6 3 5.55 3 5S3.45 4 4 4H7ZM9 3V4H15V3H9ZM7 6V19H17V6H7Z" fill="currentColor"/>
+                                    </svg>
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">إدارة الطلبات</span>
+                                </a>
+                            </li>
+                            
+                            <!-- Menu Item Inventory -->
+                            <li>
+                                <a :class="(selected === 'Inventory') && (page === 'inventory') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Inventory' ? '':'Inventory')" class="menu-item group" href="/company_inventory">
+                                    <svg class="menu-item-icon" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z" fill="currentColor"/>
+                                    </svg>
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">المخزون</span>
+                                </a>
+                            </li>
+                            
+                            <!-- Menu Item Employee Management -->
+                            <li>
+                                <a :class="(selected === 'Employees') && (page === 'employees') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Employees' ? '':'Employees')" class="menu-item group" href="/company_employees">
+                                    <svg class="menu-item-icon" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A1.5 1.5 0 0 0 18.54 8H17c-.8 0-1.54.37-2.01.99l-2.98 3.67a.5.5 0 0 0 .39.84H14v8h6zm-12.5 0v-7.5h-2A1.5 1.5 0 0 1 4 13V9.5A1.5 1.5 0 0 1 5.5 8h3A1.5 1.5 0 0 1 10 9.5V13a1.5 1.5 0 0 1-1.5 1.5h-2V22h-3zM6 6.5C6 5.12 7.12 4 8.5 4S11 5.12 11 6.5 9.88 9 8.5 9 6 7.88 6 6.5z" fill="currentColor"/>
+                                    </svg>
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">إدارة الموظفين</span>
+                                </a>
+                            </li>
+                            
+                            <!-- Menu Item Client Chats -->
+                            <li>
+                                <a :class="(selected === 'Chats') && (page === 'chats') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Chats' ? '':'Chats')" class="menu-item group" href="/company_chat">
+                                    <svg class="menu-item-icon" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4v3c0 .6.4 1 1 1 .2 0 .5-.1.7-.3L14.4 18H20c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H14l-4 4v-4H4V4h16v12z" fill="currentColor"/>
+                                    </svg>
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">محادثات العملاء</span>
+                                </a>
+                            </li>
+                            
+                            <!-- Menu Item Balance -->
+                            <li>
+                                <a :class="(selected === 'Balance') && (page === 'balance') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Balance' ? '':'Balance')" class="menu-item group" href="/company_balance">
+                                    <svg class="menu-item-icon" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1L13.5 2.5L16.17 5.17C15.24 5.06 14.32 5 13.4 5H10.6C9.68 5 8.76 5.06 7.83 5.17L10.5 2.5L9 1L3 7V9H5V20C5 21.1 5.9 22 7 22H17C18.1 22 19 21.1 19 20V9H21ZM7 9H17V20H7V9Z" fill="currentColor"/>
+                                    </svg>
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">الرصيد</span>
+                                </a>
+                            </li>
+                            
+                            <!-- Menu Item Packages -->
+                            <li>
+                                <a :class="(selected === 'Packages') && (page === 'packages') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Packages' ? '':'Packages')" class="menu-item group" href="/company_packages">
+                                    <svg class="menu-item-icon" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12,2L2,7L12,12L22,7L12,2M17,16L12,18.5L7,16V10.5L12,13L17,10.5V16Z" fill="currentColor"/>
+                                    </svg>
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">الباقات</span>
+                                </a>
+                            </li>
+                            
+                            <!-- Menu Item AI Analytics -->
+                            <li>
+                                <a :class="(selected === 'AI Analytics') && (page === 'ai_chat') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'AI Analytics' ? '':'AI Analytics')" class="menu-item group" href="/company_ai_chat">
+                                    <svg class="menu-item-icon" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12C2 13.54 2.36 14.99 3.01 16.28L1.71 19.71C1.32 20.53 2.47 21.68 3.29 21.29L6.72 19.99C8.01 20.64 9.46 21 11 21H13C18.52 21 23 16.52 23 11C23 5.48 18.52 1 13 1H12C6.48 1 2 5.48 2 11V12C2 17.52 6.48 22 12 22Z" fill="currentColor"/>
+                                    </svg>
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">التحليلات الذكية</span>
+                                </a>
+                            </li>
+                            
+                            <!-- Menu Item Analytics -->
+                            <li>
+                                <a :class="(selected === 'Analytics') && (page === 'analytics') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Analytics' ? '':'Analytics')" class="menu-item group" href="/company_analytics">
+                                    <svg class="menu-item-icon" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" fill="currentColor"/>
+                                    </svg>
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">التحليلات</span>
+                                </a>
+                            </li>
+                            
+                            <!-- Menu Item Settings -->
+                            <li>
+                                <a :class="(selected === 'Settings') && (page === 'settings') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Settings' ? '':'Settings')" class="menu-item group" href="/company_settings">
+                                    <svg class="menu-item-icon" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z" fill="currentColor"/>
+                                    </svg>
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">الإعدادات</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </aside>
+        <!-- ===== Sidebar End ===== -->
+        
+        <!-- ===== Content Area Start ===== -->
+        <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+            <!-- ===== Header Start ===== -->
+            <header class="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
+                <div class="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
+                    <div class="flex items-center gap-2 sm:gap-4 lg:hidden">
+                        <!-- Hamburger Toggle BTN -->
+                        <button @click="sidebarToggle = !sidebarToggle" class="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden">
+                            <span class="relative block h-5.5 w-5.5 cursor-pointer">
+                                <span class="du-block absolute right-0 h-full w-full">
+                                    <span :class="!sidebarToggle && 'delay-300'" class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[0] duration-200 ease-in-out dark:bg-white" :class="!sidebarToggle ? '!w-full delay-300' : 'w-0 delay-[0]'"></span>
+                                    <span class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-150 duration-200 ease-in-out dark:bg-white" :class="!sidebarToggle ? 'delay-400 !w-full' : 'w-0 delay-200'"></span>
+                                    <span :class="!sidebarToggle && 'delay-500'" class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-200 duration-200 ease-in-out dark:bg-white" :class="!sidebarToggle ? '!w-full delay-500' : 'w-0 delay-300'"></span>
+                                </span>
+                                <span class="absolute right-0 h-full w-full rotate-45">
+                                    <span :class="!sidebarToggle && 'delay-300'" class="absolute left-2.5 top-0 block h-full w-0.5 rounded-sm bg-black delay-300 duration-200 ease-in-out dark:bg-white" :class="!sidebarToggle ? '!h-0 !delay-[0]' : 'h-full delay-300'"></span>
+                                    <span :class="!sidebarToggle && 'delay-400'" class="delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm bg-black duration-200 ease-in-out dark:bg-white" :class="!sidebarToggle ? '!h-0 !delay-200' : 'h-0.5 delay-400'"></span>
+                                </span>
+                            </span>
+                        </button>
+                        <!-- Hamburger Toggle BTN -->
+                    </div>
+                    
+                    <div class="hidden sm:block">
+                        <h1 class="text-title-md2 font-semibold text-black dark:text-white">تحليلات الأعمال الذكية</h1>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">رؤى وتحليلات متقدمة لعمليات عملك</p>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 2xsm:gap-7">
+                        <!-- Dark Mode Toggler -->
+                        <li class="list-none">
+                            <label :class="darkMode ? 'bg-primary' : 'bg-stroke'" @click="darkMode = !darkMode" class="relative m-0 block h-7.5 w-14 rounded-full">
+                                <input class="dur absolute top-0 z-50 m-0 h-full w-full cursor-pointer opacity-0" type="checkbox"/>
+                                <span :class="darkMode && '!right-1 !translate-x-full'" class="absolute left-1 top-1/2 flex h-6 w-6 -translate-y-1/2 translate-x-0 items-center justify-center rounded-full bg-white shadow-switcher duration-75 ease-linear">
+                                    <span class="dark:hidden">
+                                        <svg class="fill-current stroke-current" fill="none" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zM8 14c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z" fill="currentColor"/>
+                                        </svg>
+                                    </span>
+                                    <span class="hidden dark:inline-block">
+                                        <svg class="fill-current stroke-current" fill="none" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M6.99 0C3.14 0 0 3.14 0 6.99C0 10.84 3.14 13.98 6.99 13.98C10.84 13.98 13.98 10.84 13.98 6.99C13.98 3.14 10.84 0 6.99 0ZM6.99 12.78C3.81 12.78 1.2 10.17 1.2 6.99C1.2 3.81 3.81 1.2 6.99 1.2C10.17 1.2 12.78 3.81 12.78 6.99C12.78 10.17 10.17 12.78 6.99 12.78Z" fill="currentColor"/>
+                                        </svg>
+                                    </span>
+                                </span>
+                            </label>
+                        </li>
+                        <!-- Dark Mode Toggler -->
+                    </div>
+                </div>
+            </header>
+            <!-- ===== Header End ===== -->
+            
+            <!-- ===== Main Content Start ===== -->
+            <main class="flex-1 overflow-y-auto p-4 md:p-6 2xl:p-10">
+                <div class="mx-auto max-w-4xl">
+                    <!-- AI Chat Interface -->
+                    <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                        <!-- Chat Header -->
+                        <div class="border-b border-stroke px-6 py-4 dark:border-strokedark">
+                            <h3 class="font-medium text-black dark:text-white">مساعد تحليلات الأعمال الذكي</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">اسأل أي سؤال عام أو احصل على رؤى متقدمة حول أداء عملك والطلبات والمخزون واتجاهات السوق</p>
+                        </div>
+                        
+                        <!-- Chat Messages -->
+                        <div class="h-96 overflow-y-auto p-6" id="chat-messages">
+                            <!-- Welcome Message -->
+                            <div class="mb-4">
+                                <div class="flex items-start gap-3">
+                                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
+                                        <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="rounded-lg bg-gray-100 p-3 dark:bg-gray-800">
+                                            <p class="text-sm text-gray-900 dark:text-white">مرحباً! أنا شلبي، مساعدك الذكي. يمكنني الإجابة على أي سؤال عام أو مساعدتك في تحليل أداء شركتك وفهم أنماط الطلبات وتحسين المخزون وتتبع إنتاجية الموظفين وتقديم رؤى استراتيجية. ماذا تريد أن تستكشف اليوم؟</p>
+                                        </div>
+                                        <p class="mt-1 text-xs text-gray-500">مساعد التحليلات الذكي</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Dynamic Messages -->
+                            <template x-for="message in messages" :key="message.id">
+                                <div class="mb-4">
+                                    <div class="flex items-start gap-3" :class="message.type === 'user' ? 'flex-row-reverse' : ''">
+                                        <div class="flex h-8 w-8 items-center justify-center rounded-full" :class="message.type === 'user' ? 'bg-blue-500' : 'bg-primary'">
+                                            <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path x-show="message.type === 'user'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                                <path x-show="message.type === 'ai'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="rounded-lg p-3" :class="message.type === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100 dark:bg-gray-800'" :style="message.type === 'user' ? 'background-color: #3b82f6 !important; color: white !important; opacity: 1 !important;' : ''">
+                                                <!-- Enhanced structured message rendering -->
+                                                <div x-show="message.type === 'ai' && hasStructuredData(message.content)" x-html="renderStructuredMessage(message)"></div>
+                                                <!-- Regular message content -->
+                                                <p x-show="message.type === 'user' || !hasStructuredData(message.content)" class="text-sm" :class="message.type === 'user' ? 'text-white' : 'text-gray-900 dark:text-white'" x-text="message.content"></p>
+                                                
+                                                <!-- List UI for structured data -->
+                                                <div x-show="message.list_data && message.list_type && message.type === 'ai'" class="mt-4">
+                                                    <!-- Orders List -->
+                                                    <div x-show="message.list_type === 'orders'" class="space-y-3">
+                                                        <h4 class="font-semibold text-sm mb-3 text-gray-800 dark:text-white border-b border-gray-300 dark:border-gray-600 pb-2">📋 قائمة الطلبات</h4>
+                                                        <template x-for="item in message.list_data" :key="item.id">
+                                                            <div class="bg-white dark:bg-gray-700 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md transition-shadow">
+                                                                <div class="flex justify-between items-start mb-3">
+                                                                    <h5 class="font-medium text-gray-900 dark:text-white text-base" x-text="item.order_name || 'طلب رقم ' + item.id"></h5>
+                                                                    <span class="px-3 py-1 text-xs rounded-full font-medium" 
+                                                                          :class="item.status === 'active' ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' : 
+                                                                                   item.status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100' : 
+                                                                                   'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-100'"
+                                                                          x-text="item.status === 'active' ? 'نشط' : item.status === 'pending' ? 'قيد الانتظار' : item.status"></span>
+                                                                </div>
+                                                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 leading-relaxed" x-text="item.description || 'لا يوجد وصف متاح'"></p>
+                                                                <div class="flex justify-between items-center text-sm">
+                                                                    <span class="font-semibold text-blue-600 dark:text-blue-400" x-text="'💰 ' + (item.total_amount || 0) + ' ريال'"></span>
+                                                                    <span class="text-gray-500 dark:text-gray-400" x-text="'📅 ' + (item.created_at ? new Date(item.created_at).toLocaleDateString('ar-SA') : 'غير محدد')"></span>
+                                                                </div>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                    
+                                                    <!-- Offers List -->
+                                                    <div x-show="message.list_type === 'offers'" class="space-y-3">
+                                                        <h4 class="font-semibold text-sm mb-3 text-gray-800 dark:text-white border-b border-gray-300 dark:border-gray-600 pb-2">🎯 قائمة العروض</h4>
+                                                        <template x-for="item in message.list_data" :key="item.id">
+                                                            <div class="bg-white dark:bg-gray-700 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md transition-shadow">
+                                                                <div class="flex justify-between items-start mb-3">
+                                                                    <h5 class="font-medium text-gray-900 dark:text-white text-base" x-text="'عرض رقم ' + item.id"></h5>
+                                                                    <span class="px-3 py-1 text-xs rounded-full font-medium" 
+                                                                          :class="item.status === 'accepted' ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' : 
+                                                                                   item.status === 'pending' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100' : 
+                                                                                   item.status === 'rejected' ? 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100' :
+                                                                                   'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-gray-100'"
+                                                                          x-text="item.status === 'accepted' ? 'مقبول' : item.status === 'pending' ? 'قيد المراجعة' : item.status === 'rejected' ? 'مرفوض' : item.status"></span>
+                                                                </div>
+                                                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 leading-relaxed" x-text="item.description || 'لا يوجد وصف متاح'"></p>
+                                                                <div class="flex justify-between items-center text-sm">
+                                                                    <span class="font-semibold text-blue-600 dark:text-blue-400" x-text="'💰 ' + (item.total_price || 0) + ' ريال'"></span>
+                                                                    <span class="text-gray-500 dark:text-gray-400" x-text="'⏱️ ' + (item.delivery_time || 'غير محدد') + ' يوم'"></span>
+                                                                </div>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                    
+                                                    <!-- Inventory List -->
+                                                    <div x-show="message.list_type === 'inventory'" class="space-y-3">
+                                                        <h4 class="font-semibold text-sm mb-3 text-gray-800 dark:text-white border-b border-gray-300 dark:border-gray-600 pb-2">📦 قائمة المخزون</h4>
+                                                        <template x-for="item in message.list_data" :key="item.id">
+                                                            <div class="bg-white dark:bg-gray-700 rounded-lg p-4 shadow-sm border border-gray-200 dark:border-gray-600 hover:shadow-md transition-shadow">
+                                                                <div class="flex justify-between items-start mb-3">
+                                                                    <h5 class="font-medium text-gray-900 dark:text-white text-base" x-text="item.product_name || item.name || 'منتج رقم ' + item.id"></h5>
+                                                                    <span class="px-3 py-1 text-xs rounded-full font-medium" 
+                                                                          :class="(item.quantity || 0) > 10 ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' : 
+                                                                                   (item.quantity || 0) > 0 ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100' : 
+                                                                                   'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100'"
+                                                                          x-text="(item.quantity || 0) + ' قطعة'"></span>
+                                                                </div>
+                                                                <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 leading-relaxed" x-text="item.description || item.specifications || 'لا يوجد وصف متاح'"></p>
+                                                                <div class="flex justify-between items-center text-sm">
+                                                                    <span class="font-semibold text-blue-600 dark:text-blue-400" x-text="'💰 ' + (item.unit_price || item.price || 0) + ' ريال'"></span>
+                                                                    <span class="text-gray-500 dark:text-gray-400" x-text="'📍 ' + (item.location || 'غير محدد')"></span>
+                                                                </div>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p class="mt-1 text-xs text-gray-500" :class="message.type === 'user' ? 'text-right' : ''" x-text="message.type === 'user' ? 'أنت' : 'مساعد التحليلات الذكي'"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                            
+                            <!-- Loading Indicator -->
+                            <div x-show="isLoading" class="mb-4">
+                                <div class="flex items-start gap-3">
+                                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
+                                        <svg class="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="rounded-lg bg-gray-100 p-3 dark:bg-gray-800">
+                                            <p class="text-sm text-gray-900 dark:text-white">جاري تحليل البيانات...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Chat Input -->
+                        <div class="border-t border-stroke p-6 dark:border-strokedark">
+                            <form @submit.prevent="sendMessage()" class="flex gap-3">
+                                <input 
+                                    x-model="newMessage" 
+                                    type="text" 
+                                    placeholder="اسأل أي سؤال عام أو عن أداء الأعمال والطلبات والمخزون والرؤى الاستراتيجية..." 
+                                    class="flex-1 rounded-lg border border-stroke bg-transparent px-4 py-2 text-black outline-none focus:border-primary dark:border-strokedark dark:text-white dark:focus:border-primary"
+                                    :disabled="isLoading"
+                                />
+                                <button 
+                                    type="submit" 
+                                    class="flex items-center justify-center rounded-lg bg-primary px-6 py-2 text-white hover:bg-opacity-90 disabled:opacity-50"
+                                    :disabled="isLoading || !newMessage.trim()"
+                                >
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                                    </svg>
+                                </button>
+                            </form>
+                            
+                            <!-- Quick Actions -->
+                            <div class="mt-4">
+                                <p class="mb-2 text-sm text-gray-600 dark:text-gray-400">تحليلات سريعة:</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <button @click="askQuickQuestion('حلل أداء مبيعات شركتي')" class="rounded-full bg-green-100 px-3 py-1 text-sm text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800">أداء المبيعات</button>
+                                    <button @click="askQuickQuestion('تحليل مخزون الشركة')" class="rounded-full bg-green-100 px-3 py-1 text-sm text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800">رؤى المخزون</button>
+                                    <button @click="askQuickQuestion('ما هي أفضل منتجات الشركة؟')" class="rounded-full bg-green-100 px-3 py-1 text-sm text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800">أفضل المنتجات</button>
+                                    <button @click="askQuickQuestion('حلل طلبات عملاء الشركة')" class="rounded-full bg-green-100 px-3 py-1 text-sm text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800">أنماط العملاء</button>
+                                    <button @click="askQuickQuestion('تحليل أرباح الشركة')" class="rounded-full bg-green-100 px-3 py-1 text-sm text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800">تحليل الأرباح</button>
+                                    <button @click="askQuickQuestion('رصيد الشركة الحالي')" class="rounded-full bg-green-100 px-3 py-1 text-sm text-green-700 hover:bg-green-200 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800">الرصيد الحالي</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <!-- ===== Main Content End ===== -->
+        </div>
+        <!-- ===== Content Area End ===== -->
+    </div>
+    <!-- ===== Page Wrapper End ===== -->
+    
+    <script src="{{ url_for('static', filename='js/alpine.min.js') }}"></script>
+
+</body>
+</html>

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complaints - Almoshtariat</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Alpine.js -->
+    <script defer src="{{ url_for('static', filename='js/alpine.min.js') }}"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+    
+    <!-- Custom JavaScript -->
+    <script src="{{ url_for('static', filename='js/script_0.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/script_1.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/inline_scripts.js') }}"></script>
+    
+    <style>
+        .complaint-card {
+            transition: all 0.3s ease;
+        }
+        .complaint-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .priority-badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo and Title -->
+                <div class="flex items-center">
+                    <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="h-8 w-8 mr-3">
+                    <h1 class="text-xl font-bold text-gray-900 dark:text-white">Almoshtariat</h1>
+                </div>
+                
+                <!-- Navigation -->
+                <nav class="hidden md:flex space-x-8">
+                    <a href="{{ url_for('index') }}" class="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white px-3 py-2 text-sm font-medium">Dashboard</a>
+                    {% if current_user.role == 'client' %}
+                        <a href="{{ url_for('orders') }}" class="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white px-3 py-2 text-sm font-medium">My Orders</a>
+                    {% elif current_user.role == 'company' %}
+                        <a href="{{ url_for('company_orders') }}" class="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white px-3 py-2 text-sm font-medium">Orders</a>
+                    {% endif %}
+                    <a href="{{ url_for('view_complaints') }}" class="text-blue-600 dark:text-blue-400 px-3 py-2 text-sm font-medium border-b-2 border-blue-600">Complaints</a>
+                </nav>
+                
+                <!-- User Menu -->
+                <div class="flex items-center space-x-4">
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" class="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <span class="text-sm font-medium">{{ current_user.username }}</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        
+                        <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50">
+                            <a href="{{ url_for('profile') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Profile</a>
+                            <a href="{{ url_for('logout') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <!-- Page Header -->
+        <div class="px-4 py-6 sm:px-0">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Complaints</h1>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        {% if current_user.role == 'client' %}
+                            View and manage your complaints
+                        {% else %}
+                            View and respond to customer complaints
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <!-- Add Complaint Button (for clients) -->
+                {% if current_user.role == 'client' %}
+                <button onclick="openComplaintModal()" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    New Complaint
+                </button>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Complaints List -->
+        <div class="px-4 sm:px-0">
+            {% if complaints %}
+                <div class="grid gap-6">
+                    {% for complaint in complaints %}
+                    <div class="complaint-card bg-white dark:bg-gray-800 shadow rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-3 mb-3">
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ complaint.title }}</h3>
+                                    
+                                    <!-- Status Badge -->
+                                    <span class="status-badge
+                                        {% if complaint.status == 'open' %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200
+                                        {% elif complaint.status == 'in_progress' %}bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
+                                        {% elif complaint.status == 'resolved' %}bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
+                                        {% else %}bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200{% endif %}">
+                                        {{ complaint.status.replace('_', ' ').title() }}
+                                    </span>
+                                    
+                                    <!-- Priority Badge -->
+                                    <span class="priority-badge
+                                        {% if complaint.priority == 'urgent' %}bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200
+                                        {% elif complaint.priority == 'high' %}bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200
+                                        {% elif complaint.priority == 'normal' %}bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
+                                        {% else %}bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200{% endif %}">
+                                        {{ complaint.priority.title() }}
+                                    </span>
+                                </div>
+                                
+                                <p class="text-gray-600 dark:text-gray-300 mb-4">{{ complaint.description }}</p>
+                                
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-500 dark:text-gray-400">
+                                    <div>
+                                        <span class="font-medium">Type:</span>
+                                        <span class="ml-2">{{ complaint.complaint_type.replace('_', ' ').title() }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-medium">Created:</span>
+                                        <span class="ml-2">{{ complaint.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-medium">Updated:</span>
+                                        <span class="ml-2">{{ complaint.updated_at.strftime('%Y-%m-%d %H:%M') }}</span>
+                                    </div>
+                                </div>
+                                
+                                {% if complaint.resolution_notes %}
+                                <div class="mt-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                    <h4 class="font-medium text-gray-900 dark:text-white mb-2">Resolution Notes:</h4>
+                                    <p class="text-gray-600 dark:text-gray-300">{{ complaint.resolution_notes }}</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="flex flex-col space-y-2 ml-4">
+                                <a href="{{ url_for('view_complaint', complaint_id=complaint.id) }}" class="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                    View Details
+                                </a>
+                                
+                                {% if current_user.role == 'company' and complaint.status != 'resolved' %}
+                                <button onclick="updateComplaintStatus({{ complaint.id }}, 'in_progress')" class="inline-flex items-center px-3 py-2 border border-blue-300 text-sm font-medium rounded-md text-blue-700 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:border-blue-600 dark:text-blue-400 dark:hover:bg-blue-900/40">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Mark In Progress
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <!-- Empty State -->
+                <div class="text-center py-12">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No complaints</h3>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                        {% if current_user.role == 'client' %}
+                            Get started by creating a new complaint.
+                        {% else %}
+                            No complaints have been submitted yet.
+                        {% endif %}
+                    </p>
+                    {% if current_user.role == 'client' %}
+                    <div class="mt-6">
+                        <button onclick="openComplaintModal()" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            New Complaint
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- Complaint Modal -->
+    <div id="complaintModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
+            <div class="mt-3">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Submit New Complaint</h3>
+                
+                <form id="complaintForm" class="space-y-4">
+                    <div>
+                        <label for="complaintTitle" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Title</label>
+                        <input type="text" id="complaintTitle" name="title" required class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label for="complaintDescription" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+                        <textarea id="complaintDescription" name="description" rows="4" required class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="complaintType" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Type</label>
+                            <select id="complaintType" name="complaint_type" class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                <option value="general">General</option>
+                                <option value="quality">Quality Issue</option>
+                                <option value="delivery">Delivery Problem</option>
+                                <option value="service">Service Issue</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label for="complaintPriority" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Priority</label>
+                            <select id="complaintPriority" name="priority" class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                <option value="low">Low</option>
+                                <option value="normal">Normal</option>
+                                <option value="high">High</option>
+                                <option value="urgent">Urgent</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" onclick="closeComplaintModal()" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600">
+                            Cancel
+                        </button>
+                        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Submit Complaint
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openComplaintModal() {
+            document.getElementById('complaintModal').classList.remove('hidden');
+        }
+        
+        function closeComplaintModal() {
+            document.getElementById('complaintModal').classList.add('hidden');
+            document.getElementById('complaintForm').reset();
+        }
+        
+        function updateComplaintStatus(complaintId, status) {
+            if (confirm(`Are you sure you want to mark this complaint as ${status.replace('_', ' ')}?`)) {
+                fetch('/update_complaint_status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        complaint_id: complaintId,
+                        status: status
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error updating complaint status');
+                });
+            }
+        }
+        
+        // Handle form submission
+        document.getElementById('complaintForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {
+                offer_id: 1, // This should be passed from the context
+                title: formData.get('title'),
+                description: formData.get('description'),
+                complaint_type: formData.get('complaint_type'),
+                priority: formData.get('priority')
+            };
+            
+            fetch('/submit_complaint', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Complaint submitted successfully!');
+                    closeComplaintModal();
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error submitting complaint');
+            });
+        });
+        
+        // Close modal when clicking outside
+        document.getElementById('complaintModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeComplaintModal();
+            }
+        });
+    </script>
+</body>
+</html>
+

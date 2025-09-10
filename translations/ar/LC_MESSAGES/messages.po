@@ -1,0 +1,2050 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+
+#: flask_app.py:441
+msgid "Login successful!"
+msgstr ""
+
+#: flask_app.py:443
+msgid "Invalid username or password"
+msgstr ""
+
+#: flask_app.py:513 flask_app.py:1811
+msgid "Passwords do not match"
+msgstr ""
+
+#: flask_app.py:517 flask_app.py:1819 flask_app.py:1893
+msgid "Username already exists"
+msgstr ""
+
+#: flask_app.py:521 flask_app.py:1815 flask_app.py:1887
+msgid "Email already registered"
+msgstr ""
+
+#: flask_app.py:533
+msgid "Registration successful! Please log in."
+msgstr ""
+
+#: flask_app.py:537
+msgid "Error during registration: "
+msgstr ""
+
+#: flask_app.py:1537 flask_app.py:1592 flask_app.py:1607 flask_app.py:1622
+#: flask_app.py:1632 flask_app.py:1688 flask_app.py:1700 flask_app.py:1749
+#: flask_app.py:1786 flask_app.py:1799 flask_app.py:1846 flask_app.py:1869
+#: flask_app.py:1918 flask_app.py:1986 flask_app.py:2056 flask_app.py:2080
+#: flask_app.py:2190 flask_app.py:2715 flask_app.py:2763 flask_app.py:2806
+#: flask_app.py:2825
+msgid "Access denied. Company role required."
+msgstr ""
+
+#: flask_app.py:1584 flask_app.py:1585 templates/client/new_order_form.html:7
+#: templates/client/new_order_form.html:521
+msgid "Create New Order"
+msgstr "إنشاء طلب جديد"
+
+#: flask_app.py:1761 flask_app.py:1940
+msgid "Please fill in all required fields."
+msgstr ""
+
+#: flask_app.py:1776
+msgid "Offer submitted successfully!"
+msgstr ""
+
+#: flask_app.py:1834
+msgid "Employee added successfully!"
+msgstr ""
+
+#: flask_app.py:1856
+msgid "Employee deleted successfully!"
+msgstr ""
+
+#: flask_app.py:1861 flask_app.py:1876
+msgid "Employee not found"
+msgstr ""
+
+#: flask_app.py:1905
+msgid "Employee updated successfully!"
+msgstr ""
+
+#: flask_app.py:1945 flask_app.py:2019
+msgid "SKU already exists. Please choose a different SKU."
+msgstr ""
+
+#: flask_app.py:1969
+msgid "Product added successfully!"
+msgstr ""
+
+#: flask_app.py:1973 flask_app.py:2043
+msgid "Please enter valid numbers for price, cost, and quantity."
+msgstr ""
+
+#: flask_app.py:1993 flask_app.py:2063
+#, fuzzy
+msgid "Product not found."
+msgstr "رمز المنتج"
+
+#: flask_app.py:2013
+msgid "Error updating product: Please fill in all required fields."
+msgstr ""
+
+#: flask_app.py:2039
+msgid "Product updated successfully!"
+msgstr ""
+
+#: flask_app.py:2069
+msgid "Product deleted successfully!"
+msgstr ""
+
+#: flask_app.py:2087 flask_app.py:2092
+#, fuzzy
+msgid "No file selected."
+msgstr "لم يتم اختيار ملف"
+
+#: flask_app.py:2096
+#, fuzzy
+msgid "Please upload a CSV file."
+msgstr "رفع ملف"
+
+#: flask_app.py:2768 flask_app.py:2811 flask_app.py:2830
+msgid "Company not found."
+msgstr ""
+
+#: flask_app.py:2774 flask_app.py:2836
+msgid "Order not found."
+msgstr ""
+
+#: flask_app.py:2780
+msgid "Order is already hidden from your view."
+msgstr ""
+
+#: flask_app.py:2792
+msgid "Order has been removed from your view. It will no longer appear in your orders list."
+msgstr ""
+
+#: flask_app.py:2842
+msgid "Order is not hidden from your view."
+msgstr ""
+
+#: flask_app.py:2850
+msgid "Order has been restored to your view. It will now appear in your orders list again."
+msgstr ""
+
+#: templates/base.html:48 templates/client/form_layout.html:102
+#: templates/client/orders.html:94 templates/client/orders.html:124
+#: templates/client/profile.html:99 templates/client/stocks.html:103
+msgid "Dashboard"
+msgstr "لوحة التحكم"
+
+#: templates/base.html:52 templates/client/orders.html:299
+msgid "Orders"
+msgstr "الطلبات"
+
+#: templates/base.html:55 templates/client/form_layout.html:313
+#: templates/client/profile.html:135 templates/client/profile.html:277
+#: templates/client/stocks.html:326
+#, fuzzy
+msgid "Chat"
+msgstr "المحادثات"
+
+#: templates/base.html:59 templates/client/profile.html:8
+#: templates/client/profile.html:312 templates/client/profile.html:334
+#, fuzzy
+msgid "Profile"
+msgstr "الملف الشخصي"
+
+#: templates/base.html:63
+msgid "Login"
+msgstr "تسجيل الدخول"
+
+#: templates/base.html:66
+msgid "Register"
+msgstr "التسجيل"
+
+#: templates/base.html:75
+msgid "Language"
+msgstr "اللغة"
+
+#: templates/base.html:78
+msgid "English"
+msgstr "English"
+
+#: templates/base.html:79
+msgid "Arabic"
+msgstr "العربية"
+
+#: templates/base.html:87 templates/client/new_order_form.html:504
+#: templates/client/orders.html:273
+msgid "Logout"
+msgstr "تسجيل الخروج"
+
+#: templates/client/form_layout.html:86 templates/client/orders.html:119
+#: templates/client/profile.html:87 templates/client/stocks.html:87
+msgid "MENU"
+msgstr "القائمة"
+
+#: templates/client/form_layout.html:121 templates/client/orders.html:129
+#: templates/client/profile.html:107 templates/client/stocks.html:122
+msgid "User Profile"
+msgstr "الملف الشخصي"
+
+#: templates/client/form_layout.html:132 templates/client/form_layout.html:322
+#: templates/client/orders.html:95 templates/client/orders.html:134
+#: templates/client/orders.html:288 templates/client/profile.html:114
+#: templates/client/profile.html:286 templates/client/stocks.html:133
+#: templates/client/stocks.html:335
+msgid "My Orders"
+msgstr "طلباتي"
+
+#: templates/client/form_layout.html:143 templates/client/orders.html:96
+#: templates/client/orders.html:139 templates/client/orders.html:334
+#: templates/client/profile.html:121
+msgid "Create Order"
+msgstr "إنشاء طلب"
+
+#: templates/client/form_layout.html:154
+#: templates/client/new_order_form.html:379
+#, fuzzy
+msgid "chats"
+msgstr "المحادثات"
+
+#: templates/client/form_layout.html:304
+#: templates/client/new_order_form.html:496 templates/client/orders.html:265
+#: templates/client/profile.html:268 templates/client/stocks.html:317
+msgid "Edit profile"
+msgstr "تعديل الملف الشخصي"
+
+#: templates/client/form_layout.html:331 templates/client/profile.html:295
+#: templates/client/stocks.html:344
+msgid "Sign out"
+msgstr "تسجيل الخروج"
+
+#: templates/client/form_layout.html:353 templates/client/orders.html:293
+#: templates/client/profile.html:318
+msgid "Home"
+msgstr "الرئيسية"
+
+#: templates/client/form_layout.html:373
+#, fuzzy
+msgid "Example Form"
+msgstr "نموذج من 5 خطوات"
+
+#: templates/client/form_layout.html:380
+#, fuzzy
+msgid "Purchase Details"
+msgstr "تفاصيل الطلب"
+
+#: templates/client/new_order_form.html:7
+msgid "5-Step Form"
+msgstr "نموذج من 5 خطوات"
+
+#: templates/client/new_order_form.html:522
+msgid "Fill out the form below to create a new order with multiple products"
+msgstr "املأ النموذج أدناه لإنشاء طلب جديد مع منتجات متعددة"
+
+#: templates/client/new_order_form.html:528
+msgid "Step"
+msgstr "الخطوة"
+
+#: templates/client/new_order_form.html:528
+msgid "of"
+msgstr "من"
+
+#: templates/client/new_order_form.html:530
+msgid "Complete"
+msgstr "مكتمل"
+
+#: templates/client/new_order_form.html:546
+#: templates/client/new_order_form.html:562
+msgid "Order Details"
+msgstr "تفاصيل الطلب"
+
+#: templates/client/new_order_form.html:546
+#: templates/client/new_order_form.html:618 templates/client/orders.html:429
+msgid "Products"
+msgstr "المنتجات"
+
+#: templates/client/new_order_form.html:546 templates/client/orders.html:430
+msgid "Delivery"
+msgstr "التوصيل"
+
+#: templates/client/new_order_form.html:546
+msgid "Payment"
+msgstr "الدفع"
+
+#: templates/client/new_order_form.html:546
+msgid "Settings"
+msgstr "الإعدادات"
+
+#: templates/client/new_order_form.html:568 templates/client/orders.html:420
+msgid "Order Name"
+msgstr "اسم الطلب"
+
+#: templates/client/new_order_form.html:570
+msgid "Enter order name"
+msgstr "أدخل اسم الطلب"
+
+#: templates/client/new_order_form.html:576
+msgid "Description"
+msgstr "الوصف"
+
+#: templates/client/new_order_form.html:578
+msgid "Enter order description"
+msgstr "أدخل وصف الطلب"
+
+#: templates/client/new_order_form.html:584 templates/client/orders.html:427
+msgid "Sector"
+msgstr "القطاع"
+
+#: templates/client/new_order_form.html:587
+msgid "Select Sector"
+msgstr "اختر القطاع"
+
+#: templates/client/new_order_form.html:588
+msgid "Electronics"
+msgstr "الإلكترونيات"
+
+#: templates/client/new_order_form.html:589
+msgid "Automotive"
+msgstr "السيارات"
+
+#: templates/client/new_order_form.html:590
+msgid "Construction"
+msgstr "البناء"
+
+#: templates/client/new_order_form.html:591
+msgid "Medical"
+msgstr "الطبي"
+
+#: templates/client/new_order_form.html:592
+msgid "Other"
+msgstr "أخرى"
+
+#: templates/client/new_order_form.html:598 templates/client/orders.html:428
+msgid "Order Type"
+msgstr "نوع الطلب"
+
+#: templates/client/new_order_form.html:601
+msgid "Select Order Type"
+msgstr "اختر نوع الطلب"
+
+#: templates/client/new_order_form.html:602
+msgid "Purchase"
+msgstr "شراء"
+
+#: templates/client/new_order_form.html:603
+msgid "Service"
+msgstr "خدمة"
+
+#: templates/client/new_order_form.html:604
+msgid "Rental"
+msgstr "إيجار"
+
+#: templates/client/new_order_form.html:605
+msgid "Installation"
+msgstr "تركيب"
+
+#: templates/client/new_order_form.html:606
+msgid "Maintenance"
+msgstr "صيانة"
+
+#: templates/client/new_order_form.html:626
+msgid "Grab from Preferences"
+msgstr "جلب من التفضيلات"
+
+#: templates/client/new_order_form.html:635
+msgid "Add Product"
+msgstr "إضافة منتج"
+
+#: templates/client/new_order_form.html:641
+msgid "Smart Feature"
+msgstr "ميزة ذكية"
+
+#: templates/client/new_order_form.html:641
+msgid "All products you add to orders are automatically saved to your preferences for future use"
+msgstr "جميع المنتجات التي تضيفها إلى الطلبات يتم حفظها تلقائياً في تفضيلاتك للاستخدام المستقبلي"
+
+#: templates/client/new_order_form.html:649
+msgid "Product"
+msgstr "المنتج"
+
+#: templates/client/new_order_form.html:662
+msgid "Product Name"
+msgstr "اسم المنتج"
+
+#: templates/client/new_order_form.html:665
+msgid "Enter product name"
+msgstr "أدخل اسم المنتج"
+
+#: templates/client/new_order_form.html:671
+msgid "Technical Specifications"
+msgstr "المواصفات التقنية"
+
+#: templates/client/new_order_form.html:674
+msgid "Enter technical specifications"
+msgstr "أدخل المواصفات التقنية"
+
+#: templates/client/new_order_form.html:680
+#: templates/client/new_order_form.html:683
+msgid "Quantity"
+msgstr "الكمية"
+
+#: templates/client/new_order_form.html:689
+msgid "Unit"
+msgstr "الوحدة"
+
+#: templates/client/new_order_form.html:692
+msgid "Piece"
+msgstr ""
+
+#: templates/client/new_order_form.html:693
+msgid "Kilo"
+msgstr ""
+
+#: templates/client/new_order_form.html:694
+#, fuzzy
+msgid "Meter"
+msgstr "مكتمل"
+
+#: templates/client/new_order_form.html:695
+#, fuzzy
+msgid "Liter"
+msgstr "التوصيل"
+
+#: templates/client/new_order_form.html:701
+#, fuzzy
+msgid "Max Price Per Unit (Optional)"
+msgstr "السعر الأقصى للوحدة"
+
+#: templates/client/new_order_form.html:704
+#, fuzzy
+msgid "Enter maximum price"
+msgstr "أدخل السعر الأقصى للوحدة"
+
+#: templates/client/new_order_form.html:710
+#, fuzzy
+msgid "Product Code (Optional)"
+msgstr "رمز المنتج"
+
+#: templates/client/new_order_form.html:713
+msgid "Enter product code"
+msgstr "أدخل رمز المنتج"
+
+#: templates/client/new_order_form.html:719
+#, fuzzy
+msgid "Best Supplier (Optional)"
+msgstr "أفضل مورد"
+
+#: templates/client/new_order_form.html:722
+msgid "Enter best supplier"
+msgstr "أدخل أفضل مورد"
+
+#: templates/client/new_order_form.html:728
+#, fuzzy
+msgid "Upload File (Optional)"
+msgstr "رفع ملف"
+
+#: templates/client/new_order_form.html:744
+msgid "Delivery Information"
+msgstr "معلومات التوصيل"
+
+#: templates/client/new_order_form.html:752
+#: templates/client/new_order_form.html:1004
+#: templates/client/new_order_form.html:1290
+msgid "Delivery Date"
+msgstr "تاريخ التوصيل"
+
+#: templates/client/new_order_form.html:760
+msgid "Delivery Time"
+msgstr "وقت التوصيل"
+
+#: templates/client/new_order_form.html:768
+msgid "Delivery Address"
+msgstr "عنوان التوصيل"
+
+#: templates/client/new_order_form.html:770
+msgid "Enter delivery address"
+msgstr "أدخل عنوان التوصيل"
+
+#: templates/client/new_order_form.html:776
+msgid "Delivery Notes"
+msgstr "ملاحظات التوصيل"
+
+#: templates/client/new_order_form.html:778
+msgid "Enter delivery notes"
+msgstr "أدخل ملاحظات التوصيل"
+
+#: templates/client/new_order_form.html:784
+#, fuzzy
+msgid "Receiver Information"
+msgstr "معلومات التوصيل"
+
+#: templates/client/new_order_form.html:788
+#, fuzzy
+msgid "Receiver Name"
+msgstr "اسم الطلب"
+
+#: templates/client/new_order_form.html:790
+#, fuzzy
+msgid "Enter receiver full name"
+msgstr "أدخل اسم الطلب"
+
+#: templates/client/new_order_form.html:796
+msgid "Receiver Phone"
+msgstr ""
+
+#: templates/client/new_order_form.html:798
+#, fuzzy
+msgid "Enter receiver phone number"
+msgstr "أدخل اسم الطلب"
+
+#: templates/client/new_order_form.html:811
+#, fuzzy
+msgid "Payment System"
+msgstr "شروط الدفع"
+
+#: templates/client/new_order_form.html:819
+#, fuzzy
+msgid "Payment Step"
+msgstr "إضافة خطوة دفع"
+
+#: templates/client/new_order_form.html:824
+#, fuzzy
+msgid "Remove"
+msgstr "إزالة المنتج"
+
+#: templates/client/new_order_form.html:831
+msgid "Payment Method"
+msgstr "طريقة الدفع"
+
+#: templates/client/new_order_form.html:834
+#, fuzzy
+msgid "Select Method"
+msgstr "اختر القطاع"
+
+#: templates/client/new_order_form.html:835
+msgid "Cash"
+msgstr "نقداً"
+
+#: templates/client/new_order_form.html:836
+msgid "Bank Transfer"
+msgstr "تحويل بنكي"
+
+#: templates/client/new_order_form.html:837
+#, fuzzy
+msgid "Deferred Payment"
+msgstr "إضافة خطوة دفع"
+
+#: templates/client/new_order_form.html:838
+#, fuzzy
+msgid "Installments"
+msgstr "تركيب"
+
+#: templates/client/new_order_form.html:844
+#, fuzzy
+msgid "Payment Timing"
+msgstr "شروط الدفع"
+
+#: templates/client/new_order_form.html:846
+#, fuzzy
+msgid "Enter payment timing"
+msgstr "شروط الدفع"
+
+#: templates/client/new_order_form.html:852
+#, fuzzy
+msgid "Percentage"
+msgstr "إيجار"
+
+#: templates/client/new_order_form.html:854
+#, fuzzy
+msgid "Enter percentage"
+msgstr "أدخل اسم المنتج"
+
+#: templates/client/new_order_form.html:870
+#, fuzzy
+msgid "Add Another Payment"
+msgstr "إضافة خطوة دفع"
+
+#: templates/client/new_order_form.html:876
+#, fuzzy
+msgid "Payment Summary"
+msgstr "شروط الدفع"
+
+#: templates/client/new_order_form.html:878
+msgid "Total Steps"
+msgstr ""
+
+#: templates/client/new_order_form.html:879
+msgid "Total Percentage"
+msgstr ""
+
+#: templates/client/new_order_form.html:894
+#, fuzzy
+msgid "Order Settings"
+msgstr "حالة الطلب"
+
+#: templates/client/new_order_form.html:900
+msgid "Activate Direct Negotiation"
+msgstr ""
+
+#: templates/client/new_order_form.html:903
+#: templates/client/new_order_form.html:913
+#: venv/lib/python3.13/site-packages/flask_admin/model/widgets.py:116
+msgid "No"
+msgstr ""
+
+#: templates/client/new_order_form.html:904
+#: templates/client/new_order_form.html:914
+#: venv/lib/python3.13/site-packages/flask_admin/model/widgets.py:117
+msgid "Yes"
+msgstr ""
+
+#: templates/client/new_order_form.html:910
+#, fuzzy
+msgid "Accept Unregistered Suppliers"
+msgstr "أدخل أفضل مورد"
+
+#: templates/client/new_order_form.html:920
+msgid "Maximum Number of Suppliers"
+msgstr ""
+
+#: templates/client/new_order_form.html:923
+#, fuzzy
+msgid "Enter maximum suppliers"
+msgstr "أدخل أفضل مورد"
+
+#: templates/client/new_order_form.html:934
+msgid "Order Preview & Summary"
+msgstr "معاينة الطلب والملخص"
+
+#: templates/client/new_order_form.html:935
+msgid "Review your order details before submission"
+msgstr "راجع تفاصيل طلبك قبل الإرسال"
+
+#: templates/client/new_order_form.html:1005
+#: templates/client/new_order_form.html:1222
+#: templates/client/new_order_form.html:1437
+msgid "Not specified"
+msgstr "غير محدد"
+
+#: templates/client/new_order_form.html:1082
+msgid "Previous"
+msgstr "السابق"
+
+#: templates/client/new_order_form.html:1089
+msgid "Next"
+msgstr "التالي"
+
+#: templates/client/new_order_form.html:1159
+msgid "Order Print Preview"
+msgstr "معاينة طباعة الطلب"
+
+#: templates/client/new_order_form.html:1165
+msgid "Generate PDF (Server-Side Arabic Support)"
+msgstr "إنشاء PDF (دعم عربي من جانب الخادم)"
+
+#: templates/client/new_order_form.html:1171
+msgid "Print"
+msgstr "طباعة"
+
+#: templates/client/new_order_form.html:1174
+msgid "Close"
+msgstr "إغلاق"
+
+#: templates/client/new_order_form.html:1280
+msgid "Order Preview"
+msgstr "معاينة الطلب"
+
+#: templates/client/new_order_form.html:1587
+msgid "Please fill in all required fields: Order Name, Sector, Order Type, and Delivery Date"
+msgstr "يرجى ملء جميع الحقول المطلوبة: اسم الطلب، القطاع، نوع الطلب، وتاريخ التوصيل"
+
+#: templates/client/new_order_form.html:1601
+msgid "Please add at least one product with a product name"
+msgstr "يرجى إضافة منتج واحد على الأقل مع اسم المنتج"
+
+#: templates/client/orders.html:144 templates/client/profile.html:128
+msgid "Suppliers"
+msgstr "الموردون"
+
+#: templates/client/orders.html:149
+msgid "Chats"
+msgstr "المحادثات"
+
+#: templates/client/orders.html:197 templates/client/orders.html:345
+msgid "Search orders..."
+msgstr "البحث في الطلبات..."
+
+#: templates/client/orders.html:309
+msgid "Orders Management"
+msgstr "إدارة الطلبات"
+
+#: templates/client/orders.html:310
+msgid "Track and manage all your purchase orders"
+msgstr "تتبع وإدارة جميع طلبات الشراء الخاصة بك"
+
+#: templates/client/orders.html:318
+msgid "Hide Filters"
+msgstr "إخفاء الفلاتر"
+
+#: templates/client/orders.html:318
+msgid "Show Filters"
+msgstr "إظهار الفلاتر"
+
+#: templates/client/orders.html:323
+#, fuzzy
+msgid "Export"
+msgstr "التالي"
+
+#: templates/client/orders.html:344
+#, fuzzy
+msgid "Search"
+msgstr "خدمة"
+
+#: templates/client/orders.html:399
+msgid "Clear Filters"
+msgstr "مسح الفلاتر"
+
+#: templates/client/orders.html:415
+#, fuzzy
+msgid "Order #"
+msgstr "رقم الطلب"
+
+#: templates/client/orders.html:422
+#, fuzzy
+msgid "Created Date"
+msgstr "إنشاء طلب"
+
+#: templates/client/profile.html:387
+#, fuzzy
+msgid "Edit"
+msgstr "فوري"
+
+#: templates/client/stocks.html:8
+#, fuzzy
+msgid "Client Dashboard"
+msgstr "لوحة تحكم العميل"
+
+#: templates/client/stocks.html:140
+#, fuzzy
+msgid "Supplier Orders"
+msgstr "طلبات الموردين"
+
+#: templates/client/stocks.html:243
+#, fuzzy
+msgid "Search or type command..."
+msgstr "البحث في الطلبات..."
+
+#: templates/client/stocks.html:371
+#, fuzzy
+msgid "Total Orders"
+msgstr "إجمالي الطلبات"
+
+#: templates/client/stocks.html:374
+#, fuzzy
+msgid "All time orders"
+msgstr "جميع الطلبات"
+
+#: templates/client/stocks.html:383
+#, fuzzy
+msgid "Orders created"
+msgstr "الطلبات المنشأة"
+
+#: templates/client/stocks.html:390
+#, fuzzy
+msgid "New Order"
+msgstr "طلب جديد"
+
+#: templates/client/stocks.html:406
+#, fuzzy
+msgid "Pending Orders"
+msgstr "الطلبات المعلقة"
+
+#: templates/client/stocks.html:409 templates/client/stocks.html:632
+msgid "Awaiting offers"
+msgstr "في انتظار العروض"
+
+#: templates/client/stocks.html:418
+#, fuzzy
+msgid "Orders pending"
+msgstr "الطلبات المعلقة"
+
+#: templates/client/stocks.html:422
+#, fuzzy
+msgid "View All"
+msgstr "عرض الكل"
+
+#: templates/client/stocks.html:438
+msgid "Total Offers"
+msgstr "إجمالي العروض"
+
+#: templates/client/stocks.html:441
+msgid "Received offers"
+msgstr "العروض المستلمة"
+
+#: templates/client/stocks.html:450
+msgid "Offers received"
+msgstr "العروض المستلمة"
+
+#: templates/client/stocks.html:454
+#, fuzzy
+msgid "View Offers"
+msgstr "عرض العروض"
+
+#: templates/client/stocks.html:470
+#, fuzzy
+msgid "Cart Items"
+msgstr "عناصر السلة"
+
+#: templates/client/stocks.html:473
+#, fuzzy
+msgid "Products in cart"
+msgstr "المنتجات في السلة"
+
+#: templates/client/stocks.html:482
+#, fuzzy
+msgid "Items ready"
+msgstr "العناصر جاهزة"
+
+#: templates/client/stocks.html:486
+#, fuzzy
+msgid "Checkout"
+msgstr "شيك"
+
+#: templates/client/stocks.html:593
+msgid "Recent Orders Summary"
+msgstr "ملخص الطلبات الحديثة"
+
+#: templates/client/stocks.html:596
+msgid "Overview of your latest orders and their status"
+msgstr "نظرة عامة على أحدث طلباتك وحالتها"
+
+#: templates/client/stocks.html:601
+#, fuzzy
+msgid "All Orders"
+msgstr "جميع الطلبات"
+
+#: templates/client/stocks.html:604
+msgid "Pending"
+msgstr "قيد الانتظار"
+
+#: templates/client/stocks.html:607
+msgid "With Offers"
+msgstr "مع العروض"
+
+#: templates/client/stocks.html:617
+msgid "All time"
+msgstr "طوال الوقت"
+
+#: templates/client/stocks.html:647
+#, fuzzy
+msgid "Received"
+msgstr "مستلم"
+
+#: templates/client/stocks.html:662
+msgid "Trending Companies"
+msgstr "الشركات الرائجة"
+
+#: templates/client/stocks.html:715 templates/client/stocks.html:755
+#: templates/client/stocks.html:795 templates/client/stocks.html:835
+#: templates/client/stocks.html:875
+#, fuzzy
+msgid "More details"
+msgstr "تفاصيل الطلب"
+
+#: templates/client/stocks.html:717 templates/client/stocks.html:757
+#: templates/client/stocks.html:797 templates/client/stocks.html:837
+#: templates/client/stocks.html:877
+msgid "Contact company"
+msgstr "تواصل مع الشركة"
+
+#: templates/client/stocks.html:891
+msgid "Dividend"
+msgstr "الأرباح"
+
+#: templates/client/stocks.html:920
+#, fuzzy
+msgid "My order list"
+msgstr "قائمة طلباتي"
+
+#: templates/client/stocks.html:1006
+msgid "Latest Transactions"
+msgstr "أحدث المعاملات"
+
+#: templates/client/stocks.html:1029
+msgid "Name"
+msgstr "الاسم"
+
+#: templates/client/stocks.html:1036
+#, fuzzy
+msgid "Date"
+msgstr "التاريخ"
+
+#: templates/client/stocks.html:1043
+#, fuzzy
+msgid "Price"
+msgstr "السعر"
+
+#: templates/client/stocks.html:1050
+#, fuzzy
+msgid "Category"
+msgstr "الفئة"
+
+#: templates/client/stocks.html:1057
+msgid "Status"
+msgstr "الحالة"
+
+#: venv/lib/python3.13/site-packages/click/_termui_impl.py:600
+#, python-brace-format
+msgid "{editor}: Editing failed"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/_termui_impl.py:604
+#, python-brace-format
+msgid "{editor}: Editing failed: {e}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:1084
+#: venv/lib/python3.13/site-packages/click/core.py:1121
+#, python-brace-format
+msgid "{text} {deprecated_message}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:1140
+#, fuzzy
+msgid "Options"
+msgstr "الإجراءات"
+
+#: venv/lib/python3.13/site-packages/click/core.py:1202
+#, python-brace-format
+#: venv/lib/python3.13/site-packages/click/core.py:1221
+#, python-brace-format
+msgid "DeprecationWarning: The command {name!r} is deprecated.{extra_message}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:1405
+msgid "Aborted!"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:1779
+msgid "Commands"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:1810
+msgid "Missing command."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:1888
+#, python-brace-format
+msgid "No such command {name!r}."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:2303
+msgid "Value must be an iterable."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:2324
+#, python-brace-format
+#: venv/lib/python3.13/site-packages/click/core.py:2404
+#, python-brace-format
+msgid "DeprecationWarning: The {param_type} {name!r} is deprecated.{extra_message}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:2807
+#, python-brace-format
+msgid "env var: {var}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:2810
+#, python-brace-format
+msgid "default: {default}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:2814
+msgid "required"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/core.py:2870
+msgid "(dynamic)"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/decorators.py:465
+#, python-format
+msgid "%(prog)s, version %(version)s"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/decorators.py:522
+msgid "Show the version and exit."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/decorators.py:548
+msgid "Show this message and exit."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:50
+#: venv/lib/python3.13/site-packages/click/exceptions.py:89
+#, python-brace-format
+msgid "Error: {message}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:81
+#, python-brace-format
+msgid "Try '{command} {option}' for help."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:130
+#, python-brace-format
+msgid "Invalid value: {message}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:132
+#, python-brace-format
+msgid "Invalid value for {param_hint}: {message}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:190
+msgid "Missing argument"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:192
+msgid "Missing option"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:194
+msgid "Missing parameter"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:196
+#, python-brace-format
+msgid "Missing {param_type}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:203
+#, python-brace-format
+msgid "Missing parameter: {param_name}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:223
+#, python-brace-format
+msgid "No such option: {name}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:235
+#, python-brace-format
+#: venv/lib/python3.13/site-packages/click/exceptions.py:282
+msgid "unknown error"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/exceptions.py:289
+#, python-brace-format
+msgid "Could not open file {filename!r}: {message}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/formatting.py:156
+msgid "Usage:"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/parser.py:200
+#, python-brace-format
+msgid "Argument {name!r} takes {nargs} values."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/parser.py:383
+#, python-brace-format
+msgid "Option {name!r} does not take a value."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/parser.py:444
+#, python-brace-format
+#: venv/lib/python3.13/site-packages/click/shell_completion.py:326
+msgid "Shell completion is not supported for Bash versions older than 4.4."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/shell_completion.py:333
+msgid "Couldn't detect Bash version, shell completion is not supported."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/termui.py:162
+#, fuzzy
+msgid "Repeat for confirmation"
+msgstr "معلومات الدفع"
+
+#: venv/lib/python3.13/site-packages/click/termui.py:178
+msgid "Error: The value you entered was invalid."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/termui.py:180
+#, python-brace-format
+msgid "Error: {e.message}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/termui.py:191
+msgid "Error: The two entered values do not match."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/termui.py:247
+msgid "Error: invalid input"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/termui.py:866
+msgid "Press any key to continue..."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:332
+#, python-brace-format
+msgid "Choose from:\n\t{choices}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:369
+#, python-brace-format
+#: venv/lib/python3.13/site-packages/click/types.py:460
+#, python-brace-format
+#: venv/lib/python3.13/site-packages/click/types.py:482
+#, python-brace-format
+msgid "{value!r} is not a valid {number_type}."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:538
+#, python-brace-format
+msgid "{value} is not in the range {range}."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:679
+#, python-brace-format
+msgid "{value!r} is not a valid boolean."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:703
+#, python-brace-format
+msgid "{value!r} is not a valid UUID."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:893
+msgid "file"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:895
+#, fuzzy
+msgid "directory"
+msgstr "القطاع"
+
+#: venv/lib/python3.13/site-packages/click/types.py:897
+msgid "path"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:944
+#, python-brace-format
+msgid "{name} {filename!r} does not exist."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:953
+#, python-brace-format
+msgid "{name} {filename!r} is a file."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:961
+#, python-brace-format
+msgid "{name} {filename!r} is a directory."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:970
+#, python-brace-format
+msgid "{name} {filename!r} is not readable."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:979
+#, python-brace-format
+msgid "{name} {filename!r} is not writable."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:988
+#, python-brace-format
+msgid "{name} {filename!r} is not executable."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/click/types.py:1055
+#, python-brace-format
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/rediscli.py:113
+msgid "Cli: Invalid command."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:374
+msgid "File required."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:379
+msgid "Invalid file type."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:404
+msgid "Invalid name"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:774
+#, python-format
+msgid "File \"%(name)s\" already exists."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:819
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:916
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:978
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1031
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1078
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1130
+#: venv/lib/python3.13/site-packages/flask_admin/model/base.py:2290
+msgid "Permission denied."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:912
+msgid "File uploading is disabled."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:923
+#, python-format
+msgid "Successfully saved file: %(name)s"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:927
+#, python-format
+msgid "Failed to save file: %(error)s"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:935
+msgid "Upload File"
+msgstr "رفع ملف"
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:974
+msgid "Directory creation is disabled."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:987
+#, python-format
+msgid "Successfully created directory: %(directory)s"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:991
+#, python-format
+msgid "Failed to create directory: %(error)s"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1001
+#, fuzzy
+msgid "Create Directory"
+msgstr "إنشاء طلب"
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1027
+msgid "Deletion is disabled."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1036
+msgid "Directory deletion is disabled."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1042
+#, python-format
+msgid "Directory \"%(path)s\" was successfully deleted."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1044
+#, python-format
+msgid "Failed to delete directory: %(error)s"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1050
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1205
+#, python-format
+msgid "File \"%(name)s\" was successfully deleted."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1052
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1207
+#, python-format
+msgid "Failed to delete file: %(name)s"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1074
+msgid "Renaming is disabled."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1082
+msgid "Path does not exist."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1091
+#, python-format
+msgid "Successfully renamed \"%(src)s\" to \"%(dst)s\""
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1095
+#, python-format
+msgid "Failed to rename: %(error)s"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1108
+#, python-format
+msgid "Rename %(name)s"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1145
+#, python-format
+msgid "Error saving changes to %(name)s."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1149
+#, python-format
+msgid "Changes to %(name)s saved successfully."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1157
+#, python-format
+msgid "Error reading %(name)s."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1160
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1169
+#, python-format
+msgid "Unexpected error while reading from %(name)s"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1166
+#, python-format
+msgid "Cannot edit %(name)s."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1184
+#, python-format
+msgid "Editing %(path)s"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/__init__.py:1196
+msgid "File deletion is disabled."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/fileadmin/s3.py:156
+msgid "Cannot operate on non empty directories"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/mongoengine/view.py:558
+#, python-format
+msgid "Failed to get model. %(error)s"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/mongoengine/view.py:577
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/peewee/view.py:462
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/pymongo/view.py:317
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/sqla/view.py:1166
+#, python-format
+msgid "Failed to create record. %(error)s"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/mongoengine/view.py:603
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/peewee/view.py:481
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/pymongo/view.py:342
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/sqla/view.py:1192
+#: venv/lib/python3.13/site-packages/flask_admin/model/base.py:2427
+#: venv/lib/python3.13/site-packages/flask_admin/model/base.py:2434
+#: venv/lib/python3.13/site-packages/flask_admin/model/base.py:2437
+#, python-format
+msgid "Failed to update record. %(error)s"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/mongoengine/view.py:626
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/peewee/view.py:496
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/pymongo/view.py:367
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/sqla/view.py:1217
+#, python-format
+msgid "Failed to delete record. %(error)s"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/mongoengine/view.py:676
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/peewee/view.py:532
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/pymongo/view.py:396
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/sqla/view.py:1254
+#: venv/lib/python3.13/site-packages/flask_admin/model/base.py:2238
+#, python-format
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/mongoengine/view.py:682
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/peewee/view.py:538
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/pymongo/view.py:401
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/sqla/view.py:1262
+#, python-format
+msgid "Failed to delete records. %(error)s"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/sqla/fields.py:127
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/sqla/fields.py:177
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/sqla/fields.py:182
+#: venv/lib/python3.13/site-packages/flask_admin/model/fields.py:178
+#: venv/lib/python3.13/site-packages/flask_admin/model/fields.py:227
+msgid "Not a valid choice"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/sqla/validators.py:44
+msgid "Already exists."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/sqla/validators.py:64
+#, python-format
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/sqla/validators.py:79
+msgid "Not a valid ISO currency code (e.g. USD, EUR, CNY)."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/sqla/validators.py:87
+msgid "Not a valid color (e.g. \"red\", \"#f00\", \"#ff0000\")."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/contrib/sqla/view.py:1130
+#, python-format
+msgid "Integrity error. %(message)s"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/form/fields.py:98
+msgid "Invalid time format"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/form/fields.py:147
+msgid "Invalid Choice: could not coerce"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/form/fields.py:221
+msgid "Invalid JSON"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/form/upload.py:213
+msgid "Invalid file extension"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/form/upload.py:220
+#: venv/lib/python3.13/site-packages/flask_admin/form/upload.py:290
+#, python-format
+msgid "File \"%s\" already exists."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/form/validators.py:16
+msgid "This field requires at least one item."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/model/base.py:1702
+msgid "There are no items in the table."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/model/base.py:1711
+#, python-format
+msgid "Invalid Filter Value: %(value)s"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/model/base.py:2102
+msgid "Record was successfully created."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/model/base.py:2146
+#: venv/lib/python3.13/site-packages/flask_admin/model/base.py:2198
+#: venv/lib/python3.13/site-packages/flask_admin/model/base.py:2231
+#: venv/lib/python3.13/site-packages/flask_admin/model/base.py:2419
+msgid "Record does not exist."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/model/base.py:2155
+#: venv/lib/python3.13/site-packages/flask_admin/model/base.py:2423
+msgid "Record was successfully saved."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/model/base.py:2344
+msgid "Tablib dependency not installed."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/model/base.py:2371
+#, python-format
+msgid "Export type \"%(type)s not supported."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/model/template.py:79
+#: venv/lib/python3.13/site-packages/flask_admin/model/template.py:86
+msgid "View Record"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_admin/model/template.py:93
+#: venv/lib/python3.13/site-packages/flask_admin/model/template.py:100
+#, fuzzy
+msgid "Edit Record"
+msgstr "بطاقة ائتمان"
+
+#: venv/lib/python3.13/site-packages/flask_admin/model/template.py:107
+#, fuzzy
+msgid "Delete Record"
+msgstr "اختر القطاع"
+
+#: venv/lib/python3.13/site-packages/flask_admin/model/widgets.py:62
+msgid "Please select model"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:86
+#, python-format
+msgid "Invalid field name '%s'."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:99
+#, python-format
+msgid "Field must be equal to %(other_name)s."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:146
+#, python-format
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:152
+#, python-format
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:158
+#, python-format
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:164
+#, python-format
+msgid "Field must be between %(min)d and %(max)d characters long."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:216
+#, python-format
+msgid "Number must be at least %(min)s."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:219
+#, python-format
+msgid "Number must be at most %(max)s."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:222
+#, python-format
+msgid "Number must be between %(min)s and %(max)s."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:293
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:323
+msgid "This field is required."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:358
+msgid "Invalid input."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:422
+msgid "Invalid email address."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:460
+msgid "Invalid IP address."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:503
+msgid "Invalid Mac address."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:540
+msgid "Invalid URL."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:561
+msgid "Invalid UUID."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:595
+#, python-format
+msgid "Invalid value, must be one of: %(values)s."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:631
+#, python-format
+msgid "Invalid value, can't be any of: %(values)s."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:700
+msgid "This field cannot be edited."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:716
+msgid "This field is disabled and cannot have a value."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/csrf/core.py:96
+msgid "Invalid CSRF Token."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/csrf/session.py:64
+msgid "CSRF token missing."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/csrf/session.py:72
+#, fuzzy
+msgid "CSRF failed."
+msgstr "اختر ملف"
+
+#: venv/lib/python3.13/site-packages/wtforms/csrf/session.py:77
+msgid "CSRF token expired."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/fields/choices.py:142
+msgid "Invalid Choice: could not coerce."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/fields/choices.py:149
+#: venv/lib/python3.13/site-packages/wtforms/fields/choices.py:203
+msgid "Choices cannot be None."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/fields/choices.py:155
+msgid "Not a valid choice."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/fields/choices.py:194
+msgid "Invalid choice(s): one or more data inputs could not be coerced."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/fields/choices.py:212
+#, python-format
+#: venv/lib/python3.13/site-packages/wtforms/fields/datetime.py:52
+msgid "Not a valid datetime value."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/fields/datetime.py:78
+msgid "Not a valid date value."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/fields/datetime.py:104
+msgid "Not a valid time value."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/fields/datetime.py:149
+msgid "Not a valid week value."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/fields/numeric.py:82
+#: venv/lib/python3.13/site-packages/wtforms/fields/numeric.py:92
+msgid "Not a valid integer value."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/fields/numeric.py:168
+msgid "Not a valid decimal value."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/wtforms/fields/numeric.py:197
+msgid "Not a valid float value."
+msgstr ""
+
+# Missing translations for client dashboard
+msgid "create order"
+msgstr "إنشاء طلب"
+
+msgid "Company Registration"
+msgstr "تسجيل الشركة"
+
+msgid "Page"
+msgstr "الصفحة"
+
+msgid "Simple Test Form"
+msgstr "نموذج اختبار بسيط"
+
+msgid "General"
+msgstr "عام"
+
+msgid "No Category"
+msgstr "لا توجد فئة"
+
+msgid "B2B Platform"
+msgstr "منصة B2B"
+
+msgid "Suppliers Directory"
+msgstr "دليل الموردين"
+
+msgid "Browse and connect with verified suppliers"
+msgstr "تصفح وتواصل مع الموردين المعتمدين"
+
+msgid "Filters"
+msgstr "المرشحات"
+
+msgid "Export List"
+msgstr "تصدير القائمة"
+
+msgid "Search Suppliers"
+msgstr "البحث عن الموردين"
+
+msgid "Company name, email..."
+msgstr "اسم الشركة، البريد الإلكتروني..."
+
+msgid "All Status"
+msgstr "جميع الحالات"
+
+msgid "Approved"
+msgstr "معتمد"
+
+msgid "All Sectors"
+msgstr "جميع القطاعات"
+
+msgid "Technology"
+msgstr "التكنولوجيا"
+
+msgid "Manufacturing"
+msgstr "التصنيع"
+
+msgid "Healthcare"
+msgstr "الرعاية الصحية"
+
+msgid "Food & Beverage"
+msgstr "الأغذية والمشروبات"
+
+msgid "Textiles"
+msgstr "المنسوجات"
+
+msgid "Chemicals"
+msgstr "المواد الكيميائية"
+
+msgid "Energy"
+msgstr "الطاقة"
+
+msgid "Location"
+msgstr "الموقع"
+
+msgid "City, country..."
+msgstr "المدينة، البلد..."
+
+msgid "Verified and registered suppliers in our platform"
+msgstr "الموردين المعتمدين والمسجلين في منصتنا"
+
+msgid "Sort by Name"
+msgstr "ترتيب حسب الاسم"
+
+msgid "Sort by Sector"
+msgstr "ترتيب حسب القطاع"
+
+msgid "Sort by Date"
+msgstr "ترتيب حسب التاريخ"
+
+msgid "Company"
+msgstr "الشركة"
+
+msgid "Contact"
+msgstr "جهة الاتصال"
+
+msgid "Rating"
+msgstr "التقييم"
+
+msgid "Actions"
+msgstr "الإجراءات"
+
+msgid "Not provided"
+msgstr "غير متوفر"
+
+msgid "View Products"
+msgstr "عرض المنتجات"
+
+msgid "No suppliers found"
+msgstr "لم يتم العثور على موردين"
+
+msgid "No suppliers match your current filters."
+msgstr "لا يوجد موردين يطابقون المرشحات الحالية."
+
+msgid "Showing"
+msgstr "عرض"
+
+msgid "to"
+msgstr "إلى"
+
+msgid "results"
+msgstr "نتيجة"
+
+#~ msgid "Dark Mode"
+#~ msgstr "الوضع المظلم"
+msgid "Type to search..."
+msgstr "اكتب للبحث..."
+
+# Company Status page translations
+msgid "Company Status"
+msgstr "حالة الشركة"
+
+msgid "View the current status of your registered company"
+msgstr "عرض الحالة الحالية لشركتك المسجلة"
+
+msgid "Company ID"
+msgstr "معرف الشركة"
+
+msgid "Sector not specified"
+msgstr "القطاع غير محدد"
+
+msgid "Check your registration progress"
+msgstr "تحقق من تقدم تسجيلك"
+
+msgid "Approval Status"
+msgstr "حالة الموافقة"
+
+msgid "Your company has been approved and is now active!"
+msgstr "تمت الموافقة على شركتك وهي نشطة الآن!"
+
+msgid "Pending Review"
+msgstr "في انتظار المراجعة"
+
+msgid "Your registration is under review (24-48 hours)."
+msgstr "تسجيلك قيد المراجعة (24-48 ساعة)."
+
+msgid "Active Status"
+msgstr "حالة النشاط"
+
+msgid "Your company is currently active!"
+msgstr "شركتك نشطة حالياً!"
+
+msgid "Inactive"
+msgstr "غير نشطة"
+
+msgid "Your company is currently inactive."
+msgstr "شركتك غير نشطة حالياً."
+
+msgid "Company Information"
+msgstr "معلومات الشركة"
+
+msgid "Legal Type"
+msgstr "النوع القانوني"
+
+msgid "Enter legal type"
+msgstr "أدخل النوع القانوني"
+
+msgid "Commercial Registration"
+msgstr "السجل التجاري"
+
+msgid "Enter commercial registration number"
+msgstr "أدخل رقم السجل التجاري"
+
+msgid "Contact Person"
+msgstr "شخص الاتصال"
+
+msgid "Enter contact person name"
+msgstr "أدخل اسم شخص الاتصال"
+
+msgid "Contact Position"
+msgstr "منصب الاتصال"
+
+msgid "Enter contact position"
+msgstr "أدخل منصب الاتصال"
+
+msgid "Owner Name"
+msgstr "اسم المالك"
+
+msgid "Enter owner name"
+msgstr "أدخل اسم المالك"
+
+msgid "Enter website URL"
+msgstr "أدخل رابط الموقع الإلكتروني"
+
+msgid "Office Phone"
+msgstr "هاتف المكتب"
+
+msgid "Enter office phone"
+msgstr "أدخل هاتف المكتب"
+
+msgid "Mobile Contact"
+msgstr "جهة الاتصال المحمول"
+
+msgid "Enter mobile contact"
+msgstr "أدخل جهة الاتصال المحمول"
+
+msgid "Tax ID"
+msgstr "الرقم الضريبي"
+
+msgid "Enter tax ID"
+msgstr "أدخل الرقم الضريبي"
+
+msgid "VAT Number"
+msgstr "رقم ضريبة القيمة المضافة"
+
+msgid "Enter VAT number"
+msgstr "أدخل رقم ضريبة القيمة المضافة"
+
+msgid "Founded Year"
+msgstr "سنة التأسيس"
+
+msgid "Enter founded year"
+msgstr "أدخل سنة التأسيس"
+
+msgid "Employees Count"
+msgstr "عدد الموظفين"
+
+msgid "Enter employees count"
+msgstr "أدخل عدد الموظفين"
+
+msgid "Registered Address"
+msgstr "العنوان المسجل"
+
+msgid "Enter registered address"
+msgstr "أدخل العنوان المسجل"
+
+msgid "Certifications"
+msgstr "الشهادات"
+
+msgid "Enter certifications"
+msgstr "أدخل الشهادات"
+
+msgid "Operating Countries"
+msgstr "البلدان العاملة"
+
+msgid "Enter operating countries"
+msgstr "أدخل البلدان العاملة"
+
+msgid "Banking Information"
+msgstr "المعلومات المصرفية"
+
+msgid "Bank Name"
+msgstr "اسم البنك"
+
+msgid "Enter bank name"
+msgstr "أدخل اسم البنك"
+
+msgid "Account Name"
+msgstr "اسم الحساب"
+
+msgid "Enter account name"
+msgstr "أدخل اسم الحساب"
+
+msgid "Account Number"
+msgstr "رقم الحساب"
+
+msgid "Enter account number"
+msgstr "أدخل رقم الحساب"
+
+msgid "Bank Branch"
+msgstr "فرع البنك"
+
+msgid "Enter bank branch"
+msgstr "أدخل فرع البنك"
+
+msgid "Document Uploads"
+msgstr "رفع المستندات"
+
+msgid "Commercial Registration Document"
+msgstr "مستند السجل التجاري"
+
+msgid "Uploaded"
+msgstr "تم الرفع"
+
+msgid "Not uploaded"
+msgstr "لم يتم الرفع"
+
+msgid "Upload new document"
+msgstr "رفع مستند جديد"
+
+msgid "Current file"
+msgstr "الملف الحالي"
+
+msgid "Choose file"
+msgstr "اختر ملف"
+
+msgid "Upload"
+msgstr "رفع"
+
+msgid "Cancel upload"
+msgstr "إلغاء الرفع"
+
+msgid "Field updated successfully!"
+msgstr "تم تحديث الحقل بنجاح!"
+
+msgid "Failed to update field"
+msgstr "فشل في تحديث الحقل"
+
+msgid "Document uploaded successfully!"
+msgstr "تم رفع المستند بنجاح!"
+
+msgid "Failed to upload document"
+msgstr "فشل في رفع المستند"
+
+msgid "Error updating field"
+msgstr "خطأ في تحديث الحقل"
+
+msgid "Error uploading document"
+msgstr "خطأ في رفع المستند"
+
+msgid "Company Name"
+msgstr "اسم الشركة"
+
+msgid "Company Dashboard"
+msgstr "لوحة تحكم الشركة"
+
+msgid "Company Profile"
+msgstr "الملف الشخصي للشركة"
+
+msgid "Manage Orders"
+msgstr "إدارة الطلبات"
+
+msgid "My Offers"
+msgstr "عروضي"
+
+msgid "Inventory"
+msgstr "المخزون"
+
+msgid "Employee Management"
+msgstr "إدارة الموظفين"
+
+msgid "Client Chats"
+msgstr "دردشات العملاء"
+
+msgid "Received from clients"
+msgstr "مستلمة من العملاء"
+
+msgid "Awaiting response"
+msgstr "في انتظار الرد"
+
+msgid "Successfully delivered"
+msgstr "تم التسليم بنجاح"
+
+msgid "Made by your company"
+msgstr "مقدمة من شركتكم"
+
+msgid "Inventory Summary"
+msgstr "ملخص المخزون"
+
+msgid "Products & Categories"
+msgstr "المنتجات والفئات"
+
+msgid "Total Products:"
+msgstr "إجمالي المنتجات:"
+
+msgid "Active Categories:"
+msgstr "الفئات النشطة:"
+
+msgid "Low Stock Items:"
+msgstr "المواد منخفضة المخزون"
+
+msgid "Manage your company"
+msgstr "إدارة شركتكم"
+
+msgid "Completed Orders"
+msgstr "الطلبات المكتملة"
+
+msgid "View Orders"
+msgstr "عرض الطلبات"
+
+msgid "Completed"
+msgstr "مكتمل"
+
+msgid "Manage Inventory"
+msgstr "إدارة المخزون"
+
+msgid "Edit Profile"
+msgstr "تعديل الملف الشخصي"
+
+msgid "Notifications"
+msgstr "الإشعارات"
+
+msgid "Mark all read"
+msgstr "تحديد الكل كمقروء"
+
+msgid "No notifications"
+msgstr "لا توجد إشعارات"
+
+msgid "You're all caught up!"
+msgstr "لقد قرأت كل شيء!"
+
+msgid "View all notifications"
+msgstr "عرض جميع الإشعارات"
+

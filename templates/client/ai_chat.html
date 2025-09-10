@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}" dir="{{ 'rtl' if get_locale() == 'ar' else 'ltr' }}">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+    <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{{ _('AI Assistant') }}</title>
+    <link href="favicon.ico" rel="icon"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css', v=version) }}">
+    <style>
+      /* RTL Support for Language Switching */
+      [dir="rtl"] .language-switcher {
+        direction: rtl;
+      }
+      
+      [dir="rtl"] .sidebar {
+        border-right: none;
+        border-left: 1px solid rgb(229 231 235);
+      }
+      
+      [dir="rtl"] .sidebar-header {
+        flex-direction: row-reverse;
+      }
+      
+      [dir="rtl"] .menu-item-text {
+        text-align: right;
+      }
+      
+      [dir="rtl"] .search-input {
+        padding-left: 3rem;
+        padding-right: 1rem;
+      }
+      
+      [dir="rtl"] .search-icon {
+        left: 1rem;
+        right: auto;
+      }
+      
+      [dir="rtl"] .user-dropdown {
+        margin-left: 0;
+        margin-right: 0.75rem;
+      }
+      
+      [dir="rtl"] .breadcrumb-arrow {
+        transform: rotate(180deg);
+      }
+      
+      [dir="rtl"] .language-switcher .dropdown {
+        right: auto;
+        left: 0;
+      }
+      
+      /* Enhanced structured list animations */
+      @keyframes slideIn {
+          from {
+              opacity: 0;
+              transform: translateY(10px);
+          }
+          to {
+              opacity: 1;
+              transform: translateY(0);
+          }
+      }
+      
+      @keyframes pulse {
+          0%, 100% {
+              opacity: 1;
+          }
+          50% {
+              opacity: 0.5;
+          }
+      }
+      
+      @keyframes shimmer {
+          0% {
+              background-position: -200px 0;
+          }
+          100% {
+              background-position: calc(200px + 100%) 0;
+          }
+      }
+      
+      .slideIn {
+          animation: slideIn 0.3s ease-out;
+      }
+      
+      .pulse {
+          animation: pulse 2s infinite;
+      }
+      
+      .shimmer {
+          background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+          background-size: 200px 100%;
+          animation: shimmer 1.5s infinite;
+      }
+      
+      .structured-list-item:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      
+      .dark .structured-list-item:hover {
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      }
+      
+      /* Action Button Styles */
+      .action-button {
+          background-color: #3b82f6 !important;
+          color: white !important;
+          border: none !important;
+          padding: 8px 16px !important;
+          border-radius: 8px !important;
+          text-decoration: none !important;
+          display: inline-flex !important;
+          align-items: center !important;
+          gap: 8px !important;
+          font-size: 14px !important;
+          font-weight: 500 !important;
+          transition: all 0.2s ease !important;
+          transform: scale(1) !important;
+      }
+      
+      .action-button:hover {
+          background-color: #2563eb !important;
+          color: white !important;
+          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+          transform: scale(1.05) !important;
+      }
+    </style>
+    <script>
+        // Define chatApp function before Alpine loads
+        function chatApp() {
+            return {
+                messages: [],
+                conversationHistory: [],
+                newMessage: '',
+                isLoading: false,
+                page: 'ai_chat',
+                loaded: true,
+                darkMode: false,
+                stickyMenu: false,
+                sidebarToggle: false,
+                scrollTop: false,
+                isMobile: false,
+                sessionId: null,
+                initialized: false,
+                
+                // Check if message contains structured data
+                hasStructuredData(content) {
+                    return content.includes('* **') || (content.includes('*') && content.includes('**'));
+                },
+                
+                // Render structured message with better UI
+                renderStructuredMessage(message) {
+                    const content = message.content;
+                    const lines = content.split('\n');
+                    let html = '';
+                    let inList = false;
+                    let listType = this.detectListType(content);
+                    
+                    lines.forEach(line => {
+                        const trimmedLine = line.trim();
+                        
+                        if (trimmedLine.startsWith('* **') && trimmedLine.includes('**')) {
+                            if (!inList) {
+                                html += '<div class="structured-list mt-3">';
+                                inList = true;
+                            }
+                            
+                            // Extract the content between ** **
+                            const match = trimmedLine.match(/\*\s*\*\*(.+?)\*\*(.*)/); 
+                            if (match) {
+                                const title = match[1].trim();
+                                const description = match[2].replace(/^:?\s*/, '').trim();
+                                
+                                html += this.renderListItem(title, description);
+                            }
+                        } else if (trimmedLine.startsWith('*') && !trimmedLine.includes('**')) {
+                            if (!inList) {
+                                html += '<div class="structured-list mt-3">';
+                                inList = true;
+                            }
+                            
+                            const content = trimmedLine.substring(1).trim();
+                            html += this.renderListItem('', content);
+                        } else {
+                            if (inList) {
+                                html += this.renderActionButton(listType);
+                                html += '</div>';
+                                inList = false;
+                            }
+                            
+                            if (trimmedLine) {
+                                html += `<p class="text-sm text-gray-900 dark:text-white mb-2">${trimmedLine}</p>`;
+                            }
+                        }
+                    });
+                    
+                    if (inList) {
+                        html += this.renderActionButton(listType);
+                        html += '</div>';
+                    }
+                    
+                    html += `<p class="text-xs mt-2 opacity-75">${message.timestamp ? new Date(message.timestamp).toLocaleString('ar-SA') : ''}</p>`;
+                    
+                    return html;
+                },
+                
+                // Detect the type of list content
+                detectListType(content) {
+                    const lowerContent = content.toLowerCase();
+                    
+                    if (lowerContent.includes('طلب') || lowerContent.includes('طلبات') || lowerContent.includes('order') || lowerContent.includes('orders') || lowerContent.includes('my order') || lowerContent.includes('طلباتي')) {
+                        return 'orders';
+                    } else if (lowerContent.includes('عرض') || lowerContent.includes('عروض') || lowerContent.includes('offer')) {
+                        return 'offers';
+                    } else if (lowerContent.includes('رصيد') || lowerContent.includes('مالي') || lowerContent.includes('balance') || lowerContent.includes('financial')) {
+                        return 'balance';
+                    } else if (lowerContent.includes('منتج') || lowerContent.includes('منتجات') || lowerContent.includes('product')) {
+                        return 'products';
+                    } else if (lowerContent.includes('مورد') || lowerContent.includes('موردين') || lowerContent.includes('supplier')) {
+                        return 'suppliers';
+                    } else if (lowerContent.includes('تسليم') || lowerContent.includes('توصيل') || lowerContent.includes('delivery')) {
+                        return 'deliveries';
+                    }
+                    
+                    return 'general';
+                },
+                
+                // Render action button based on list type
+                renderActionButton(listType) {
+                    const buttonConfigs = {
+                        'offers': {
+                            text: 'عرض جميع العروض',
+                            icon: '🎯',
+                            route: '/client_offers',
+                            color: 'bg-blue-500 hover:bg-blue-600'
+                        },
+                        'orders': {
+                            text: 'طلباتي',
+                            icon: '📋',
+                            route: '/client_orders',
+                            color: 'bg-blue-500 hover:bg-blue-600'
+                        },
+                        'balance': {
+                            text: 'عرض الرصيد',
+                            icon: '💰',
+                            route: '/client_balance',
+                            color: 'bg-blue-500 hover:bg-blue-600'
+                        },
+                        'products': {
+                            text: 'تصفح المنتجات',
+                            icon: '🛍️',
+                            route: '/client_stocks',
+                            color: 'bg-blue-500 hover:bg-blue-600'
+                        },
+                        'suppliers': {
+                            text: 'الموردين',
+                            icon: '🏪',
+                            route: '/client_suppliers',
+                            color: 'bg-blue-500 hover:bg-blue-600'
+                        },
+                        'deliveries': {
+                            text: 'التسليمات',
+                            icon: '🚚',
+                            route: '/client_deliveries',
+                            color: 'bg-blue-500 hover:bg-blue-600'
+                        }
+                    };
+                    
+                    const config = buttonConfigs[listType];
+                    if (!config) return '';
+                    
+                    return `
+                        <div class="mt-4 pt-3 border-t border-gray-200 dark:border-gray-600">
+                            <a href="${config.route}" class="action-button">
+                                <span>${config.icon}</span>
+                                <span>${config.text}</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                </svg>
+                            </a>
+                        </div>
+                    `;
+                },
+                
+                // Render individual list item
+                renderListItem(title, description) {
+                    return `
+                        <div class="structured-list-item bg-white dark:bg-gray-700 rounded-lg p-4 mb-3 border border-gray-200 dark:border-gray-600 hover:shadow-md transition-all duration-200 slideIn">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2 pulse"></div>
+                                <div class="flex-1 min-w-0">
+                                    ${title ? `<h4 class="font-semibold text-gray-900 dark:text-white text-sm mb-1">${title}</h4>` : ''}
+                                    ${description ? `<p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">${description}</p>` : ''}
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                },
+                
+                sendMessage() {
+                    if (!this.newMessage.trim() || this.isLoading) return;
+                    
+                    const userMessage = {
+                        id: Date.now(),
+                        type: 'user',
+                        content: this.newMessage,
+                        timestamp: new Date()
+                    };
+                    
+                    this.messages.push(userMessage);
+                    const question = this.newMessage;
+                    this.newMessage = '';
+                    this.isLoading = true;
+                    
+                    // Scroll to bottom
+                    setTimeout(() => {
+                        const chatMessages = document.getElementById('chat-messages');
+                        if (chatMessages) {
+                            chatMessages.scrollTop = chatMessages.scrollHeight;
+                        }
+                    }, 100);
+                    
+                    // Send to AI API with conversation history
+                    fetch('/api/ai_chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                        },
+                        body: JSON.stringify({ 
+                            message: question, 
+                            language: 'ar',
+                            conversation_history: this.conversationHistory
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => Promise.reject(err));
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('AI Response Data:', data); // Debug log
+                        if (data.error) {
+                            throw new Error(data.error);
+                        }
+                        
+                        // Check if response is empty or null
+                        let responseContent = data.response;
+                        if (!responseContent || responseContent.trim() === '') {
+                            console.warn('Empty AI response received:', data);
+                            responseContent = 'تم استلام الطلب ولكن لم يتم الحصول على رد من المساعد الذكي.';
+                        }
+                        
+                        const aiMessage = {
+                            id: Date.now() + 1,
+                            type: 'ai',
+                            content: responseContent,
+                            timestamp: new Date(),
+                            list_data: data.list_data || null,
+                            list_type: data.list_type || null
+                        };
+                        
+                        this.messages.push(aiMessage);
+                        
+                        // Update conversation history for context
+                        this.conversationHistory.push(
+                            { role: 'user', content: question },
+                            { role: 'assistant', content: responseContent }
+                        );
+                        
+                        // Keep only last 10 messages in history to avoid token limits
+                        if (this.conversationHistory.length > 20) {
+                            this.conversationHistory = this.conversationHistory.slice(-20);
+                        }
+                        
+                        // Save chat history to database
+                        this.saveChatHistory(question, responseContent);
+                        
+                        this.isLoading = false;
+                        
+                        // Scroll to bottom
+                        setTimeout(() => {
+                            const chatMessages = document.getElementById('chat-messages');
+                            if (chatMessages) {
+                                chatMessages.scrollTop = chatMessages.scrollHeight;
+                            }
+                        }, 100);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        const errorMessage = {
+                            id: Date.now() + 1,
+                            type: 'ai',
+                            content: error.message || 'عذراً، حدث خطأ في الاتصال. يرجى المحاولة لاحقاً.',
+                            timestamp: new Date()
+                        };
+                        
+                        this.messages.push(errorMessage);
+                        
+                        // Add error to conversation history as well
+                        this.conversationHistory.push(
+                            { role: 'user', content: question },
+                            { role: 'assistant', content: 'عذراً، حدث خطأ في الاتصال.' }
+                        );
+                        
+                        this.isLoading = false;
+                    });
+                },
+                
+                askQuickQuestion(question) {
+                    // For specific data requests, fetch real data first
+                    if (question.includes('رصيدي') || question.includes('balance')) {
+                        this.fetchBalanceAndAsk();
+                    } else if (question.includes('عروضي') || question.includes('offers')) {
+                        this.fetchOffersAndAsk();
+                    } else if (question.includes('طلباتي') || question.includes('orders')) {
+                        this.fetchOrdersAndAsk();
+                    } else {
+                        this.newMessage = question;
+                        this.sendMessage();
+                    }
+                },
+                
+                async fetchBalanceAndAsk() {
+                    try {
+                        const response = await fetch('/api/user_balance');
+                        const data = await response.json();
+                        
+                        if (data.error) {
+                            this.newMessage = 'ما هو رصيدي الحالي؟';
+                        } else {
+                            this.newMessage = `رصيدي الحالي هو ${data.current_balance} ${data.currency}. أنفقت هذا الشهر ${data.monthly_spent} ${data.currency}. حلل لي وضعي المالي وقدم نصائح للتوفير.`;
+                        }
+                    } catch (error) {
+                        this.newMessage = 'ما هو رصيدي الحالي؟';
+                    }
+                    this.sendMessage();
+                },
+                
+                async fetchOffersAndAsk() {
+                    try {
+                        const response = await fetch('/api/user_offers');
+                        const data = await response.json();
+                        
+                        if (data.error || data.total_offers === 0) {
+                            this.newMessage = 'أظهر لي عروضي الخاصة المتاحة';
+                        } else {
+                            const offersText = data.offers.slice(0, 3).map(offer => 
+                                `${offer.company_name}: ${offer.total_price} جنيه لطلب ${offer.order_name}`
+                            ).join('، ');
+                            this.newMessage = `لدي ${data.total_offers} عرض متاح. أحدث العروض: ${offersText}. حلل هذه العروض وانصحني بأفضلها.`;
+                        }
+                    } catch (error) {
+                        this.newMessage = 'أظهر لي عروضي الخاصة المتاحة';
+                    }
+                    this.sendMessage();
+                },
+                
+                async fetchOrdersAndAsk() {
+                    try {
+                        const response = await fetch('/api/user_orders?per_page=5');
+                        const data = await response.json();
+                        
+                        if (data.error || data.orders.length === 0) {
+                            this.newMessage = 'ما هي طلباتي الأخيرة؟';
+                        } else {
+                            const ordersText = data.orders.slice(0, 3).map(order => 
+                                `${order.order_name} (${order.status})`
+                            ).join('، ');
+                            this.newMessage = `لدي ${data.pagination.total} طلب إجمالي. آخر الطلبات: ${ordersText}. حلل طلباتي وعاداتي الشرائية.`;
+                        }
+                    } catch (error) {
+                        this.newMessage = 'ما هي طلباتي الأخيرة؟';
+                    }
+                    this.sendMessage();
+                },
+                
+                async clearConversation() {
+                    // Clear chat history from database for current session
+                    if (this.sessionId) {
+                        try {
+                            await fetch('/api/chat_history/clear', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                                },
+                                body: JSON.stringify({
+                                    session_id: this.sessionId
+                                })
+                            });
+                        } catch (error) {
+                            console.error('Error clearing chat history:', error);
+                        }
+                    }
+                    
+                    this.messages = [];
+                    this.conversationHistory = [];
+                    this.sessionId = this.generateSessionId();
+                    // Clear localStorage to start fresh
+                    localStorage.removeItem('ai_chat_session_id');
+                    localStorage.setItem('ai_chat_session_id', this.sessionId);
+                    
+                    // Add welcome message after clearing
+                    this.messages.push({
+                        id: Date.now(),
+                        type: 'ai',
+                        content: 'مرحباً! أنا شلبي، مساعدك الذكي. يمكنني مساعدتك في تحليل طلباتك وعاداتك الشرائية وتقديم نصائح مفيدة. ما الذي تود معرفته؟',
+                        timestamp: new Date()
+                    });
+                },
+                
+                generateSessionId() {
+                    return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+                },
+                
+                async saveChatHistory(userMessage, aiResponse) {
+                    if (!this.sessionId) {
+                        this.sessionId = this.generateSessionId();
+                    }
+                    
+                    try {
+                        // Save user message
+                        await fetch('/api/chat_history/save', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                session_id: this.sessionId,
+                                message_content: userMessage,
+                                message_type: 'user',
+                                message_order: this.messages.length - 1
+                            })
+                        });
+                        
+                        // Save AI response
+                        await fetch('/api/chat_history/save', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                session_id: this.sessionId,
+                                message_content: aiResponse,
+                                message_type: 'ai',
+                                message_order: this.messages.length
+                            })
+                        });
+                    } catch (error) {
+                        console.error('Error saving chat history:', error);
+                    }
+                },
+                
+                async loadChatHistory() {
+                    if (!this.sessionId) return;
+                    
+                    try {
+                        const response = await fetch(`/api/chat_history/${this.sessionId}`);
+                        const data = await response.json();
+                        
+                        if (data.history && data.history.length > 0) {
+                            this.messages = [];
+                            this.conversationHistory = [];
+                            
+                            data.history.forEach(msg => {
+                                this.messages.push({
+                                    id: msg.id,
+                                    type: msg.message_type,
+                                    content: msg.message_content,
+                                    timestamp: new Date(msg.created_at)
+                                });
+                                
+                                this.conversationHistory.push({
+                                    role: msg.message_type === 'user' ? 'user' : 'assistant',
+                                    content: msg.message_content
+                                });
+                            });
+                            
+                            // Scroll to bottom after loading
+                            setTimeout(() => {
+                                const chatMessages = document.getElementById('chat-messages');
+                                if (chatMessages) {
+                                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                                }
+                            }, 100);
+                        }
+                    } catch (error) {
+                        console.error('Error loading chat history:', error);
+                    }
+                },
+                
+                async init() {
+                    // Prevent multiple initializations
+                    if (this.initialized) return;
+                    this.initialized = true;
+                    
+                    // Generate or retrieve session ID
+                    this.sessionId = localStorage.getItem('ai_chat_session_id');
+                    if (!this.sessionId) {
+                        this.sessionId = this.generateSessionId();
+                        localStorage.setItem('ai_chat_session_id', this.sessionId);
+                    }
+                    
+                    // Try to load existing chat history
+                    await this.loadChatHistory();
+                    
+                    // Add welcome message only if no history exists
+                    if (this.messages.length === 0) {
+                        this.messages.push({
+                            id: Date.now(),
+                            type: 'ai',
+                            content: 'مرحباً! أنا شلبي، مساعدك الذكي. يمكنني مساعدتك في تحليل طلباتك وعاداتك الشرائية وتقديم نصائح مفيدة. ما الذي تود معرفته؟',
+                            timestamp: new Date()
+                        });
+                    }
+                }
+            };
+        }
+    </script>
+</head>
+<body :class="{'dark bg-gray-900': darkMode === true}" x-data="chatApp()" x-init="
+        darkMode = JSON.parse(localStorage.getItem('darkMode'));
+        $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)));
+        init();">
+    <!-- ===== Preloader Start ===== -->
+    <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => loaded = false, 500)})" x-show="loaded">
+        <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent"></div>
+    </div>
+    <!-- ===== Preloader End ===== -->
+    
+    <!-- ===== Page Wrapper Start ===== -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- ===== Sidebar Start ===== -->
+        <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+            <!-- SIDEBAR HEADER -->
+            <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+                <a href="/">
+                    <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+                        <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                        <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                    </span>
+                    <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                </a>
+            </div>
+            <!-- SIDEBAR HEADER -->
+            
+            <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+                <!-- Sidebar Menu -->
+                <nav x-data="{selected: 'AI Assistant'}">
+                    <!-- Menu Group -->
+                    <div>
+                        <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+                            <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">
+                                {{ _('MENU') }}
+                            </span>
+                            <svg :class="sidebarToggle ? 'xl:block hidden' : 'hidden'" class="menu-group-icon mx-auto fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.9716 18.9656 13.7551 17.9991 13.7551C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.9716 11.0326 13.7551 11.9991 13.7551C12.9656 13.7551 13.7491 12.9716 13.7491 12.0051V11.9951Z" fill="currentColor" fill-rule="evenodd">
+                                </path>
+                            </svg>
+                        </h3>
+                        <ul class="mb-6 flex flex-col gap-1">
+                            <!-- Menu Item Dashboard -->
+                            <li>
+                                <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/dash">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {{ _('Dashboard') }}
+                                    </span>
+                                </a>
+                            </li>
+                            
+                            <!-- Menu Item Profile -->
+                            <li>
+                                <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/profile">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {{ _('User Profile') }}
+                                    </span>
+                                </a>
+                            </li>
+                            
+                            <!-- Menu Item Orders -->
+                            <li>
+                                <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/orders">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {{ _('My Orders') }}
+                                    </span>
+                                </a>
+                            </li>
+
+                            <!-- Menu Item Deliveries -->
+                            <li>
+                                <a :class=" (selected === 'Deliveries') && (page === 'deliveries') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Deliveries' ? '':'Deliveries')" class="menu-item group" href="/my_deliveries">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {{ _('My Deliveries') }}
+                                    </span>
+                                </a>
+                            </li>
+
+                            <!-- Menu Item Create Order -->
+                            <li>
+                                <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/new_purchase">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {{ _('create order') }}
+                                    </span>
+                                </a>
+                            </li>
+                            
+                            <!-- Menu Item Suppliers -->
+                            <li>
+                                <a :class=" (selected === 'Suppliers') && (page === 'suppliers') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Suppliers' ? '':'Suppliers')" class="menu-item group" href="/suppliers">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {{ _('Suppliers') }}
+                                    </span>
+                                </a>
+                            </li>
+                            
+                            <!-- Menu Item Chats -->
+                            <li>
+                                <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/chat">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {{ _('chats') }}
+                                    </span>
+                                </a>
+                            </li>
+                            
+                            <!-- Balance Menu Item -->
+                            <li>
+                                <a :class=" (selected === 'Balance') && (page === 'balance') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Balance' ? '':'Balance')" class="menu-item group" href="/balance">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {{ _('Balance') }}
+                                    </span>
+                                </a>
+                            </li>
+                            
+                            <!-- AI Assistant Menu Item -->
+                            <li>
+                                <a :class=" (selected === 'AI Assistant') && (page === 'ai_chat') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'AI Assistant' ? '':'AI Assistant')" class="menu-item group" href="/client/ai_chat">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {{ _('AI Assistant') }}
+                                    </span>
+                                </a>
+                            </li>
+                            
+                            <!-- Company Registration Menu Item -->
+                             <li>
+                                 <a :class=" (selected === 'Company Registration') && (page === 'company_register') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Company Registration' ? '':'Company Registration')" class="menu-item group" href="/company_register">
+                                     <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                         {{ _('Company Registration') }}
+                                     </span>
+                                 </a>
+                             </li>
+                        </ul>
+                    </div>
+                </nav>
+                <!-- Sidebar Menu -->
+            </div>
+        </aside>
+        <!-- ===== Sidebar End ===== -->
+        
+        <!-- ===== Content Area Start ===== -->
+        <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+            <!-- ===== Header Start ===== -->
+            <header class="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
+                <div class="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
+                    <div class="flex items-center gap-2 sm:gap-4 lg:hidden">
+                        <!-- Hamburger Toggle BTN -->
+                        <button @click="sidebarToggle = !sidebarToggle" class="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden">
+                            <span class="relative block h-5.5 w-5.5 cursor-pointer">
+                                <span class="du-block absolute right-0 h-full w-full">
+                                    <span :class="!sidebarToggle && 'delay-300'" class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[0] duration-200 ease-in-out dark:bg-white" :class="!sidebarToggle ? '!w-full delay-300' : 'w-0 delay-[0]'"></span>
+                                    <span class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-150 duration-200 ease-in-out dark:bg-white" :class="!sidebarToggle ? 'delay-400 !w-full' : 'w-0 delay-200'"></span>
+                                    <span :class="!sidebarToggle && 'delay-500'" class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-200 duration-200 ease-in-out dark:bg-white" :class="!sidebarToggle ? '!w-full delay-500' : 'w-0 delay-300'"></span>
+                                </span>
+                                <span class="absolute right-0 h-full w-full rotate-45">
+                                    <span :class="!sidebarToggle && 'delay-300'" class="absolute left-2.5 top-0 block h-full w-0.5 rounded-sm bg-black delay-300 duration-200 ease-in-out dark:bg-white" :class="!sidebarToggle ? '!h-0 !delay-[0]' : 'h-full delay-300'"></span>
+                                    <span :class="!sidebarToggle && 'delay-400'" class="delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm bg-black duration-200 ease-in-out dark:bg-white" :class="!sidebarToggle ? '!h-0 !delay-200' : 'h-0.5 delay-400'"></span>
+                                </span>
+                            </span>
+                        </button>
+                        <!-- Hamburger Toggle BTN -->
+                    </div>
+                    
+                    <div class="hidden sm:block">
+                        <h1 class="text-title-md2 font-semibold text-black dark:text-white">{{ _('AI Assistant') }}</h1>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ _('Get intelligent insights about your orders and business') }}</p>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 2xsm:gap-7">
+                        <!-- Dark Mode Toggler -->
+                        <li class="list-none">
+                            <label :class="darkMode ? 'bg-primary' : 'bg-stroke'" @click="darkMode = !darkMode" class="relative m-0 block h-7.5 w-14 rounded-full">
+                                <input class="dur absolute top-0 z-50 m-0 h-full w-full cursor-pointer opacity-0" type="checkbox"/>
+                                <span :class="darkMode && '!right-1 !translate-x-full'" class="absolute left-1 top-1/2 flex h-6 w-6 -translate-y-1/2 translate-x-0 items-center justify-center rounded-full bg-white shadow-switcher duration-75 ease-linear">
+                                    <span class="dark:hidden">
+                                        <svg class="fill-current stroke-current" fill="none" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zM8 14c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z" fill="currentColor"/>
+                                        </svg>
+                                    </span>
+                                    <span class="hidden dark:inline-block">
+                                        <svg class="fill-current stroke-current" fill="none" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M6.99 0C3.14 0 0 3.14 0 6.99C0 10.84 3.14 13.98 6.99 13.98C10.84 13.98 13.98 10.84 13.98 6.99C13.98 3.14 10.84 0 6.99 0ZM6.99 12.78C3.81 12.78 1.2 10.17 1.2 6.99C1.2 3.81 3.81 1.2 6.99 1.2C10.17 1.2 12.78 3.81 12.78 6.99C12.78 10.17 10.17 12.78 6.99 12.78Z" fill="currentColor"/>
+                                        </svg>
+                                    </span>
+                                </span>
+                            </label>
+                        </li>
+                        <!-- Dark Mode Toggler -->
+                    </div>
+                </div>
+            </header>
+            <!-- ===== Header End ===== -->
+            
+            <!-- ===== Main Content Start ===== -->
+            <main class="flex-1 overflow-y-auto p-4 md:p-6 2xl:p-10">
+                <div class="mx-auto max-w-4xl">
+                    <!-- AI Chat Interface -->
+                    <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                        <!-- Chat Header -->
+                        <div class="border-b border-stroke px-6 py-4 dark:border-strokedark">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="font-medium text-black dark:text-white">{{ _('AI Business Assistant') }}</h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">{{ _('Ask me anything - general questions, your orders, offers, and business insights') }}</p>
+                                </div>
+                                <button @click="clearConversation()" class="rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700" title="مسح المحادثة">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Chat Messages -->
+                        <div class="h-96 overflow-y-auto p-6" id="chat-messages">
+                            <!-- Welcome Message -->
+                            <div class="mb-4">
+                                <div class="flex items-start gap-3">
+                                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
+                                        <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="rounded-lg bg-gray-100 p-3 dark:bg-gray-800">
+                                            <p class="text-sm text-gray-900 dark:text-white">مرحباً! أنا شلبي، مساعدك الذكي. يمكنني الإجابة على أي سؤال عام أو مساعدتك في تحليل طلباتك وفهم اتجاهات السوق وتقديم رؤى حول أداء عملك. ماذا تريد أن تعرف؟</p>
+                                        </div>
+                                        <p class="mt-1 text-xs text-gray-500">المساعد الذكي</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Dynamic Messages -->
+                            <template x-for="message in messages" :key="message.id">
+                                <div class="mb-4">
+                                    <div class="flex items-start gap-3" :class="message.type === 'user' ? 'flex-row-reverse' : ''">
+                                        <div class="flex h-8 w-8 items-center justify-center rounded-full" :class="message.type === 'user' ? 'bg-blue-500' : 'bg-primary'">
+                                            <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path x-show="message.type === 'user'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                                <path x-show="message.type === 'ai'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="flex-1">
+                                            <div class="rounded-lg p-3" :class="message.type === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100 dark:bg-gray-800'" :style="message.type === 'user' ? 'background-color: #3b82f6 !important; color: white !important; opacity: 1 !important;' : ''">
+                                                <div x-html="message.type === 'ai' && hasStructuredData(message.content) ? renderStructuredMessage(message.content) : `<p class='text-sm ${message.type === 'user' ? 'text-white' : 'text-gray-900 dark:text-white'}'>${message.content}</p>`"></div>
+                                            </div>
+                                            <p class="mt-1 text-xs text-gray-500" :class="message.type === 'user' ? 'text-right' : ''" x-text="message.type === 'user' ? 'أنت' : 'المساعد الذكي'"></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                            
+                            <!-- Loading Indicator -->
+                            <div x-show="isLoading" class="mb-4">
+                                <div class="flex items-start gap-3">
+                                    <div class="flex h-8 w-8 items-center justify-center rounded-full bg-primary">
+                                        <svg class="h-4 w-4 animate-spin text-white" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="rounded-lg bg-gray-100 p-3 dark:bg-gray-800">
+                                            <p class="text-sm text-gray-900 dark:text-white">جاري التفكير...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Chat Input -->
+                        <div class="border-t border-stroke p-6 dark:border-strokedark">
+                            <form @submit.prevent="sendMessage()" class="flex gap-3">
+                                <input 
+                                    x-model="newMessage" 
+                                    type="text" 
+                                    placeholder="اسألني أي سؤال أو عن طلباتك والعروض ورؤى الأعمال..." 
+                                    class="flex-1 rounded-lg border border-stroke bg-transparent px-4 py-2 text-black outline-none focus:border-primary dark:border-strokedark dark:text-white dark:focus:border-primary"
+                                    :disabled="isLoading"
+                                />
+                                <button 
+                                    type="submit" 
+                                    class="flex items-center justify-center rounded-lg bg-primary px-6 py-2 text-white hover:bg-opacity-90 disabled:opacity-50"
+                                    :disabled="isLoading || !newMessage.trim()"
+                                >
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                                    </svg>
+                                </button>
+                            </form>
+                            
+                            <!-- Quick Actions -->
+                            <div class="mt-4">
+                                <p class="mb-2 text-sm text-gray-600 dark:text-gray-400">أسئلة سريعة:</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <button @click="askQuickQuestion('ما هي طلباتي الأخيرة؟')" class="rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-700 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800">الطلبات الأخيرة</button>
+                                    <button @click="askQuickQuestion('حلل طلباتي ومشترياتي')" class="rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-700 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800">تحليل الطلبات</button>
+                                    <button @click="askQuickQuestion('كم أنفقت هذا الشهر؟')" class="rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-700 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800">تحليل الإنفاق</button>
+                                    <button @click="askQuickQuestion('ما هو رصيدي الحالي؟')" class="rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-700 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800">الرصيد الحالي</button>
+                                    <button @click="askQuickQuestion('أظهر لي عروضي الخاصة')" class="rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-700 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800">العروض المتاحة</button>
+                                    <button @click="askQuickQuestion('تقييم عاداتي الشرائية')" class="rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-700 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800">تقييم العادات</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <!-- ===== Main Content End ===== -->
+        </div>
+        <!-- ===== Content Area End ===== -->
+    </div>
+    <!-- ===== Page Wrapper End ===== -->
+    
+
+    <script src="{{ url_for('static', filename='js/alpine.min.js') }}"></script>
+</body>
+</html>

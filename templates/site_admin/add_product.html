@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+  <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+  <title>
+   {% if request.cookies.get('language') == 'ar' %}إضافة منتج{% else %}Add Product{% endif %}
+  </title>
+  <link href="favicon.ico" rel="icon"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+ </head>
+ <body :class="{'dark bg-gray-900': darkMode === true}" x-data="{ page: 'addProduct', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false, 'currentLanguage': '{{ request.cookies.get("language", "en") }}' }" x-init="
+         darkMode = JSON.parse(localStorage.getItem('darkMode'));
+         currentLanguage = localStorage.getItem('language') || '{{ request.cookies.get("language", "en") }}';
+         $watch('darkMode', value =&gt; localStorage.setItem('darkMode', JSON.stringify(value)));
+         $watch('currentLanguage', value =&gt; localStorage.setItem('language', value))">
+  <!-- ===== Preloader Start ===== -->
+  <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () =&gt; {setTimeout(() =&gt; loaded = false, 500)})" x-show="loaded">
+   <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent">
+   </div>
+  </div>
+  <!-- ===== Preloader End ===== -->
+  <!-- ===== Page Wrapper Start ===== -->
+  <div class="flex h-screen overflow-hidden">
+   <!-- ===== Sidebar Start ===== -->
+   <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+    <!-- SIDEBAR HEADER -->
+    <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+     <a href="/">
+      <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+       <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+       <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+      </span>
+      <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+     </a>
+    </div>
+    <!-- SIDEBAR HEADER -->
+    <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+     <!-- Sidebar Menu -->
+     <nav x-data="{selected: $persist('Dashboard')}">
+      <!-- Menu Group -->
+      <div>
+       <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+        <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">
+         {% if request.cookies.get('language') == 'ar' %}القائمة{% else %}MENU{% endif %}
+        </span>
+        <svg :class="sidebarToggle ? 'xl:block hidden' : 'hidden'" class="menu-group-icon mx-auto fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+         <path clip-rule="evenodd" d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.9716 18.9656 13.7551 17.9991 13.7551C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.9716 11.0326 13.7551 11.9991 13.7551C12.9656 13.7551 13.7491 12.9716 13.7491 12.0051V11.9951Z" fill="currentColor" fill-rule="evenodd">
+         </path>
+        </svg>
+       </h3>
+       <ul class="mb-6 flex flex-col gap-1">
+        <!-- Menu Item Dashboard -->
+          <li>
+         <a :class=" (selected === 'Profile') &amp;&amp; (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_dashboard">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}لوحة تحكم الشركة{% else %}Company Dashboard{% endif %}
+          </span>
+         </a>
+        </li>
+        <!-- Menu Item Profile -->
+        <li>
+         <a :class=" (selected === 'Profile') &amp;&amp; (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_profile">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}الملف الشخصي للشركة{% else %}Company Profile{% endif %}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') &amp;&amp; (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_orders">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}إدارة الطلبات{% else %}Manage Orders{% endif %}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') &amp;&amp; (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_inventory">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}المخزون{% else %}Inventory{% endif %}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') &amp;&amp; (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_chat">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}دردشات العملاء{% else %}Client Chats{% endif %}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') &amp;&amp; (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_employees">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}إدارة الموظفين{% else %}Employee Management{% endif %}
+          </span>
+         </a>
+        </li>
+       </ul>
+      </div>
+     </nav>
+     <!-- Sidebar Menu -->
+    </div>
+   </aside>
+   <!-- ===== Sidebar End ===== -->
+   <!-- ===== Content Area Start ===== -->
+   <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+    <!-- Small Device Overlay Start -->
+    <div :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fixed z-50 h-screen w-full bg-gray-900/50">
+    </div>
+    <!-- Small Device Overlay End -->
+    <!-- ===== Header Start ===== -->
+    <header class="sticky top-0 z-99999 flex w-full border-gray-200 bg-white xl:border-b dark:border-gray-800 dark:bg-gray-900" x-data="{menuToggle: false}">
+     <div class="flex grow flex-col items-center justify-between xl:flex-row xl:px-6">
+      <div class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:py-4 xl:justify-normal xl:border-b-0 xl:px-0 dark:border-gray-800">
+       <!-- Hamburger Toggle BTN -->
+       <button :class="sidebarToggle ? 'xl:bg-transparent dark:xl:bg-transparent bg-gray-100 dark:bg-gray-800' : ''" @click.stop="sidebarToggle = !sidebarToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 xl:h-11 xl:w-11 xl:border dark:border-gray-800 dark:text-gray-400">
+        <svg class="fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+         <path clip-rule="evenodd" d="M3.5 6.5C3.5 5.67157 4.17157 5 5 5H19C19.8284 5 20.5 5.67157 20.5 6.5C20.5 7.32843 19.8284 8 19 8H5C4.17157 8 3.5 7.32843 3.5 6.5ZM3.5 12.5C3.5 11.6716 4.17157 11 5 11H19C19.8284 11 20.5 11.6716 20.5 12.5C20.5 13.3284 19.8284 14 19 14H5C4.17157 14 3.5 13.3284 3.5 12.5ZM3.5 18.5C3.5 17.6716 4.17157 17 5 17H19C19.8284 17 20.5 17.6716 20.5 18.5C20.5 19.3284 19.8284 20 19 20H5C4.17157 20 3.5 19.3284 3.5 18.5Z" fill="" fill-rule="evenodd">
+         </path>
+        </svg>
+       </button>
+       <!-- Hamburger Toggle BTN -->
+       <!-- Search Bar -->
+       <div class="flex grow items-center gap-2 xl:ml-6">
+        <div class="flex w-full items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 dark:border-gray-800 dark:bg-gray-800">
+         <svg class="fill-current" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+          <path clip-rule="evenodd" d="M8.5 3.5C5.73858 3.5 3.5 5.73858 3.5 8.5C3.5 11.2614 5.73858 13.5 8.5 13.5C11.2614 13.5 13.5 11.2614 13.5 8.5C13.5 5.73858 11.2614 3.5 8.5 3.5ZM1.5 8.5C1.5 4.63401 4.63401 1.5 8.5 1.5C12.366 1.5 15.5 4.63401 15.5 8.5C15.5 12.366 12.366 15.5 8.5 15.5C4.63401 15.5 1.5 12.366 1.5 8.5ZM14.2929 13.2929C14.6834 12.9024 15.3166 12.9024 15.7071 13.2929C16.0976 13.6834 16.0976 14.3166 15.7071 14.7071L13.2929 17.1213C12.9024 17.5118 12.2692 17.5118 11.8787 17.1213C11.4882 16.7308 11.4882 16.0976 11.8787 15.7071L14.2929 13.2929Z" fill="" fill-rule="evenodd">
+          </path>
+         </svg>
+         <input class="w-full border-0 bg-transparent px-2 text-sm font-medium text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-0 dark:text-white dark:placeholder:text-gray-400" placeholder="{% if request.cookies.get('language') == 'ar' %}البحث...{% else %}Search...{% endif %}" type="text"/>
+        </div>
+       </div>
+       <!-- Search Bar -->
+       <!-- Notification Menu Area -->
+       {% include 'partials/notification_dropdown.html' %}
+       
+       <!-- Language Toggle -->
+       <button @click.prevent="toggleLanguage()" class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white" :title="currentLanguage === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'">
+        <span x-text="currentLanguage === 'ar' ? 'EN' : 'عربي'" class="text-xs font-medium"></span>
+       </button>
+       <!-- Language Toggle -->
+       
+       <!-- User Area -->
+       <div class="flex items-center gap-3">
+        <!-- User Area -->
+        <div class="relative" x-data="{dropdownOpen: false}">
+         <button @click="dropdownOpen = !dropdownOpen" class="flex items-center gap-2">
+          <div class="h-9 w-9">
+           <img alt="User" class="h-full w-full rounded-full" src="https://img.icons8.com/?size=100&id=hu4SFxCb4UXH&format=png&color=000000"/>
+          </div>
+          <span class="hidden text-right lg:block">
+           <span class="block text-sm font-medium text-gray-800 dark:text-white">
+            {{ current_user.username }}
+           </span>
+           <span class="block text-xs text-gray-500 dark:text-gray-400">
+            Company
+           </span>
+          </span>
+         </button>
+        </div>
+       </div>
+       <!-- User Area -->
+      </div>
+     </div>
+    </header>
+    <!-- ===== Header End ===== -->
+    <!-- ===== Main Content Start ===== -->
+    <main>
+     <div class="mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6">
+      <!-- Breadcrumb Start -->
+      <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+       <div>
+        <h2 class="text-title-md2 font-bold text-gray-800 dark:text-white">
+         {% if request.cookies.get('language') == 'ar' %}إضافة منتج جديد{% else %}Add New Product{% endif %}
+        </h2>
+        <nav>
+         <ol class="flex items-center gap-2 font-medium">
+          <li class="text-sm">
+           <a class="text-gray-500 hover:text-brand-500 dark:text-gray-400 dark:hover:text-brand-500" href="/company_inventory">
+            {% if request.cookies.get('language') == 'ar' %}المخزون{% else %}Inventory{% endif %}
+           </a>
+          </li>
+          <li class="text-sm">
+           <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+           </svg>
+          </li>
+          <li class="text-sm text-brand-500">
+           {% if request.cookies.get('language') == 'ar' %}إضافة منتج{% else %}Add Product{% endif %}
+          </li>
+         </ol>
+        </nav>
+       </div>
+      </div>
+      <!-- Breadcrumb End -->
+      
+      <!-- Add Product Form -->
+      <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+       <!-- Form Card -->
+       <div class="rounded-2xl border border-gray-200 bg-white px-6 pb-5 pt-6 dark:border-gray-800 dark:bg-white/[0.03]">
+        <div class="mb-6">
+         <div class="mb-6 flex items-center gap-3">
+          <div class="h-10 w-10">
+           <img alt="add-product" src="https://img.icons8.com/?size=100&id=add-shopping-cart&format=png&color=000000"/>
+          </div>
+          <div>
+           <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+            {% if request.cookies.get('language') == 'ar' %}إضافة منتج جديد{% else %}Add New Product{% endif %}
+           </h3>
+           <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+            {% if request.cookies.get('language') == 'ar' %}إنشاء عنصر مخزون جديد{% else %}Create a new inventory item{% endif %}
+           </span>
+          </div>
+         </div>
+        </div>
+        
+        <form method="POST" class="space-y-6">
+         <div class="space-y-4">
+          <!-- Product Name -->
+          <div>
+           <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90" for="name">
+            {% if request.cookies.get('language') == 'ar' %}اسم المنتج{% else %}Product Name{% endif %} <span class="text-red-500">*</span>
+           </label>
+           <input class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm font-medium outline-none transition focus:border-brand-500 active:border-brand-500 disabled:cursor-default disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" id="name" name="name" placeholder="{% if request.cookies.get('language') == 'ar' %}أدخل اسم المنتج{% else %}Enter product name{% endif %}" required type="text"/>
+          </div>
+          
+          <!-- Description -->
+          <div>
+           <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90" for="description">
+            {% if request.cookies.get('language') == 'ar' %}الوصف{% else %}Description{% endif %}
+           </label>
+           <textarea class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm font-medium outline-none transition focus:border-brand-500 active:border-brand-500 disabled:cursor-default disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" id="description" name="description" placeholder="{% if request.cookies.get('language') == 'ar' %}أدخل وصف المنتج{% else %}Enter product description{% endif %}" rows="3"></textarea>
+          </div>
+          
+          <!-- Category and SKU -->
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+           <div>
+            <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90" for="category">
+             {% if request.cookies.get('language') == 'ar' %}الفئة{% else %}Category{% endif %} <span class="text-red-500">*</span>
+            </label>
+            <select class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm font-medium outline-none transition focus:border-brand-500 active:border-brand-500 disabled:cursor-default disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" id="category" name="category" required>
+             <option value="">{% if request.cookies.get('language') == 'ar' %}اختر الفئة{% else %}Select Category{% endif %}</option>
+             <option value="Electronics">{% if request.cookies.get('language') == 'ar' %}الإلكترونيات{% else %}Electronics{% endif %}</option>
+             <option value="Automotive">{% if request.cookies.get('language') == 'ar' %}السيارات{% else %}Automotive{% endif %}</option>
+             <option value="Manufacturing">{% if request.cookies.get('language') == 'ar' %}التصنيع{% else %}Manufacturing{% endif %}</option>
+             <option value="Raw Materials">{% if request.cookies.get('language') == 'ar' %}المواد الخام{% else %}Raw Materials{% endif %}</option>
+             <option value="Tools">{% if request.cookies.get('language') == 'ar' %}الأدوات{% else %}Tools{% endif %}</option>
+             <option value="Other">{% if request.cookies.get('language') == 'ar' %}أخرى{% else %}Other{% endif %}</option>
+            </select>
+           </div>
+           
+           <div>
+            <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90" for="sku">
+             SKU <span class="text-red-500">*</span>
+            </label>
+            <input class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm font-medium outline-none transition focus:border-brand-500 active:border-brand-500 disabled:cursor-default disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" id="sku" name="sku" placeholder="{% if request.cookies.get('language') == 'ar' %}أدخل SKU{% else %}Enter SKU{% endif %}" required type="text"/>
+           </div>
+          </div>
+          
+          <!-- Price and Cost -->
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+           <div>
+            <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90" for="price">
+             {% if request.cookies.get('language') == 'ar' %}السعر{% else %}Price{% endif %} <span class="text-red-500">*</span>
+            </label>
+            <input class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm font-medium outline-none transition focus:border-brand-500 active:border-brand-500 disabled:cursor-default disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" id="price" name="price" placeholder="0.00 EGP" required step="0.01" type="number"/>
+           </div>
+           
+           <div>
+            <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90" for="cost">
+             {% if request.cookies.get('language') == 'ar' %}التكلفة{% else %}Cost{% endif %}
+            </label>
+            <input class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm font-medium outline-none transition focus:border-brand-500 active:border-brand-500 disabled:cursor-default disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" id="cost" name="cost" placeholder="0.00 EGP" step="0.01" type="number"/>
+           </div>
+          </div>
+          
+          <!-- Quantity and Min Quantity -->
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+           <div>
+            <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90" for="quantity">
+             {% if request.cookies.get('language') == 'ar' %}الكمية{% else %}Quantity{% endif %} <span class="text-red-500">*</span>
+            </label>
+            <input class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm font-medium outline-none transition focus:border-brand-500 active:border-brand-500 disabled:cursor-default disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" id="quantity" name="quantity" placeholder="0" required type="number"/>
+           </div>
+           
+           <div>
+            <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90" for="min_quantity">
+             {% if request.cookies.get('language') == 'ar' %}الكمية الدنيا{% else %}Minimum Quantity{% endif %}
+            </label>
+            <input class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm font-medium outline-none transition focus:border-brand-500 active:border-brand-500 disabled:cursor-default disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" id="min_quantity" name="min_quantity" placeholder="0" type="number"/>
+           </div>
+          </div>
+          
+          <!-- Unit and Location -->
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+           <div>
+            <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90" for="unit">
+             {% if request.cookies.get('language') == 'ar' %}الوحدة{% else %}Unit{% endif %}
+            </label>
+            <select class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm font-medium outline-none transition focus:border-brand-500 active:border-brand-500 disabled:cursor-default disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" id="unit" name="unit">
+             <option value="pcs">{% if request.cookies.get('language') == 'ar' %}قطع{% else %}Pieces{% endif %}</option>
+             <option value="kg">{% if request.cookies.get('language') == 'ar' %}كيلوغرامات{% else %}Kilograms{% endif %}</option>
+             <option value="l">{% if request.cookies.get('language') == 'ar' %}لترات{% else %}Liters{% endif %}</option>
+             <option value="m">{% if request.cookies.get('language') == 'ar' %}أمتار{% else %}Meters{% endif %}</option>
+             <option value="box">{% if request.cookies.get('language') == 'ar' %}صناديق{% else %}Boxes{% endif %}</option>
+             <option value="set">{% if request.cookies.get('language') == 'ar' %}مجموعات{% else %}Sets{% endif %}</option>
+            </select>
+           </div>
+           
+           <div>
+            <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90" for="location">
+             {% if request.cookies.get('language') == 'ar' %}الموقع{% else %}Location{% endif %}
+            </label>
+            <input class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm font-medium outline-none transition focus:border-brand-500 active:border-brand-500 disabled:cursor-default disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" id="location" name="location" placeholder="{% if request.cookies.get('language') == 'ar' %}موقع المستودع{% else %}Warehouse location{% endif %}" type="text"/>
+           </div>
+          </div>
+          
+          <!-- Supplier Information -->
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+           <div>
+            <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90" for="supplier">
+             {% if request.cookies.get('language') == 'ar' %}المورد{% else %}Supplier{% endif %}
+            </label>
+            <input class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm font-medium outline-none transition focus:border-brand-500 active:border-brand-500 disabled:cursor-default disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" id="supplier" name="supplier" placeholder="{% if request.cookies.get('language') == 'ar' %}اسم المورد{% else %}Supplier name{% endif %}" type="text"/>
+           </div>
+           
+           <div>
+            <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90" for="supplier_contact">
+             {% if request.cookies.get('language') == 'ar' %}معلومات الاتصال بالمورد{% else %}Supplier Contact{% endif %}
+            </label>
+            <input class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm font-medium outline-none transition focus:border-brand-500 active:border-brand-500 disabled:cursor-default disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" id="supplier_contact" name="supplier_contact" placeholder="{% if request.cookies.get('language') == 'ar' %}البريد الإلكتروني أو الهاتف{% else %}Email or phone{% endif %}" type="text"/>
+           </div>
+          </div>
+          
+          <!-- Requirements -->
+          <div>
+           <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90" for="requirements">
+            {% if request.cookies.get('language') == 'ar' %}المتطلبات الخاصة{% else %}Special Requirements{% endif %}
+           </label>
+           <textarea class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm font-medium outline-none transition focus:border-brand-500 active:border-brand-500 disabled:cursor-default disabled:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" id="requirements" name="requirements" placeholder="{% if request.cookies.get('language') == 'ar' %}أي متطلبات أو مواصفات خاصة{% else %}Any special requirements or specifications{% endif %}" rows="3"></textarea>
+          </div>
+         </div>
+         
+         <!-- Submit Buttons -->
+         <div class="flex gap-3 pt-4">
+          <a href="/company_inventory" class="flex-1 inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 text-center text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+           {% if request.cookies.get('language') == 'ar' %}إلغاء{% else %}Cancel{% endif %}
+          </a>
+          <button class="flex-1 inline-flex items-center justify-center rounded-lg bg-brand-500 px-4 py-3 text-center text-sm font-medium text-white hover:bg-brand-600" type="submit">
+           <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+           </svg>
+           {% if request.cookies.get('language') == 'ar' %}إضافة المنتج{% else %}Add Product{% endif %}
+          </button>
+         </div>
+        </form>
+       </div>
+
+       <!-- Info Card -->
+       <div class="space-y-6">
+        <!-- Company Info Card -->
+        <div class="rounded-2xl border border-gray-200 bg-white px-6 pb-5 pt-6 dark:border-gray-800 dark:bg-white/[0.03]">
+         <div class="mb-6 flex items-center gap-3">
+          <div class="h-10 w-10">
+           <img alt="company" src="https://img.icons8.com/?size=100&id=company&format=png&color=000000"/>
+          </div>
+          <div>
+           <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+            {% if request.cookies.get('language') == 'ar' %}معلومات الشركة{% else %}Company Information{% endif %}
+           </h3>
+           <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+            {% if request.cookies.get('language') == 'ar' %}سيتم إضافة المنتج إلى{% else %}Product will be added to{% endif %}
+           </span>
+          </div>
+         </div>
+         <div class="space-y-3">
+          <div class="flex items-center justify-between">
+           <span class="text-sm text-gray-600 dark:text-gray-400">{% if request.cookies.get('language') == 'ar' %}اسم الشركة:{% else %}Company Name:{% endif %}</span>
+           <span class="font-medium text-gray-800 dark:text-white/90">{{ company.name }}</span>
+          </div>
+          <div class="flex items-center justify-between">
+           <span class="text-sm text-gray-600 dark:text-gray-400">{% if request.cookies.get('language') == 'ar' %}نوع المنتج:{% else %}Product Type:{% endif %}</span>
+           <span class="inline-flex items-center rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-600 dark:bg-brand-500/15 dark:text-brand-500">{% if request.cookies.get('language') == 'ar' %}عنصر مخزون{% else %}Inventory Item{% endif %}</span>
+          </div>
+          <div class="flex items-center justify-between">
+           <span class="text-sm text-gray-600 dark:text-gray-400">{% if request.cookies.get('language') == 'ar' %}الحالة:{% else %}Status:{% endif %}</span>
+           <span class="text-sm text-gray-800 dark:text-white/90">{% if request.cookies.get('language') == 'ar' %}نشط{% else %}Active{% endif %}</span>
+          </div>
+         </div>
+        </div>
+
+        <!-- Guidelines Card -->
+        <div class="rounded-2xl border border-gray-200 bg-white px-6 pb-5 pt-6 dark:border-gray-800 dark:bg-white/[0.03]">
+         <div class="mb-6 flex items-center gap-3">
+          <div class="h-10 w-10">
+           <img alt="guidelines" src="https://img.icons8.com/?size=100&id=info&format=png&color=000000"/>
+          </div>
+          <div>
+           <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+            {% if request.cookies.get('language') == 'ar' %}الإرشادات{% else %}Guidelines{% endif %}
+           </h3>
+           <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+            {% if request.cookies.get('language') == 'ar' %}معلومات مهمة{% else %}Important information{% endif %}
+           </span>
+          </div>
+         </div>
+         <div class="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+          <div class="flex items-start gap-2">
+           <svg class="mt-0.5 h-4 w-4 text-brand-500" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+           </svg>
+           <span>{% if request.cookies.get('language') == 'ar' %}يجب أن يكون SKU فريداً عبر جميع المنتجات{% else %}SKU must be unique across all products{% endif %}</span>
+          </div>
+          <div class="flex items-start gap-2">
+           <svg class="mt-0.5 h-4 w-4 text-brand-500" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+           </svg>
+           <span>{% if request.cookies.get('language') == 'ar' %}السعر والكمية حقول مطلوبة{% else %}Price and quantity are required fields{% endif %}</span>
+          </div>
+          <div class="flex items-start gap-2">
+           <svg class="mt-0.5 h-4 w-4 text-brand-500" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+           </svg>
+           <span>{% if request.cookies.get('language') == 'ar' %}الكمية الدنيا تساعد في تتبع تنبيهات المخزون المنخفض{% else %}Minimum quantity helps track low stock alerts{% endif %}</span>
+          </div>
+          <div class="flex items-start gap-2">
+           <svg class="mt-0.5 h-4 w-4 text-brand-500" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+           </svg>
+           <span>{% if request.cookies.get('language') == 'ar' %}يمكنك تعديل تفاصيل المنتج في أي وقت{% else %}You can edit product details anytime{% endif %}</span>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </main>
+    <!-- ===== Main Content End ===== -->
+   </div>
+   <!-- ===== Content Area End ===== -->
+  </div>
+  <!-- ===== Page Wrapper End ===== -->
+  <script src="{{ url_for('static', filename='js/script_1.js') }}"></script>
+  
+  <!-- Arabic Translation System -->
+  <script>
+  // Language toggle function
+  function toggleLanguage() {
+      const currentLang = document.cookie.includes('language=ar') ? 'en' : 'ar';
+      document.cookie = `language=${currentLang}; path=/; max-age=31536000`;
+      window.location.reload();
+  }
+
+  // Translation dictionary
+  const translations = {
+      'en': {
+          'Add Product': 'Add Product',
+          'Add New Product': 'Add New Product',
+          'Create a new inventory item': 'Create a new inventory item',
+          'Product Name': 'Product Name',
+          'Enter product name': 'Enter product name',
+          'Description': 'Description',
+          'Enter product description': 'Enter product description',
+          'Category': 'Category',
+          'Select Category': 'Select Category',
+          'Electronics': 'Electronics',
+          'Automotive': 'Automotive',
+          'Manufacturing': 'Manufacturing',
+          'Raw Materials': 'Raw Materials',
+          'Tools': 'Tools',
+          'Other': 'Other',
+          'Enter SKU': 'Enter SKU',
+          'Price': 'Price',
+          'Cost': 'Cost',
+          'Quantity': 'Quantity',
+          'Minimum Quantity': 'Minimum Quantity',
+          'Unit': 'Unit',
+          'Pieces': 'Pieces',
+          'Kilograms': 'Kilograms',
+          'Liters': 'Liters',
+          'Meters': 'Meters',
+          'Boxes': 'Boxes',
+          'Sets': 'Sets',
+          'Location': 'Location',
+          'Warehouse location': 'Warehouse location',
+          'Supplier': 'Supplier',
+          'Supplier name': 'Supplier name',
+          'Supplier Contact': 'Supplier Contact',
+          'Email or phone': 'Email or phone',
+          'Special Requirements': 'Special Requirements',
+          'Any special requirements or specifications': 'Any special requirements or specifications',
+          'Cancel': 'Cancel',
+          'Add Product': 'Add Product',
+          'Company Information': 'Company Information',
+          'Product will be added to': 'Product will be added to',
+          'Company Name:': 'Company Name:',
+          'Product Type:': 'Product Type:',
+          'Inventory Item': 'Inventory Item',
+          'Status:': 'Status:',
+          'Active': 'Active',
+          'Guidelines': 'Guidelines',
+          'Important information': 'Important information',
+          'SKU must be unique across all products': 'SKU must be unique across all products',
+          'Price and quantity are required fields': 'Price and quantity are required fields',
+          'Minimum quantity helps track low stock alerts': 'Minimum quantity helps track low stock alerts',
+          'You can edit product details anytime': 'You can edit product details anytime',
+          'Search...': 'Search...',
+          'MENU': 'MENU',
+          'Company Dashboard': 'Company Dashboard',
+          'Company Profile': 'Company Profile',
+          'Manage Orders': 'Manage Orders',
+          'Inventory': 'Inventory',
+          'Client Chats': 'Client Chats',
+          'Employee Management': 'Employee Management'
+      },
+      'ar': {
+          'Add Product': 'إضافة منتج',
+          'Add New Product': 'إضافة منتج جديد',
+          'Create a new inventory item': 'إنشاء عنصر مخزون جديد',
+          'Product Name': 'اسم المنتج',
+          'Enter product name': 'أدخل اسم المنتج',
+          'Description': 'الوصف',
+          'Enter product description': 'أدخل وصف المنتج',
+          'Category': 'الفئة',
+          'Select Category': 'اختر الفئة',
+          'Electronics': 'الإلكترونيات',
+          'Automotive': 'السيارات',
+          'Manufacturing': 'التصنيع',
+          'Raw Materials': 'المواد الخام',
+          'Tools': 'الأدوات',
+          'Other': 'أخرى',
+          'Enter SKU': 'أدخل SKU',
+          'Price': 'السعر',
+          'Cost': 'التكلفة',
+          'Quantity': 'الكمية',
+          'Minimum Quantity': 'الكمية الدنيا',
+          'Unit': 'الوحدة',
+          'Pieces': 'قطع',
+          'Kilograms': 'كيلوغرامات',
+          'Liters': 'لترات',
+          'Meters': 'أمتار',
+          'Boxes': 'صناديق',
+          'Sets': 'مجموعات',
+          'Location': 'الموقع',
+          'Warehouse location': 'موقع المستودع',
+          'Supplier': 'المورد',
+          'Supplier name': 'اسم المورد',
+          'Supplier Contact': 'معلومات الاتصال بالمورد',
+          'Email or phone': 'البريد الإلكتروني أو الهاتف',
+          'Special Requirements': 'المتطلبات الخاصة',
+          'Any special requirements or specifications': 'أي متطلبات أو مواصفات خاصة',
+          'Cancel': 'إلغاء',
+          'Add Product': 'إضافة المنتج',
+          'Company Information': 'معلومات الشركة',
+          'Product will be added to': 'سيتم إضافة المنتج إلى',
+          'Company Name:': 'اسم الشركة:',
+          'Product Type:': 'نوع المنتج:',
+          'Inventory Item': 'عنصر مخزون',
+          'Status:': 'الحالة:',
+          'Active': 'نشط',
+          'Guidelines': 'الإرشادات',
+          'Important information': 'معلومات مهمة',
+          'SKU must be unique across all products': 'يجب أن يكون SKU فريداً عبر جميع المنتجات',
+          'Price and quantity are required fields': 'السعر والكمية حقول مطلوبة',
+          'Minimum quantity helps track low stock alerts': 'الكمية الدنيا تساعد في تتبع تنبيهات المخزون المنخفض',
+          'You can edit product details anytime': 'يمكنك تعديل تفاصيل المنتج في أي وقت',
+          'Search...': 'البحث...',
+          'MENU': 'القائمة',
+          'Company Dashboard': 'لوحة تحكم الشركة',
+          'Company Profile': 'الملف الشخصي للشركة',
+          'Manage Orders': 'إدارة الطلبات',
+          'Inventory': 'المخزون',
+          'Client Chats': 'دردشات العملاء',
+          'Employee Management': 'إدارة الموظفين'
+      }
+  };
+
+  // Function to get translated text
+  function getText(key) {
+      const currentLang = document.cookie.includes('language=ar') ? 'ar' : 'en';
+      return translations[currentLang][key] || key;
+  }
+
+  // Function to translate the page
+  function translatePage() {
+      const currentLang = document.cookie.includes('language=ar') ? 'ar' : 'en';
+      
+      // Update title
+      document.title = getText('Add Product');
+      
+      // Update all translatable elements
+      Object.keys(translations.en).forEach(key => {
+          const elements = document.querySelectorAll(`*:not(script):not(style)`);
+          elements.forEach(element => {
+              if (element.childNodes.length === 1 && element.childNodes[0].nodeType === Node.TEXT_NODE) {
+                  const text = element.textContent.trim();
+                  if (text === translations.en[key]) {
+                      element.textContent = translations[currentLang][key];
+                  }
+              }
+          });
+      });
+  }
+
+  // Apply translations when page loads
+  document.addEventListener('DOMContentLoaded', function() {
+      translatePage();
+  });
+
+  // Make functions globally available
+  window.toggleLanguage = toggleLanguage;
+  window.getText = getText;
+  window.translatePage = translatePage;
+  </script>
+ </body>
+</html> 

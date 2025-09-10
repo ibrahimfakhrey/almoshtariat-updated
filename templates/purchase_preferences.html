@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+    <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+    <title>Purchase Preferences</title>
+    <link href="favicon.ico" rel="icon"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+</head>
+<body :class="{'dark bg-gray-900': darkMode === true}" x-data="{ page: 'preferences', 'loaded': true, 'darkMode': false }" x-init="
+         darkMode = JSON.parse(localStorage.getItem('darkMode'));
+         $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))">
+    
+    <!-- ===== Preloader Start ===== -->
+    <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => loaded = false, 500)})" x-show="loaded">
+        <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent"></div>
+    </div>
+    <!-- ===== Preloader End ===== -->
+
+    <!-- ===== Page Wrapper Start ===== -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- ===== Content Area Start ===== -->
+        <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+            <!-- ===== Header Start ===== -->
+            <header class="sticky top-0 z-99999 flex w-full border-gray-200 bg-white xl:border-b dark:border-gray-800 dark:bg-gray-900">
+                <div class="flex grow flex-col items-center justify-between xl:flex-row xl:px-6">
+                    <div class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:py-4 xl:justify-normal xl:border-b-0 xl:px-0 dark:border-gray-800">
+                        <!-- Logo -->
+                        <a href="/" class="flex items-center gap-2">
+                            <img alt="Logo" class="h-8 w-8" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                            <span class="text-xl font-bold text-gray-800 dark:text-white">B2B Platform</span>
+                        </a>
+                        
+                        <!-- Navigation -->
+                        <nav class="flex items-center gap-4">
+                            <a href="/dash" class="text-sm font-medium text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white">Dashboard</a>
+                            <a href="/new_purchase" class="text-sm font-medium text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white">New Purchase</a>
+                            <a href="/my_orders" class="text-sm font-medium text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white">My Orders</a>
+                            <a href="/profile" class="text-sm font-medium text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white">Profile</a>
+                        </nav>
+                        
+                        <!-- Dark Mode Toggle -->
+                        <button @click.prevent="darkMode = !darkMode" class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white">
+                            <svg class="hidden dark:block" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M9.99998 1.5415C10.4142 1.5415 10.75 1.87729 10.75 2.2915V3.5415C10.75 3.95572 10.4142 4.2915 9.99998 4.2915C9.58577 4.2915 9.24998 3.95572 9.24998 3.5415V2.2915C9.24998 1.87729 9.58577 1.5415 9.99998 1.5415ZM10.0009 6.79327C8.22978 6.79327 6.79402 8.22904 6.79402 10.0001C6.79402 11.7712 8.22978 13.207 10.0009 13.207C11.772 13.207 13.2078 11.7712 13.2078 10.0001C13.2078 8.22904 11.772 6.79327 10.0009 6.79327ZM10.0009 14.707C10.4142 14.707 10.7509 15.0438 10.7509 15.458V16.708C10.7509 17.1222 10.4142 17.459 10.0009 17.459C9.58772 17.459 9.25098 17.1222 9.25098 16.708V15.458C9.25098 15.0438 9.58772 14.707 10.0009 14.707ZM16.6676 10.0001C16.6676 9.58588 16.3318 9.2491 15.9176 9.2491H14.6676C14.2534 9.2491 13.9176 9.58588 13.9176 10.0001C13.9176 10.4143 14.2534 10.7511 14.6676 10.7511H15.9176C16.3318 10.7511 16.6676 10.4143 16.6676 10.0001ZM5.41758 10.0001C5.41758 9.58588 5.0818 9.2491 4.66758 9.2491H3.41758C3.00336 9.2491 2.66758 9.58588 2.66758 10.0001C2.66758 10.4143 3.00336 10.7511 3.41758 10.7511H4.66758C5.0818 10.7511 5.41758 10.4143 5.41758 10.0001ZM14.1676 14.1676C14.4726 13.8626 14.4726 13.3876 14.1676 13.0826L13.4176 12.3326C13.1126 12.0276 12.6376 12.0276 12.3326 12.3326C12.0276 12.6376 12.0276 13.1126 12.3326 13.4176L13.0826 14.1676C13.3876 14.4726 13.8626 14.4726 14.1676 14.1676ZM7.66758 7.6676C7.97258 7.3626 7.97258 6.8876 7.66758 6.5826L6.91758 5.8326C6.61258 5.5276 6.13758 5.5276 5.83258 5.8326C5.52758 6.1376 5.52758 6.6126 5.83258 6.9176L6.58258 7.6676C6.88758 7.9726 7.36258 7.9726 7.66758 7.6676ZM14.1676 5.8326C13.8626 6.1376 13.3876 6.1376 13.0826 5.8326L12.3326 5.0826C12.0276 4.7776 12.0276 4.3026 12.3326 3.9976C12.6376 3.6926 13.1126 3.6926 13.4176 3.9976L14.1676 4.7476C14.4726 5.0526 14.4726 5.5276 14.1676 5.8326ZM7.66758 13.4176C7.97258 13.1126 7.97258 12.6376 7.66758 12.3326L6.91758 11.5826C6.61258 11.2776 6.13758 11.2776 5.83258 11.5826C5.52758 11.8876 5.52758 12.3626 5.83258 12.6676L6.58258 13.4176C6.88758 13.7226 7.36258 13.7226 7.66758 13.4176Z" fill="" fill-rule="evenodd"></path>
+                            </svg>
+                            <svg class="block dark:hidden" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M17.2929 2.29289C17.6834 1.90237 18.3166 1.90237 18.7071 2.29289C19.0976 2.68342 19.0976 3.31658 18.7071 3.70711L17.7071 4.70711C17.3166 5.09763 16.6834 5.09763 16.2929 4.70711C15.9024 4.31658 15.9024 3.68342 16.2929 3.29289L17.2929 2.29289ZM10 6C7.79086 6 6 7.79086 6 10C6 12.2091 7.79086 14 10 14C12.2091 14 14 12.2091 14 10C14 7.79086 12.2091 6 10 6ZM2.29289 2.29289C2.68342 1.90237 3.31658 1.90237 3.70711 2.29289L4.70711 3.29289C5.09763 3.68342 5.09763 4.31658 4.70711 4.70711C4.31658 5.09763 3.68342 5.09763 3.29289 4.70711L2.29289 3.29289C1.90237 3.31658 1.90237 2.68342 2.29289 2.29289ZM2.29289 17.7071C1.90237 17.3166 1.90237 16.6834 2.29289 16.2929L3.29289 15.2929C3.68342 14.9024 4.31658 14.9024 4.70711 15.2929C5.09763 15.6834 5.09763 16.3166 4.70711 16.7071L3.29289 17.7071C3.31658 18.0976 2.68342 18.0976 2.29289 17.7071ZM17.7071 17.7071C17.3166 18.0976 16.6834 18.0976 16.2929 17.7071L15.2929 16.7071C14.9024 16.3166 14.9024 15.6834 15.2929 15.2929C15.6834 14.9024 16.3166 14.9024 16.7071 15.2929L17.7071 16.2929C18.0976 16.6834 18.0976 17.3166 17.7071 17.7071ZM10 18C13.3137 18 16 15.3137 16 12C16 8.68629 13.3137 6 10 6C6.68629 6 4 8.68629 4 12C4 15.3137 6.68629 18 10 18Z" fill="" fill-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </header>
+            <!-- ===== Header End ===== -->
+
+            <!-- ===== Main Content Start ===== -->
+            <main>
+                <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+                    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h2 class="text-title-md2 font-bold text-gray-800 dark:text-white">
+                                Purchase Preferences
+                            </h2>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                Manage your purchase history and preferences for better product suggestions
+                            </p>
+                        </div>
+                        <div class="flex gap-2">
+                            <a href="/upload_purchase_preferences" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-500 rounded-lg hover:bg-brand-600 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                </svg>
+                                Upload File
+                            </a>
+                            <a href="/add_preference" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors dark:text-gray-400 dark:bg-gray-700 dark:hover:bg-gray-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Add Preference
+                            </a>
+                            <a href="/download_purchase_preferences_template" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors dark:text-blue-400 dark:bg-blue-900/20 dark:hover:bg-blue-900/30">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                Download Template
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Purchase Frequency Overview -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <!-- Monthly Purchases -->
+                        <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Monthly Purchases</h3>
+                                <span class="text-2xl font-bold text-blue-600">{{ monthly_products|length }}</span>
+                            </div>
+                            <div class="space-y-2">
+                                {% for product in monthly_products %}
+                                <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg dark:bg-gray-700">
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">{{ product.product_name }}</span>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ product.quantity }} {{ product.unit }}</span>
+                                </div>
+                                {% else %}
+                                <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">No monthly purchases</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Quarterly Purchases -->
+                        <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Quarterly Purchases</h3>
+                                <span class="text-2xl font-bold text-green-600">{{ quarterly_products|length }}</span>
+                            </div>
+                            <div class="space-y-2">
+                                {% for product in quarterly_products %}
+                                <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg dark:bg-gray-700">
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">{{ product.product_name }}</span>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ product.quantity }} {{ product.unit }}</span>
+                                </div>
+                                {% else %}
+                                <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">No quarterly purchases</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Yearly Purchases -->
+                        <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Yearly Purchases</h3>
+                                <span class="text-2xl font-bold text-purple-600">{{ yearly_products|length }}</span>
+                            </div>
+                            <div class="space-y-2">
+                                {% for product in yearly_products %}
+                                <div class="flex items-center justify-between p-2 bg-gray-50 rounded-lg dark:bg-gray-700">
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">{{ product.product_name }}</span>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">{{ product.quantity }} {{ product.unit }}</span>
+                                </div>
+                                {% else %}
+                                <p class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">No yearly purchases</p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preferences by Category -->
+                    <div class="rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+                        <div class="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
+                            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">All Purchase Preferences</h3>
+                        </div>
+                        
+                        {% if preferences_by_category %}
+                            {% for category, preferences in preferences_by_category.items() %}
+                            <div class="border-b border-gray-200 last:border-b-0 dark:border-gray-700">
+                                <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700/50">
+                                    <h4 class="font-medium text-gray-800 dark:text-white">{{ category }}</h4>
+                                </div>
+                                <div class="px-6 py-4">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {% for preference in preferences %}
+                                        <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-600">
+                                            <div class="flex items-start justify-between mb-2">
+                                                <h5 class="font-medium text-gray-800 dark:text-white">{{ preference.product_name }}</h5>
+                                                <span class="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full dark:bg-blue-900/20 dark:text-blue-400">
+                                                    {{ preference.frequency or 'Unknown' }}
+                                                </span>
+                                            </div>
+                                            {% if preference.product_description %}
+                                            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ preference.product_description }}</p>
+                                            {% endif %}
+                                            <div class="grid grid-cols-2 gap-2 text-xs text-gray-500 dark:text-gray-400">
+                                                <div>
+                                                    <span class="font-medium">Quantity:</span><br>
+                                                    {{ preference.quantity or 'N/A' }} {{ preference.unit }}
+                                                </div>
+                                                <div>
+                                                    <span class="font-medium">Max Price:</span><br>
+                                                    ${{ "%.2f"|format(preference.max_price_per_unit) if preference.max_price_per_unit else 'N/A' }}
+                                                </div>
+                                            </div>
+                                            {% if preference.preferred_suppliers %}
+                                            <div class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                                <span class="font-medium">Preferred Suppliers:</span><br>
+                                                {{ preference.preferred_suppliers }}
+                                            </div>
+                                            {% endif %}
+                                            
+                                            <!-- Action Buttons -->
+                                            <div class="flex gap-2 mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
+                                                <a href="{{ url_for('edit_preference', preference_id=preference.id) }}" 
+                                                   class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-600 bg-blue-50 rounded hover:bg-blue-100 transition-colors dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/30">
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                                    </svg>
+                                                    Edit
+                                                </a>
+                                                <button onclick="deletePreference({{ preference.id }})" 
+                                                        class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-red-600 bg-red-50 rounded hover:bg-red-100 transition-colors dark:bg-red-900/20 dark:text-red-400 dark:hover:bg-red-900/30">
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                                    </svg>
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="px-6 py-12 text-center">
+                                <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No purchase preferences yet</h3>
+                                <p class="text-gray-500 dark:text-gray-400 mb-4">Upload your purchase history to get started with personalized product suggestions.</p>
+                                <a href="/download_purchase_preferences_template" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-500 rounded-lg hover:bg-brand-600 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    Download Template
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </main>
+            <!-- ===== Main Content End ===== -->
+        </div>
+        <!-- ===== Content Area End ===== -->
+    </div>
+    <!-- ===== Page Wrapper End ===== -->
+
+    <script src="{{ url_for('static', filename='js/script_1.js') }}"></script>
+    
+    <script>
+        function deletePreference(preferenceId) {
+            if (confirm('Are you sure you want to delete this preference? This action cannot be undone.')) {
+                fetch(`/delete_preference/${preferenceId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Reload the page to show updated preferences
+                        window.location.reload();
+                    } else {
+                        alert('Error deleting preference: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error deleting preference. Please try again.');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

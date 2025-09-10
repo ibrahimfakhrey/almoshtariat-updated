@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% if request.cookies.get('language') == 'ar' %}تفاصيل الشركة{% else %}Company Details{% endif %} - Admin Dashboard</title>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='logo.png') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}" />
+ </head>
+ <body :class="{'dark bg-gray-900': darkMode === true}" x-data="{ page: 'companies', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }" x-init="
+         darkMode = JSON.parse(localStorage.getItem('darkMode'));
+         $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))">
+  <!-- ===== Preloader Start ===== -->
+  <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => loaded = false, 500)})" x-show="loaded">
+   <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent">
+   </div>
+  </div>
+  <!-- ===== Preloader End ===== -->
+  <!-- ===== Page Wrapper Start ===== -->
+  <div class="flex h-screen overflow-hidden">
+   <!-- ===== Sidebar Start ===== -->
+   <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+    <!-- SIDEBAR HEADER -->
+    <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+     <a href="/">
+      <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+       <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+       <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+      </span>
+      <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+     </a>
+    </div>
+    <!-- SIDEBAR HEADER -->
+    <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+     <!-- Sidebar Menu -->
+     <nav x-data="{selected: $persist('Companies')}">
+      <!-- Menu Group -->
+      <div>
+       <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+        <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">
+         {% if request.cookies.get('language') == 'ar' %}القائمة{% else %}MENU{% endif %}
+        </span>
+        <svg :class="sidebarToggle ? 'xl:block hidden' : 'hidden'" class="menu-group-icon mx-auto fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+         <path clip-rule="evenodd" d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.8335 18.9656 13.5051 17.9991 13.5051C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.8335 11.1706 13.5051 11.9991 13.5051C12.8275 13.5051 13.499 12.8335 13.499 12.0051V11.9951Z" fill="currentColor" fill-rule="evenodd">
+         </path>
+        </svg>
+       </h3>
+       <ul class="mb-6 flex flex-col gap-1">
+        <!-- Menu Item Dashboard -->
+        <li>
+         <a :class=" (selected === 'Dashboard') && (page === 'dashboard') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Dashboard' ? '':'Dashboard')" class="menu-item group" href="/admin_dashboard">
+          <svg :class="(selected === 'Dashboard') && (page === 'dashboard') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}لوحة تحكم المدير{% else %}Admin Dashboard{% endif %}
+          </span>
+         </a>
+        </li>
+        
+        <!-- Menu Item Company Management -->
+        <li>
+         <a :class=" (selected === 'Companies') && (page === 'companies') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Companies' ? '':'Companies')" class="menu-item group" href="/admin_companies">
+          <svg :class="(selected === 'Companies') && (page === 'companies') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}إدارة الشركات{% else %}Company Management{% endif %}
+          </span>
+         </a>
+        </li>
+        
+        <!-- Menu Item User Management -->
+        <li>
+         <a :class=" (selected === 'Users') && (page === 'users') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Users' ? '':'Users')" class="menu-item group" href="/admin_users">
+          <svg :class="(selected === 'Users') && (page === 'users') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A1.5 1.5 0 0 0 18.54 8H17c-.8 0-1.54.37-2.01 1l-1.7 2.26A1.5 1.5 0 0 0 12.5 12H11v8h9zM5.5 6c.83 0 1.5-.67 1.5-1.5S6.33 3 5.5 3 4 3.67 4 4.5 4.67 6 5.5 6zm2.5 6c-.8 0-1.54.37-2.01 1l-1.7 2.26A1.5 1.5 0 0 0 1.5 16H0v6h9v-6H7.5z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}إدارة المستخدمين{% else %}User Management{% endif %}
+          </span>
+         </a>
+        </li>
+        
+        <!-- Menu Item Order Management -->
+        <li>
+         <a :class=" (selected === 'Orders') && (page === 'orders') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Orders' ? '':'Orders')" class="menu-item group" href="/admin_orders">
+          <svg :class="(selected === 'Orders') && (page === 'orders') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}إدارة الطلبات{% else %}Order Management{% endif %}
+          </span>
+         </a>
+        </li>
+        
+        <!-- Menu Item Create Direct Order -->
+        <li>
+         <a :class=" (selected === 'CreateOrder') && (page === 'create_order') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'CreateOrder' ? '':'CreateOrder')" class="menu-item group" href="/admin_create_order">
+          <svg :class="(selected === 'CreateOrder') && (page === 'create_order') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}إنشاء طلب مباشر{% else %}Create Direct Order{% endif %}
+          </span>
+         </a>
+        </li>
+        
+        <!-- Menu Item Analytics -->
+        <li>
+         <a :class=" (selected === 'Analytics') && (page === 'analytics') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Analytics' ? '':'Analytics')" class="menu-item group" href="/admin_analytics">
+          <svg :class="(selected === 'Analytics') && (page === 'analytics') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}التحليلات{% else %}Analytics{% endif %}
+          </span>
+         </a>
+        </li>
+        
+        <!-- Menu Item System Settings -->
+        <li>
+         <a :class=" (selected === 'Settings') && (page === 'settings') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Settings' ? '':'Settings')" class="menu-item group" href="/admin_settings">
+          <svg :class="(selected === 'Settings') && (page === 'settings') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.02,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}إعدادات النظام{% else %}System Settings{% endif %}
+          </span>
+         </a>
+        </li>
+       </ul>
+      </div>
+     </nav>
+    </div>
+   </aside>
+   <!-- ===== Sidebar End ===== -->
+   
+   <!-- ===== Content Area Start ===== -->
+   <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+    <!-- ===== Header Start ===== -->
+    <header class="sticky top-0 z-99999 flex w-full border-gray-200 bg-white xl:border-b dark:border-gray-800 dark:bg-gray-900" x-data="{menuToggle: false}">
+     <div class="flex grow flex-col items-center justify-between xl:flex-row xl:px-6">
+      <div class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:py-4 xl:justify-normal xl:border-b-0 xl:px-0 dark:border-gray-800">
+       <!-- Hamburger Toggle BTN -->
+       <button :class="sidebarToggle ? 'xl:bg-transparent dark:xl:bg-transparent bg-gray-100 dark:bg-gray-800' : ''" @click.stop="sidebarToggle = !sidebarToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 xl:h-11 xl:w-11 xl:border dark:border-gray-800 dark:text-gray-400">
+        <svg class="hidden fill-current xl:block" fill="none" height="12" viewbox="0 0 16 12" width="16" xmlns="http://www.w3.org/2000/svg">
+         <path clip-rule="evenodd" d="M0.583252 1C0.583252 0.585788 0.919038 0.25 1.33325 0.25H14.6666C15.0808 0.25 15.4166 0.585786 15.4166 1C15.4166 1.41421 15.0808 1.75 14.6666 1.75L1.33325 1.75C0.919038 1.75 0.583252 1.41422 0.583252 1ZM0.583252 11C0.583252 10.5858 0.919038 10.25 1.33325 10.25L14.6666 10.25C15.0808 10.25 15.4166 10.5858 15.4166 11C15.4166 11.4142 15.0808 11.75 14.6666 11.75L1.33325 11.75C0.919038 11.75 0.583252 11.4142 0.583252 11ZM1.33325 5.25C0.919038 5.25 0.583252 5.58579 0.583252 6C0.583252 6.41421 0.919038 6.75 1.33325 6.75L7.99992 6.75C8.41413 6.75 8.74992 6.41421 8.74992 6C8.74992 5.58579 8.41413 5.25 7.99992 5.25Z" fill="" fill-rule="evenodd">
+         </path>
+        </svg>
+        <svg :class="sidebarToggle ? 'hidden' : 'block xl:hidden'" class="fill-current xl:hidden" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+         <path clip-rule="evenodd" d="M3.25 6C3.25 5.58579 3.58579 5.25 4 5.25L20 5.25C20.4142 5.25 20.75 5.58579 20.75 6C20.75 6.41421 20.4142 6.75 20 6.75L4 6.75C3.58579 6.75 3.25 6.41422 3.25 6ZM3.25 18C3.25 17.5858 3.58579 17.25 4 17.25L20 17.25C20.4142 17.25 20.75 17.5858 20.75 18C20.75 18.4142 20.4142 18.75 20 18.75L4 18.75C3.58579 18.75 3.25 18.4142 3.25 18ZM4 11.25C3.58579 11.25 3.25 11.5858 3.25 12C3.25 12.4142 3.58579 12.75 4 12.75L12 12.75C12.4142 12.75 12.75 12.4142 12.75 12C12.75 11.5858 12.4142 11.25 12 11.25L4 11.25Z" fill="" fill-rule="evenodd">
+         </path>
+        </svg>
+       </button>
+       <!-- Hamburger Toggle BTN -->
+       <a class="xl:hidden" href="index.html">
+        <img alt="Logo" class="dark:hidden" src="src/images/logo/logo.svg"/>
+        <img alt="Logo" class="hidden dark:block" src="src/images/logo/logo-dark.svg"/>
+       </a>
+       <!-- Application nav menu button -->
+       <button :class="menuToggle ? 'bg-gray-100 dark:bg-gray-800' : ''" @click.stop="menuToggle = !menuToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 hover:bg-gray-100 xl:hidden dark:text-gray-400 dark:hover:bg-gray-800">
+        <svg class="fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+         <path clip-rule="evenodd" d="M5.99902 10.4951C6.82745 10.4951 7.49902 11.1667 7.49902 11.9951V12.0051C7.49902 12.8335 6.82745 13.5051 5.99902 13.5051C5.1706 13.5051 4.49902 12.8335 4.49902 12.0051V11.9951C4.49902 11.1667 5.1706 10.4951 5.99902 10.4951ZM17.999 10.4951C18.8275 10.4951 19.499 11.1667 19.499 11.9951V12.0051C19.499 12.8335 18.8275 13.5051 17.999 13.5051C17.1706 13.5051 16.499 12.8335 16.499 12.0051V11.9951C16.499 11.1667 17.1706 10.4951 17.999 10.4951ZM13.499 11.9951C13.499 11.1667 12.8275 10.4951 11.999 10.4951C11.1706 10.4951 10.499 11.1667 10.499 11.9951V12.0051C10.499 12.8335 11.1706 13.5051 11.999 13.5051C12.8275 13.5051 13.499 12.8335 13.499 12.0051V11.9951Z" fill="" fill-rule="evenodd">
+         </path>
+        </svg>
+       </button>
+       <!-- Application nav menu button -->
+      </div>
+      <div :class="menuToggle ? 'flex' : 'hidden'" class="shadow-theme-md w-full items-center justify-between gap-4 px-5 py-4 xl:flex xl:justify-end xl:px-0 xl:shadow-none">
+       <div class="2xsm:gap-3 flex items-center gap-2">
+        <!-- Language Toggle -->
+        <button @click.prevent="toggleLanguage()" class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white" :title="currentLanguage === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'">
+         <span x-text="currentLanguage === 'ar' ? 'EN' : 'عربي'" class="text-xs font-medium"></span>
+        </button>
+        <!-- Language Toggle -->
+        
+        <!-- Dark Mode Toggler -->
+        <button @click.prevent="darkMode = !darkMode" class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white">
+         <svg class="hidden dark:block" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+          <path clip-rule="evenodd" d="M9.99998 1.5415C10.4142 1.5415 10.75 1.87729 10.75 2.2915V3.5415C10.75 3.95572 10.4142 4.2915 9.99998 4.2915C9.58577 4.2915 9.24998 3.95572 9.24998 3.5415V2.2915C9.24998 1.87729 9.58577 1.5415 9.99998 1.5415ZM10.0009 6.79327C8.22978 6.79327 6.79402 8.22904 6.79402 10.0001C6.79402 11.7712 8.22978 13.207 10.0009 13.207C11.772 13.207 13.2078 11.7712 13.2078 10.0001C13.2078 8.22904 11.772 6.79327 10.0009 6.79327ZM5.29402 10.0001C5.29402 7.40061 7.40135 5.29327 10.0009 5.29327C12.6004 5.29327 14.7078 7.40061 14.7078 10.0001C14.7078 12.5997 12.6004 14.707 10.0009 14.707C7.40135 14.707 5.29402 12.5997 5.29402 10.0001ZM15.9813 5.08035C16.2742 4.78746 16.2742 4.31258 15.9813 4.01969C15.6884 3.7268 15.2135 3.7268 14.9207 4.01969L14.0368 4.90357C13.7439 5.19647 13.7439 5.67134 14.0368 5.96423C14.3297 6.25713 14.8045 6.25713 15.0974 5.96423L15.9813 5.08035ZM18.4577 10.0001C18.4577 10.4143 18.1219 10.7501 17.7077 10.7501H16.4577C16.0435 10.7501 15.7077 10.4143 15.7077 10.0001C15.7077 9.58592 16.0435 9.25013 16.4577 9.25013H17.7077C18.1219 9.25013 18.4577 9.58592 18.4577 10.0001ZM14.9207 15.9806C15.2135 16.2735 15.6884 16.2735 15.9813 15.9806C16.2742 15.6877 16.2742 15.2128 15.9813 14.9199L15.0974 14.036C14.8045 13.7431 14.3297 13.7431 14.0368 14.036C13.7439 14.3289 13.7439 14.8038 14.0368 15.0967L14.9207 15.9806ZM9.99998 15.7088C10.4142 15.7088 10.75 16.0445 10.75 16.4588V17.7088C10.75 18.123 10.4142 18.4588 9.99998 18.4588C9.58577 18.4588 9.24998 18.123 9.24998 17.7088V16.4588C9.24998 16.0445 9.58577 15.7088 9.99998 15.7088ZM5.96356 15.0972C6.25646 14.8043 6.25646 14.3295 5.96356 14.0366C5.67067 13.7437 5.1958 13.7437 4.9029 14.0366L4.01902 14.9204C3.72613 15.2133 3.72613 15.6882 4.01902 15.9811C4.31191 16.274 4.78679 16.274 5.07968 15.9811L5.96356 15.0972ZM4.29224 10.0001C4.29224 10.4143 3.95645 10.7501 3.54224 10.7501H2.29224C1.87802 10.7501 1.54224 10.4143 1.54224 10.0001C1.54224 9.58592 1.87802 9.25013 2.29224 9.25013H3.54224C3.95645 9.25013 4.29224 9.58592 4.29224 10.0001ZM4.9029 5.9637C5.1958 6.25659 5.67067 6.25659 5.96356 5.9637C6.25646 5.6708 6.25646 5.19593 5.96356 4.90303L5.07968 4.01915C4.78679 3.72626 4.31191 3.72626 4.01902 4.01915C3.72613 4.31204 3.72613 4.78692 4.01902 5.07981L4.9029 5.9637Z" fill="currentColor" fill-rule="evenodd">
+          </path>
+         </svg>
+         <svg class="dark:hidden" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17.4547 11.97L18.1799 12.1611C18.265 11.8383 18.1265 11.4982 17.8401 11.3266C17.5538 11.1551 17.1885 11.1934 16.944 11.4207L17.4547 11.97ZM8.0306 2.5459L8.57989 3.05657C8.80718 2.81209 8.84554 2.44682 8.67398 2.16046C8.50243 1.8741 8.16227 1.73559 7.83948 1.82066L8.0306 2.5459ZM12.9154 13.0035C9.64678 13.0035 6.99707 10.3538 6.99707 7.08524H5.49707C5.49707 11.1823 8.81835 14.5035 12.9154 14.5035V14.5035ZM16.944 11.4207C15.8869 12.4035 14.4721 13.0035 12.9154 13.0035V14.5035C14.8657 14.5035 16.6418 13.7499 17.9654 12.5193L16.944 11.4207ZM16.7295 11.7789C15.9437 14.7607 13.2277 16.9586 10.0003 16.9586V18.4586C13.9257 18.4586 17.2249 15.7853 18.1799 12.1611L16.7295 11.7789ZM10.0003 16.9586C6.15734 16.9586 3.04199 13.8433 3.04199 10.0003H1.54199C1.54199 14.6717 5.32892 18.4586 10.0003 18.4586V16.9586ZM3.04199 10.0001C3.04199 6.77289 5.23988 4.05695 8.22173 3.27114L7.83948 1.82066C4.21532 2.77574 1.54199 6.07486 1.54199 10.0001H3.04199ZM6.99707 7.08524C6.99707 5.52854 7.5971 4.11366 8.57989 3.05657L7.48132 2.03522C6.25073 3.35885 5.49707 5.13487 5.49707 7.08524H6.99707Z" fill="currentColor">
+          </path>
+         </svg>
+        </button>
+        <!-- Dark Mode Toggler -->
+        <!-- Notification Menu Area -->
+        {% include 'partials/notification_dropdown.html' %}
+               
+        <!-- Notification Menu Area -->
+       </div>
+       <!-- User Area -->
+       <div @click.outside="dropdownOpen = false" class="relative" x-data="{ dropdownOpen: false }">
+        <a @click.prevent="dropdownOpen = ! dropdownOpen" class="flex items-center text-gray-700 dark:text-gray-400" href="#">
+         <span class="mr-3 h-11 w-11 overflow-hidden rounded-full">
+          <img alt="Admin" src="https://img.icons8.com/?size=100&id=admin&format=png&color=000000"/>
+         </span>
+         <span class="text-theme-sm mr-1 block font-medium">
+          {{ current_user.username }} (Admin)
+         </span>
+         <svg :class="dropdownOpen && 'rotate-180'" class="stroke-gray-500 dark:stroke-gray-400" fill="none" height="20" viewbox="0 0 18 20" width="18" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4.3125 8.65625L9 13.3437L13.6875 8.65625" stroke="" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">
+          </path>
+         </svg>
+        </a>
+        <!-- Dropdown Start -->
+        <div class="shadow-theme-lg dark:bg-gray-dark absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 dark:border-gray-800" x-show="dropdownOpen">
+         <div>
+          <span class="text-theme-sm block font-medium text-gray-700 dark:text-gray-400">
+           {{ current_user.name or 'System Administrator' }}
+          </span>
+          <span class="text-theme-xs mt-0.5 block text-gray-500 dark:text-gray-400">
+           {{ current_user.email }}
+          </span>
+         </div>
+         <ul class="flex flex-col gap-1 border-b border-gray-200 pt-4 pb-3 dark:border-gray-800">
+          <li>
+           <a class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300" href="/admin_profile">
+            <svg class="fill-gray-500 group-hover:fill-gray-700 dark:fill-gray-400 dark:group-hover:fill-gray-300" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+             <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="" fill-rule="evenodd">
+             </path>
+            </svg>
+            {% if request.cookies.get('language') == 'ar' %}الملف الشخصي للمدير{% else %}Admin Profile{% endif %}
+           </a>
+          </li>
+          <li>
+           <a class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300" href="/admin_settings">
+            <svg class="fill-gray-500 group-hover:fill-gray-700 dark:fill-gray-400 dark:group-hover:fill-gray-300" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+             <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z" fill="currentColor">
+             </path>
+            </svg>
+            {% if request.cookies.get('language') == 'ar' %}إعدادات النظام{% else %}System Settings{% endif %}
+           </a>
+          </li>
+         </ul>
+         <a href="{{ url_for('logout') }}" class="group text-theme-sm mt-3 flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
+          <svg class="fill-gray-500 group-hover:fill-gray-700 dark:group-hover:fill-gray-300" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path clip-rule="evenodd" d="M15.1007 19.247C14.6865 19.247 14.3507 18.9112 14.3507 18.497L14.3507 14.245H12.8507V18.497C12.8507 19.7396 13.8581 20.747 15.1007 20.747H18.5007C19.7434 20.747 20.7507 19.7396 20.7507 18.497L20.7507 5.49609C20.7507 4.25345 19.7433 3.24609 18.5007 3.24609H15.1007C13.8581 3.24609 12.8507 4.25345 12.8507 5.49609V9.74501L14.3507 9.74501V5.49609C14.3507 5.08188 14.6865 4.74609 15.1007 4.74609L18.5007 4.74609C18.9149 4.74609 19.2507 5.08188 19.2507 5.49609L19.2507 18.497C19.2507 18.9112 18.9149 19.247 18.5007 19.247H15.1007ZM3.25073 11.9984C3.25073 12.2144 3.34204 12.4091 3.48817 12.546L8.09483 17.1556C8.38763 17.4485 8.86251 17.4487 9.15549 17.1559C9.44848 16.8631 9.44863 16.3882 9.15583 16.0952L5.81116 12.7484L16.0007 12.7484C16.4149 12.7484 16.7507 12.4127 16.7507 11.9984C16.7507 11.5842 16.4149 11.2484 16.0007 11.2484L5.81528 11.2484L9.15585 7.90554C9.44864 7.61255 9.44847 7.13767 9.15547 6.84488C8.86248 6.55209 8.3876 6.55226 8.09481 6.84525L3.52309 11.4202C3.35673 11.5577 3.25073 11.7657 3.25073 11.9984Z" fill="" fill-rule="evenodd">
+           </path>
+          </svg>
+          {% if request.cookies.get('language') == 'ar' %}تسجيل الخروج{% else %}Sign out{% endif %}
+         </a>
+        </div>
+        <!-- Dropdown End -->
+       </div>
+       <!-- User Area -->
+      </div>
+     </div>
+    </header>
+    <!-- ===== Header End ===== -->
+     
+     <!-- ===== Main Content Start ===== -->
+     <main>
+      <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+       <!-- Breadcrumb -->
+       <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h2 class="text-title-md2 font-bold text-black dark:text-white">
+         {% if request.cookies.get('language') == 'ar' %}تفاصيل الشركة{% else %}Company Details{% endif %}
+        </h2>
+        <nav>
+         <ol class="flex items-center gap-2">
+          <li><a class="font-medium" href="/admin_dashboard">{% if request.cookies.get('language') == 'ar' %}لوحة التحكم{% else %}Dashboard{% endif %}</a></li>
+          <li><a class="font-medium" href="/admin_companies">{% if request.cookies.get('language') == 'ar' %}الشركات{% else %}Companies{% endif %}</a></li>
+          <li class="text-primary">/ {{ company.name_ar if request.cookies.get('language') == 'ar' else company.name_en }}</li>
+         </ol>
+        </nav>
+       </div>
+       
+       <!-- Company Header -->
+       <div class="mb-6 rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+        <div class="flex items-center gap-4">
+         <div class="flex h-16 w-16 items-center justify-center rounded-full bg-brand-500 text-white">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+          </svg>
+         </div>
+         <div>
+          <h1 class="text-2xl font-bold text-black dark:text-white">
+           {{ company.name_ar if request.cookies.get('language') == 'ar' else company.name_en }}
+          </h1>
+          <p class="text-gray-600 dark:text-gray-400">{{ company.email }}</p>
+          <div class="mt-2 flex items-center gap-2">
+           <span class="inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium
+            {% if company.company_type == 'supplier' %}
+             bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300
+            {% elif company.company_type == 'client' %}
+             bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300
+            {% else %}
+             bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300
+            {% endif %}">
+            {% if company.company_type == 'supplier' %}
+             {% if request.cookies.get('language') == 'ar' %}مورد{% else %}Supplier{% endif %}
+            {% elif company.company_type == 'client' %}
+             {% if request.cookies.get('language') == 'ar' %}عميل{% else %}Client{% endif %}
+            {% else %}
+             {{ company.company_type }}
+            {% endif %}
+           </span>
+           {% if company.is_approved and company.is_active %}
+            <span class="inline-flex rounded-full bg-green-100 py-1 px-3 text-sm font-medium text-green-800 dark:bg-green-900 dark:text-green-300">
+             {% if request.cookies.get('language') == 'ar' %}نشط{% else %}Active{% endif %}
+            </span>
+           {% elif company.is_approved and not company.is_active %}
+            <span class="inline-flex rounded-full bg-yellow-100 py-1 px-3 text-sm font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+             {% if request.cookies.get('language') == 'ar' %}معلق{% else %}Suspended{% endif %}
+            </span>
+           {% else %}
+            <span class="inline-flex rounded-full bg-red-100 py-1 px-3 text-sm font-medium text-red-800 dark:bg-red-900 dark:text-red-300">
+             {% if request.cookies.get('language') == 'ar' %}في الانتظار{% else %}Pending{% endif %}
+            </span>
+           {% endif %}
+          </div>
+         </div>
+        </div>
+       </div>
+       
+       <!-- Company Statistics Cards -->
+       <div class="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <!-- Total Orders -->
+        <div class="rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark">
+         <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
+          <svg class="w-6 h-6 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+          </svg>
+         </div>
+         <div class="mt-4 flex items-end justify-between">
+          <div>
+           <h4 class="text-title-md font-bold text-black dark:text-white">
+            {{ total_orders }}
+           </h4>
+           <p class="text-sm font-medium">{% if request.cookies.get('language') == 'ar' %}إجمالي الطلبات{% else %}Total Orders{% endif %}</p>
+          </div>
+         </div>
+        </div>
+        
+        <!-- Total Products -->
+        <div class="rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark">
+         <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
+          <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+          </svg>
+         </div>
+         <div class="mt-4 flex items-end justify-between">
+          <div>
+           <h4 class="text-title-md font-bold text-black dark:text-white">
+            {{ total_products }}
+           </h4>
+           <p class="text-sm font-medium">{% if request.cookies.get('language') == 'ar' %}إجمالي المنتجات{% else %}Total Products{% endif %}</p>
+          </div>
+         </div>
+        </div>
+        
+        <!-- Total Employees -->
+        <div class="rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark">
+         <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
+          <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+          </svg>
+         </div>
+         <div class="mt-4 flex items-end justify-between">
+          <div>
+           <h4 class="text-title-md font-bold text-black dark:text-white">
+            {{ total_employees }}
+           </h4>
+           <p class="text-sm font-medium">{% if request.cookies.get('language') == 'ar' %}إجمالي الموظفين{% else %}Total Employees{% endif %}</p>
+          </div>
+         </div>
+        </div>
+        
+        <!-- Company Status -->
+        <div class="rounded-sm border border-stroke bg-white p-4 shadow-default dark:border-strokedark dark:bg-boxdark">
+         <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2 dark:bg-meta-4">
+          <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+         </div>
+         <div class="mt-4 flex items-end justify-between">
+          <div>
+           <h4 class="text-title-md font-bold text-black dark:text-white">
+            {% if company.is_approved and company.is_active %}
+             {% if request.cookies.get('language') == 'ar' %}نشط{% else %}Active{% endif %}
+            {% elif company.is_approved and not company.is_active %}
+             {% if request.cookies.get('language') == 'ar' %}معلق{% else %}Suspended{% endif %}
+            {% else %}
+             {% if request.cookies.get('language') == 'ar' %}في الانتظار{% else %}Pending{% endif %}
+            {% endif %}
+           </h4>
+           <p class="text-sm font-medium">{% if request.cookies.get('language') == 'ar' %}حالة الشركة{% else %}Company Status{% endif %}</p>
+          </div>
+         </div>
+         
+                   <!-- Status Change Form -->
+          <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+           <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 flex items-center">
+            <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 100 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+            </svg>
+            {% if request.cookies.get('language') == 'ar' %}تغيير الحالة{% else %}Change Status{% endif %}
+           </h5>
+          
+          <form method="POST" action="{{ url_for('admin_change_company_status', company_id=company.id) }}" class="space-y-3 status-form">
+           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+           <!-- Status Selection -->
+           <div>
+            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+             {% if request.cookies.get('language') == 'ar' %}الحالة الجديدة{% else %}New Status{% endif %}
+            </label>
+            <select name="status" required class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+             {% if not company.is_approved %}
+              <option value="approve">{% if request.cookies.get('language') == 'ar' %}موافقة{% else %}Approve{% endif %}</option>
+              <option value="reject">{% if request.cookies.get('language') == 'ar' %}رفض{% else %}Reject{% endif %}</option>
+              <option value="request_info">{% if request.cookies.get('language') == 'ar' %}طلب معلومات إضافية{% else %}Request More Information{% endif %}</option>
+             {% elif company.is_approved and company.is_active %}
+              <option value="deactivate">{% if request.cookies.get('language') == 'ar' %}إيقاف{% else %}Deactivate{% endif %}</option>
+              <option value="suspend">{% if request.cookies.get('language') == 'ar' %}تعليق مؤقت{% else %}Temporary Suspension{% endif %}</option>
+             {% elif company.is_approved and not company.is_active %}
+              <option value="activate">{% if request.cookies.get('language') == 'ar' %}تفعيل{% else %}Activate{% endif %}</option>
+              <option value="reactivate">{% if request.cookies.get('language') == 'ar' %}إعادة تفعيل{% else %}Reactivate{% endif %}</option>
+             {% endif %}
+            </select>
+           </div>
+           
+           <!-- Reason/Description (Optional) -->
+           <div>
+            <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+             {% if request.cookies.get('language') == 'ar' %}السبب أو الملاحظة (اختياري){% else %}Reason/Note (Optional){% endif %}
+            </label>
+            <textarea name="reason" rows="2" placeholder="{% if request.cookies.get('language') == 'ar' %}اكتب السبب أو الملاحظة هنا...{% else %}Enter reason or note here...{% endif %}" class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white resize-none"></textarea>
+           </div>
+           
+           <!-- Submit Button -->
+           <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
+            {% if request.cookies.get('language') == 'ar' %}تحديث الحالة{% else %}Update Status{% endif %}
+           </button>
+          </form>
+          
+          <!-- Status History -->
+          <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+           <h6 class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2 flex items-center">
+            <svg class="w-3 h-3 mr-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            {% if request.cookies.get('language') == 'ar' %}سجل تغييرات الحالة{% else %}Status Change History{% endif %}
+           </h6>
+           
+           {% if company.status_history %}
+            <div class="space-y-2 max-h-32 overflow-y-auto">
+             {% for history in company.status_history[-3:] %}
+              <div class="text-xs p-2 bg-gray-50 dark:bg-gray-800 rounded border-l-2 border-blue-500">
+               <div class="flex justify-between items-start">
+                <span class="font-medium text-gray-700 dark:text-gray-300">
+                 {{ history.status_display }}
+                </span>
+                <span class="text-gray-500 dark:text-gray-400">
+                 {{ history.changed_at.strftime('%m/%d %H:%M') }}
+                </span>
+               </div>
+               {% if history.reason %}
+                <div class="text-gray-600 dark:text-gray-400 mt-1 italic">
+                 "{{ history.reason }}"
+                </div>
+               {% endif %}
+              </div>
+             {% endfor %}
+            </div>
+           {% else %}
+            <div class="text-xs text-gray-500 dark:text-gray-400">
+             {% if request.cookies.get('language') == 'ar' %}لا توجد تغييرات سابقة{% else %}No previous changes{% endif %}
+            </div>
+           {% endif %}
+           
+           <div class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+            {% if company.updated_at %}
+             <span class="font-medium">{% if request.cookies.get('language') == 'ar' %}آخر تحديث:{% else %}Last Updated:{% endif %}</span>
+             {{ company.updated_at.strftime('%Y-%m-%d %H:%M') }}
+            {% else %}
+             {% if request.cookies.get('language') == 'ar' %}لم يتم التحديث بعد{% else %}Not updated yet{% endif %}
+            {% endif %}
+           </div>
+          </div>
+         </div>
+        </div>
+       </div>
+       
+       <!-- Company Information and Recent Activity -->
+       <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <!-- Company Information -->
+        <div class="rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+         <h3 class="mb-4 text-xl font-semibold text-black dark:text-white">
+          {% if request.cookies.get('language') == 'ar' %}معلومات الشركة{% else %}Company Information{% endif %}
+         </h3>
+         <div class="space-y-4">
+          <div>
+           <label class="text-sm font-medium text-gray-600 dark:text-gray-400">
+            {% if request.cookies.get('language') == 'ar' %}اسم الشركة (عربي):{% else %}Company Name (Arabic):{% endif %}
+           </label>
+           <p class="text-black dark:text-white">{{ company.name_ar or 'N/A' }}</p>
+          </div>
+          <div>
+           <label class="text-sm font-medium text-gray-600 dark:text-gray-400">
+            {% if request.cookies.get('language') == 'ar' %}اسم الشركة (إنجليزي):{% else %}Company Name (English):{% endif %}
+           </label>
+           <p class="text-black dark:text-white">{{ company.name_en or 'N/A' }}</p>
+          </div>
+          <div>
+           <label class="text-sm font-medium text-gray-600 dark:text-gray-400">
+            {% if request.cookies.get('language') == 'ar' %}البريد الإلكتروني:{% else %}Email:{% endif %}
+           </label>
+           <p class="text-black dark:text-white">{{ company.email }}</p>
+          </div>
+          <div>
+           <label class="text-sm font-medium text-gray-600 dark:text-gray-400">
+            {% if request.cookies.get('language') == 'ar' %}نوع الشركة:{% else %}Company Type:{% endif %}
+           </label>
+           <p class="text-black dark:text-white">
+            {% if company.company_type == 'supplier' %}
+             {% if request.cookies.get('language') == 'ar' %}مورد{% else %}Supplier{% endif %}
+            {% elif company.company_type == 'client' %}
+             {% if request.cookies.get('language') == 'ar' %}عميل{% else %}Client{% endif %}
+            {% else %}
+             {{ company.company_type }}
+            {% endif %}
+           </p>
+          </div>
+          <div>
+           <label class="text-sm font-medium text-gray-600 dark:text-gray-400">
+            {% if request.cookies.get('language') == 'ar' %}القطاع:{% else %}Sector:{% endif %}
+           </label>
+           <p class="text-black dark:text-white">{{ company.sector or 'N/A' }}</p>
+          </div>
+          <div>
+           <label class="text-sm font-medium text-gray-600 dark:text-gray-400">
+            {% if request.cookies.get('language') == 'ar' %}تاريخ الإنشاء:{% else %}Created Date:{% endif %}
+           </label>
+           <p class="text-black dark:text-white">{{ company.created_at.strftime('%Y-%m-%d %H:%M') if company.created_at else 'N/A' }}</p>
+          </div>
+         </div>
+        </div>
+
+        <!-- Company Information Management -->
+        <div class="rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark company-info">
+         <h3 class="mb-6 text-xl font-semibold text-black dark:text-white">
+          {% if request.cookies.get('language') == 'ar' %}إدارة معلومات الشركة{% else %}Company Information Management{% endif %}
+         </h3>
+         
+         <!-- Legal Information Section -->
+         <div class="mb-6">
+          <h4 class="mb-4 text-lg font-medium text-black dark:text-white">
+           {% if request.cookies.get('language') == 'ar' %}المعلومات القانونية{% else %}Legal Information{% endif %}
+          </h4>
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+           <!-- Legal Type -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}النوع القانوني{% else %}Legal Type{% endif %}
+            </label>
+            <p class="text-black dark:text-white mb-3">{{ company.legal_type or 'N/A' }}</p>
+            {% if company.legal_type %}
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="legal_type">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="reject">
+               <input type="hidden" name="field_name" value="legal_type">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% endif %}
+           </div>
+
+           <!-- Tax ID -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}الرقم الضريبي{% else %}Tax ID{% endif %}
+            </label>
+            <p class="text-black dark:text-white mb-3">{{ company.tax_id or 'N/A' }}</p>
+            {% if company.tax_id %}
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="tax_id">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="tax_id">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% endif %}
+           </div>
+
+           <!-- Commercial Registration -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}رقم السجل التجاري{% else %}Commercial Registration{% endif %}
+            </label>
+            <p class="text-black dark:text-white mb-3">{{ company.commercial_registration or 'N/A' }}</p>
+            {% if company.commercial_registration %}
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="commercial_registration">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="commercial_registration">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% endif %}
+           </div>
+
+           <!-- VAT Number -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}رقم VAT{% else %}VAT Number{% endif %}
+            </label>
+            <p class="text-black dark:text-white mb-3">{{ company.vat_number or 'N/A' }}</p>
+            {% if company.vat_number %}
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="vat_number">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="vat_number">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% endif %}
+           </div>
+          </div>
+         </div>
+
+         <!-- Contact Information Section -->
+         <div class="mb-6">
+          <h4 class="mb-4 text-lg font-medium text-black dark:text-white">
+           {% if request.cookies.get('language') == 'ar' %}معلومات الاتصال{% else %}Contact Information{% endif %}
+          </h4>
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+           <!-- Registered Address -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}العنوان المسجل{% else %}Registered Address{% endif %}
+            </label>
+            <p class="text-black dark:text-white mb-3">{{ company.registered_address or 'N/A' }}</p>
+            {% if company.registered_address %}
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="registered_address">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="registered_address">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% endif %}
+           </div>
+
+           <!-- Website -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}الموقع الإلكتروني{% else %}Website{% endif %}
+            </label>
+            <p class="text-black dark:text-white mb-3">{{ company.website or 'N/A' }}</p>
+            {% if company.website %}
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="website">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="website">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% endif %}
+           </div>
+
+           <!-- Office Phone -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}هاتف المكتب{% else %}Office Phone{% endif %}
+            </label>
+            <p class="text-black dark:text-white mb-3">{{ company.office_phone or 'N/A' }}</p>
+            {% if company.office_phone %}
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="office_phone">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="office_phone">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% endif %}
+           </div>
+
+           <!-- Mobile Contact -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}موبايل جهة التواصل{% else %}Mobile Contact{% endif %}
+            </label>
+            <p class="text-black dark:text-white mb-3">{{ company.mobile_contact or 'N/A' }}</p>
+            {% if company.mobile_contact %}
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="mobile_contact">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="mobile_contact">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% endif %}
+           </div>
+          </div>
+         </div>
+
+         <!-- Contact Person Information Section -->
+         <div class="mb-6">
+          <h4 class="mb-4 text-lg font-medium text-black dark:text-white">
+           {% if request.cookies.get('language') == 'ar' %}معلومات الشخص المسؤول{% else %}Contact Person Information{% endif %}
+          </h4>
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+           <!-- Contact Person -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}الشخص المسؤول{% else %}Contact Person{% endif %}
+            </label>
+            <p class="text-black dark:text-white mb-3">{{ company.contact_person or 'N/A' }}</p>
+            {% if company.contact_person %}
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="contact_person">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="contact_person">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% endif %}
+           </div>
+
+           <!-- Contact Position -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}المنصب{% else %}Position{% endif %}
+            </label>
+            <p class="text-black dark:text-white mb-3">{{ company.contact_position or 'N/A' }}</p>
+            {% if company.contact_position %}
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="contact_position">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="contact_position">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% endif %}
+           </div>
+
+           <!-- Owner Name -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}اسم صاحب المنشأة{% else %}Owner Name{% endif %}
+            </label>
+            <p class="text-black dark:text-white mb-3">{{ company.owner_name or 'N/A' }}</p>
+            {% if company.owner_name %}
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="owner_name">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="owner_name">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% endif %}
+           </div>
+          </div>
+         </div>
+
+         <!-- Banking Information Section -->
+         <div class="mb-6">
+          <h4 class="mb-4 text-lg font-medium text-black dark:text-white">
+           {% if request.cookies.get('language') == 'ar' %}المعلومات المصرفية{% else %}Banking Information{% endif %}
+          </h4>
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+           <!-- Bank Name -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}اسم البنك{% else %}Bank Name{% endif %}
+            </label>
+            <p class="text-black dark:text-white mb-3">{{ company.bank_name or 'N/A' }}</p>
+            {% if company.bank_name %}
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="bank_name">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="bank_name">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% endif %}
+           </div>
+
+           <!-- Account Name -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}اسم الحساب{% else %}Account Name{% endif %}
+            </label>
+            <p class="text-black dark:text-white mb-3">{{ company.account_name or 'N/A' }}</p>
+            {% if company.account_name %}
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="account_name">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="account_name">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% endif %}
+           </div>
+
+           <!-- Account Number -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}رقم الحساب{% else %}Account Number{% endif %}
+            </label>
+            <p class="text-black dark:text-white mb-3">{{ company.account_number or 'N/A' }}</p>
+            {% if company.account_number %}
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="account_number">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="account_number">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% endif %}
+           </div>
+
+           <!-- Bank Branch -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}فرع البنك{% else %}Bank Branch{% endif %}
+            </label>
+            <p class="text-black dark:text-white mb-3">{{ company.bank_branch or 'N/A' }}</p>
+            {% if company.bank_branch %}
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="bank_branch">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="bank_branch">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% endif %}
+           </div>
+          </div>
+         </div>
+
+         <!-- Additional Information Section -->
+         <div class="mb-6">
+          <h4 class="mb-4 text-lg font-medium text-black dark:text-white">
+           {% if request.cookies.get('language') == 'ar' %}معلومات إضافية{% else %}Additional Information{% endif %}
+          </h4>
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+           <!-- Founded Year -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}سنة الإنشاء{% else %}Founded Year{% endif %}
+            </label>
+            <p class="text-black dark:text-white mb-3">{{ company.founded_year or 'N/A' }}</p>
+            {% if company.founded_year %}
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="founded_year">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="founded_year">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% endif %}
+           </div>
+
+           <!-- Employees Count -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}عدد الموظفين{% else %}Employees Count{% endif %}
+            </label>
+            <p class="text-black dark:text-white mb-3">{{ company.employees_count or 'N/A' }}</p>
+            {% if company.employees_count %}
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="employees_count">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="employees_count">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% endif %}
+           </div>
+
+           <!-- Certifications -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}الشهادات{% else %}Certifications{% endif %}
+            </label>
+            <p class="text-black dark:text-white mb-3">{{ company.certifications or 'N/A' }}</p>
+            {% if company.certifications %}
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="certifications">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="certifications">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% endif %}
+           </div>
+
+           <!-- Operating Countries -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}الدول العاملة{% else %}Operating Countries{% endif %}
+            </label>
+            <p class="text-black dark:text-white mb-3">{{ company.operating_countries or 'N/A' }}</p>
+            {% if company.operating_countries %}
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="operating_countries">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="operating_countries">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% endif %}
+           </div>
+          </div>
+                   </div>
+         </div>
+
+         <!-- Document Management Section -->
+         <div class="rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+          <h3 class="mb-6 text-xl font-semibold text-black dark:text-white">
+           {% if request.cookies.get('language') == 'ar' %}إدارة المستندات{% else %}Document Management{% endif %}
+          </h3>
+          
+          <style>
+           .download-btn {
+             display: inline-flex;
+             align-items: center;
+             padding: 0.75rem 1rem;
+             background-color: #2563eb;
+             color: white;
+             border-radius: 0.5rem;
+             font-size: 0.875rem;
+             font-weight: 500;
+             transition: all 0.2s;
+             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+             text-decoration: none;
+           }
+           .download-btn:hover {
+             background-color: #1d4ed8;
+             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+           }
+           .download-btn svg {
+             width: 12px;
+             height: 12px;
+             margin-right: 0.5rem;
+           }
+           .action-btn {
+             padding: 0.75rem 1rem;
+             border-radius: 0.5rem;
+             font-size: 0.875rem;
+             font-weight: 600;
+             transition: all 0.2s;
+             border: none;
+             cursor: pointer;
+           }
+           .accept-btn {
+             background-color: #10b981;
+             color: white;
+           }
+           .accept-btn:hover {
+             background-color: #059669;
+             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+           }
+           .refuse-btn {
+             background-color: #ef4444;
+             color: white;
+           }
+           .refuse-btn:hover {
+             background-color: #dc2626;
+             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+           }
+           
+           /* Company Information Management Buttons */
+           .action-btn {
+             padding: 0.5rem 1rem;
+             border-radius: 0.375rem;
+             font-size: 0.875rem;
+             font-weight: 600;
+             transition: all 0.2s;
+             border: none;
+             cursor: pointer;
+             text-decoration: none;
+             display: inline-block;
+           }
+           .accept-btn {
+             background-color: #10b981;
+             color: white;
+           }
+           .accept-btn:hover {
+             background-color: #059669;
+             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+           }
+           .refuse-btn {
+             background-color: #ef4444;
+             color: white;
+           }
+           .refuse-btn:hover {
+             background-color: #dc2626;
+             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+           }
+           
+           /* Status Change Form Styling */
+           .status-form select,
+           .status-form textarea {
+             background-color: white;
+             border: 1px solid #d1d5db;
+             border-radius: 0.375rem;
+             padding: 0.5rem 0.75rem;
+             font-size: 0.875rem;
+             transition: all 0.2s;
+           }
+           .status-form select:focus,
+           .status-form textarea:focus {
+             outline: none;
+             border-color: #3b82f6;
+             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+           }
+           .status-form button {
+             background-color: #2563eb;
+             color: white;
+             padding: 0.5rem 1rem;
+             border-radius: 0.375rem;
+             font-size: 0.875rem;
+             font-weight: 500;
+             border: none;
+             cursor: pointer;
+             transition: all 0.2s;
+             width: 100%;
+           }
+           .status-form button:hover {
+             background-color: #1d4ed8;
+             transform: translateY(-1px);
+             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+           }
+           .dark .status-form select,
+           .dark .status-form textarea {
+             background-color: #374151;
+             border-color: #4b5563;
+             color: white;
+           }
+           .dark .status-form select:focus,
+           .dark .status-form textarea:focus {
+             border-color: #60a5fa;
+             box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+           }
+          </style>
+          
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+           <!-- Commercial Registration Document -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <div class="flex items-center justify-between mb-2">
+             <label class="text-sm font-medium text-gray-600 dark:text-gray-400">
+              {% if request.cookies.get('language') == 'ar' %}السجل التجاري{% else %}Commercial Registration{% endif %}
+             </label>
+             {% if company.commercial_registration_doc %}
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+               {% if request.cookies.get('language') == 'ar' %}متوفر{% else %}Available{% endif %}
+              </span>
+             {% else %}
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+               {% if request.cookies.get('language') == 'ar' %}غير متوفر{% else %}Not Available{% endif %}
+              </span>
+             {% endif %}
+            </div>
+            {% if company.commercial_registration_doc %}
+             <div class="mb-3">
+              <a href="{{ url_for('admin_download_document', company_id=company.id, field_name='commercial_registration_doc') }}" 
+                 class="download-btn">
+               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+               </svg>
+               {% if request.cookies.get('language') == 'ar' %}تحميل{% else %}Download{% endif %}
+              </a>
+             </div>
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="commercial_registration_doc">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="commercial_registration_doc">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% else %}
+             <p class="text-gray-500 dark:text-gray-400 mb-3">
+              {% if request.cookies.get('language') == 'ar' %}لم يتم رفع المستند{% else %}No document uploaded{% endif %}
+             </p>
+            {% endif %}
+           </div>
+
+           <!-- Tax Card Document -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <div class="flex items-center justify-between mb-2">
+             <label class="text-sm font-medium text-gray-600 dark:text-gray-400">
+              {% if request.cookies.get('language') == 'ar' %}البطاقة الضريبية{% else %}Tax Card{% endif %}
+             </label>
+             {% if company.tax_card_doc %}
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+               {% if request.cookies.get('language') == 'ar' %}متوفر{% else %}Available{% endif %}
+              </span>
+             {% else %}
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+               {% if request.cookies.get('language') == 'ar' %}غير متوفر{% else %}Not Available{% endif %}
+              </span>
+             {% endif %}
+            </div>
+            {% if company.tax_card_doc %}
+             <div class="mb-3">
+              <a href="{{ url_for('admin_download_document', company_id=company.id, field_name='tax_card_doc') }}" 
+                 class="download-btn">
+               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+               </svg>
+               {% if request.cookies.get('language') == 'ar' %}تحميل{% else %}Download{% endif %}
+              </a>
+             </div>
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="tax_card_doc">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="tax_card_doc">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% else %}
+             <p class="text-gray-500 dark:text-gray-400 mb-3">
+              {% if request.cookies.get('language') == 'ar' %}لم يتم رفع المستند{% else %}No document uploaded{% endif %}
+             </p>
+            {% endif %}
+           </div>
+
+           <!-- E-Invoice Proof Document -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <div class="flex items-center justify-between mb-2">
+             <label class="text-sm font-medium text-gray-600 dark:text-gray-400">
+              {% if request.cookies.get('language') == 'ar' %}إثبات الفاتورة الإلكترونية{% else %}E-Invoice Proof{% endif %}
+             </label>
+             {% if company.e_invoice_proof_doc %}
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+               {% if request.cookies.get('language') == 'ar' %}متوفر{% else %}Available{% endif %}
+              </span>
+             {% else %}
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+               {% if request.cookies.get('language') == 'ar' %}غير متوفر{% else %}Not Available{% endif %}
+              </span>
+             {% endif %}
+            </div>
+            {% if company.e_invoice_proof_doc %}
+             <div class="mb-3">
+              <a href="{{ url_for('admin_download_document', company_id=company.id, field_name='e_invoice_proof_doc') }}" 
+                 class="download-btn">
+               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+               </svg>
+               {% if request.cookies.get('language') == 'ar' %}تحميل{% else %}Download{% endif %}
+              </a>
+             </div>
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="e_invoice_proof_doc">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="e_invoice_proof_doc">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% else %}
+             <p class="text-gray-500 dark:text-gray-400 mb-3">
+              {% if request.cookies.get('language') == 'ar' %}لم يتم رفع المستند{% else %}No document uploaded{% endif %}
+             </p>
+            {% endif %}
+           </div>
+
+           <!-- Logo Document -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <div class="flex items-center justify-between mb-2">
+             <label class="text-sm font-medium text-gray-600 dark:text-gray-400">
+              {% if request.cookies.get('language') == 'ar' %}الشعار{% else %}Logo{% endif %}
+             </label>
+             {% if company.logo_doc %}
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+               {% if request.cookies.get('language') == 'ar' %}متوفر{% else %}Available{% endif %}
+              </span>
+             {% else %}
+              <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+               {% if request.cookies.get('language') == 'ar' %}غير متوفر{% else %}Not Available{% endif %}
+              </span>
+             {% endif %}
+            </div>
+            {% if company.logo_doc %}
+             <div class="mb-3">
+              <a href="{{ url_for('admin_download_document', company_id=company.id, field_name='logo_doc') }}" 
+                 class="download-btn">
+               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+               </svg>
+               {% if request.cookies.get('language') == 'ar' %}تحميل{% else %}Download{% endif %}
+              </a>
+             </div>
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="logo_doc">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="logo_doc">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% else %}
+             <p class="text-gray-500 dark:text-gray-400 mb-3">
+              {% if request.cookies.get('language') == 'ar' %}لم يتم رفع المستند{% else %}No document uploaded{% endif %}
+             </p>
+            {% endif %}
+           </div>
+
+           <!-- Letterhead Document -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}ليتر هيد{% else %}Letterhead{% endif %}
+            </label>
+            {% if company.letterhead_doc %}
+             <div class="mb-3">
+              <a href="{{ url_for('admin_download_document', company_id=company.id, field_name='letterhead_doc') }}" 
+                 class="inline-flex items-center px-3 py-2 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">
+               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+               </svg>
+               {% if request.cookies.get('language') == 'ar' %}تحميل{% else %}Download{% endif %}
+              </a>
+             </div>
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="letterhead_doc">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="letterhead_doc">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% else %}
+             <p class="text-gray-500 dark:text-gray-400 mb-3">
+              {% if request.cookies.get('language') == 'ar' %}لم يتم رفع المستند{% else %}No document uploaded{% endif %}
+             </p>
+            {% endif %}
+           </div>
+
+           <!-- Bank Letter Document -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}خطاب البنك{% else %}Bank Letter{% endif %}
+            </label>
+            {% if company.bank_letter_doc %}
+             <div class="mb-3">
+              <a href="{{ url_for('admin_download_document', company_id=company.id, field_name='bank_letter_doc') }}" 
+                 class="inline-flex items-center px-3 py-2 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">
+               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+               </svg>
+               {% if request.cookies.get('language') == 'ar' %}تحميل{% else %}Download{% endif %}
+              </a>
+             </div>
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="bank_letter_doc">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="bank_letter_doc">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% else %}
+             <p class="text-gray-500 dark:text-gray-400 mb-3">
+              {% if request.cookies.get('language') == 'ar' %}لم يتم رفع المستند{% else %}No document uploaded{% endif %}
+             </p>
+            {% endif %}
+           </div>
+
+           <!-- Owner ID Document -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}صورة هوية المفوض{% else %}Owner ID{% endif %}
+            </label>
+            {% if company.owner_id_doc %}
+             <div class="mb-3">
+              <a href="{{ url_for('admin_download_document', company_id=company.id, field_name='owner_id_doc') }}" 
+                 class="inline-flex items-center px-3 py-2 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">
+               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+               </svg>
+               {% if request.cookies.get('language') == 'ar' %}تحميل{% else %}Download{% endif %}
+              </a>
+             </div>
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="owner_id_doc">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="owner_id_doc">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% else %}
+             <p class="text-gray-500 dark:text-gray-400 mb-3">
+              {% if request.cookies.get('language') == 'ar' %}لم يتم رفع المستند{% else %}No document uploaded{% endif %}
+             </p>
+            {% endif %}
+           </div>
+
+           <!-- Product Catalog Document -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}كتالوج المنتجات{% else %}Product Catalog{% endif %}
+            </label>
+            {% if company.product_catalog_doc %}
+             <div class="mb-3">
+              <a href="{{ url_for('admin_download_document', company_id=company.id, field_name='product_catalog_doc') }}" 
+                 class="inline-flex items-center px-3 py-2 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">
+               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+               </svg>
+               {% if request.cookies.get('language') == 'ar' %}تحميل{% else %}Download{% endif %}
+              </a>
+             </div>
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="product_catalog_doc">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="product_catalog_doc">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% else %}
+             <p class="text-gray-500 dark:text-gray-400 mb-3">
+              {% if request.cookies.get('language') == 'ar' %}لم يتم رفع المستند{% else %}No document uploaded{% endif %}
+             </p>
+            {% endif %}
+           </div>
+
+           <!-- Quality Certificates Document -->
+           <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700">
+            <label class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+             {% if request.cookies.get('language') == 'ar' %}شهادات الجودة{% else %}Quality Certificates{% endif %}
+            </label>
+            {% if company.quality_certificates_doc %}
+             <div class="mb-3">
+              <a href="{{ url_for('admin_download_document', company_id=company.id, field_name='quality_certificates_doc') }}" 
+                 class="inline-flex items-center px-3 py-2 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">
+               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+               </svg>
+               {% if request.cookies.get('language') == 'ar' %}تحميل{% else %}Download{% endif %}
+              </a>
+             </div>
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="quality_certificates_doc">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="quality_certificates_doc">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% else %}
+             <p class="text-gray-500 dark:text-gray-400 mb-3">
+              {% if request.cookies.get('language') == 'ar' %}لم يتم رفع المستند{% else %}No document uploaded{% endif %}
+             </p>
+            {% endif %}
+           </div>
+          </div>
+         </div>
+         
+         <!-- Recent Orders -->
+        <div class="rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+         <h3 class="mb-4 text-xl font-semibold text-black dark:text-white">
+          {% if request.cookies.get('language') == 'ar' %}آخر الطلبات{% else %}Recent Orders{% endif %}
+         </h3>
+         {% if recent_orders %}
+          <div class="space-y-3">
+           {% for order in recent_orders %}
+           <div class="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-gray-700">
+            <div>
+             <p class="font-medium text-black dark:text-white">Order #{{ order.id }}</p>
+             <p class="text-sm text-gray-600 dark:text-gray-400">{{ order.created_at.strftime('%Y-%m-%d') if order.created_at else 'N/A' }}</p>
+            </div>
+            <span class="inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium
+             {% if order.status == 'pending' %}
+              bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300
+             {% elif order.status == 'approved' %}
+              bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300
+             {% elif order.status == 'rejected' %}
+              bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300
+             {% else %}
+              bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300
+             {% endif %}">
+             {{ order.status|title }}
+            </span>
+           </div>
+           {% endfor %}
+          </div>
+         {% else %}
+          <p class="text-gray-500 dark:text-gray-400">
+           {% if request.cookies.get('language') == 'ar' %}لا توجد طلبات حديثة{% else %}No recent orders{% endif %}
+          </p>
+         {% endif %}
+        </div>
+       </div>
+       
+       <!-- Company Products -->
+       <div class="mt-6 rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+        <h3 class="mb-4 text-xl font-semibold text-black dark:text-white">
+         {% if request.cookies.get('language') == 'ar' %}منتجات الشركة{% else %}Company Products{% endif %}
+        </h3>
+        {% if company_products %}
+         <div class="overflow-x-auto">
+          <table class="w-full table-auto">
+           <thead>
+            <tr class="bg-gray-2 text-left dark:bg-meta-4">
+             <th class="py-4 px-4 font-medium text-black dark:text-white">
+              {% if request.cookies.get('language') == 'ar' %}اسم المنتج{% else %}Product Name{% endif %}
+             </th>
+             <th class="py-4 px-4 font-medium text-black dark:text-white">
+              {% if request.cookies.get('language') == 'ar' %}الوصف{% else %}Description{% endif %}
+             </th>
+             <th class="py-4 px-4 font-medium text-black dark:text-white">
+              {% if request.cookies.get('language') == 'ar' %}السعر{% else %}Price{% endif %}
+             </th>
+             <th class="py-4 px-4 font-medium text-black dark:text-white">
+              {% if request.cookies.get('language') == 'ar' %}الحالة{% else %}Status{% endif %}
+             </th>
+            </tr>
+           </thead>
+           <tbody>
+            {% for product in company_products %}
+            <tr class="border-b border-[#eee] dark:border-strokedark">
+             <td class="py-4 px-4">
+              <p class="text-black dark:text-white">{{ product.name }}</p>
+             </td>
+             <td class="py-4 px-4">
+              <p class="text-gray-600 dark:text-gray-400">{{ product.description[:50] + '...' if product.description and product.description|length > 50 else product.description or 'N/A' }}</p>
+             </td>
+             <td class="py-4 px-4">
+              <p class="text-black dark:text-white">{{ product.price or 'N/A' }}</p>
+             </td>
+             <td class="py-4 px-4">
+              <span class="inline-flex rounded-full bg-opacity-10 py-1 px-3 text-sm font-medium
+               {% if product.is_active %}
+                bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300
+               {% else %}
+                bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300
+               {% endif %}">
+               {% if product.is_active %}
+                {% if request.cookies.get('language') == 'ar' %}نشط{% else %}Active{% endif %}
+               {% else %}
+                {% if request.cookies.get('language') == 'ar' %}غير نشط{% else %}Inactive{% endif %}
+               {% endif %}
+              </span>
+             </td>
+            </tr>
+            {% endfor %}
+           </tbody>
+          </table>
+         </div>
+        {% else %}
+         <p class="text-gray-500 dark:text-gray-400">
+          {% if request.cookies.get('language') == 'ar' %}لا توجد منتجات{% else %}No products found{% endif %}
+         </p>
+        {% endif %}
+       </div>
+      </div>
+     </main>
+     <!-- ===== Main Content End ===== -->
+    </div>
+    <!-- ===== Content Area End ===== -->
+   </div>
+   <!-- ===== Page Wrapper End ===== -->
+   
+   <script src="{{ url_for('static', filename='js/alpine.min.js') }}"></script>
+   <script src="{{ url_for('static', filename='js/script_1.js') }}"></script>
+   
+   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Alpine.js data
+        if (typeof Alpine !== 'undefined') {
+            Alpine.data('companyDetails', () => ({
+                currentLanguage: '{{ request.cookies.get("language", "en") }}',
+                darkMode: false,
+                
+                toggleLanguage() {
+                    const newLang = this.currentLanguage === 'ar' ? 'en' : 'ar';
+                    this.currentLanguage = newLang;
+                    document.cookie = `language=${newLang}; path=/; max-age=31536000`;
+                    location.reload();
+                }
+            }));
+        }
+    });
+   </script>
+  </body>
+ </html>

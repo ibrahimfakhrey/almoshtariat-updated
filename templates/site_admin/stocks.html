@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+  <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+  <title>
+    {% if request.cookies.get('language') == 'ar' %}لوحة تحكم المدير{% else %}Admin Dashboard{% endif %}
+  </title>
+  <link href="favicon.ico" rel="icon"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+ </head>
+ <body :class="{'dark bg-gray-900': darkMode === true}" x-data="{ page: 'stocks', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false, 'currentLanguage': '{{ request.cookies.get("language", "en") }}' }" x-init="
+         darkMode = JSON.parse(localStorage.getItem('darkMode'));
+         currentLanguage = localStorage.getItem('language') || '{{ request.cookies.get("language", "en") }}';
+         $watch('darkMode', value =&gt; localStorage.setItem('darkMode', JSON.stringify(value)));
+         $watch('currentLanguage', value =&gt; localStorage.setItem('language', value))">
+  <!-- ===== Preloader Start ===== -->
+  <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () =&gt; {setTimeout(() =&gt; loaded = false, 500)})" x-show="loaded">
+   <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent">
+   </div>
+  </div>
+  <!-- ===== Preloader End ===== -->
+  <!-- ===== Page Wrapper Start ===== -->
+  <div class="flex h-screen overflow-hidden">
+   <!-- ===== Sidebar Start ===== -->
+   <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+    <!-- SIDEBAR HEADER -->
+    <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+     <a href="/">
+      <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+       <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+       <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+      </span>
+      <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+     </a>
+    </div>
+    <!-- SIDEBAR HEADER -->
+    <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+     <!-- Sidebar Menu -->
+     <nav x-data="{selected: $persist('Dashboard')}">
+      <!-- Menu Group -->
+      <div>
+               <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+         <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">
+          {% if request.cookies.get('language') == 'ar' %}القائمة{% else %}MENU{% endif %}
+         </span>
+        <svg :class="sidebarToggle ? 'xl:block hidden' : 'hidden'" class="menu-group-icon mx-auto fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+         <path clip-rule="evenodd" d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.8335 18.9656 13.5051 17.9991 13.5051C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.8335 11.1706 13.5051 11.9991 13.5051C12.8275 13.5051 13.499 12.8335 13.499 12.0051V11.9951Z" fill="currentColor" fill-rule="evenodd">
+         </path>
+        </svg>
+       </h3>
+       <ul class="mb-6 flex flex-col gap-1">
+        <!-- Menu Item Dashboard -->
+          <li>
+         <a :class=" (selected === 'Dashboard') && (page === 'dashboard') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Dashboard' ? '':'Dashboard')" class="menu-item group" href="/admin_dashboard">
+          <svg :class="(selected === 'Dashboard') && (page === 'dashboard') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}لوحة تحكم المدير{% else %}Admin Dashboard{% endif %}
+          </span>
+         </a>
+        </li>
+        
+        <!-- Menu Item Company Management -->
+        <li>
+         <a :class=" (selected === 'Companies') && (page === 'companies') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Companies' ? '':'Companies')" class="menu-item group" href="/admin_companies">
+          <svg :class="(selected === 'Companies') && (page === 'companies') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}إدارة الشركات{% else %}Company Management{% endif %}
+          </span>
+         </a>
+        </li>
+        
+        <!-- Menu Item Register New Company -->
+        <li>
+         <a :class=" (selected === 'RegisterCompany') && (page === 'register_company') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'RegisterCompany' ? '':'RegisterCompany')" class="menu-item group" href="/admin_register_company">
+          <svg :class="(selected === 'RegisterCompany') && (page === 'register_company') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}تسجيل شركة جديدة{% else %}Register New Company{% endif %}
+          </span>
+         </a>
+        </li>
+        
+        <!-- Menu Item User Management -->
+        <li>
+         <a :class=" (selected === 'Users') && (page === 'users') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Users' ? '':'Users')" class="menu-item group" href="/admin_users">
+          <svg :class="(selected === 'Users') && (page === 'users') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A1.5 1.5 0 0 0 18.54 8H17c-.8 0-1.54.37-2.01 1l-1.7 2.26A1.5 1.5 0 0 0 12.5 12H11v8h9zM5.5 6c.83 0 1.5-.67 1.5-1.5S6.33 3 5.5 3 4 3.67 4 4.5 4.67 6 5.5 6zm2.5 6c-.8 0-1.54.37-2.01 1l-1.7 2.26A1.5 1.5 0 0 0 1.5 16H0v6h9v-6H7.5z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}إدارة المستخدمين{% else %}User Management{% endif %}
+          </span>
+         </a>
+        </li>
+        
+        <!-- Menu Item Order Management -->
+        <li>
+         <a :class=" (selected === 'Orders') && (page === 'orders') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Orders' ? '':'Orders')" class="menu-item group" href="/admin_orders">
+          <svg :class="(selected === 'Orders') && (page === 'orders') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}إدارة الطلبات{% else %}Order Management{% endif %}
+          </span>
+         </a>
+        </li>
+        
+        <!-- Menu Item Create Direct Order -->
+        <li>
+         <a :class=" (selected === 'CreateOrder') && (page === 'create_order') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'CreateOrder' ? '':'CreateOrder')" class="menu-item group" href="/admin_create_order">
+          <svg :class="(selected === 'CreateOrder') && (page === 'create_order') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}إنشاء طلب مباشر{% else %}Create Direct Order{% endif %}
+          </span>
+         </a>
+        </li>
+        
+        <!-- Menu Item Analytics -->
+        <li>
+         <a :class=" (selected === 'Analytics') && (page === 'analytics') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Analytics' ? '':'Analytics')" class="menu-item group" href="/admin_analytics">
+          <svg :class="(selected === 'Analytics') && (page === 'analytics') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}التحليلات{% else %}Analytics{% endif %}
+          </span>
+         </a>
+        </li>
+        
+        <!-- Menu Item System Settings -->
+        <li>
+         <a :class=" (selected === 'Settings') && (page === 'settings') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Settings' ? '':'Settings')" class="menu-item group" href="/admin_settings">
+          <svg :class="(selected === 'Settings') && (page === 'settings') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}إعدادات النظام{% else %}System Settings{% endif %}
+          </span>
+         </a>
+        </li>
+       </ul>
+      </div>
+     </nav>
+    </div>
+   </aside>
+   <!-- ===== Sidebar End ===== -->
+   <!-- ===== Content Area Start ===== -->
+   <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+    <!-- Small Device Overlay Start -->
+    <div :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fixed z-50 h-screen w-full bg-gray-900/50">
+    </div>
+    <!-- Small Device Overlay End -->
+    <!-- ===== Header Start ===== -->
+    <header class="sticky top-0 z-99999 flex w-full border-gray-200 bg-white xl:border-b dark:border-gray-800 dark:bg-gray-900" x-data="{menuToggle: false}">
+     <div class="flex grow flex-col items-center justify-between xl:flex-row xl:px-6">
+      <div class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:py-4 xl:justify-normal xl:border-b-0 xl:px-0 dark:border-gray-800">
+       <!-- Hamburger Toggle BTN -->
+       <button :class="sidebarToggle ? 'xl:bg-transparent dark:xl:bg-transparent bg-gray-100 dark:bg-gray-800" : ''" @click.stop="sidebarToggle = !sidebarToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 xl:h-11 xl:w-11 xl:border dark:border-gray-800 dark:text-gray-400">
+        <svg class="hidden fill-current xl:block" fill="none" height="12" viewbox="0 0 16 12" width="16" xmlns="http://www.w3.org/2000/svg">
+         <path clip-rule="evenodd" d="M0.583252 1C0.583252 0.585788 0.919038 0.25 1.33325 0.25H14.6666C15.0808 0.25 15.4166 0.585786 15.4166 1C15.4166 1.41421 15.0808 1.75 14.6666 1.75L1.33325 1.75C0.919038 1.75 0.583252 1.41422 0.583252 1ZM0.583252 11C0.583252 10.5858 0.919038 10.25 1.33325 10.25L14.6666 10.25C15.0808 10.25 15.4166 10.5858 15.4166 11C15.4166 11.4142 15.0808 11.75 14.6666 11.75L1.33325 11.75C0.919038 11.75 0.583252 11.4142 0.583252 11ZM1.33325 5.25C0.919038 5.25 0.583252 5.58579 0.583252 6C0.583252 6.41421 0.919038 6.75 1.33325 6.75L7.99992 6.75C8.41413 6.75 8.74992 6.41421 8.74992 6C8.74992 5.58579 8.41413 5.25 7.99992 5.25L1.33325 5.25Z" fill="" fill-rule="evenodd">
+         </path>
+        </svg>
+        <svg :class="sidebarToggle ? 'hidden' : 'block xl:hidden'" class="fill-current xl:hidden" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+         <path clip-rule="evenodd" d="M3.25 6C3.25 5.58579 3.58579 5.25 4 5.25L20 5.25C20.4142 5.25 20.75 5.58579 20.75 6C20.75 6.41421 20.4142 6.75 20 6.75L4 6.75C3.58579 6.75 3.25 6.41422 3.25 6ZM3.25 18C3.25 17.5858 3.58579 17.25 4 17.25L20 17.25C20.4142 17.25 20.75 17.5858 20.75 18C20.75 18.4142 20.4142 18.75 20 18.75L4 18.75C3.58579 18.75 3.25 18.4142 3.25 18ZM4 11.25C3.58579 11.25 3.25 11.5858 3.25 12C3.25 12.4142 3.58579 12.75 4 12.75L12 12.75C12.4142 12.75 12.75 12.4142 12.75 12C12.75 11.5858 12.4142 11.25 12 11.25L4 11.25Z" fill="" fill-rule="evenodd">
+         </path>
+        </svg>
+        <!-- cross icon -->
+        <svg :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+         <path clip-rule="evenodd" d="M6.21967 7.28131C5.92678 6.98841 5.92678 6.51354 6.21967 6.22065C6.51256 5.92775 6.98744 5.92775 7.28033 6.22065L11.999 10.9393L16.7176 6.22078C17.0105 5.92789 17.4854 5.92788 17.7782 6.22078C18.0711 6.51367 18.0711 6.98855 17.7782 7.28144L13.0597 12L17.7782 16.7186C18.0711 17.0115 18.0711 17.4863 17.7782 17.7792C17.4854 18.0721 17.0105 18.0721 16.7176 17.7792L11.999 13.0607L7.28033 17.7794C6.98744 18.0722 6.51256 18.0722 6.21967 17.7794C5.92678 17.4865 5.92678 17.0116 6.21967 16.7187L10.9384 12L6.21967 7.28131Z" fill="" fill-rule="evenodd">
+         </path>
+        </svg>
+       </button>
+       <!-- Hamburger Toggle BTN -->
+       <a class="xl:hidden" href="index.html">
+        <img alt="Logo" class="dark:hidden" src="src/images/logo/logo.svg"/>
+        <img alt="Logo" class="hidden dark:block" src="src/images/logo/logo-dark.svg"/>
+       </a>
+       <!-- Application nav menu button -->
+       <button :class="menuToggle ? 'bg-gray-100 dark:bg-gray-800" : ''" @click.stop="menuToggle = !menuToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 hover:bg-gray-100 xl:hidden dark:text-gray-400 dark:hover:bg-gray-800">
+        <svg class="fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+         <path clip-rule="evenodd" d="M5.99902 10.4951C6.82745 10.4951 7.49902 11.1667 7.49902 11.9951V12.0051C7.49902 12.8335 6.82745 13.5051 5.99902 13.5051C5.1706 13.5051 4.49902 12.8335 4.49902 12.0051V11.9951C4.49902 11.1667 5.1706 10.4951 5.99902 10.4951ZM17.999 10.4951C18.8275 10.4951 19.499 11.1667 19.499 11.9951V12.0051C19.499 12.8335 18.8275 13.5051 17.999 13.5051C17.1706 13.5051 16.499 12.8335 16.499 12.0051V11.9951C16.499 11.1667 17.1706 10.4951 17.999 10.4951ZM13.499 11.9951C13.499 11.1667 12.8275 10.4951 11.999 10.4951C11.1706 10.4951 10.499 11.1667 10.499 11.9951V12.0051C10.499 12.8335 11.1706 13.5051 11.999 13.5051C12.8275 13.5051 13.499 12.8335 13.499 12.0051V11.9951Z" fill="" fill-rule="evenodd">
+         </path>
+        </svg>
+       </button>
+       <!-- Application nav menu button -->
+      </div>
+      <div :class="menuToggle ? 'flex' : 'hidden'" class="shadow-theme-md w-full items-center justify-between gap-4 px-5 py-4 xl:flex xl:justify-end xl:px-0 xl:shadow-none">
+       <div class="2xsm:gap-3 flex items-center gap-2">
+        <!-- Language Toggle -->
+        <button @click.prevent="toggleLanguage()" class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white" :title="currentLanguage === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'">
+         <span x-text="currentLanguage === 'ar' ? 'EN' : 'عربي'" class="text-xs font-medium"></span>
+        </button>
+        <!-- Language Toggle -->
+        
+        <!-- Dark Mode Toggler -->
+        <button @click.prevent="darkMode = !darkMode" class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white">
+         <svg class="hidden dark:block" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+          <path clip-rule="evenodd" d="M9.99998 1.5415C10.4142 1.5415 10.75 1.87729 10.75 2.2915V3.5415C10.75 3.95572 10.4142 4.2915 9.99998 4.2915C9.58577 4.2915 9.24998 3.95572 9.24998 3.5415V2.2915C9.24998 1.87729 9.58577 1.5415 9.99998 1.5415ZM10.0009 6.79327C8.22978 6.79327 6.79402 8.22904 6.79402 10.0001C6.79402 11.7712 8.22978 13.207 10.0009 13.207C11.772 13.207 13.2078 11.7712 13.2078 10.0001C13.2078 8.22904 11.772 6.79327 10.0009 6.79327ZM5.29402 10.0001C5.29402 7.40061 7.40135 5.29327 10.0009 5.29327C12.6004 5.29327 14.7078 7.40061 14.7078 10.0001C14.7078 12.5997 12.6004 14.707 10.0009 14.707C7.40135 14.707 5.29402 12.5997 5.29402 10.0001ZM15.9813 5.08035C16.2742 4.78746 16.2742 4.31258 15.9813 4.01969C15.6884 3.7268 15.2135 3.7268 14.9207 4.01969L14.0368 4.90357C13.7439 5.19647 13.7439 5.67134 14.0368 5.96423C14.3297 6.25713 14.8045 6.25713 15.0974 5.96423L15.9813 5.08035ZM18.4577 10.0001C18.4577 10.4143 18.1219 10.7501 17.7077 10.7501H16.4577C16.0435 10.7501 15.7077 10.4143 15.7077 10.0001C15.7077 9.58592 16.0435 9.25013 16.4577 9.25013H17.7077C18.1219 9.25013 18.4577 9.58592 18.4577 10.0001ZM14.9207 15.9806C15.2135 16.2735 15.6884 16.2735 15.9813 15.9806C16.2742 15.6877 16.2742 15.2128 15.9813 14.9199L15.0974 14.036C14.8045 13.7431 14.3297 13.7431 14.0368 14.036C13.7439 14.3289 13.7439 14.8038 14.0368 15.0967L14.9207 15.9806ZM9.99998 15.7088C10.4142 15.7088 10.75 16.0445 10.75 16.4588V17.7088C10.75 18.123 10.4142 18.4588 9.99998 18.4588C9.58577 18.4588 9.24998 18.123 9.24998 17.7088V16.4588C9.24998 16.0445 9.58577 15.7088 9.99998 15.7088ZM5.96356 15.0972C6.25646 14.8043 6.25646 14.3295 5.96356 14.0366C5.67067 13.7437 5.1958 13.7437 4.9029 14.0366L4.01902 14.9204C3.72613 15.2133 3.72613 15.6882 4.01902 15.9811C4.31191 16.274 4.78679 16.274 5.07968 15.9811L5.96356 15.0972ZM4.29224 10.0001C4.29224 10.4143 3.95645 10.7501 3.54224 10.7501H2.29224C1.87802 10.7501 1.54224 10.4143 1.54224 10.0001C1.54224 9.58592 1.87802 9.25013 2.29224 9.25013H3.54224C3.95645 9.25013 4.29224 9.58592 4.29224 10.0001ZM4.9029 5.9637C5.1958 6.25659 5.67067 6.25659 5.96356 5.9637C6.25646 5.6708 6.25646 5.19593 5.96356 4.90303L5.07968 4.01915C4.78679 3.72626 4.31191 3.72626 4.01902 4.01915C3.72613 4.31204 3.72613 4.78692 4.01902 5.07981L4.9029 5.9637Z" fill="currentColor" fill-rule="evenodd">
+          </path>
+         </svg>
+         <svg class="dark:hidden" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17.4547 11.97L18.1799 12.1611C18.265 11.8383 18.1265 11.4982 17.8401 11.3266C17.5538 11.1551 17.1885 11.1934 16.944 11.4207L17.4547 11.97ZM8.0306 2.5459L8.57989 3.05657C8.80718 2.81209 8.84554 2.44682 8.67398 2.16046C8.50243 1.8741 8.16227 1.73559 7.83948 1.82066L8.0306 2.5459ZM12.9154 13.0035C9.64678 13.0035 6.99707 10.3538 6.99707 7.08524H5.49707C5.49707 11.1823 8.81835 14.5035 12.9154 14.5035V14.5035ZM16.944 11.4207C15.8869 12.4035 14.4721 13.0035 12.9154 13.0035V14.5035C14.8657 14.5035 16.6418 13.7499 17.9654 12.5193L16.944 11.4207ZM16.7295 11.7789C15.9437 14.7607 13.2277 16.9586 10.0003 16.9586V18.4586C13.9257 18.4586 17.2249 15.7853 18.1799 12.1611L16.7295 11.7789ZM10.0003 16.9586C6.15734 16.9586 3.04199 13.8433 3.04199 10.0003H1.54199C1.54199 14.6717 5.32892 18.4586 10.0003 18.4586V16.9586ZM3.04199 10.0001C3.04199 6.77289 5.23988 4.05695 8.22173 3.27114L7.83948 1.82066C4.21532 2.77574 1.54199 6.07486 1.54199 10.0001H3.04199ZM6.99707 7.08524C6.99707 5.52854 7.5971 4.11366 8.57989 3.05657L7.48132 2.03522C6.25073 3.35885 5.49707 5.13487 5.49707 7.08524H6.99707Z" fill="currentColor">
+          </path>
+         </svg>
+        </button>
+        <!-- Dark Mode Toggler -->
+        <!-- Notification Menu Area -->
+        {% include 'partials/notification_dropdown.html' %}
+               
+        <!-- Notification Menu Area -->
+       </div>
+       <!-- User Area -->
+       <div @click.outside="dropdownOpen = false" class="relative" x-data="{ dropdownOpen: false }">
+        <a @click.prevent="dropdownOpen = ! dropdownOpen" class="flex items-center text-gray-700 dark:text-gray-400" href="#">
+         <span class="mr-3 h-11 w-11 overflow-hidden rounded-full">
+          <img alt="Admin" src="https://img.icons8.com/?size=100&id=admin&format=png&color=000000"/>
+         </span>
+         <span class="text-theme-sm mr-1 block font-medium">
+          {{ current_user.username }} (Admin)
+         </span>
+         <svg :class="dropdownOpen && 'rotate-180'" class="stroke-gray-500 dark:stroke-gray-400" fill="none" height="20" viewbox="0 0 18 20" width="18" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4.3125 8.65625L9 13.3437L13.6875 8.65625" stroke="" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">
+          </path>
+         </svg>
+        </a>
+        <!-- Dropdown Start -->
+        <div class="shadow-theme-lg dark:bg-gray-dark absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 dark:border-gray-800" x-show="dropdownOpen">
+         <div>
+          <span class="text-theme-sm block font-medium text-gray-700 dark:text-gray-400">
+           {{ current_user.name or 'System Administrator' }}
+          </span>
+          <span class="text-theme-xs mt-0.5 block text-gray-500 dark:text-gray-400">
+           {{ current_user.email }}
+          </span>
+         </div>
+         <ul class="flex flex-col gap-1 border-b border-gray-200 pt-4 pb-3 dark:border-gray-800">
+          <li>
+           <a class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300" href="/admin_profile">
+            <svg class="fill-gray-500 group-hover:fill-gray-700 dark:fill-gray-400 dark:group-hover:fill-gray-300" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+             <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="" fill-rule="evenodd">
+             </path>
+            </svg>
+            {% if request.cookies.get('language') == 'ar' %}الملف الشخصي للمدير{% else %}Admin Profile{% endif %}
+           </a>
+          </li>
+          <li>
+           <a class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300" href="/admin_settings">
+            <svg class="fill-gray-500 group-hover:fill-gray-700 dark:fill-gray-400 dark:group-hover:fill-gray-300" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+             <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z" fill="currentColor">
+             </path>
+            </svg>
+            {% if request.cookies.get('language') == 'ar' %}إعدادات النظام{% else %}System Settings{% endif %}
+           </a>
+          </li>
+         </ul>
+         <a href="{{ url_for('logout') }}" class="group text-theme-sm mt-3 flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
+          <svg class="fill-gray-500 group-hover:fill-gray-700 dark:group-hover:fill-gray-300" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path clip-rule="evenodd" d="M15.1007 19.247C14.6865 19.247 14.3507 18.9112 14.3507 18.497L14.3507 14.245H12.8507V18.497C12.8507 19.7396 13.8581 20.747 15.1007 20.747H18.5007C19.7434 20.747 20.7507 19.7396 20.7507 18.497L20.7507 5.49609C20.7507 4.25345 19.7433 3.24609 18.5007 3.24609H15.1007C13.8581 3.24609 12.8507 4.25345 12.8507 5.49609V9.74501L14.3507 9.74501V5.49609C14.3507 5.08188 14.6865 4.74609 15.1007 4.74609L18.5007 4.74609C18.9149 4.74609 19.2507 5.08188 19.2507 5.49609L19.2507 18.497C19.2507 18.9112 18.9149 19.247 18.5007 19.247H15.1007ZM3.25073 11.9984C3.25073 12.2144 3.34204 12.4091 3.48817 12.546L8.09483 17.1556C8.38763 17.4485 8.86251 17.4487 9.15549 17.1559C9.44848 16.8631 9.44863 16.3882 9.15583 16.0952L5.81116 12.7484L16.0007 12.7484C16.4149 12.7484 16.7507 12.4127 16.7507 11.9984C16.7507 11.5842 16.4149 11.2484 16.0007 11.2484L5.81528 11.2484L9.15585 7.90554C9.44864 7.61255 9.44847 7.13767 9.15547 6.84488C8.86248 6.55209 8.3876 6.55226 8.09481 6.84525L3.52309 11.4202C3.35673 11.5577 3.25073 11.7657 3.25073 11.9984Z" fill="" fill-rule="evenodd">
+           </path>
+          </svg>
+          {% if request.cookies.get('language') == 'ar' %}تسجيل الخروج{% else %}Sign out{% endif %}
+         </a>
+        </div>
+        <!-- Dropdown End -->
+       </div>
+       <!-- User Area -->
+      </div>
+     </div>
+    </header>
+    <!-- ===== Header End ===== -->
+    <!-- ===== Main Content Start ===== -->
+    <main>
+     <div class="mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6">
+      <div class="grid grid-cols-12 gap-4 md:gap-6">
+       <div class="col-span-12">
+        <!-- Admin Dashboard Statistics -->
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 xl:grid-cols-3 2xl:grid-cols-6">
+         <!-- Total Users Card -->
+         <div class="rounded-2xl border border-gray-200 bg-white px-6 pb-5 pt-6 dark:border-gray-800 dark:bg-white/[0.03]">
+          <div class="mb-6 flex items-center gap-3">
+           <div class="h-10 w-10">
+            <img alt="users" src="https://img.icons8.com/?size=100&id=user&format=png&color=000000"/>
+           </div>
+           <div>
+            <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+             {% if request.cookies.get('language') == 'ar' %}إجمالي المستخدمين{% else %}Total Users{% endif %}
+            </h3>
+            <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+             {% if request.cookies.get('language') == 'ar' %}جميع المستخدمين المسجلين{% else %}All registered users{% endif %}
+            </span>
+           </div>
+          </div>
+          <div class="flex items-end justify-between">
+           <div>
+            <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+             {{ total_users or 0 }}
+            </h4>
+           </div>
+           <a href="/admin_users">
+             <button class="flex items-center justify-center w-full p-3 font-medium text-white rounded-lg bg-brand-500 text-theme-sm shadow-theme-xs hover:bg-brand-600">
+              {% if request.cookies.get('language') == 'ar' %}إدارة المستخدمين{% else %}Manage Users{% endif %}
+             </button>
+           </a>
+          </div>
+         </div>
+
+         <!-- Total Companies Card -->
+         <div class="rounded-2xl border border-gray-200 bg-white px-6 pb-5 pt-6 dark:border-gray-800 dark:bg-white/[0.03]">
+          <div class="mb-6 flex items-center gap-3">
+           <div class="h-10 w-10">
+            <img alt="companies" src="https://img.icons8.com/?size=100&id=company&format=png&color=000000"/>
+           </div>
+           <div>
+            <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+             {% if request.cookies.get('language') == 'ar' %}إجمالي الشركات{% else %}Total Companies{% endif %}
+            </h3>
+            <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+             {% if request.cookies.get('language') == 'ar' %}الشركات المسجلة{% else %}Registered companies{% endif %}
+            </span>
+           </div>
+          </div>
+          <div class="flex items-end justify-between">
+           <div>
+            <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+             {{ total_companies or 0 }}
+            </h4>
+           </div>
+           <a href="/admin_companies">
+             <button class="flex items-center justify-center w-full p-3 font-medium text-white rounded-lg bg-brand-500 text-theme-sm shadow-theme-xs hover:bg-brand-600">
+              {% if request.cookies.get('language') == 'ar' %}إدارة الشركات{% else %}Manage Companies{% endif %}
+             </button>
+           </a>
+          </div>
+         </div>
+
+         <!-- Total Orders Card -->
+         <div class="rounded-2xl border border-gray-200 bg-white px-6 pb-5 pt-6 dark:border-gray-800 dark:bg-white/[0.03]">
+          <div class="mb-6 flex items-center gap-3">
+           <div class="h-10 w-10">
+            <img alt="orders" src="https://img.icons8.com/?size=100&id=TdrrT9U3U1Qe&format=png&color=000000"/>
+           </div>
+           <div>
+            <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+             {% if request.cookies.get('language') == 'ar' %}إجمالي الطلبات{% else %}Total Orders{% endif %}
+            </h3>
+            <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+             {% if request.cookies.get('language') == 'ar' %}جميع الطلبات في النظام{% else %}All orders in system{% endif %}
+            </span>
+           </div>
+          </div>
+          <div class="flex items-end justify-between">
+           <div>
+            <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+             {{ total_orders or 0 }}
+            </h4>
+           </div>
+           <a href="/admin_orders">
+             <button class="flex items-center justify-center w-full p-3 font-medium text-white rounded-lg bg-brand-500 text-theme-sm shadow-theme-xs hover:bg-brand-600">
+              {% if request.cookies.get('language') == 'ar' %}إدارة الطلبات{% else %}Manage Orders{% endif %}
+             </button>
+           </a>
+          </div>
+         </div>
+
+         <!-- Pending Approvals Card -->
+         <div class="rounded-2xl border border-gray-200 bg-white px-6 pb-5 pt-6 dark:border-gray-800 dark:bg-white/[0.03]">
+          <div class="mb-6 flex items-center gap-3">
+           <div class="h-10 w-10">
+            <img alt="pending" src="https://img.icons8.com/?size=100&id=hu4SFxCb4UXH&format=png&color=000000"/>
+           </div>
+           <div>
+            <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+             {% if request.cookies.get('language') == 'ar' %}في انتظار الموافقة{% else %}Pending Approvals{% endif %}
+            </h3>
+            <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+             {% if request.cookies.get('language') == 'ar' %}شركات تحتاج موافقة{% else %}Companies need approval{% endif %}
+            </span>
+           </div>
+          </div>
+          <div class="flex items-end justify-between">
+           <div>
+            <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+             {{ pending_approvals or 0 }}
+            </h4>
+           </div>
+           <span class="flex items-center gap-1 rounded-full bg-warning-50 py-0.5 pl-2 pr-2.5 text-sm font-medium text-warning-600 dark:bg-warning-500/15 dark:text-warning-500">
+            <svg class="fill-current" fill="none" height="12" viewbox="0 0 12 12" width="12" xmlns="http://www.w3.org/2000/svg">
+             <path clip-rule="evenodd" d="M6 2C6.55228 2 7 2.44772 7 3V7C7 7.55228 6.55228 8 6 8C5.44772 8 5 7.55228 5 7V3C5 2.44772 5.44772 2 6 2ZM6 10C6.55228 10 7 10.4477 7 11C7 11.5523 6.55228 12 6 12C5.44772 12 5 11.5523 5 11C5 10.4477 5.44772 10 6 10Z" fill="" fill-rule="evenodd">
+             </path>
+            </svg>
+            {% if request.cookies.get('language') == 'ar' %}في الانتظار{% else %}Pending{% endif %}
+           </span>
+          </div>
+         </div>
+
+         <!-- Active Users Card -->
+         <div class="rounded-2xl border border-gray-200 bg-white px-6 pb-5 pt-6 dark:border-gray-800 dark:bg-white/[0.03]">
+          <div class="mb-6 flex items-center gap-3">
+           <div class="h-10 w-10">
+            <img alt="active" src="https://img.icons8.com/?size=100&id=checkmark&format=png&color=000000"/>
+           </div>
+           <div>
+            <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+             {% if request.cookies.get('language') == 'ar' %}المستخدمين النشطين{% else %}Active Users{% endif %}
+            </h3>
+            <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+             {% if request.cookies.get('language') == 'ar' %}المستخدمين النشطين هذا الشهر{% else %}Active users this month{% endif %}
+            </span>
+           </div>
+          </div>
+          <div class="flex items-end justify-between">
+           <div>
+            <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+             {{ active_users or 0 }}
+            </h4>
+           </div>
+           <span class="flex items-center gap-1 rounded-full bg-success-50 py-0.5 pl-2 pr-2.5 text-sm font-medium text-success-600 dark:bg-success-500/15 dark:text-success-500">
+            <svg class="fill-current" fill="none" height="12" viewbox="0 0 12 12" width="12" xmlns="http://www.w3.org/2000/svg">
+             <path clip-rule="evenodd" d="M9.70714 3.29289C10.0976 3.68342 10.0976 4.31658 9.70714 4.70711L5.41421 9.00004C5.02368 9.39056 4.39052 9.39056 4.00000 9.00004L2.29289 7.29293C1.90237 6.90240 1.90237 6.26924 2.29289 5.87871C2.68342 5.48819 3.31658 5.48819 3.70711 5.87871L4.70711 6.87871L8.29289 3.29293C8.68342 2.90240 9.31658 2.90240 9.70714 3.29289Z" fill="" fill-rule="evenodd">
+             </path>
+            </svg>
+            {% if request.cookies.get('language') == 'ar' %}نشط{% else %}Active{% endif %}
+           </span>
+          </div>
+         </div>
+
+         <!-- System Health Card -->
+         <div class="rounded-2xl border border-gray-200 bg-white px-6 pb-5 pt-6 dark:border-gray-800 dark:bg-white/[0.03]">
+          <div class="mb-6 flex items-center gap-3">
+           <div class="h-10 w-10">
+            <img alt="system" src="https://img.icons8.com/?size=100&id=settings&format=png&color=000000"/>
+           </div>
+           <div>
+            <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+             {% if request.cookies.get('language') == 'ar' %}صحة النظام{% else %}System Health{% endif %}
+            </h3>
+            <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+             {% if request.cookies.get('language') == 'ar' %}حالة النظام العامة{% else %}Overall system status{% endif %}
+            </span>
+           </div>
+          </div>
+          <div class="flex items-end justify-between">
+           <div>
+            <h4 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+             {{ system_health or 'Good' }}
+            </h4>
+           </div>
+           <a href="/admin_settings">
+             <button class="flex items-center justify-center w-full p-3 font-medium text-white rounded-lg bg-brand-500 text-theme-sm shadow-theme-xs hover:bg-brand-600">
+              {% if request.cookies.get('language') == 'ar' %}إعدادات النظام{% else %}System Settings{% endif %}
+             </button>
+           </a>
+          </div>
+         </div>
+        </div>
+        <!-- Admin Dashboard Statistics -->
+       </div>
+       <div class="col-span-12 space-y-6 xl:col-span-8">
+        <!-- ====== Platform Overview Start ===== -->
+        <div class="rounded-2xl border border-gray-200 bg-white px-5 pb-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-5">
+         <div class="flex flex-col gap-5 mb-6 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+           <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+            {% if request.cookies.get('language') == 'ar' %}نظرة عامة على المنصة{% else %}Platform Overview{% endif %}
+           </h3>
+           <p class="mt-1 text-gray-500 text-theme-sm dark:text-gray-400">
+            {% if request.cookies.get('language') == 'ar' %}إحصائيات شاملة عن النظام والمنصة{% else %}Comprehensive system and platform statistics{% endif %}
+           </p>
+          </div>
+          <a href="/admin_analytics" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-500 rounded-lg hover:bg-brand-600 transition-colors">
+           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+           </svg>
+           {% if request.cookies.get('language') == 'ar' %}عرض التحليلات{% else %}View Analytics{% endif %}
+          </a>
+         </div>
+         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- User Growth -->
+          <div class="rounded-xl border border-gray-200 bg-blue-50 p-4 dark:border-gray-700 dark:bg-blue-900/20">
+           <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+             <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center dark:bg-blue-900/30">
+              <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+              </svg>
+             </div>
+             <h4 class="font-semibold text-gray-800 dark:text-white">{% if request.cookies.get('language') == 'ar' %}نمو المستخدمين{% else %}User Growth{% endif %}</h4>
+            </div>
+            <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full dark:bg-blue-900 dark:text-blue-200">
+             {% if request.cookies.get('language') == 'ar' %}+{{ user_growth or 15 }}%{% else %}+{{ user_growth or 15 }}%{% endif %}
+            </span>
+           </div>
+           <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+            {% if request.cookies.get('language') == 'ar' %}معدل نمو المستخدمين هذا الشهر{% else %}User growth rate this month{% endif %}
+           </p>
+           <a href="/admin_users" class="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400">
+            {% if request.cookies.get('language') == 'ar' %}عرض المستخدمين →{% else %}View Users →{% endif %}
+           </a>
+          </div>
+
+          <!-- Company Registrations -->
+          <div class="rounded-xl border border-gray-200 bg-green-50 p-4 dark:border-gray-700 dark:bg-green-900/20">
+           <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+             <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center dark:bg-green-900/30">
+              <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+              </svg>
+             </div>
+             <h4 class="font-semibold text-gray-800 dark:text-white">{% if request.cookies.get('language') == 'ar' %}تسجيلات الشركات{% else %}Company Registrations{% endif %}</h4>
+            </div>
+            <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full dark:bg-green-900 dark:text-green-200">
+             {% if request.cookies.get('language') == 'ar' %}{{ new_companies or 8 }} جديدة{% else %}{{ new_companies or 8 }} New{% endif %}
+            </span>
+           </div>
+           <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+            {% if request.cookies.get('language') == 'ar' %}شركات جديدة مسجلة هذا الشهر{% else %}New companies registered this month{% endif %}
+           </p>
+           <a href="/admin_companies" class="text-sm font-medium text-green-600 hover:text-green-700 dark:text-green-400">
+            {% if request.cookies.get('language') == 'ar' %}عرض الشركات →{% else %}View Companies →{% endif %}
+           </a>
+          </div>
+
+          <!-- Order Volume -->
+          <div class="rounded-xl border border-gray-200 bg-orange-50 p-4 dark:border-gray-700 dark:bg-orange-900/20">
+           <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+             <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center dark:bg-orange-900/30">
+              <svg class="w-4 h-4 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+             </div>
+             <h4 class="font-semibold text-gray-800 dark:text-white">{% if request.cookies.get('language') == 'ar' %}حجم الطلبات{% else %}Order Volume{% endif %}</h4>
+            </div>
+            <span class="px-2 py-1 text-xs font-medium bg-orange-100 text-orange-800 rounded-full dark:bg-orange-900 dark:text-orange-200">
+             {% if request.cookies.get('language') == 'ar' %}{{ monthly_orders or 45 }}{% else %}{{ monthly_orders or 45 }}{% endif %}
+            </span>
+           </div>
+           <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+            {% if request.cookies.get('language') == 'ar' %}طلبات جديدة هذا الشهر{% else %}New orders this month{% endif %}
+           </p>
+           <a href="/admin_orders" class="text-sm font-medium text-orange-600 hover:text-orange-700 dark:text-orange-400">
+            {% if request.cookies.get('language') == 'ar' %}عرض الطلبات →{% else %}View Orders →{% endif %}
+           </a>
+          </div>
+         </div>
+        </div>
+        <!-- ====== Platform Overview End ===== -->
+        
+        <!-- ====== System Performance & Analytics Start ====== -->
+        <div class="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] sm:p-6">
+         <div class="flex justify-between mb-6">
+          <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+           {% if request.cookies.get('language') == 'ar' %}أداء النظام والتحليلات{% else %}System Performance & Analytics{% endif %}
+          </h3>
+          <div class="flex items-center gap-2">
+           <span class="text-sm text-gray-500 dark:text-gray-400">{% if request.cookies.get('language') == 'ar' %}آخر 30 يوم{% else %}Last 30 days{% endif %}</span>
+         </div>
+         </div>
+         
+         <!-- Performance Summary Cards -->
+         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <!-- Platform Uptime -->
+          <div class="rounded-xl border border-gray-200 bg-blue-50 p-4 dark:border-gray-700 dark:bg-blue-900/20">
+           <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center dark:bg-blue-900/30">
+             <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+             </svg>
+            </div>
+            <div>
+             <p class="text-sm font-medium text-blue-800 dark:text-blue-200">{% if request.cookies.get('language') == 'ar' %}وقت التشغيل{% else %}Uptime{% endif %}</p>
+             <p class="text-lg font-bold text-blue-600 dark:text-blue-400">{{ platform_uptime or '99.9%' }}</p>
+            </div>
+           </div>
+          </div>
+          
+          <!-- Response Time -->
+          <div class="rounded-xl border border-gray-200 bg-green-50 p-4 dark:border-gray-700 dark:bg-green-900/20">
+           <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center dark:bg-green-900/30">
+             <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+             </svg>
+            </div>
+            <div>
+             <p class="text-sm font-medium text-green-800 dark:text-green-200">{% if request.cookies.get('language') == 'ar' %}وقت الاستجابة{% else %}Response Time{% endif %}</p>
+             <p class="text-lg font-bold text-green-600 dark:text-green-400">{{ avg_response_time or '150ms' }}</p>
+            </div>
+           </div>
+          </div>
+          
+          <!-- Error Rate -->
+          <div class="rounded-xl border border-gray-200 bg-red-50 p-4 dark:border-gray-700 dark:bg-red-900/20">
+           <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center dark:bg-red-900/30">
+             <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+             </svg>
+            </div>
+            <div>
+             <p class="text-sm font-medium text-red-800 dark:text-red-200">{% if request.cookies.get('language') == 'ar' %}معدل الأخطاء{% else %}Error Rate{% endif %}</p>
+             <p class="text-lg font-bold text-red-600 dark:text-red-400">{{ error_rate or '0.1%' }}</p>
+            </div>
+           </div>
+          </div>
+         </div>
+         
+         <!-- Quick Actions -->
+         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <a href="/admin_companies" class="flex items-center justify-between p-4 rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 transition-colors dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
+           <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-brand-100 rounded-lg flex items-center justify-center dark:bg-brand-900/30">
+             <svg class="w-4 h-4 text-brand-600 dark:text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+             </svg>
+            </div>
+            <span class="font-medium text-gray-700 dark:text-gray-300">{% if request.cookies.get('language') == 'ar' %}مراجعة طلبات الشركات{% else %}Review Company Applications{% endif %}</span>
+           </div>
+           <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+           </svg>
+          </a>
+          
+          <a href="/admin_users" class="flex items-center justify-between p-4 rounded-xl border border-gray-200 bg-gray-50 hover:bg-gray-100 transition-colors dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700">
+           <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-brand-100 rounded-lg flex items-center justify-center dark:bg-brand-900/30">
+             <svg class="w-4 h-4 text-brand-600 dark:text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+             </svg>
+            </div>
+            <span class="font-medium text-gray-700 dark:text-gray-300">{% if request.cookies.get('language') == 'ar' %}إدارة المستخدمين{% else %}Manage Users{% endif %}</span>
+           </div>
+           <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+           </svg>
+          </a>
+         </div>
+        </div>
+        <!-- ====== System Performance & Analytics End ====== -->
+       </div>
+       <div class="col-span-12 space-y-6 xl:col-span-4">
+        <!-- ====== System Status & Quick Actions Start ====== -->
+        <div class="rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6">
+         <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+           {% if request.cookies.get('language') == 'ar' %}حالة النظام{% else %}System Status{% endif %}
+          </h3>
+          <div class="flex items-center gap-2">
+           <span class="text-sm text-gray-500 dark:text-gray-400">{% if request.cookies.get('language') == 'ar' %}آخر تحديث{% else %}Last Updated{% endif %}</span>
+         </div>
+         </div>
+         
+         <!-- System Status -->
+         <div class="space-y-4">
+          <!-- Database Status -->
+          <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg dark:bg-green-900/20">
+           <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center dark:bg-green-900/30">
+             <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+             </svg>
+            </div>
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{% if request.cookies.get('language') == 'ar' %}قاعدة البيانات{% else %}Database{% endif %}</span>
+           </div>
+           <span class="text-lg font-bold text-green-600 dark:text-green-400">{% if request.cookies.get('language') == 'ar' %}متصل{% else %}Online{% endif %}</span>
+          </div>
+          
+          <!-- File System Status -->
+          <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg dark:bg-green-900/20">
+           <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center dark:bg-green-900/30">
+             <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+             </svg>
+            </div>
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{% if request.cookies.get('language') == 'ar' %}نظام الملفات{% else %}File System{% endif %}</span>
+           </div>
+           <span class="text-lg font-bold text-green-600 dark:text-green-400">{% if request.cookies.get('language') == 'ar' %}متصل{% else %}Online{% endif %}</span>
+          </div>
+          
+          <!-- Email Service Status -->
+          <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg dark:bg-green-900/20">
+           <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center dark:bg-green-900/30">
+             <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+             </svg>
+            </div>
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{% if request.cookies.get('language') == 'ar' %}خدمة البريد{% else %}Email Service{% endif %}</span>
+           </div>
+           <span class="text-lg font-bold text-green-600 dark:text-green-400">{% if request.cookies.get('language') == 'ar' %}متصل{% else %}Online{% endif %}</span>
+          </div>
+         </div>
+        </div>
+        <!-- ====== System Status & Quick Actions End ====== -->
+        
+        <!-- ====== Admin Quick Actions Start ====== -->
+        <div class="rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
+         <div class="mb-6 flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">
+           {% if request.cookies.get('language') == 'ar' %}إجراءات سريعة للمدير{% else %}Admin Quick Actions{% endif %}
+          </h3>
+         </div>
+         
+         <!-- Quick Action Buttons -->
+         <div class="grid grid-cols-1 gap-3 mb-6">
+          <a href="/admin_companies" class="flex items-center justify-center gap-2 p-3 bg-brand-50 border border-brand-200 rounded-lg hover:bg-brand-100 transition-colors dark:bg-brand-900/20 dark:border-brand-800 dark:hover:bg-brand-900/30">
+           <svg class="w-4 h-4 text-brand-600 dark:text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+           </svg>
+           <span class="text-sm font-medium text-brand-700 dark:text-brand-300">{% if request.cookies.get('language') == 'ar' %}مراجعة طلبات الشركات{% else %}Review Company Applications{% endif %}</span>
+          </a>
+          
+          <a href="/admin_users" class="flex items-center justify-center gap-2 p-3 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors dark:bg-green-900/20 dark:border-green-800 dark:hover:bg-green-900/30">
+           <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+           </svg>
+           <span class="text-sm font-medium text-green-700 dark:text-green-300">{% if request.cookies.get('language') == 'ar' %}إدارة المستخدمين{% else %}Manage Users{% endif %}</span>
+          </a>
+          
+          <a href="/admin_orders" class="flex items-center justify-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors dark:bg-blue-900/20 dark:border-blue-800 dark:hover:bg-blue-900/30">
+           <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+           </svg>
+           <span class="text-sm font-medium text-blue-700 dark:text-blue-300">{% if request.cookies.get('language') == 'ar' %}مراقبة الطلبات{% else %}Monitor Orders{% endif %}</span>
+          </a>
+          
+          <a href="/admin_analytics" class="flex items-center justify-center gap-2 p-3 bg-purple-50 border border-purple-200 rounded-lg hover:bg-purple-100 transition-colors dark:bg-purple-900/20 dark:border-purple-800 dark:hover:bg-purple-900/30">
+           <svg class="w-4 h-4 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+           </svg>
+           <span class="text-sm font-medium text-purple-700 dark:text-purple-300">{% if request.cookies.get('language') == 'ar' %}عرض التحليلات{% else %}View Analytics{% endif %}</span>
+          </a>
+         </div>
+         
+         <!-- System Alerts -->
+         <div class="space-y-3">
+          <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">{% if request.cookies.get('language') == 'ar' %}تنبيهات النظام{% else %}System Alerts{% endif %}</h4>
+          
+          {% if pending_approvals and pending_approvals > 0 %}
+          <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg dark:bg-yellow-900/20">
+           <div class="flex items-center gap-3">
+            <div class="w-6 h-6 bg-yellow-100 rounded-lg flex items-center justify-center dark:bg-yellow-900/30">
+             <svg class="w-3 h-3 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+             </svg>
+            </div>
+            <div>
+              <p class="text-xs font-medium text-yellow-800 dark:text-yellow-200">{% if request.cookies.get('language') == 'ar' %}شركات تحتاج موافقة{% else %}Companies Need Approval{% endif %}</p>
+              <p class="text-xs text-yellow-600 dark:text-yellow-400">{{ pending_approvals }} {% if request.cookies.get('language') == 'ar' %}شركة{% else %}companies{% endif %}</p>
+             </div>
+           </div>
+           <a href="/admin_companies" class="text-xs text-yellow-600 hover:text-yellow-700 dark:text-yellow-400">
+            {% if request.cookies.get('language') == 'ar' %}مراجعة{% else %}Review{% endif %}
+           </a>
+          </div>
+          {% endif %}
+          
+          {% if system_health and system_health != 'Good' %}
+          <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg dark:bg-red-900/20">
+           <div class="flex items-center gap-3">
+            <div class="w-6 h-6 bg-red-100 rounded-lg flex items-center justify-center dark:bg-red-900/30">
+             <svg class="w-3 h-3 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+             </svg>
+            </div>
+            <div>
+              <p class="text-xs font-medium text-red-800 dark:text-red-200">{% if request.cookies.get('language') == 'ar' %}مشكلة في النظام{% else %}System Issue{% endif %}</p>
+              <p class="text-xs text-red-600 dark:text-red-400">{{ system_health }}</p>
+             </div>
+           </div>
+           <a href="/admin_settings" class="text-xs text-red-600 hover:text-red-700 dark:text-red-400">
+            {% if request.cookies.get('language') == 'ar' %}إصلاح{% else %}Fix{% endif %}
+           </a>
+          </div>
+          {% endif %}
+          
+          {% if not pending_approvals or pending_approvals == 0 %}
+          <div class="text-center py-8 text-gray-500 dark:text-gray-400">
+           <svg class="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+           </svg>
+           <p class="text-sm">{% if request.cookies.get('language') == 'ar' %}لا توجد تنبيهات{% else %}No alerts{% endif %}</p>
+           <p class="text-xs text-gray-400 dark:text-gray-500">{% if request.cookies.get('language') == 'ar' %}النظام يعمل بشكل طبيعي{% else %}System is running normally{% endif %}</p>
+          </div>
+          {% endif %}
+         </div>
+        </div>
+        <!-- ====== Admin Quick Actions End ====== -->
+       </div>
+      </div>
+     </div>
+    </main>
+    <!-- ===== Main Content End ===== -->
+   </div>
+   <!-- ===== Content Area End ===== -->
+  </div>
+  <!-- ===== Page Wrapper End ===== -->
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js">
+  </script>
+<script defer src="{{ url_for('static', filename='js/script_1.js') }}"></script>
+
+<script>
+// Language toggle function
+function toggleLanguage() {
+    const currentLang = document.cookie.includes('language=ar') ? 'en' : 'ar';
+    document.cookie = `language=${currentLang}; path=/; max-age=31536000`;
+    window.location.reload();
+}
+
+// Language toggle functionality only (translations handled server-side by Flask-Babel)
+window.toggleLanguage = toggleLanguage;
+</script>
+ </body>
+</html>

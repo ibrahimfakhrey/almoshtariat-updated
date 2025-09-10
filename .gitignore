@@ -1,0 +1,106 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+PIPFILE.lock
+
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Flask
+instance/
+.webassets-cache
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+purchases.db
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Uploads
+uploads/
+
+# Temporary files
+*.tmp
+*.temp
+
+# macOS specific
+__MACOSX/
+
+# Backup files
+*.bak
+*.backup
+
+# System settings (may contain sensitive info)
+system_settings.json
+
+# AI Config (may contain API keys)
+ai_config.py
+
+# Cookies and session data
+cookies.txt
+
+# Compressed files
+*.zip
+*.tar.gz
+*.rar
+
+# CSV test files
+test_*.csv
+sample_*.csv
+
+# Translation files (generated)
+messages.pot
+
+# Flask migrations (if using Flask-Migrate)
+migrations/versions/*.py
+!migrations/versions/__init__.py

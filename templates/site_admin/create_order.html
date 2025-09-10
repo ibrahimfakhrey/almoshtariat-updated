@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+  <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+  <title>{% if request.cookies.get('language') == 'ar' %}إنشاء طلب مباشر{% else %}Create Direct Order{% endif %}</title>
+  <link href="favicon.ico" rel="icon"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+  
+  <!-- Alpine.js -->
+
+  <style>
+    .search-dropdown {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      max-height: 200px;
+      overflow-y: auto;
+      z-index: 50;
+    }
+    
+    .search-item {
+      padding: 0.75rem;
+      cursor: pointer;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    
+    .search-item:hover {
+      background-color: #f9fafb;
+    }
+    
+    .search-item:last-child {
+      border-bottom: none;
+    }
+    
+    .dark .search-dropdown {
+      background: #374151;
+      border-color: #4b5563;
+    }
+    
+    .dark .search-item {
+      border-color: #4b5563;
+      color: #f9fafb;
+    }
+    
+    .dark .search-item:hover {
+      background-color: #4b5563;
+    }
+    
+    .form-section {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 0.5rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .dark .form-section {
+      background: #374151;
+      border-color: #4b5563;
+    }
+    
+    .section-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 1rem;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 0.5rem;
+    }
+    
+    .dark .section-title {
+      color: #f9fafb;
+      border-color: #4b5563;
+    }
+  </style>
+</head>
+
+<body x-data="createOrderData()" :class="darkMode && 'dark'">
+
+  <!-- ===== Page Wrapper Start ===== -->
+  <div class="flex min-h-screen">
+    <!-- ===== Sidebar Start ===== -->
+    <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-700 dark:bg-gray-900">
+      <!-- SIDEBAR HEADER -->
+      <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+        <a href="/">
+          <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+            <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+            <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+          </span>
+          <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+        </a>
+        
+        <button @click="sidebarToggle = !sidebarToggle" class="sidebar-toggle xl:hidden">
+          <svg class="fill-current" width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 8.175H2.98748L9.36248 1.6875C9.69998 1.35 9.69998 0.825 9.36248 0.4875C9.02498 0.15 8.49998 0.15 8.16248 0.4875L0.399976 8.3625C0.0624756 8.7 0.0624756 9.225 0.399976 9.5625L8.16248 17.4375C8.31248 17.5875 8.53748 17.7 8.76248 17.7C8.98748 17.7 9.17498 17.625 9.36248 17.4375C9.69998 17.1 9.69998 16.575 9.36248 16.2375L3.02498 9.8625H19C19.45 9.8625 19.825 9.4875 19.825 9.0375C19.825 8.55 19.45 8.175 19 8.175Z"/>
+          </svg>
+        </button>
+      </div>
+      
+      <!-- SIDEBAR MENU -->
+      <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+        <nav x-data="{selected: $persist('Create Order')}">
+          <div>
+            <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+              {% if request.cookies.get('language') == 'ar' %}القائمة{% else %}MENU{% endif %}
+            </h3>
+            
+            <ul class="mb-6 flex flex-col gap-1.5">
+              <!-- Menu Item Dashboard -->
+              <li>
+                <a :class=" (selected === 'Dashboard') && (page === 'dashboard') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Dashboard' ? '':'Dashboard')" class="menu-item group" href="/admin_dashboard">
+                  <svg :class="(selected === 'Dashboard') && (page === 'dashboard') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/>
+                  </svg>
+                  <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                    {% if request.cookies.get('language') == 'ar' %}لوحة تحكم المدير{% else %}Admin Dashboard{% endif %}
+                  </span>
+                </a>
+              </li>
+              
+              <!-- Menu Item Company Management -->
+              <li>
+                <a :class=" (selected === 'Companies') && (page === 'companies') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Companies' ? '':'Companies')" class="menu-item group" href="/admin_companies">
+                  <svg :class="(selected === 'Companies') && (page === 'companies') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/>
+                  </svg>
+                  <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                    {% if request.cookies.get('language') == 'ar' %}إدارة الشركات{% else %}Company Management{% endif %}
+                  </span>
+                </a>
+              </li>
+              
+              <!-- Menu Item User Management -->
+              <li>
+                <a :class=" (selected === 'Users') && (page === 'users') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Users' ? '':'Users')" class="menu-item group" href="/admin_users">
+                  <svg :class="(selected === 'Users') && (page === 'users') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 4c0-1.11.89-2 2-2s2 .89 2 2-.89 2-2 2-2-.89-2-2zm4 18v-6h2.5l-2.54-7.63A1.5 1.5 0 0 0 18.54 8H17c-.8 0-1.54.37-2.01 1l-1.7 2.26A1.5 1.5 0 0 0 12.5 12H11v8h9zM5.5 6c.83 0 1.5-.67 1.5-1.5S6.33 3 5.5 3 4 3.67 4 4.5 4.67 6 5.5 6zm2.5 6c-.8 0-1.54.37-2.01 1l-1.7 2.26A1.5 1.5 0 0 0..." fill="currentColor"/>
+                  </svg>
+                  <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                    {% if request.cookies.get('language') == 'ar' %}إدارة المستخدمين{% else %}User Management{% endif %}
+                  </span>
+                </a>
+              </li>
+              
+              <!-- Menu Item Order Management -->
+              <li>
+                <a :class=" (selected === 'Orders') && (page === 'orders') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Orders' ? '':'Orders')" class="menu-item group" href="/admin_orders">
+                  <svg :class="(selected === 'Orders') && (page === 'orders') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" fill="currentColor"/>
+                  </svg>
+                  <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                    {% if request.cookies.get('language') == 'ar' %}إدارة الطلبات{% else %}Order Management{% endif %}
+                  </span>
+                </a>
+              </li>
+              
+              <!-- Menu Item Create Direct Order -->
+              <li>
+                <a :class=" (selected === 'Create Order') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Create Order' ? '':'Create Order')" class="menu-item group" href="/admin_create_order">
+                  <svg :class="(selected === 'Create Order') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" fill="currentColor"/>
+                  </svg>
+                  <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                    {% if request.cookies.get('language') == 'ar' %}إنشاء طلب مباشر{% else %}Create Direct Order{% endif %}
+                  </span>
+                </a>
+              </li>
+              
+              <!-- Menu Item Analytics -->
+              <li>
+                <a :class=" (selected === 'Analytics') && (page === 'analytics') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Analytics' ? '':'Analytics')" class="menu-item group" href="/admin_analytics">
+                  <svg :class="(selected === 'Analytics') && (page === 'analytics') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" fill="currentColor"/>
+                  </svg>
+                  <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                    {% if request.cookies.get('language') == 'ar' %}التحليلات{% else %}Analytics{% endif %}
+                  </span>
+                </a>
+              </li>
+              
+              <!-- Menu Item System Settings -->
+              <li>
+                <a :class=" (selected === 'Settings') && (page === 'settings') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Settings' ? '':'Settings')" class="menu-item group" href="/admin_settings">
+                  <svg :class="(selected === 'Settings') && (page === 'settings') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.82,11.69,4.82,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z" fill="currentColor"/>
+                  </svg>
+                  <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                    {% if request.cookies.get('language') == 'ar' %}إعدادات النظام{% else %}System Settings{% endif %}
+                  </span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+    </aside>
+    <!-- ===== Sidebar End ===== -->
+    
+    <!-- Main Content -->
+    <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+      <!-- ===== Content Area Start ===== -->
+        <!-- Small Device Overlay Start -->
+        <div :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fixed z-50 h-screen w-full bg-gray-900/50"></div>
+        <!-- Small Device Overlay End -->
+        
+        <!-- ===== Header Start ===== -->
+        <header class="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-gray-900 dark:drop-shadow-none">
+          <div class="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
+            <div class="flex items-center gap-2 sm:gap-4">
+              <!-- Hamburger Toggle BTN -->
+              <button @click="sidebarToggle = !sidebarToggle" class="z-99999 block rounded-sm border border-gray-300 bg-white p-1.5 shadow-sm dark:border-gray-600 dark:bg-gray-800 xl:hidden">
+                <span class="relative block h-5.5 w-5.5 cursor-pointer">
+                  <span class="du-block absolute right-0 h-full w-full">
+                    <span :class="!sidebarToggle && 'delay-300'" class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[0] duration-200 ease-in-out dark:bg-white" :class="!sidebarToggle ? '!w-full delay-300' : 'w-0 delay-[0]'"></span>
+                    <span class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-150 duration-200 ease-in-out dark:bg-white" :class="!sidebarToggle ? 'delay-400 !w-full' : 'w-0 delay-200'"></span>
+                    <span :class="!sidebarToggle && 'delay-500'" class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-200 duration-200 ease-in-out dark:bg-white" :class="!sidebarToggle ? '!w-full delay-500' : 'w-0 delay-300'"></span>
+                  </span>
+                  <span class="absolute right-0 h-full w-full rotate-45">
+                    <span :class="!sidebarToggle && 'delay-300'" class="absolute left-2.5 top-0 block h-full w-0.5 rounded-sm bg-black delay-300 duration-200 ease-in-out dark:bg-white" :class="!sidebarToggle ? '!h-0 !delay-[0]' : 'h-full delay-300'"></span>
+                    <span :class="!sidebarToggle && 'delay-400'" class="delay-400 absolute left-0 top-2.5 block h-0.5 w-full rounded-sm bg-black duration-200 ease-in-out dark:bg-white" :class="!sidebarToggle ? '!h-0 !delay-200' : 'h-0.5 delay-400'"></span>
+                  </span>
+                </span>
+              </button>
+              <!-- Hamburger Toggle BTN -->
+              
+              <div class="hidden sm:block">
+                <h1 class="text-title-md2 font-semibold text-black dark:text-white">
+                  {% if request.cookies.get('language') == 'ar' %}إنشاء طلب مباشر{% else %}Create Direct Order{% endif %}
+                </h1>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-3 2xsm:gap-7">
+              <!-- Translation Button -->
+              <button onclick="toggleLanguage()" class="flex items-center justify-center rounded-lg px-3 py-2 transition-colors" style="background-color: #2563eb !important; color: white !important;" onmouseover="this.style.backgroundColor='#1d4ed8'" onmouseout="this.style.backgroundColor='#2563eb'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z" fill="currentColor"/>
+                </svg>
+                <span class="ml-1 text-sm">
+                  {% if request.cookies.get('language') == 'ar' %}EN{% else %}عربي{% endif %}
+                </span>
+              </button>
+              <!-- Translation Button -->
+              
+              <!-- Dark Mode Toggler -->
+              <div>
+                <label :class="darkMode ? 'bg-primary' : 'bg-gray-300'" class="relative m-0 block h-7.5 w-14 rounded-full">
+                  <input @change="darkMode = !darkMode" type="checkbox" class="dur absolute top-0 z-50 m-0 h-full w-full cursor-pointer opacity-0"/>
+                  <span :class="darkMode ? 'right-1 bg-white' : 'right-6 bg-white'" class="absolute top-1/2 flex h-6 w-6 -translate-y-1/2 translate-x-0 items-center justify-center rounded-full shadow-switcher duration-75 ease-linear">
+                    <span class="dark:hidden">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M7.99992 12.6666C10.9455 12.6666 13.3333 10.2789 13.3333 7.33329C13.3333 4.38767 10.9455 1.99996 7.99992 1.99996C5.0543 1.99996 2.66659 4.38767 2.66659 7.33329C2.66659 10.2789 5.0543 12.6666 7.99992 12.6666Z" fill="#969AA1"/>
+                      </svg>
+                    </span>
+                    <span class="hidden dark:inline-block">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M14.3533 10.62C14.2466 10.44 13.9466 10.16 13.1999 10.2933C12.7866 10.3667 12.3666 10.4 11.9466 10.38C10.3933 10.3133 8.98659 9.6 8.00659 8.5C7.13993 7.53333 6.60659 6.27333 6.59993 4.91333C6.59993 4.15333 6.74659 3.42 7.04659 2.72666C7.33993 2.05333 7.13326 1.7 6.98659 1.55333C6.83326 1.4 6.47326 1.18666 5.76659 1.48C3.03993 2.62666 1.35326 5.36 1.55326 8.28666C1.75326 11.04 3.68659 13.3933 6.24659 14.28C6.85993 14.4933 7.50659 14.6067 8.17326 14.6067C8.27993 14.6067 8.38659 14.6067 8.49326 14.6C10.7266 14.4867 12.8199 13.4133 14.2199 11.7133C14.5866 11.2466 14.4666 10.8 14.3533 10.62Z" fill="#969AA1"/>
+                      </svg>
+                    </span>
+                  </span>
+                </label>
+              </div>
+              <!-- Dark Mode Toggler -->
+            </div>
+          </div>
+        </header>
+        <!-- ===== Header End ===== -->
+        
+        <!-- ===== Main Content Start ===== -->
+        <main class="min-h-screen">
+          <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+            
+            <!-- Create Order Form -->
+            <div class="rounded-sm border border-gray-300 bg-white shadow-default dark:border-gray-600 dark:bg-gray-800">
+              <div class="border-b border-gray-300 px-7 py-4 dark:border-gray-600">
+                <h3 class="font-medium text-black dark:text-white">
+                  {% if request.cookies.get('language') == 'ar' %}إنشاء طلب مباشر للعميل{% else %}Create Direct Order for Client{% endif %}
+                </h3>
+              </div>
+              
+              <div class="p-7">
+                <form @submit.prevent="submitOrder()" id="createOrderForm">
+                  
+                  <!-- Client Information Section -->
+                  <div class="form-section">
+                    <h4 class="section-title">
+                      {% if request.cookies.get('language') == 'ar' %}معلومات العميل{% else %}Client Information{% endif %}
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                      <!-- Client Search -->
+                      <div class="relative">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                          {% if request.cookies.get('language') == 'ar' %}البحث عن العميل{% else %}Search Client{% endif %}
+                        </label>
+                        <input 
+                          x-model="clientSearch"
+                          @input="searchClients()"
+                          @focus="showClientDropdown = true"
+                          type="text" 
+                          placeholder="{% if request.cookies.get('language') == 'ar' %}ابحث بالاسم أو البريد الإلكتروني أو الهاتف{% else %}Search by name, email, or phone{% endif %}"
+                          class="w-full rounded border-[1.5px] border-gray-300 bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary"
+                        />
+                        
+                        <!-- Client Search Dropdown -->
+                        <div x-show="showClientDropdown && clientResults.length > 0" class="search-dropdown">
+                          <template x-for="client in clientResults" :key="client.id">
+                            <div @click="selectClient(client)" class="search-item">
+                              <div class="font-medium" x-text="client.name"></div>
+                              <div class="text-sm text-gray-500" x-text="client.email"></div>
+                              <div class="text-sm text-gray-500" x-text="client.phone_number"></div>
+                            </div>
+                          </template>
+                        </div>
+                      </div>
+                      
+                      <!-- Selected Client Display -->
+                      <div x-show="selectedClient">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                          {% if request.cookies.get('language') == 'ar' %}العميل المحدد{% else %}Selected Client{% endif %}
+                        </label>
+                        <div class="rounded border-[1.5px] border-green-300 bg-green-50 px-5 py-3 dark:border-green-600 dark:bg-green-900">
+                          <div class="font-medium text-green-800 dark:text-green-200" x-text="selectedClient?.name"></div>
+                          <div class="text-sm text-green-600 dark:text-green-300" x-text="selectedClient?.email"></div>
+                          <div class="text-sm text-green-600 dark:text-green-300" x-text="selectedClient?.phone_number"></div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Manual Client Entry -->
+                    <div x-show="!selectedClient" class="mt-6">
+                      <h5 class="mb-4 text-sm font-medium text-gray-600 dark:text-gray-400">
+                        {% if request.cookies.get('language') == 'ar' %}أو أدخل معلومات العميل يدوياً{% else %}Or enter client information manually{% endif %}
+                      </h5>
+                      
+                      <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        <div>
+                          <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                            {% if request.cookies.get('language') == 'ar' %}اسم العميل *{% else %}Client Name *{% endif %}
+                          </label>
+                          <input 
+                            type="text" 
+                            name="client_name"
+                            required
+                            placeholder="{% if request.cookies.get('language') == 'ar' %}أدخل اسم العميل{% else %}Enter client name{% endif %}"
+                            class="w-full rounded border-[1.5px] border-gray-300 bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                            {% if request.cookies.get('language') == 'ar' %}البريد الإلكتروني *{% else %}Email *{% endif %}
+                          </label>
+                          <input 
+                            type="email" 
+                            name="client_email"
+                            required
+                            placeholder="{% if request.cookies.get('language') == 'ar' %}أدخل البريد الإلكتروني{% else %}Enter email address{% endif %}"
+                            class="w-full rounded border-[1.5px] border-gray-300 bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                            {% if request.cookies.get('language') == 'ar' %}رقم الهاتف{% else %}Phone Number{% endif %}
+                          </label>
+                          <input 
+                            type="tel" 
+                            name="client_phone"
+                            placeholder="{% if request.cookies.get('language') == 'ar' %}أدخل رقم الهاتف{% else %}Enter phone number{% endif %}"
+                            class="w-full rounded border-[1.5px] border-gray-300 bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary"
+                          />
+                        </div>
+                        
+                        <div>
+                          <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                            {% if request.cookies.get('language') == 'ar' %}اسم الشركة{% else %}Company Name{% endif %}
+                          </label>
+                          <input 
+                            type="text" 
+                            name="client_company"
+                            placeholder="{% if request.cookies.get('language') == 'ar' %}أدخل اسم الشركة{% else %}Enter company name{% endif %}"
+                            class="w-full rounded border-[1.5px] border-gray-300 bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Company Assignment Section -->
+                  <div class="form-section">
+                    <h4 class="section-title">
+                      {% if request.cookies.get('language') == 'ar' %}تعيين الشركة{% else %}Company Assignment{% endif %}
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                      <!-- Company Search -->
+                      <div class="relative">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                          {% if request.cookies.get('language') == 'ar' %}البحث عن الشركة{% else %}Search Company{% endif %}
+                        </label>
+                        <input 
+                          x-model="companySearch"
+                          @input="searchCompanies()"
+                          @focus="showCompanyDropdown = true"
+                          type="text" 
+                          placeholder="{% if request.cookies.get('language') == 'ar' %}ابحث بالاسم أو البريد الإلكتروني{% else %}Search by name or email{% endif %}"
+                          class="w-full rounded border-[1.5px] border-gray-300 bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary"
+                        />
+                        
+                        <!-- Company Search Dropdown -->
+                        <div x-show="showCompanyDropdown && companyResults.length > 0" class="search-dropdown">
+                          <template x-for="company in companyResults" :key="company.id">
+                            <div @click="selectCompany(company)" class="search-item">
+                              <div class="font-medium" x-text="company.name"></div>
+                              <div class="text-sm text-gray-500" x-text="company.email"></div>
+                              <div class="text-sm text-gray-500" x-text="company.sector"></div>
+                            </div>
+                          </template>
+                        </div>
+                      </div>
+                      
+                      <!-- Selected Company Display -->
+                      <div x-show="selectedCompany">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                          {% if request.cookies.get('language') == 'ar' %}الشركة المحددة{% else %}Selected Company{% endif %}
+                        </label>
+                        <div class="rounded border-[1.5px] border-blue-300 bg-blue-50 px-5 py-3 dark:border-blue-600 dark:bg-blue-900">
+                          <div class="font-medium text-blue-800 dark:text-blue-200" x-text="selectedCompany?.name"></div>
+                          <div class="text-sm text-blue-600 dark:text-blue-300" x-text="selectedCompany?.email"></div>
+                          <div class="text-sm text-blue-600 dark:text-blue-300" x-text="selectedCompany?.sector"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Order Information Section -->
+                  <div class="form-section">
+                    <h4 class="section-title">
+                      {% if request.cookies.get('language') == 'ar' %}معلومات الطلب{% else %}Order Information{% endif %}
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                      <div>
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                          {% if request.cookies.get('language') == 'ar' %}اسم الطلب *{% else %}Order Name *{% endif %}
+                        </label>
+                        <input 
+                          type="text" 
+                          name="order_name"
+                          required
+                          placeholder="{% if request.cookies.get('language') == 'ar' %}أدخل اسم الطلب{% else %}Enter order name{% endif %}"
+                          class="w-full rounded border-[1.5px] border-gray-300 bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                          {% if request.cookies.get('language') == 'ar' %}القطاع *{% else %}Sector *{% endif %}
+                        </label>
+                        <select 
+                          name="sector"
+                          required
+                          class="w-full rounded border-[1.5px] border-gray-300 bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary"
+                        >
+                          <option value="">{% if request.cookies.get('language') == 'ar' %}اختر القطاع{% else %}Select Sector{% endif %}</option>
+                          <option value="تكنولوجيا المعلومات">{% if request.cookies.get('language') == 'ar' %}تكنولوجيا المعلومات{% else %}Information Technology{% endif %}</option>
+                          <option value="الصحة">{% if request.cookies.get('language') == 'ar' %}الصحة{% else %}Healthcare{% endif %}</option>
+                          <option value="التعليم">{% if request.cookies.get('language') == 'ar' %}التعليم{% else %}Education{% endif %}</option>
+                          <option value="الصناعة">{% if request.cookies.get('language') == 'ar' %}الصناعة{% else %}Manufacturing{% endif %}</option>
+                          <option value="التجارة">{% if request.cookies.get('language') == 'ar' %}التجارة{% else %}Commerce{% endif %}</option>
+                          <option value="الخدمات">{% if request.cookies.get('language') == 'ar' %}الخدمات{% else %}Services{% endif %}</option>
+                          <option value="عام">{% if request.cookies.get('language') == 'ar' %}عام{% else %}General{% endif %}</option>
+                        </select>
+                      </div>
+                      
+                      <div class="md:col-span-2">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                          {% if request.cookies.get('language') == 'ar' %}وصف الطلب{% else %}Order Description{% endif %}
+                        </label>
+                        <textarea 
+                          name="description"
+                          rows="4"
+                          placeholder="{% if request.cookies.get('language') == 'ar' %}أدخل وصف مفصل للطلب{% else %}Enter detailed order description{% endif %}"
+                          class="w-full rounded border-[1.5px] border-gray-300 bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary"
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Products Section -->
+                  <div class="form-section">
+                    <h4 class="section-title">
+                      {% if request.cookies.get('language') == 'ar' %}المنتجات{% else %}Products{% endif %}
+                    </h4>
+                    
+                    <template x-for="(product, index) in products" :key="index">
+                      <div class="mb-6 rounded border border-gray-200 p-4 dark:border-gray-600">
+                        <div class="mb-4 flex items-center justify-between">
+                          <h5 class="font-medium text-black dark:text-white">
+                            {% if request.cookies.get('language') == 'ar' %}المنتج{% else %}Product{% endif %} <span x-text="index + 1"></span>
+                          </h5>
+                          <button 
+                            x-show="products.length > 1"
+                            @click="removeProduct(index)"
+                            type="button"
+                            class="text-red-600 hover:text-red-800"
+                          >
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                          </button>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                          <div>
+                            <label class="mb-2 block text-sm font-medium text-black dark:text-white">
+                              {% if request.cookies.get('language') == 'ar' %}اسم المنتج{% else %}Product Name{% endif %}
+                            </label>
+                            <input 
+                              x-model="product.product_name"
+                              type="text" 
+                              placeholder="{% if request.cookies.get('language') == 'ar' %}أدخل اسم المنتج{% else %}Enter product name{% endif %}"
+                              class="w-full rounded border-[1.5px] border-gray-300 bg-transparent px-3 py-2 text-black outline-none transition focus:border-primary active:border-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label class="mb-2 block text-sm font-medium text-black dark:text-white">
+                              {% if request.cookies.get('language') == 'ar' %}الكمية{% else %}Quantity{% endif %}
+                            </label>
+                            <input 
+                              x-model="product.quantity"
+                              type="number" 
+                              min="1"
+                              placeholder="1"
+                              class="w-full rounded border-[1.5px] border-gray-300 bg-transparent px-3 py-2 text-black outline-none transition focus:border-primary active:border-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                            />
+                          </div>
+                          
+                          <div>
+                            <label class="mb-2 block text-sm font-medium text-black dark:text-white">
+                              {% if request.cookies.get('language') == 'ar' %}الوحدة{% else %}Unit{% endif %}
+                            </label>
+                            <select 
+                              x-model="product.unit"
+                              class="w-full rounded border-[1.5px] border-gray-300 bg-transparent px-3 py-2 text-black outline-none transition focus:border-primary active:border-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                            >
+                              <option value="pcs">{% if request.cookies.get('language') == 'ar' %}قطعة{% else %}Pieces{% endif %}</option>
+                              <option value="kg">{% if request.cookies.get('language') == 'ar' %}كيلوجرام{% else %}Kilogram{% endif %}</option>
+                              <option value="m">{% if request.cookies.get('language') == 'ar' %}متر{% else %}Meter{% endif %}</option>
+                              <option value="box">{% if request.cookies.get('language') == 'ar' %}صندوق{% else %}Box{% endif %}</option>
+                              <option value="set">{% if request.cookies.get('language') == 'ar' %}مجموعة{% else %}Set{% endif %}</option>
+                            </select>
+                          </div>
+                          
+                          <div class="md:col-span-2">
+                            <label class="mb-2 block text-sm font-medium text-black dark:text-white">
+                              {% if request.cookies.get('language') == 'ar' %}المواصفات الفنية{% else %}Technical Specifications{% endif %}
+                            </label>
+                            <textarea 
+                              x-model="product.technical_specs"
+                              rows="2"
+                              placeholder="{% if request.cookies.get('language') == 'ar' %}أدخل المواصفات الفنية{% else %}Enter technical specifications{% endif %}"
+                              class="w-full rounded border-[1.5px] border-gray-300 bg-transparent px-3 py-2 text-black outline-none transition focus:border-primary active:border-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                            ></textarea>
+                          </div>
+                          
+                          <div>
+                            <label class="mb-2 block text-sm font-medium text-black dark:text-white">
+                              {% if request.cookies.get('language') == 'ar' %}الحد الأقصى للسعر{% else %}Max Price{% endif %}
+                            </label>
+                            <input 
+                              x-model="product.max_price_per_unit"
+                              type="number" 
+                              step="0.01"
+                              placeholder="0.00"
+                              class="w-full rounded border-[1.5px] border-gray-300 bg-transparent px-3 py-2 text-black outline-none transition focus:border-primary active:border-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </template>
+                    
+                    <button 
+                      @click="addProduct()"
+                      type="button"
+                      class="flex items-center gap-2 rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 transition-colors"
+                      style="background-color: #2563eb !important; color: white !important;"
+                    >
+                      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                      </svg>
+                      {% if request.cookies.get('language') == 'ar' %}إضافة منتج{% else %}Add Product{% endif %}
+                    </button>
+                  </div>
+                  
+                  <!-- Delivery Information Section -->
+                  <div class="form-section">
+                    <h4 class="section-title">
+                      {% if request.cookies.get('language') == 'ar' %}معلومات التسليم{% else %}Delivery Information{% endif %}
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                      <div>
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                          {% if request.cookies.get('language') == 'ar' %}تاريخ التسليم{% else %}Delivery Date{% endif %}
+                        </label>
+                        <input 
+                          type="date" 
+                          name="delivery_date"
+                          class="w-full rounded border-[1.5px] border-gray-300 bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary"
+                        />
+                      </div>
+                      
+                      <div>
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                          {% if request.cookies.get('language') == 'ar' %}وقت التسليم{% else %}Delivery Time{% endif %}
+                        </label>
+                        <input 
+                          type="time" 
+                          name="delivery_time"
+                          class="w-full rounded border-[1.5px] border-gray-300 bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary"
+                        />
+                      </div>
+                      
+                      <div class="md:col-span-2">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                          {% if request.cookies.get('language') == 'ar' %}عنوان التسليم{% else %}Delivery Address{% endif %}
+                        </label>
+                        <textarea 
+                          name="delivery_address"
+                          rows="3"
+                          placeholder="{% if request.cookies.get('language') == 'ar' %}أدخل عنوان التسليم{% else %}Enter delivery address{% endif %}"
+                          class="w-full rounded border-[1.5px] border-gray-300 bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary"
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Order Settings Section -->
+                  <div class="form-section">
+                    <h4 class="section-title">
+                      {% if request.cookies.get('language') == 'ar' %}إعدادات الطلب{% else %}Order Settings{% endif %}
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                      <div>
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                          {% if request.cookies.get('language') == 'ar' %}الأولوية{% else %}Priority{% endif %}
+                        </label>
+                        <select 
+                          name="priority"
+                          class="w-full rounded border-[1.5px] border-gray-300 bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary"
+                        >
+                          <option value="low">{% if request.cookies.get('language') == 'ar' %}منخفضة{% else %}Low{% endif %}</option>
+                          <option value="medium" selected>{% if request.cookies.get('language') == 'ar' %}متوسطة{% else %}Medium{% endif %}</option>
+                          <option value="high">{% if request.cookies.get('language') == 'ar' %}عالية{% else %}High{% endif %}</option>
+                          <option value="urgent">{% if request.cookies.get('language') == 'ar' %}عاجل{% else %}Urgent{% endif %}</option>
+                        </select>
+                      </div>
+                      
+                      <div>
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                          {% if request.cookies.get('language') == 'ar' %}طريقة الدفع{% else %}Payment Method{% endif %}
+                        </label>
+                        <select 
+                          name="payment_way"
+                          class="w-full rounded border-[1.5px] border-gray-300 bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary"
+                        >
+                          <option value="">{% if request.cookies.get('language') == 'ar' %}اختر طريقة الدفع{% else %}Select Payment Method{% endif %}</option>
+                          <option value="cash">{% if request.cookies.get('language') == 'ar' %}نقداً{% else %}Cash{% endif %}</option>
+                          <option value="bank_transfer">{% if request.cookies.get('language') == 'ar' %}تحويل بنكي{% else %}Bank Transfer{% endif %}</option>
+                          <option value="credit_card">{% if request.cookies.get('language') == 'ar' %}بطاقة ائتمان{% else %}Credit Card{% endif %}</option>
+                          <option value="check">{% if request.cookies.get('language') == 'ar' %}شيك{% else %}Check{% endif %}</option>
+                        </select>
+                      </div>
+                      
+                      <div class="md:col-span-2">
+                        <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+                          {% if request.cookies.get('language') == 'ar' %}ملاحظات إدارية{% else %}Admin Notes{% endif %}
+                        </label>
+                        <textarea 
+                          name="admin_notes"
+                          rows="3"
+                          placeholder="{% if request.cookies.get('language') == 'ar' %}أدخل ملاحظات إدارية{% else %}Enter admin notes{% endif %}"
+                          class="w-full rounded border-[1.5px] border-gray-300 bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-primary"
+                        ></textarea>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Submit Button -->
+                  <div class="flex justify-end gap-4">
+                    <button 
+                      type="button"
+                      onclick="window.history.back()"
+                      class="flex justify-center rounded border border-gray-300 px-6 py-2 font-medium text-black hover:shadow-1 dark:border-gray-600 dark:text-white"
+                    >
+                      {% if request.cookies.get('language') == 'ar' %}إلغاء{% else %}Cancel{% endif %}
+                    </button>
+                    
+                    <button 
+                      type="submit"
+                      class="flex justify-center rounded bg-primary px-6 py-2 font-medium text-gray hover:bg-opacity-90"
+                    >
+                      {% if request.cookies.get('language') == 'ar' %}إنشاء الطلب{% else %}Create Order{% endif %}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </main>
+        <!-- ===== Main Content End ===== -->
+      </div>
+      <!-- ===== Content Area End ===== -->
+    </div>
+    </div>
+  </div>
+  <!-- ===== Page Wrapper End ===== -->
+  
+  <script>
+    // Alpine.js data and methods
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('createOrderData', () => ({
+        // Data properties
+        sidebarToggle: false,
+        darkMode: Alpine.$persist(false),
+        clientSearch: '',
+        companySearch: '',
+        showClientDropdown: false,
+        showCompanyDropdown: false,
+        clientResults: [],
+        companyResults: [],
+        selectedClient: null,
+        selectedCompany: null,
+        products: [{ product_name: '', quantity: 1, unit: 'pcs', technical_specs: '', product_code: '', max_price_per_unit: '' }],
+        
+        // Search functions
+        async searchClients() {
+          if (this.clientSearch.length < 2) {
+            this.clientResults = [];
+            return;
+          }
+          
+          try {
+            const response = await fetch(`/api/search_clients?q=${encodeURIComponent(this.clientSearch)}`);
+            const data = await response.json();
+            this.clientResults = data.clients || [];
+          } catch (error) {
+            console.error('Error searching clients:', error);
+            this.clientResults = [];
+          }
+        },
+        
+        async searchCompanies() {
+          if (this.companySearch.length < 2) {
+            this.companyResults = [];
+            return;
+          }
+          
+          try {
+            const response = await fetch(`/api/search_companies?q=${encodeURIComponent(this.companySearch)}`);
+            const data = await response.json();
+            this.companyResults = data.companies || [];
+          } catch (error) {
+            console.error('Error searching companies:', error);
+            this.companyResults = [];
+          }
+        },
+        
+        selectClient(client) {
+          this.selectedClient = client;
+          this.clientSearch = client.name;
+          this.showClientDropdown = false;
+        },
+        
+        selectCompany(company) {
+          this.selectedCompany = company;
+          this.companySearch = company.name;
+          this.showCompanyDropdown = false;
+        },
+        
+        // Product management
+        addProduct() {
+          this.products.push({
+            product_name: '',
+            quantity: 1,
+            unit: 'pcs',
+            technical_specs: '',
+            product_code: '',
+            max_price_per_unit: ''
+          });
+        },
+        
+        removeProduct(index) {
+          if (this.products.length > 1) {
+            this.products.splice(index, 1);
+          }
+        },
+        
+        // Form submission
+        async submitOrder() {
+          const form = document.getElementById('createOrderForm');
+          const formData = new FormData(form);
+          
+          // Add selected client and company data
+          if (this.selectedClient) {
+            formData.append('selected_client_id', this.selectedClient.id);
+          }
+          
+          if (this.selectedCompany) {
+            formData.append('selected_company_id', this.selectedCompany.id);
+          }
+          
+          // Add products data
+          formData.append('products', JSON.stringify(this.products));
+          
+          try {
+            const response = await fetch('/admin_create_order', {
+              method: 'POST',
+              body: formData
+            });
+            
+            if (response.ok) {
+              const result = await response.json();
+              if (result.success) {
+                alert('{% if request.cookies.get("language") == "ar" %}تم إنشاء الطلب بنجاح{% else %}Order created successfully{% endif %}');
+                window.location.href = '/admin_orders';
+              } else {
+                alert(result.message || '{% if request.cookies.get("language") == "ar" %}حدث خطأ أثناء إنشاء الطلب{% else %}Error creating order{% endif %}');
+              }
+            } else {
+              alert('{% if request.cookies.get("language") == "ar" %}حدث خطأ أثناء إنشاء الطلب{% else %}Error creating order{% endif %}');
+            }
+          } catch (error) {
+            console.error('Error submitting order:', error);
+            alert('{% if request.cookies.get("language") == "ar" %}حدث خطأ أثناء إنشاء الطلب{% else %}Error creating order{% endif %}');
+          }
+        }
+      }));
+    });
+    
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(event) {
+      const clientDropdown = document.querySelector('[x-show="showClientDropdown && clientResults.length > 0"]');
+      const companyDropdown = document.querySelector('[x-show="showCompanyDropdown && companyResults.length > 0"]');
+      
+      if (clientDropdown && !clientDropdown.contains(event.target)) {
+        Alpine.store('showClientDropdown', false);
+      }
+      
+      if (companyDropdown && !companyDropdown.contains(event.target)) {
+        Alpine.store('showCompanyDropdown', false);
+      }
+    });
+    
+    // Toggle language function
+    function toggleLanguage() {
+      const currentLang = document.cookie.includes('language=ar') ? 'en' : 'ar';
+      document.cookie = `language=${currentLang}; path=/; max-age=31536000`;
+      location.reload();
+    }
+  </script>
+  
+  <!-- Additional Scripts -->
+  <script src="{{ url_for('static', filename='js/script_0.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/script_1.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/inline_scripts.js') }}"></script>
+</body>
+</html>

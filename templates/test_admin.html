@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Test Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        .btn { padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin: 5px; }
+        .btn:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Admin Dashboard Test</h1>
+        
+        <div class="test-section">
+            <h2>Admin User Created Successfully!</h2>
+            <p class="success">✅ Admin user has been created in the database</p>
+            <p><strong>Username:</strong> s</p>
+            <p><strong>Password:</strong> admin123</p>
+            <p><strong>Role:</strong> admin</p>
+        </div>
+
+        <div class="test-section">
+            <h2>Test Admin Login</h2>
+            <p>Use these credentials to test the admin dashboard:</p>
+            <a href="/login" class="btn">Go to Login Page</a>
+            <p class="info">After login, admin users will be redirected to /admin_dashboard</p>
+        </div>
+
+        <div class="test-section">
+            <h2>Admin Routes Available</h2>
+            <ul>
+                <li><strong>/admin_dashboard</strong> - Main admin dashboard</li>
+                <li><strong>/admin_companies</strong> - Company management</li>
+                <li><strong>/admin_users</strong> - User management</li>
+                <li><strong>/admin_orders</strong> - Order management</li>
+                <li><strong>/admin_analytics</strong> - Analytics page</li>
+                <li><strong>/admin_settings</strong> - System settings</li>
+                <li><strong>/admin_profile</strong> - Admin profile</li>
+            </ul>
+        </div>
+
+        <div class="test-section">
+            <h2>Next Steps</h2>
+            <ol>
+                <li>Go to the <a href="/login">login page</a></li>
+                <li>Login with username: <strong>s</strong> and password: <strong>admin123</strong></li>
+                <li>You should be redirected to the admin dashboard</li>
+                <li>Test the various admin features</li>
+            </ol>
+        </div>
+
+        <div class="test-section">
+            <h2>Admin Dashboard Features</h2>
+            <ul>
+                <li>Platform-wide statistics (users, companies, orders)</li>
+                <li>System health monitoring</li>
+                <li>Company approval management</li>
+                <li>User management</li>
+                <li>Order monitoring</li>
+                <li>System analytics</li>
+                <li>Bilingual support (Arabic/English)</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

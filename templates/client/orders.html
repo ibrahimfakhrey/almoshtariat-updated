@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}" dir="{{ 'rtl' if get_locale() == 'ar' else 'ltr' }}">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+  <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+    <title>My Orders - B2B Platform</title>
+  <link href="favicon.ico" rel="icon"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+    <style>
+        [dir="rtl"] .language-switcher {
+            direction: rtl;
+        }
+        
+        [dir="rtl"] .sidebar {
+            right: 0;
+            left: auto;
+        }
+        
+        [dir="rtl"] .sidebar-header {
+            text-align: right;
+        }
+        
+        [dir="rtl"] .menu-item-text {
+            text-align: right;
+        }
+        
+        [dir="rtl"] .search-input {
+            padding-left: 3rem;
+            padding-right: 1rem;
+        }
+        
+        [dir="rtl"] .search-icon {
+            left: auto;
+            right: 1rem;
+        }
+        
+        [dir="rtl"] .user-dropdown {
+            right: auto;
+            left: 0;
+        }
+        
+        [dir="rtl"] .breadcrumb-arrow {
+            transform: rotate(180deg);
+        }
+    </style>
+ </head>
+<body :class="{'dark bg-gray-900': darkMode === true}" x-data="{ 
+    page: 'orders', 
+    'loaded': true, 
+    'darkMode': false, 
+    'stickyMenu': false, 
+    'sidebarToggle': false, 
+    'scrollTop': false,
+    'user_notifications': [],
+    'unread_notifications_count': 0,
+    'showFilters': false,
+    'currentLanguage': localStorage.getItem('language') || '{{ get_locale() }}',
+    'filters': {
+        'search': '',
+        'status': '',
+        'sector': '',
+        'order_type': '',
+        'date_from': '',
+        'date_to': ''
+    },
+    'sortBy': 'created_at',
+    'sortOrder': 'desc',
+    'selected': []
+}" x-init="
+         darkMode = JSON.parse(localStorage.getItem('darkMode'));
+    $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)));
+    
+    // Initialize notification data
+    user_notifications = [];
+    unread_notifications_count = 0;
+    
+    // Load notifications
+    fetch('/notifications/get_notifications')
+        .then(response => response.json())
+        .then(data => {
+            user_notifications = data.notifications || [];
+            unread_notifications_count = data.unread_count || 0;
+        })
+        .catch(error => console.error('Error loading notifications:', error));
+">
+    <!-- Preloader -->
+    <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => loaded = false, 500)})" x-show="loaded">
+        <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent"></div>
+   </div>
+
+    <!-- Debug Info (remove this after testing) -->
+    <div class="fixed top-0 left-0 z-[999999] bg-yellow-200 p-2 text-xs" style="display: none;">
+        <p>Current Locale: {{ get_locale() }}</p>
+        <p>Dashboard Text: {{ _('Dashboard') }}</p>
+        <p>My Orders Text: {{ _('My Orders') }}</p>
+        <p>Create Order Text: {{ _('Create Order') }}</p>
+    </div>
+    
+    <!-- Page Wrapper -->
+  <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+   <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+    <!-- SIDEBAR HEADER -->
+    <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+     <a href="/">
+      <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+       <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+       <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+      </span>
+      <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+     </a>
+    </div>
+            
+            <!-- Sidebar Menu -->
+    <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+                <nav x-data="{selected: $persist('Orders')}">
+      <div>
+       <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+                            <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">{{ _('MENU') }}</span>
+       </h3>
+       <ul class="mb-6 flex flex-col gap-1">
+                            <li>
+                                <a :class="(selected === 'Dashboard') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Dashboard'" class="menu-item group" href="/dash">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Dashboard') }}</span>
+         </a>
+        </li>
+                            <li>
+                                <a :class="(selected === 'Profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Profile'" class="menu-item group" href="/profile">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('User Profile') }}</span>
+         </a>
+        </li>
+         <li>
+                                <a :class="(selected === 'Orders') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Orders'" class="menu-item group" href="/orders">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('My Orders') }}</span>
+         </a>
+        </li>
+
+         <li>
+                                <a :class="(selected === 'Deliveries') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Deliveries'" class="menu-item group" href="/my_deliveries">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('My Deliveries') }}</span>
+         </a>
+        </li>
+
+                  <li>
+                                <a :class="(selected === 'CreateOrder') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'CreateOrder'" class="menu-item group" href="/new_purchase">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Create Order') }}</span>
+         </a>
+        </li>
+         <li>
+                                <a :class="(selected === 'Suppliers') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Suppliers'" class="menu-item group" href="/suppliers">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Suppliers') }}</span>
+         </a>
+        </li>
+         <li>
+                                <a :class="(selected === 'Chat') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Chat'" class="menu-item group" href="/chat">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('chats') }}</span>
+         </a>
+        </li>
+         <li>
+                                <a :class="(selected === 'Balance') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Balance'" class="menu-item group" href="/balance">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Balance') }}</span>
+         </a>
+        </li>
+         <li>
+                                <a :class="(selected === 'AI Assistant') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'AI Assistant'" class="menu-item group" href="/client/ai_chat">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('AI Assistant') }}</span>
+         </a>
+        </li>
+        <!-- Company Registration Menu Item -->
+        <li>
+                                <a :class="(selected === 'Company Registration') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Company Registration'" class="menu-item group" href="/company_register">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Company Registration') }}</span>
+         </a>
+        </li>
+       </ul>
+      </div>
+     </nav>
+    </div>
+   </aside>
+
+        <!-- Main Content -->
+   <div class="relative flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
+            <!-- Header -->
+  <header class="sticky top-0 z-99999 flex w-full border-gray-200 bg-white xl:border-b dark:border-gray-800 dark:bg-gray-900" x-data="{menuToggle: false}">
+     <div class="flex grow flex-col items-center justify-between xl:flex-row xl:px-6">
+      <div class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:py-4 xl:justify-normal xl:border-b-0 xl:px-0 dark:border-gray-800">
+       <!-- Hamburger Toggle BTN -->
+                        <button :class="sidebarToggle ? 'xl:bg-transparent dark:xl:bg-transparent bg-gray-100 dark:bg-gray-800' : ''" @click.stop="sidebarToggle = !sidebarToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 xl:h-11 xl:w-11 xl:border dark:border-gray-800 dark:text-gray-400">
+        <svg class="hidden fill-current xl:block" fill="none" height="12" viewbox="0 0 16 12" width="16" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M0.583252 1C0.583252 0.585788 0.919038 0.25 1.33325 0.25H14.6666C15.0808 0.25 15.4166 0.585786 15.4166 1C15.4166 1.41421 15.0808 1.75 14.6666 1.75L1.33325 1.75C0.919038 1.75 0.583252 1.41422 0.583252 1ZM0.583252 11C0.583252 10.5858 0.919038 10.25 1.33325 10.25L14.6666 10.25C15.0808 10.25 15.4166 10.5858 15.4166 11C15.4166 11.4142 15.0808 11.75 14.6666 11.75L1.33325 11.75C0.919038 11.75 0.583252 11.4142 0.583252 11ZM1.33325 5.25C0.919038 5.25 0.583252 5.58579 0.583252 6C0.583252 6.41421 0.919038 6.75 1.33325 6.75L7.99992 6.75C8.41413 6.75 8.74992 6.41421 8.74992 6C8.74992 5.58579 8.41413 5.25 7.99992 5.25L1.33325 5.25Z" fill="" fill-rule="evenodd"></path>
+        </svg>
+        <svg :class="sidebarToggle ? 'hidden' : 'block xl:hidden'" class="fill-current xl:hidden" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M3.25 6C3.25 5.58579 3.58579 5.25 4 5.25L20 5.25C20.4142 5.25 20.75 5.58579 20.75 6C20.75 6.41421 20.4142 6.75 20 6.75L4 6.75C3.58579 6.75 3.25 6.41422 3.25 6ZM3.25 18C3.25 17.5858 3.58579 17.25 4 17.25L20 17.25C20.4142 17.25 20.75 17.5858 20.75 18C20.75 18.4142 20.4142 18.75 20 18.75L4 18.75C3.58579 18.75 3.25 18.4142 3.25 18ZM4 11.25C3.58579 11.25 3.25 11.5858 3.25 12C3.25 12.4142 3.58579 12.75 4 12.75L12 12.75C12.4142 12.75 12.75 12.4142 12.75 12C12.75 11.5858 12.4142 11.25 12 11.25L4 11.25Z" fill="" fill-rule="evenodd"></path>
+        </svg>
+        <!-- cross icon -->
+        <svg :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M6.21967 7.28131C5.92678 6.98841 5.92678 6.51354 6.21967 6.22065C6.51256 5.92775 6.98744 5.92775 7.28033 6.22065L11.999 10.9393L16.7176 6.22078C17.0105 5.92789 17.4854 5.92788 17.7782 6.22078C18.0711 6.51367 18.0711 6.98855 17.7782 7.28144L13.0597 12L17.7782 16.7186C18.0711 17.0115 18.0711 17.4863 17.7782 17.7792C17.4854 18.0721 17.0105 18.0721 16.7176 17.7792L11.999 13.0607L7.28033 17.7794C6.98744 18.0722 6.51256 18.0722 6.21967 17.7794C5.92678 17.4865 5.92678 17.0116 6.21967 16.7187L10.9384 12L6.21967 7.28131Z" fill="" fill-rule="evenodd"></path>
+        </svg>
+       </button>
+                        
+                        <a class="xl:hidden" href="/">
+                            <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                            <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                        </a>
+                        
+                        <button :class="menuToggle ? 'bg-gray-100 dark:bg-gray-800' : ''" @click.stop="menuToggle = !menuToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 hover:bg-gray-100 xl:hidden dark:text-gray-400 dark:hover:bg-gray-800">
+        <svg class="fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M5.99902 10.4951C6.82745 10.4951 7.49902 11.1667 7.49902 11.9951V12.0051C7.49902 12.8335 6.82745 13.5051 5.99902 13.5051C5.1706 13.5051 4.49902 12.8335 4.49902 12.0051V11.9951C4.49902 11.1667 5.1706 10.4951 5.99902 10.4951ZM17.999 10.4951C18.8275 10.4951 19.499 11.1667 19.499 11.9951V12.0051C19.499 12.8335 18.8275 13.5051 17.999 13.5051C17.1706 13.5051 16.499 12.8335 16.499 12.0051V11.9951C16.499 11.1667 17.1706 10.4951 17.999 10.4951ZM13.499 11.9951C13.499 11.1667 12.8275 10.4951 11.999 10.4951C11.1706 10.4951 10.499 11.1667 10.499 11.9951V12.0051C10.499 12.8335 11.1706 13.5051 11.999 13.5051C12.8275 13.5051 13.499 12.8335 13.499 12.0051V11.9951Z" fill="" fill-rule="evenodd"></path>
+        </svg>
+       </button>
+                        
+       <div class="hidden xl:block">
+        <form>
+         <div class="relative">
+          <span class="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2">
+           <svg class="fill-gray-500 dark:fill-gray-400" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                                            <path clip-rule="evenodd" d="M3.04175 9.37363C3.04175 5.87693 5.87711 3.04199 9.37508 3.04199C12.8731 3.04199 15.7084 5.87693 15.7084 9.37363C15.7084 12.8703 12.8731 15.7053 9.37508 15.7053C5.87711 15.7053 3.04175 12.8703 3.04175 9.37363ZM9.37508 1.54199C5.04902 1.54199 1.54175 5.04817 1.54175 9.37363C1.54175 13.6991 5.04902 17.2053 9.37508 17.2053C11.2674 17.2053 13.003 16.5344 14.357 15.4176L17.177 18.238C17.4699 18.5309 17.9448 18.5309 18.2377 18.238C18.5306 17.9451 18.5306 17.4703 18.2377 17.1774L15.418 14.3573C16.5365 13.0033 17.2084 11.2669 17.2084 9.37363C17.2084 5.04817 13.7011 1.54199 9.37508 1.54199Z" fill="" fill-rule="evenodd"></path>
+           </svg>
+          </span>
+                                    <input class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pr-14 pl-12 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden xl:w-[430px] dark:border-gray-800 dark:bg-gray-900 dark:bg-white/[0.03] dark:text-white/90 dark:placeholder:text-white/30" id="search-input" placeholder="{{ _('Search orders...') }}" type="text" x-model="filters.search"/>
+         </div>
+        </form>
+       </div>
+      </div>
+                    
+      <div :class="menuToggle ? 'flex' : 'hidden'" class="shadow-theme-md w-full items-center justify-between gap-4 px-5 py-4 xl:flex xl:justify-end xl:px-0 xl:shadow-none">
+       <div class="2xsm:gap-3 flex items-center gap-2">
+        <!-- Language Switcher -->
+        <div class="relative" x-data="{ languageOpen: false }">
+            <button @click="languageOpen = !languageOpen" class="hover:text-dark-900 relative flex h-11 items-center justify-center rounded-lg border border-gray-200 bg-white px-3 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white">
+                <span class="mr-2 text-sm">{{ get_locale().upper() }}</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+            <div x-show="languageOpen" @click.outside="languageOpen = false" class="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-lg shadow-lg z-50">
+                <a href="{{ url_for('set_language', language='en') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-t-lg">English</a>
+                <a href="{{ url_for('set_language', language='ar') }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-b-lg">العربية</a>
+            </div>
+        </div>
+        
+        <!-- Language Toggle Button -->
+        <button @click="toggleLanguage()" class="hover:text-dark-900 relative flex h-11 items-center justify-center rounded-lg border border-gray-200 bg-white px-3 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white">
+            <span class="mr-2 text-sm" x-text="currentLanguage === 'en' ? 'EN' : 'AR'"></span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </button>
+        
+        <!-- Dark Mode Toggler -->
+        <button @click.prevent="darkMode = !darkMode" class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white">
+         <svg class="hidden dark:block" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                                    <path clip-rule="evenodd" d="M9.99998 1.5415C10.4142 1.5415 10.75 1.87729 10.75 2.2915V3.5415C10.75 3.95572 10.4142 4.2915 9.99998 4.2915C9.58577 4.2915 9.24998 3.95572 9.24998 3.5415V2.2915C9.24998 1.87729 9.58577 1.5415 9.99998 1.5415ZM10.0009 6.79327C8.22978 6.79327 6.79402 8.22904 6.79402 10.0001C6.79402 11.7712 8.22978 13.207 10.0009 13.207C11.772 13.207 13.2078 11.7712 13.2078 10.0001C13.2078 8.22904 11.772 6.79327 10.0009 6.79327ZM5.29402 10.0001C5.29402 7.40061 7.40135 5.29327 10.0009 5.29327C12.6004 5.29327 14.7078 7.40061 14.7078 10.0001C14.7078 12.5997 12.6004 14.707 10.0009 14.707C7.40135 14.707 5.29402 12.5997 5.29402 10.0001ZM15.9813 5.08035C16.2742 4.78746 16.2742 4.31258 15.9813 4.01969C15.6884 3.7268 15.2135 3.7268 14.9207 4.01969L14.0368 4.90357C13.7439 5.19647 13.7439 5.67134 14.0368 5.96423C14.3297 6.25713 14.8045 6.25713 15.0974 5.96423L15.9813 5.08035ZM18.4577 10.0001C18.4577 10.4143 18.1219 10.7501 17.7077 10.7501H16.4577C16.0435 10.7501 15.7077 10.4143 15.7077 10.0001C15.7077 9.58592 16.0435 9.25013 16.4577 9.25013H17.7077C18.1219 9.25013 18.4577 9.58592 18.4577 10.0001ZM14.9207 15.9806C15.2135 16.2735 15.6884 16.2735 15.9813 15.9806C16.2742 15.6877 16.2742 15.2128 15.9813 14.9199L15.0974 14.036C14.8045 13.7431 14.3297 13.7431 14.0368 14.036C13.7439 14.3289 13.7439 14.8038 14.0368 15.0967L14.9207 15.9806ZM9.99998 15.7088C10.4142 15.7088 10.75 16.0445 10.75 16.4588V17.7088C10.75 18.123 10.4142 18.4588 9.99998 18.4588C9.58577 18.4588 9.24998 18.123 9.24998 17.7088V16.4588C9.24998 16.0445 9.58577 15.7088 9.99998 15.7088ZM5.96356 15.0972C6.25646 14.8043 6.25646 14.3295 5.96356 14.0366C5.67067 13.7437 5.1958 13.7437 4.9029 14.0366L4.01902 14.9204C3.72613 15.2133 3.72613 15.6882 4.01902 15.9811C4.31191 16.274 4.78679 16.274 5.07968 15.9811L5.96356 15.0972ZM4.29224 10.0001C4.29224 10.4143 3.95645 10.7501 3.54224 10.7501H2.29224C1.87802 10.7501 1.54224 10.4143 1.54224 10.0001C1.54224 9.58592 1.87802 9.25013 2.29224 9.25013H3.54224C3.95645 9.25013 4.29224 9.58592 4.29224 10.0001ZM4.9029 5.9637C5.1958 6.25659 5.67067 6.25659 5.96356 5.9637C6.25646 5.6708 6.25646 5.19593 5.96356 4.90303L5.07968 4.01915C4.78679 3.72626 4.31191 3.72626 4.01902 4.01915C3.72613 4.31204 3.72613 4.78692 4.01902 5.07981L4.9029 5.9637Z" fill="currentColor" fill-rule="evenodd"></path>
+         </svg>
+         <svg class="dark:hidden" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17.4547 11.97L18.1799 12.1611C18.265 11.8383 18.1265 11.4982 17.8401 11.3266C17.5538 11.1551 17.1885 11.1934 16.944 11.4207L17.4547 11.97ZM8.0306 2.5459L8.57989 3.05657C8.80718 2.81209 8.84554 2.44682 8.67398 2.16046C8.50243 1.8741 8.16227 1.73559 7.83948 1.82066L8.0306 2.5459ZM12.9154 13.0035C9.64678 13.0035 6.99707 10.3538 6.99707 7.08524H5.49707C5.49707 11.1823 8.81835 14.5035 12.9154 14.5035V13.0035ZM16.944 11.4207C15.8869 12.4035 14.4721 13.0035 12.9154 13.0035V14.5035C14.8657 14.5035 16.6418 13.7499 17.9654 12.5193L16.944 11.4207ZM16.7295 11.7789C15.9437 14.7607 13.2277 16.9586 10.0003 16.9586V18.4586C13.9257 18.4586 17.2249 15.7853 18.1799 12.1611L16.7295 11.7789ZM10.0003 16.9586C6.15734 16.9586 3.04199 13.8433 3.04199 10.0003H1.54199C1.54199 14.6717 5.32892 18.4586 10.0003 18.4586V16.9586ZM3.04199 10.0003C3.04199 6.77289 5.23988 4.05695 8.22173 3.27114L7.83948 1.82066C4.21532 2.77574 1.54199 6.07486 1.54199 10.0003H3.04199ZM6.99707 7.08524C6.99707 5.52854 7.5971 4.11366 8.57989 3.05657L7.48132 2.03522C6.25073 3.35885 5.49707 5.13487 5.49707 7.08524H6.99707Z" fill="currentColor"></path>
+         </svg>
+        </button>
+                            
+        <!-- Notification Menu Area -->
+        {% if unread_notifications_count is defined %}
+            {% include 'partials/notification_dropdown.html' %}
+        {% else %}
+            <!-- Simple notification icon when data not available -->
+            <button class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white">
+                <svg class="fill-current" fill="none" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 2C11.1 2 12 2.9 12 4V4.1C15.4 4.6 18 7.6 18 11V16L20 18V19H0V18L2 16V11C2 7.6 4.6 4.6 8 4.1V4C8 2.9 8.9 2 10 2ZM10 17C10.6 17 11 16.6 11 16H9C9 16.6 9.4 17 10 17Z" fill="currentColor"></path>
+                </svg>
+            </button>
+        {% endif %}
+       </div>
+                        
+       <!-- User Area -->
+             <div @click.outside="dropdownOpen = false" class="relative" x-data="{ dropdownOpen: false }">
+        <a @click.prevent="dropdownOpen = ! dropdownOpen" class="flex items-center text-gray-700 dark:text-gray-400" href="#">
+         <span class="mr-3 h-11 w-11 overflow-hidden rounded-full">
+                                    <img alt="User" src="https://png.pngtree.com/png-vector/20231019/ourmid/pngtree-user-profile-avatar-png-image_10211467.png"/>
+         </span>
+                                <span class="text-theme-sm mr-1 block font-medium">{{ current_user.username }}</span>
+                                <svg :class="dropdownOpen && 'rotate-180'" class="stroke-gray-500 dark:stroke-gray-400" fill="none" height="20" viewbox="0 0 18 20" width="18" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4.3125 8.65625L9 13.3437L13.6875 8.65625" stroke="" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+         </svg>
+        </a>
+        <!-- Dropdown Start -->
+        <div class="shadow-theme-lg dark:bg-gray-dark absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 dark:border-gray-800" x-show="dropdownOpen">
+         <div>
+                                    <span class="text-theme-sm block font-medium text-gray-700 dark:text-gray-400">{{ current_user.name }}</span>
+                                    <span class="text-theme-xs mt-0.5 block text-gray-500 dark:text-gray-400">{{ current_user.email }}</span>
+         </div>
+         <ul class="flex flex-col gap-1 border-b border-gray-200 pt-4 pb-3 dark:border-gray-800">
+          <li>
+           <a class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300" href="{{ url_for('profile') }}">
+            <svg class="fill-gray-500 group-hover:fill-gray-700 dark:fill-gray-400 dark:group-hover:fill-gray-300" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                                <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="" fill-rule="evenodd"></path>
+            </svg>
+            {{ _('Edit profile') }}
+           </a>
+          </li>
+          <li>
+                                        <a class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300" href="{{ url_for('logout') }}">
+            <svg class="fill-gray-500 group-hover:fill-gray-700 dark:fill-gray-400 dark:group-hover:fill-gray-300" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                                <path clip-rule="evenodd" d="M15.1007 19.247C14.6865 19.247 14.3507 18.9112 14.3507 18.497L14.3507 14.245H12.8507V18.497C12.8507 19.7396 13.8581 20.747 15.1007 20.747H18.5007C19.7434 20.747 20.7507 19.7396 20.7507 18.497L20.7507 5.49609C20.7507 4.25345 19.7433 3.24609 18.5007 3.24609H15.1007C13.8581 3.24609 12.8507 4.25345 12.8507 5.49609V9.74501L14.3507 9.74501V5.49609C14.3507 5.08188 14.6865 4.74609 15.1007 4.74609L18.5007 4.74609C18.9149 4.74609 19.2507 5.08188 19.2507 5.49609L19.2507 18.497C19.2507 18.9112 18.9149 19.247 18.5007 19.247H15.1007ZM3.25073 11.9984C3.25073 12.2144 3.34204 12.4091 3.48817 12.546L8.09483 17.1556C8.38763 17.4485 8.86251 17.4487 9.15549 17.1559C9.44848 16.8631 9.44863 16.3882 9.15583 16.0952L5.81116 12.7484L16.0007 12.7484C16.4149 12.7484 16.7507 12.4127 16.7507 11.9984C16.7507 11.5842 16.4149 11.2484 16.0007 11.2484L5.81528 11.2484L9.15585 7.90554C9.44864 7.61255 9.44847 7.13767 9.15547 6.84488C8.86248 6.55209 8.3876 6.55226 8.09481 6.84525L3.52309 11.4202C3.35673 11.5577 3.25073 11.7657 3.25073 11.9984Z" fill="" fill-rule="evenodd"></path>
+            </svg>
+                                            {{ _('Logout') }}
+           </a>
+          </li>
+         </ul>
+        </div>
+       </div>
+      </div>
+     </div>
+            </header>
+
+            <!-- Main Content -->
+    <main>
+                <div class="mx-auto max-w-screen-2xl px-5 py-4 md:p-6">
+                    <!-- Breadcrumb -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pb-6">
+                        <h2 class="text-xl font-semibold text-gray-800 dark:text-white/90">{{ _('My Orders') }}</h2>
+         <nav>
+          <ol class="flex items-center gap-1.5">
+           <li>
+                                    <a class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400" href="/">
+             {{ _('Home') }}
+             <svg class="stroke-current" fill="none" height="16" viewbox="0 0 17 16" width="17" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M6.0765 12.667L10.2432 8.50033L6.0765 4.33366" stroke="" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"></path>
+             </svg>
+            </a>
+           </li>
+                                <li class="text-sm text-gray-800 dark:text-white/90">{{ _('Orders') }}</li>
+          </ol>
+         </nav>
+        </div>
+
+                    <!-- Orders Table -->
+                    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+                        <!-- Header -->
+         <div class="flex flex-col justify-between gap-5 border-b border-gray-200 px-5 py-4 sm:flex-row sm:items-center dark:border-gray-800">
+          <div>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90">{{ _('Orders Management') }}</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ _('Track and manage all your purchase orders') }}</p>
+          </div>
+          <div class="flex gap-3">
+                                <!-- Filter Toggle Button -->
+                                <button @click="showFilters = !showFilters" :class="showFilters ? 'bg-brand-100 border-brand-300 text-brand-700' : 'bg-white border-gray-300 text-gray-700'" class="shadow-theme-xs inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium ring-1 transition hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700 dark:hover:bg-white/[0.03]">
+                                    <svg fill="none" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M14.6537 5.90414C14.6537 4.48433 13.5027 3.33331 12.0829 3.33331C10.6631 3.33331 9.51206 4.48433 9.51204 5.90415M14.6537 5.90414C14.6537 7.32398 13.5027 8.47498 12.0829 8.47498C10.663 8.47498 9.51204 7.32398 9.51204 5.90415M14.6537 5.90414L17.7087 5.90411M9.51204 5.90415L2.29199 5.90411M5.34694 14.0958C5.34694 12.676 6.49794 11.525 7.91777 11.525C9.33761 11.525 10.4886 12.676 10.4886 14.0958M5.34694 14.0958C5.34694 15.5156 6.49794 16.6666 7.91778 16.6666C9.33761 16.6666 10.4886 15.5156 10.4886 14.0958M5.34694 14.0958L2.29199 14.0958M10.4886 14.0958L17.7087 14.0958" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+                                    </svg>
+                                    <span x-text="showFilters ? '{{ _('Hide Filters') }}' : '{{ _('Show Filters') }}'"></span>
+                                </button>
+                                
+                                <!-- Export Button -->
+                                <a href="{{ url_for('export_orders') }}" class="shadow-theme-xs inline-flex items-center justify-center gap-2 rounded-lg bg-white px-4 py-3 text-sm font-medium text-gray-700 ring-1 ring-gray-300 transition hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-400 dark:ring-gray-700 dark:hover:bg-white/[0.03]">
+    {{ _('Export') }}
+    <svg fill="none" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16.667 13.3333V15.4166C16.667 16.1069 16.1074 16.6666 15.417 16.6666H4.58295C3.89259 16.6666 3.33295 16.1069 3.33295 15.4166V13.3333M10.0013 13.3333L10.0013 3.33325M6.14547 9.47942L9.99951 13.331L13.8538 9.47942" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+    </svg>
+                                </a>
+                                
+                                <!-- Create Order Button -->
+           <a class="bg-brand-500 shadow-theme-xs hover:bg-brand-600 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-white transition" href="/new_purchase">
+            <svg fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M5 10.0002H15.0006M10.0002 5V15.0006" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+            </svg>
+                                    {{ _('Create Order') }}
+           </a>
+          </div>
+         </div>
+                        
+                        <!-- Filters Panel -->
+                        <div x-show="showFilters" x-transition class="border-b border-gray-200 bg-gray-50 px-5 py-4 dark:border-gray-800 dark:bg-gray-900/50">
+                            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                                <!-- Search Filter -->
+                                <div>
+                                    <label class="mb-2 block text-xs font-medium text-gray-700 dark:text-gray-300">{{ _('Search') }}</label>
+                                    <input type="text" x-model="filters.search" class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-10 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 focus:ring-2 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90" placeholder="{{ _('Search orders...') }}"/>
+                                </div>
+                                
+                                <!-- Status Filter -->
+                                <div>
+                                    <label class="mb-2 block text-xs font-medium text-gray-700 dark:text-gray-300">Status</label>
+                                    <select x-model="filters.status" class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-10 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 focus:ring-2 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+<option value="Technology">Technology</option>
+<option value="Electronics">Electronics</option>
+<option value="IT">IT</option>
+<option value="Software">Software</option>
+<option value="Hardware">Hardware</option>
+<option value="General">General</option>
+<option value="Other">Other</option>
+</select>
+                                </div>
+                                
+                                <!-- Order Type Filter -->
+                                <div>
+                                    <label class="mb-2 block text-xs font-medium text-gray-700 dark:text-gray-300">Order Type</label>
+                                    <select x-model="filters.order_type" class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-10 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 focus:ring-2 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+                                        <option value="">All Types</option>
+                                        <option value="direct">Direct Purchase</option>
+                                        <option value="tender">Tender</option>
+                                        <option value="quotation">Quotation Request</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Date From -->
+                                <div>
+                                    <label class="mb-2 block text-xs font-medium text-gray-700 dark:text-gray-300">Date From</label>
+                                    <input type="date" x-model="filters.date_from" class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-10 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 focus:ring-2 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"/>
+                                </div>
+                                
+                                <!-- Date To -->
+                                <div>
+                                    <label class="mb-2 block text-xs font-medium text-gray-700 dark:text-gray-300">Date To</label>
+                                    <input type="date" x-model="filters.date_to" class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-10 w-full rounded-lg border border-gray-300 bg-transparent px-3 py-2 text-sm text-gray-800 focus:ring-2 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"/>
+                                </div>
+                                
+                                <!-- Clear Filters -->
+                                <div class="flex items-end">
+                                    <button @click="filters = {search: '', status: '', sector: '', order_type: '', date_from: '', date_to: ''}" class="bg-gray-500 hover:bg-gray-600 h-10 w-full rounded-lg px-3 py-2 text-sm font-medium text-white transition-colors">
+                                        {{ _('Clear Filters') }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Table Container -->
+         <div class="custom-scrollbar overflow-x-auto">
+       {% if orders.items %}
+                                <table class="min-w-full bg-white dark:bg-gray-800">
+                                    <thead class="bg-gray-50 dark:bg-gray-900">
+                        <tr class="text-left text-sm font-medium text-gray-500 dark:text-gray-400">
+                                            <th class="px-5 py-4">
+                                                <input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-700">
+                                            </th>
+                                            <th class="px-5 py-4 cursor-pointer hover:text-gray-700 dark:hover:text-gray-200">
+                                                {{ _('Order #') }}
+                                                <svg class="w-4 h-4 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                                                </svg>
+                                            </th>
+                                            <th class="px-5 py-4">{{ _('Order Name') }}</th>
+                                            <th class="px-5 py-4 cursor-pointer hover:text-gray-700 dark:hover:text-gray-200">
+                                                {{ _('Created Date') }}
+                                                <svg class="w-4 h-4 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+                                                </svg>
+                                            </th>
+                                            <th class="px-5 py-4">{{ _('Sector') }}</th>
+                                            <th class="px-5 py-4">{{ _('Order Type') }}</th>
+                                            <th class="px-5 py-4">{{ _('Products') }}</th>
+                                            <th class="px-5 py-4">{{ _('Delivery') }}</th>
+                                            <th class="px-5 py-4">Receiver</th>
+                                            <th class="px-5 py-4">Payment</th>
+                            <th class="px-5 py-4">Status</th>
+                                            <th class="px-5 py-4">Offers</th>
+                            <th class="px-5 py-4">Actions</th>
+                        </tr>
+                    </thead>
+                                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                        {% for order in orders.items %}
+                            {% set order_matches_filter = true %}
+                            
+                            <!-- Apply client-side filtering -->
+                            {% if filters and filters.search %}
+                                {% set order_matches_filter = order_matches_filter and (
+                                    filters.search.lower() in (order.order_name or '').lower() or 
+                                    filters.search.lower() in order.id|string
+                                ) %}
+                            {% endif %}
+                            
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50" x-show="
+                                (!filters.search || 
+                                 '{{ order.order_name or '' }}'.toLowerCase().includes(filters.search.toLowerCase()) || 
+                                 '{{ order.id }}'.includes(filters.search)) &&
+                                (!filters.status || 
+                                 (filters.status === 'no_offers' && {{ order.offers|length }} === 0) ||
+                                 (filters.status === 'pending' && {{ order.offers|selectattr('status', 'equalto', 'pending')|list|length }} > 0) ||
+                                 (filters.status === 'accepted' && {{ order.offers|selectattr('status', 'equalto', 'accepted')|list|length }} > 0) ||
+                                 (filters.status === 'rejected' && {{ order.offers|selectattr('status', 'equalto', 'rejected')|list|length }} > 0)) &&
+                                (!filters.sector || '{{ order.sector or '' }}'.toLowerCase().includes(filters.sector.toLowerCase())) &&
+                                (!filters.order_type || '{{ order.order_type or '' }}'.toLowerCase().includes(filters.order_type.toLowerCase())) &&
+                                (!filters.date_from || '{{ order.created_at.strftime('%Y-%m-%d') }}' >= filters.date_from) &&
+                                (!filters.date_to || '{{ order.created_at.strftime('%Y-%m-%d') }}' <= filters.date_to)
+                            ">
+                                <!-- Checkbox -->
+                                <td class="w-14 px-5 py-4 whitespace-nowrap">
+                                    <input type="checkbox" class="h-4 w-4 rounded border-gray-300 text-brand-600 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-700">
+                                </td>
+                                                
+                                <!-- Order ID -->
+                                <td class="px-5 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <span class="text-sm font-semibold text-brand-600 dark:text-brand-400">#{{ order.id }}</span>
+                                    </div>
+                                </td>
+                                                
+                                <!-- Order Name -->
+                                <td class="px-5 py-4">
+                                    <div class="max-w-xs">
+                                        <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{{ order.order_name or 'Unnamed Order' }}</p>
+                                        {% if order.description %}
+                                            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ order.description[:50] }}{% if order.description|length > 50 %}...{% endif %}</p>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                                
+                                <!-- Created Date -->
+                                <td class="px-5 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-900 dark:text-gray-100">{{ order.created_at.strftime('%Y-%m-%d') }}</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ order.created_at.strftime('%H:%M') }}</div>
+                                </td>
+                                                
+                                <!-- Sector -->
+                                <td class="px-5 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+                                        {{ order.sector or 'N/A' }}
+                                    </span>
+                                </td>
+                                                
+                                <!-- Order Type -->
+                                <td class="px-5 py-4 whitespace-nowrap">
+                                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400">
+                                        {{ order.order_type or 'N/A' }}
+                                    </span>
+                                </td>
+                                                
+                                <!-- Products -->
+                                <td class="px-5 py-4">
+                                    <div class="max-w-xs">
+                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ order.purchases|length }} item(s)</div>
+                                        {% if order.purchases %}
+                                            <div class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                                                {% for purchase in order.purchases[:2] %}
+                                                    {{ purchase.part_name }}{% if not loop.last %}, {% endif %}
+                                                {% endfor %}
+                                                {% if order.purchases|length > 2 %}...{% endif %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                                
+                                <!-- Delivery -->
+                                <td class="px-5 py-4 whitespace-nowrap">
+                                    {% if order.delivery_date %}
+                                        <div class="text-sm text-gray-900 dark:text-gray-100">{{ order.delivery_date.strftime('%Y-%m-%d') }}</div>
+                                        {% if order.delivery_time %}
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">{{ order.delivery_time }}</div>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-xs text-gray-400">Not specified</span>
+                                    {% endif %}
+                                </td>
+                                
+                                <!-- Receiver Information -->
+                                <td class="px-5 py-4 whitespace-nowrap">
+                                    {% if order.receiver_name or order.receiver_phone %}
+                                        {% if order.receiver_name %}
+                                            <div class="text-sm text-gray-900 dark:text-gray-100">{{ order.receiver_name }}</div>
+                                        {% endif %}
+                                        {% if order.receiver_phone %}
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">📞 {{ order.receiver_phone }}</div>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="text-xs text-gray-400">Not specified</span>
+                                    {% endif %}
+                                </td>
+                                
+                                <!-- Payment Information -->
+                                <td class="px-5 py-4">
+                                    <div class="max-w-xs">
+                                        {% if order.payment_steps %}
+                                            {% set payment_data = order.payment_steps|from_json %}
+                                            {% if payment_data %}
+                                                <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ payment_data|length }} Step(s)</div>
+                                                <div class="text-xs text-gray-500 dark:text-gray-400">
+                                                    {% for step in payment_data[:2] %}
+                                                        {% if step.percentage %}{{ step.percentage }}%{% endif %}
+                                                        {% if step.method %} ({{ step.method }}){% endif %}
+                                                        {% if not loop.last %}, {% endif %}
+                                                    {% endfor %}
+                                                    {% if payment_data|length > 2 %}...{% endif %}
+                                                </div>
+                                            {% else %}
+                                                <span class="text-xs text-gray-400">Standard payment</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="text-xs text-gray-400">Standard payment</span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                                
+                                <!-- Status -->
+                                <td class="px-5 py-4 whitespace-nowrap">
+                                    {% set accepted_offers = order.offers|selectattr('status', 'equalto', 'accepted')|list %}
+                                    {% set pending_offers = order.offers|selectattr('status', 'equalto', 'pending')|list %}
+                                    {% set rejected_offers = order.offers|selectattr('status', 'equalto', 'rejected')|list %}
+                                    
+                                    {% if accepted_offers|length > 0 %}
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+                                            ✓ Accepted
+                                        </span>
+                                    {% elif pending_offers|length > 0 %}
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400">
+                                            ⏳ Pending
+                                        </span>
+                                    {% elif rejected_offers|length > 0 and order.offers|length == rejected_offers|length %}
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400">
+                                            ✗ Rejected
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400">
+                                            📭 No Offers
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                                
+                                <!-- Offers Count -->
+                                <td class="px-5 py-4 whitespace-nowrap">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ order.offers|length }}</span>
+                                        {% if order.offers|length > 0 %}
+                                            <div class="flex space-x-1">
+                                                {% if accepted_offers|length > 0 %}
+                                                    <span class="inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-green-600 bg-green-100 rounded-full dark:bg-green-900/20 dark:text-green-400">{{ accepted_offers|length }}</span>
+                                                {% endif %}
+                                                {% if pending_offers|length > 0 %}
+                                                    <span class="inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-yellow-600 bg-yellow-100 rounded-full dark:bg-yellow-900/20 dark:text-yellow-400">{{ pending_offers|length }}</span>
+                                                {% endif %}
+                                                {% if rejected_offers|length > 0 %}
+                                                    <span class="inline-flex items-center justify-center w-5 h-5 text-xs font-medium text-red-600 bg-red-100 rounded-full dark:bg-red-900/20 dark:text-red-400">{{ rejected_offers|length }}</span>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                                
+                                <!-- Actions -->
+                                <td class="px-5 py-4 whitespace-nowrap">
+                                    <div class="relative flex justify-center" x-data="{ open: false }">
+                                        <button @click="open = !open" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                                            <svg class="fill-current" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                                <path clip-rule="evenodd" d="M5.99902 10.245C6.96552 10.245 7.74902 11.0285 7.74902 11.995V12.005C7.74902 12.9715 6.96552 13.755 5.99902 13.755C5.03253 13.755 4.24902 12.9715 4.24902 12.005V11.995C4.24902 11.0285 5.03253 10.245 5.99902 10.245ZM17.999 10.245C18.9655 10.245 19.749 11.0285 19.749 11.995V12.005C19.749 12.9715 18.9655 13.755 17.999 13.755C17.0325 13.755 16.249 12.9715 16.249 12.005V11.995C16.249 11.0285 17.0325 10.245 17.999 10.245ZM13.749 11.995C13.749 11.0285 12.9655 10.245 11.999 10.245C11.0325 10.245 10.249 11.0285 10.249 11.995V12.005C10.249 12.9715 11.0325 13.755 11.999 13.755C12.9655 13.755 13.749 12.9715 13.749 12.005V11.995Z" fill="" fill-rule="evenodd"></path>
+                                            </svg>
+                                        </button>
+                                        <div @click.outside="open = false" class="shadow-lg dark:bg-gray-800 absolute right-0 z-10 mt-8 w-40 space-y-1 rounded-2xl border border-gray-200 bg-white p-2 dark:border-gray-800" x-show="open" x-transition>
+                                            <a href="{{ url_for('view_order', order_id=order.id) }}" class="text-sm flex w-full rounded-lg px-3 py-2 text-left font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
+                                                👁️ View Details
+                                            </a>
+                                            {% if order.offers|length > 0 %}
+                                                <a href="{{ url_for('view_offers', order_id=order.id) }}" class="text-sm flex w-full rounded-lg px-3 py-2 text-left font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
+                                                    💼 View Offers ({{ order.offers|length }})
+                                                </a>
+                                            {% endif %}
+                                            {% if order.company %}
+                                            <a href="{{ url_for('start_chat', company_id=order.company.id) }}" class="text-sm flex w-full rounded-lg px-3 py-2 text-left font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
+                                                💬 Chat with Company
+                                            </a>
+                                            {% endif %}
+                                            <hr class="border-gray-200 dark:border-gray-700">
+                                            <a href="{{ url_for('delete_order', order_id=order.id) }}" onclick="return confirm('Are you sure you want to delete this order?')" class="text-sm flex w-full rounded-lg px-3 py-2 text-left font-medium text-red-500 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-900/20 dark:hover:text-red-300">
+                                                🗑️ Delete Order
+                                            </a>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                <!-- Supplier Orders Section -->
+                {% if supplier_orders %}
+                <div class="mt-8">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white/90 mb-4 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                        <span data-translate="Supplier Orders">{{ _('Supplier Orders') }}</span>
+                    </h3>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                            <thead class="bg-gray-50 dark:bg-gray-900">
+                                <tr class="text-left text-sm font-medium text-gray-500 dark:text-gray-400">
+                                    <th class="px-5 py-4"><span data-translate="Order #">{{ _('Order #') }}</span></th>
+                                    <th class="px-5 py-4"><span data-translate="Order Name">{{ _('Order Name') }}</span></th>
+                                    <th class="px-5 py-4"><span data-translate="Created Date">{{ _('Created Date') }}</span></th>
+                                    <th class="px-5 py-4"><span data-translate="Sector">{{ _('Sector') }}</span></th>
+                                    <th class="px-5 py-4"><span data-translate="Order Type">{{ _('Order Type') }}</span></th>
+                                    <th class="px-5 py-4"><span data-translate="Products">{{ _('Products') }}</span></th>
+                                    <th class="px-5 py-4"><span data-translate="Status">{{ _('Status') }}</span></th>
+                                    <th class="px-5 py-4"><span data-translate="Actions">{{ _('Actions') }}</span></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                {% for supplier_order in supplier_orders %}
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+                                    <!-- Order ID -->
+                                    <td class="px-5 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <span class="text-sm font-semibold text-purple-600 dark:text-purple-400">#{{ supplier_order.id }}</span>
+                                            <span class="ml-2 inline-flex items-center rounded-full bg-purple-100 px-2 py-1 text-xs font-medium text-purple-800 dark:bg-purple-900/20 dark:text-purple-300">Supplier</span>
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- Order Name -->
+                                    <td class="px-5 py-4">
+                                        <div class="max-w-xs">
+                                            <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{{ supplier_order.order_name or 'Unnamed Order' }}</p>
+                                            {% if supplier_order.notes %}
+                                                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ supplier_order.notes[:50] }}{% if supplier_order.notes|length > 50 %}...{% endif %}</p>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    
+                                    <!-- Created Date -->
+                                    <td class="px-5 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900 dark:text-gray-100">{{ supplier_order.created_at.strftime('%Y-%m-%d') }}</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ supplier_order.created_at.strftime('%H:%M') }}</div>
+                                    </td>
+                                    
+                                    <!-- Sector -->
+                                    <td class="px-5 py-4">
+                                        <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/20 dark:text-blue-300">
+                                            {{ supplier_order.sector or 'General' }}
+                                        </span>
+                                    </td>
+                                    
+                                    <!-- Order Type -->
+                                    <td class="px-5 py-4">
+                                        <span class="text-sm text-gray-900 dark:text-gray-100">{{ supplier_order.order_type or 'Purchase' }}</span>
+                                    </td>
+                                    
+                                    <!-- Products -->
+                                    <td class="px-5 py-4">
+                                        <div class="text-sm text-gray-900 dark:text-gray-100">{{ supplier_order.products|length }} product(s)</div>
+                                        {% if supplier_order.products %}
+                                            <div class="text-xs text-gray-500 dark:text-gray-400">
+                                                {% for product in supplier_order.products[:2] %}
+                                                    {{ product.product_name }}{% if not loop.last %}, {% endif %}
+                                                {% endfor %}
+                                                {% if supplier_order.products|length > 2 %}...{% endif %}
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                    
+                                    <!-- Status -->
+                                    <td class="px-5 py-4">
+                                        {% if supplier_order.status == 'pending' %}
+                                            <span class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300">
+                                                <span data-translate="Pending">{{ _('Pending') }}</span>
+                                            </span>
+                                        {% elif supplier_order.status == 'accepted' %}
+                                            <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/20 dark:text-green-300">
+                                                <span data-translate="Accepted">{{ _('Accepted') }}</span>
+                                            </span>
+                                        {% elif supplier_order.status == 'rejected' %}
+                                            <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900/20 dark:text-red-300">
+                                                <span data-translate="Rejected">{{ _('Rejected') }}</span>
+                                            </span>
+                                        {% elif supplier_order.status == 'completed' %}
+                                            <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/20 dark:text-blue-300">
+                                                <span data-translate="Completed">{{ _('Completed') }}</span>
+                                            </span>
+                                        {% else %}
+                                            <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-900/20 dark:text-gray-300">
+                                                {{ supplier_order.status|title }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    
+                                    <!-- Actions -->
+                                    <td class="px-5 py-4">
+                                        <div class="relative flex justify-center" x-data="{ open: false }">
+                                            <button @click="open = !open" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
+                                                <svg class="fill-current" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                                    <path clip-rule="evenodd" d="M5.99902 10.245C6.96552 10.245 7.74902 11.0285 7.74902 11.995V12.005C7.74902 12.9715 6.96552 13.755 5.99902 13.755C5.03253 13.755 4.24902 12.9715 4.24902 12.005V11.995C4.24902 11.0285 5.03253 10.245 5.99902 10.245ZM17.999 10.245C18.9655 10.245 19.749 11.0285 19.749 11.995V12.005C19.749 12.9715 18.9655 13.755 17.999 13.755C17.0325 13.755 16.249 12.9715 16.249 12.005V11.995C16.249 11.0285 17.0325 10.245 17.999 10.245ZM13.749 11.995C13.749 11.0285 12.9655 10.245 11.999 10.245C11.0325 10.245 10.249 11.0285 10.249 11.995V12.005C10.249 12.9715 11.0325 13.755 11.999 13.755C12.9655 13.755 13.749 12.9715 13.749 12.005V11.995Z" fill="" fill-rule="evenodd"></path>
+                                                </svg>
+                                            </button>
+                                            <div @click.outside="open = false" class="shadow-lg dark:bg-gray-800 absolute right-0 z-10 mt-8 w-48 space-y-1 rounded-2xl border border-gray-200 bg-white p-2 dark:border-gray-800" x-show="open" x-transition>
+                                                <a href="{{ url_for('view_order', order_id=supplier_order.id) }}" class="text-sm flex w-full rounded-lg px-3 py-2 text-left font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
+                                                    👁️ <span data-translate="View Details">{{ _('View Details') }}</span>
+                                                </a>
+                                                <hr class="border-gray-200 dark:border-gray-700">
+                                                <a href="{{ url_for('submit_complaint', offer_id=0) }}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-b-lg">
+                                                    📝 <span data-translate="Submit Complaint">{{ _('Submit Complaint') }}</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Pagination -->
+                                <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 dark:border-gray-800 dark:bg-gray-900">
+                                    <div class="flex flex-1 justify-between sm:hidden">
+                    {% if orders.has_prev %}
+                                            <a href="{{ url_for('orders', page=orders.prev_num) }}" class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</a>
+                    {% endif %}
+                    {% if orders.has_next %}
+                                            <a href="{{ url_for('orders', page=orders.next_num) }}" class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</a>
+                    {% endif %}
+                </div>
+                                    <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                                        <div>
+                                            <p class="text-sm text-gray-700 dark:text-gray-300">
+            Showing
+                                                <span class="font-medium">{{ (orders.page - 1) * orders.per_page + 1 }}</span>
+                                                to
+                                                <span class="font-medium">{{ min(orders.page * orders.per_page, orders.total) }}</span>
+                                                of
+                                                <span class="font-medium">{{ orders.total }}</span>
+                                                results
+                                            </p>
+          </div>
+                                        <div>
+                                            <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                                                {% if orders.has_prev %}
+                                                    <a href="{{ url_for('orders', page=orders.prev_num) }}" class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                                                        <span class="sr-only">Previous</span>
+                                                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                            <path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" />
+             </svg>
+                                                    </a>
+                                                {% endif %}
+                                                
+                                                {% for page_num in orders.iter_pages() %}
+                                                    {% if page_num %}
+                                                        {% if page_num != orders.page %}
+                                                            <a href="{{ url_for('orders', page=page_num) }}" class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">{{ page_num }}</a>
+                                                        {% else %}
+                                                            <span class="relative z-10 inline-flex items-center bg-brand-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-600">{{ page_num }}</span>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <span class="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300 focus:outline-offset-0">…</span>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                
+                                                {% if orders.has_next %}
+                                                    <a href="{{ url_for('orders', page=orders.next_num) }}" class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0">
+                                                        <span class="sr-only">Next</span>
+                                                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                            <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" />
+             </svg>
+                                                    </a>
+                                                {% endif %}
+                                            </nav>
+          </div>
+         </div>
+        </div>
+                            {% else %}
+                                <div class="flex flex-col items-center justify-center py-12">
+                                    <svg class="w-16 h-16 text-gray-400 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No orders found</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Get started by creating your first order</p>
+                                    <a href="{{ url_for('new_purchase') }}" class="bg-brand-500 hover:bg-brand-600 inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                        </svg>
+                                        Create New Order
+                                    </a>
+                                </div>
+                            {% endif %}
+       </div>
+      </div>
+     </div>
+    </main>
+   </div>
+  </div>
+
+    <script src="{{ url_for('static', filename='js/script_1.js') }}" defer></script>
+    
+    <!-- Translation System -->
+    <script>
+        // Language management
+        let currentLanguage = localStorage.getItem('language') || '{{ get_locale() }}';
+        
+        function toggleLanguage() {
+            currentLanguage = currentLanguage === 'en' ? 'ar' : 'en';
+            localStorage.setItem('language', currentLanguage);
+            translatePage();
+            updateLanguageDisplay();
+        }
+        
+        function updateLanguageDisplay() {
+            const languageSpans = document.querySelectorAll('[x-text*="currentLanguage"]');
+            languageSpans.forEach(span => {
+                if (span.textContent.includes('currentLanguage')) {
+                    span.textContent = currentLanguage === 'en' ? 'EN' : 'AR';
+                }
+            });
+        }
+        
+        function translatePage() {
+            const elements = document.querySelectorAll('[data-translate]');
+            elements.forEach(element => {
+                const key = element.getAttribute('data-translate');
+                const translation = getTranslation(key);
+                if (translation) {
+                    element.textContent = translation;
+                }
+            });
+            
+            // Update page direction
+            document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
+            document.documentElement.lang = currentLanguage;
+        }
+        
+        function getTranslation(key) {
+            const translations = {
+                'en': {
+                    'Supplier Orders': 'Supplier Orders',
+                    'Order #': 'Order #',
+                    'Order Name': 'Order Name',
+                    'Created Date': 'Created Date',
+                    'Sector': 'Sector',
+                    'Order Type': 'Order Type',
+                    'Products': 'Products',
+                    'Status': 'Status',
+                    'Actions': 'Actions',
+                    'Pending': 'Pending',
+                    'Accepted': 'Accepted',
+                    'Rejected': 'Rejected',
+                    'Completed': 'Completed',
+                    'View Details': 'View Details',
+                    'Submit Complaint': 'Submit Complaint',
+                    'General': 'General',
+                    'Purchase': 'Purchase',
+                    'product(s)': 'product(s)'
+                },
+                'ar': {
+                    'Supplier Orders': 'طلبات الموردين',
+                    'Order #': 'رقم الطلب',
+                    'Order Name': 'اسم الطلب',
+                    'Created Date': 'تاريخ الإنشاء',
+                    'Sector': 'القطاع',
+                    'Order Type': 'نوع الطلب',
+                    'Products': 'المنتجات',
+                    'Status': 'الحالة',
+                    'Actions': 'الإجراءات',
+                    'Pending': 'قيد الانتظار',
+                    'Accepted': 'مقبول',
+                    'Rejected': 'مرفوض',
+                    'Completed': 'مكتمل',
+                    'View Details': 'عرض التفاصيل',
+                    'Submit Complaint': 'تقديم شكوى',
+                    'General': 'عام',
+                    'Purchase': 'شراء',
+                    'product(s)': 'منتج(ات)'
+                }
+            };
+            
+            return translations[currentLanguage]?.[key] || key;
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            currentLanguage = localStorage.getItem('language') || '{{ get_locale() }}';
+            translatePage();
+            updateLanguageDisplay();
+        });
+    </script>
+ </body>
+</html>

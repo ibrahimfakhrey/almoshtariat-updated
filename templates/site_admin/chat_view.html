@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+    <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+    <title>Chat with {{ current_chat.client.username }}</title>
+    <link href="favicon.ico" rel="icon"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+</head>
+<body :class="{'dark bg-gray-900': darkMode === true}" x-data="{ page: 'companyChat', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false, isMobile: false }" x-init="
+         darkMode = JSON.parse(localStorage.getItem('darkMode'));
+         $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))">
+    
+    <!-- ===== Preloader Start ===== -->
+    <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => loaded = false, 500)})" x-show="loaded">
+        <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent"></div>
+    </div>
+    <!-- ===== Preloader End ===== -->
+    
+    <!-- ===== Page Wrapper Start ===== -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- ===== Sidebar Start ===== -->
+        <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+            <!-- SIDEBAR HEADER -->
+            <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+                <a href="/">
+                    <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+                        <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                        <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                    </span>
+                    <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                </a>
+            </div>
+            
+            <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+                <!-- Sidebar Menu -->
+                <nav x-data="{selected: $persist('Chat')}">
+                    <!-- Menu Group -->
+                    <div>
+                        <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+                            <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">MENU</span>
+                            <svg :class="sidebarToggle ? 'xl:block hidden' : 'hidden'" class="menu-group-icon mx-auto fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.9716 18.9656 13.7551 17.9991 13.7551C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.9716 11.0326 13.7551 11.9991 13.7551C12.9656 13.7551 13.7491 12.9716 13.7491 12.0051V11.9951Z" fill="currentColor" fill-rule="evenodd"></path>
+                            </svg>
+                        </h3>
+                        <ul class="mb-6 flex flex-col gap-1">
+                            <li>
+                                <a :class=" (selected === 'Dashboard') && (page === 'companyDashboard') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Dashboard' ? '':'Dashboard')" class="menu-item group" href="/company_dashboard">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">Company Dashboard</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_profile">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">Company Profile</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_orders">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">Manage Orders</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_offers">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">My Offers</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_inventory">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">Inventory</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a :class=" (selected === 'Chat') && (page === 'companyChat') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Chat' ? '':'Chat')" class="menu-item group" href="/company_chat">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">Client Chats</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+                <!-- Sidebar Menu -->
+            </div>
+        </aside>
+        <!-- ===== Sidebar End ===== -->
+        
+        <!-- ===== Content Area Start ===== -->
+        <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+            <!-- Small Device Overlay Start -->
+            <div :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fixed z-50 h-screen w-full bg-gray-900/50"></div>
+            <!-- Small Device Overlay End -->
+            
+            <!-- ===== Header Start ===== -->
+            <header class="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-black dark:drop-shadow-none">
+                <div class="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
+                    <div class="flex items-center gap-2 sm:gap-4 xl:hidden">
+                        <button @click="sidebarToggle = !sidebarToggle" class="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark xl:hidden">
+                            <span class="relative block h-5.5 w-5.5 cursor-pointer">
+                                <span class="du-block absolute right-0 h-full w-full">
+                                    <span class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[0] duration-200 ease-in-out dark:bg-white"></span>
+                                    <span class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[75] duration-200 ease-in-out dark:bg-white"></span>
+                                    <span class="relative left-0 top-0 my-1 block h-0.5 w-0 rounded-sm bg-black delay-[150] duration-200 ease-in-out dark:bg-white"></span>
+                                </span>
+                                <span class="absolute right-0 h-full w-full rotate-45">
+                                    <span class="absolute left-2.5 top-0 block h-full w-0.5 rounded-sm bg-black delay-[0] duration-200 ease-in-out dark:bg-white"></span>
+                                    <span class="delay-[75] absolute left-0 top-2.5 block h-0.5 w-full rounded-sm bg-black duration-200 ease-in-out dark:bg-white"></span>
+                                </span>
+                            </span>
+                        </button>
+                        <a class="block flex-shrink-0 xl:hidden" href="/">
+                            <img src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000" alt="Logo" />
+                        </a>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 2xsm:gap-7">
+                        <ul class="flex items-center gap-2 2xsm:gap-4">
+                            <li>
+                                <a class="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border-[0.5px] border-stroke bg-gray hover:text-primary dark:border-strokedark dark:bg-meta-4 dark:text-white" href="#">
+                                    <span class="text-sm font-medium text-black dark:text-white">{{ current_user.username }}</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+            <!-- ===== Header End ===== -->
+            
+            <!-- ===== Main Content Start ===== -->
+            <main>
+                <div class="mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6">
+                    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h2 class="text-title-md2 font-bold text-gray-800 dark:text-white">
+                                Chat with {{ current_chat.client.username }}
+                            </h2>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                Communicate with your client
+                            </p>
+                        </div>
+                        <div class="flex gap-2">
+                            <a href="/company_chat" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                                </svg>
+                                Back to Chats
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                        <!-- Chat List Sidebar -->
+                        <div class="lg:col-span-1">
+                            <div class="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">All Chats</h3>
+                                <div class="space-y-2">
+                                    {% for chat in chats %}
+                                    <a href="/company_chat/view/{{ chat.id }}" class="block p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors {% if chat.id == current_chat.id %}bg-brand-50 border border-brand-200 dark:bg-brand-900/20 dark:border-brand-600{% endif %}">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 bg-brand-100 rounded-full flex items-center justify-center dark:bg-brand-900/20">
+                                                <svg class="w-5 h-5 text-brand-600 dark:text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                                </svg>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="font-medium text-gray-800 dark:text-white truncate">{{ chat.client.username }}</p>
+                                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ chat.updated_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Chat Messages -->
+                        <div class="lg:col-span-3">
+                            <div class="rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+                                <!-- Chat Header -->
+                                <div class="border-b border-gray-200 dark:border-gray-700 p-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-12 h-12 bg-brand-100 rounded-full flex items-center justify-center dark:bg-brand-900/20">
+                                            <svg class="w-6 h-6 text-brand-600 dark:text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h3 class="font-semibold text-gray-800 dark:text-white">{{ current_chat.client.username }}</h3>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">Client</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Messages Area -->
+                                <div id="messages-container" class="h-96 overflow-y-auto p-4 space-y-4">
+                                    <!-- Messages will be loaded here -->
+                                </div>
+                                
+                                <!-- Message Input -->
+                                <div class="border-t border-gray-200 dark:border-gray-700 p-4">
+                                    <form id="message-form" class="flex gap-3">
+                                        <input type="hidden" id="chat-id" value="{{ current_chat.id }}">
+                                        <input type="text" id="message-input" placeholder="Type your message..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:placeholder-gray-400">
+                                        <button type="submit" class="px-6 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition-colors">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+            <!-- ===== Main Content End ===== -->
+        </div>
+        <!-- ===== Content Area End ===== -->
+    </div>
+    <!-- ===== Page Wrapper End ===== -->
+    
+    <script src="{{ url_for('static', filename='js/alpine.min.js') }}"></script>
+    
+    <script>
+        // Load messages when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMessages();
+            // Auto-refresh messages every 5 seconds
+            setInterval(loadMessages, 5000);
+        });
+
+        // Load messages from server
+        function loadMessages() {
+            const chatId = document.getElementById('chat-id').value;
+            fetch(`/company_chat/get_messages/${chatId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.messages) {
+                        displayMessages(data.messages);
+                    }
+                })
+                .catch(error => console.error('Error loading messages:', error));
+        }
+
+        // Display messages in the chat
+        function displayMessages(messages) {
+            const container = document.getElementById('messages-container');
+            container.innerHTML = '';
+            
+            messages.forEach(message => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `flex ${message.sender_type === 'company' ? 'justify-end' : 'justify-start'}`;
+                
+                const messageBubble = document.createElement('div');
+                messageBubble.className = `max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                    message.sender_type === 'company' 
+                        ? 'bg-brand-500 text-white' 
+                        : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-white'
+                }`;
+                
+                messageBubble.innerHTML = `
+                    <p class="text-sm">${message.content}</p>
+                    <p class="text-xs mt-1 opacity-75">${message.created_at}</p>
+                `;
+                
+                messageDiv.appendChild(messageBubble);
+                container.appendChild(messageDiv);
+            });
+            
+            // Scroll to bottom
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Handle message form submission
+        document.getElementById('message-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const chatId = document.getElementById('chat-id').value;
+            const messageInput = document.getElementById('message-input');
+            const content = messageInput.value.trim();
+            
+            if (!content) return;
+            
+            // Send message
+            fetch('/company_chat/send_message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `chat_id=${chatId}&content=${encodeURIComponent(content)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    messageInput.value = '';
+                    loadMessages(); // Reload messages to show the new one
+                } else {
+                    alert('Error sending message: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error sending message');
+            });
+        });
+    </script>
+</body>
+</html>
+

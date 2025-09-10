@@ -1,0 +1,76 @@
+# AI Configuration Example
+# Copy this file to ai_config.py and add your actual API keys
+
+import os
+from typing import Optional
+
+class AIConfig:
+    """
+    Configuration class for AI services
+    """
+    
+    # Google Gemini API Configuration
+    GEMINI_API_KEY: Optional[str] = "your-gemini-api-key-here"
+    MODEL_NAME: str = "gemini-1.5-pro"
+    TEMPERATURE: float = 0.7
+    MAX_TOKENS: int = 2048
+    
+    # AI Service Settings
+    ENABLE_AI_CHAT: bool = True
+    ENABLE_AGENTIC_AI: bool = True
+    DEFAULT_LANGUAGE: str = "ar"  # Arabic by default
+    
+    # Function Calling Settings
+    MAX_FUNCTION_CALLS: int = 5
+    FUNCTION_TIMEOUT: int = 30  # seconds
+    
+    # Conversation Settings
+    MAX_CONVERSATION_HISTORY: int = 10
+    CONVERSATION_TIMEOUT: int = 3600  # 1 hour
+    
+    @classmethod
+    def is_configured(cls) -> bool:
+        """
+        Check if AI services are properly configured
+        """
+        return (
+            cls.GEMINI_API_KEY is not None and 
+            cls.GEMINI_API_KEY != "your-gemini-api-key-here" and
+            len(cls.GEMINI_API_KEY.strip()) > 0
+        )
+    
+    @classmethod
+    def get_api_key(cls) -> Optional[str]:
+        """
+        Get the API key from environment variable or class attribute
+        """
+        # Try environment variable first
+        env_key = os.getenv('GEMINI_API_KEY')
+        if env_key:
+            return env_key
+        
+        # Fall back to class attribute
+        if cls.is_configured():
+            return cls.GEMINI_API_KEY
+        
+        return None
+    
+    @classmethod
+    def get_model_config(cls) -> dict:
+        """
+        Get model configuration for API calls
+        """
+        return {
+            'model': cls.MODEL_NAME,
+            'temperature': cls.TEMPERATURE,
+            'max_output_tokens': cls.MAX_TOKENS,
+        }
+
+# Create a global instance
+ai_config = AIConfig()
+
+# Instructions for setup:
+# 1. Get your Google Gemini API key from: https://makersuite.google.com/app/apikey
+# 2. Replace 'your-gemini-api-key-here' with your actual API key
+# 3. Optionally, set the GEMINI_API_KEY environment variable instead
+# 4. Adjust other settings as needed for your use case

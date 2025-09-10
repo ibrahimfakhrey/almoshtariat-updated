@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Deliveries - Almoshtariat</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="{{ url_for('static', filename='js/alpine.min.js') }}" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+</head>
+<body class="bg-gray-50" x-data="deliveryData()">
+    
+    <!-- Sidebar -->
+    <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out" :class="sidebarToggle ? 'translate-x-0' : '-translate-x-full'">
+        <div class="flex items-center justify-between h-16 px-6 bg-blue-600">
+            <h1 class="text-xl font-bold text-white">Almoshtariat</h1>
+            <button @click="sidebarToggle = false" class="text-white hover:text-gray-200">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <nav class="mt-6">
+            <a href="{{ url_for('dash') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100">
+                <i class="fas fa-tachometer-alt mr-3"></i>
+                Dashboard
+            </a>
+            <a href="{{ url_for('profile') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100">
+                <i class="fas fa-user mr-3"></i>
+                User Profile
+            </a>
+            <a href="{{ url_for('my_orders') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100">
+                <i class="fas fa-shopping-cart mr-3"></i>
+                My Orders
+            </a>
+            <a href="{{ url_for('my_deliveries') }}" class="flex items-center px-6 py-3 text-blue-600 bg-blue-50 border-r-4 border-blue-600">
+                <i class="fas fa-truck mr-3"></i>
+                My Deliveries
+            </a>
+            <a href="{{ url_for('new_purchase') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100">
+                <i class="fas fa-plus mr-3"></i>
+                Create Order
+            </a>
+            <a href="{{ url_for('suppliers') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100">
+                <i class="fas fa-building mr-3"></i>
+                Suppliers
+            </a>
+            <a href="{{ url_for('chat') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100">
+                <i class="fas fa-comments mr-3"></i>
+                Chats
+            </a>
+            <a href="/balance" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100">
+                <i class="fas fa-wallet mr-3"></i>
+                Balance
+            </a>
+            <a href="{{ url_for('company_register') }}" class="flex items-center px-6 py-3 text-gray-700 hover:bg-gray-100">
+                <i class="fas fa-building mr-3"></i>
+                Company Registration
+            </a>
+        </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="lg:ml-0">
+        <!-- Header -->
+        <header class="bg-white shadow-sm border-b border-gray-200">
+            <div class="flex items-center justify-between h-16 px-6">
+                <button @click="sidebarToggle = true" class="lg:hidden text-gray-600 hover:text-gray-900">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                
+                <h2 class="text-2xl font-semibold text-gray-800">My Deliveries</h2>
+                
+                <div class="flex items-center space-x-4">
+                    <span class="text-gray-600">Welcome, {{ current_user.username }}</span>
+                    <a href="{{ url_for('logout') }}" class="text-red-600 hover:text-red-800">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Content -->
+        <main class="p-6">
+            <div class="max-w-6xl mx-auto">
+                <!-- Page Header -->
+                <div class="mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-900 mb-2">Package Deliveries</h1>
+                            <p class="text-gray-600">Track and confirm packages being delivered to you</p>
+                        </div>
+                        <a href="{{ url_for('dash') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center">
+                            <i class="fas fa-tachometer-alt mr-2"></i>
+                            Dashboard
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Packages List -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+                    <div class="p-6">
+                        <template x-if="packages.length === 0">
+                            <div class="text-center py-12">
+                                <i class="fas fa-truck text-6xl text-gray-300 mb-4"></i>
+                                <h3 class="text-xl font-semibold text-gray-600 mb-2">No Pending Deliveries</h3>
+                                <p class="text-gray-500">You don't have any packages waiting for delivery confirmation.</p>
+                            </div>
+                        </template>
+                        
+                        <template x-if="packages.length > 0">
+                            <div class="space-y-4">
+                                <template x-for="package in packages" :key="package.id">
+                                    <div class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex-1">
+                                                <div class="flex items-center mb-3">
+                                                    <h3 class="text-lg font-semibold text-gray-900 mr-3" x-text="'Package #' + package.package_number"></h3>
+                                                    <span class="px-3 py-1 text-sm font-medium rounded-full" 
+                                                          :class="{
+                                                              'bg-yellow-100 text-yellow-800': package.status === 'preparing',
+                                                              'bg-blue-100 text-blue-800': package.status === 'shipped',
+                                                              'bg-purple-100 text-purple-800': package.status === 'in_transit'
+                                                          }" 
+                                                          x-text="package.status.replace('_', ' ').toUpperCase()"></span>
+                                                </div>
+                                                
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                    <div>
+                                                        <p class="text-sm text-gray-600 mb-1">Receiver Name</p>
+                                                        <p class="font-medium text-gray-900" x-text="package.receiver_name"></p>
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-sm text-gray-600 mb-1">Receiver Phone</p>
+                                                        <p class="font-medium text-gray-900" x-text="package.receiver_phone"></p>
+                                                    </div>
+                                                    <div class="md:col-span-2">
+                                                        <p class="text-sm text-gray-600 mb-1">Delivery Address</p>
+                                                        <p class="font-medium text-gray-900" x-text="package.receiver_address"></p>
+                                                    </div>
+                                                </div>
+                                                
+                                                <template x-if="package.tracking_notes">
+                                                    <div class="mb-4">
+                                                        <p class="text-sm text-gray-600 mb-1">Tracking Notes</p>
+                                                        <p class="text-gray-700" x-text="package.tracking_notes"></p>
+                                                    </div>
+                                                </template>
+                                                
+                                                <div class="flex items-center text-sm text-gray-500">
+                                                    <i class="fas fa-calendar mr-2"></i>
+                                                    <span x-text="'Created: ' + new Date(package.created_at).toLocaleDateString()"></span>
+                                                    <template x-if="package.shipped_at">
+                                                        <span class="ml-4">
+                                                            <i class="fas fa-shipping-fast mr-2"></i>
+                                                            <span x-text="'Shipped: ' + new Date(package.shipped_at).toLocaleDateString()"></span>
+                                                        </span>
+                                                    </template>
+                                                </div>
+                                                
+                                                <!-- Delivery Code Display -->
+                                                <template x-if="package.delivery_code">
+                                                    <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                                        <div class="flex items-center justify-between">
+                                                            <div>
+                                                                <p class="text-sm font-medium text-blue-900">Delivery Confirmation Code</p>
+                                                                <p class="text-lg font-mono font-bold text-blue-700" x-text="package.delivery_code"></p>
+                                                                <p class="text-xs text-blue-600">Give this code to the delivery company</p>
+                                                            </div>
+                                                            <i class="fas fa-key text-2xl text-blue-400"></i>
+                                                        </div>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                            
+                                            <div class="ml-6">
+                                                <button @click="confirmDelivery(package.id)" 
+                                                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                                    <i class="fas fa-key mr-2"></i>
+                                                    Generate Code
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Mobile Sidebar Overlay -->
+    <div x-show="sidebarToggle" @click="sidebarToggle = false" class="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"></div>
+
+    <script>
+        function deliveryData() {
+            return {
+                darkMode: false,
+                sidebarToggle: false,
+                packages: {{ packages|tojson }},
+                confirmDelivery(packageId) {
+                    const packageData = this.packages.find(p => p.id === packageId);
+                    if (!packageData) {
+                        alert('Package not found!');
+                        return;
+                    }
+
+                    if (confirm('Generate delivery confirmation code? You will need to give this code to the delivery company.')) {
+                        fetch(`/generate_delivery_code/${packageId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Update the package with the new delivery code
+                                packageData.delivery_code = data.delivery_code;
+                                
+                                // Show the code to the user
+                                alert(`Delivery Code Generated!\n\nYour delivery confirmation code is: ${data.delivery_code}\n\nPlease give this code to the delivery company to confirm your package delivery.`);
+                            } else {
+                                alert('Error: ' + data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('An error occurred while generating delivery code.');
+                        });
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

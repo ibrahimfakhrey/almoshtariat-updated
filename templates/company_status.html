@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}" dir="{{ 'rtl' if get_locale() == 'ar' else 'ltr' }}">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+    <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>{{ _('Company Status') }}</title>
+    <link href="favicon.ico" rel="icon"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css', v=version) }}">
+    <style>
+        /* Document Status Styling */
+        .document-status-card {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            background-color: #f9fafb;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .document-status-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .dark .document-status-card {
+            background-color: #374151;
+            border-color: #4b5563;
+        }
+        
+        .uploaded-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background-color: #dcfce7;
+            color: #166534;
+            border: 2px solid #22c55e;
+            box-shadow: 0 2px 4px rgba(34, 197, 94, 0.2);
+            animation: pulse-green 2s infinite;
+        }
+        
+        .dark .uploaded-badge {
+            background-color: #064e3b;
+            color: #4ade80;
+            border-color: #10b981;
+        }
+        
+        .missing-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background-color: #fef2f2;
+            color: #dc2626;
+            border: 2px solid #ef4444;
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+            animation: pulse-red 2s infinite;
+        }
+        
+        .dark .missing-badge {
+            background-color: #450a0a;
+            color: #f87171;
+            border-color: #f87171;
+        }
+        
+        @keyframes pulse-green {
+            0%, 100% {
+                box-shadow: 0 2px 4px rgba(34, 197, 94, 0.2);
+            }
+            50% {
+                box-shadow: 0 4px 8px rgba(34, 197, 94, 0.4);
+            }
+        }
+        
+        @keyframes pulse-red {
+            0%, 100% {
+                box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+            }
+            50% {
+                box-shadow: 0 4px 8px rgba(239, 68, 68, 0.4);
+            }
+        }
+        
+        /* Enhanced visual feedback */
+        .uploaded-badge:hover {
+            background-color: #bbf7d0;
+            transform: scale(1.05);
+        }
+        
+        .dark .uploaded-badge:hover {
+            background-color: #065f46;
+        }
+        
+        .missing-badge:hover {
+            background-color: #fecaca;
+            transform: scale(1.05);
+        }
+        
+        .dark .missing-badge:hover {
+            background-color: #7f1d1d;
+        }
+        
+        /* Information Status Styling */
+        .info-status-card {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
+            background-color: #f9fafb;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .info-status-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .dark .info-status-card {
+            background-color: #374151;
+            border-color: #4b5563;
+        }
+        
+        .provided-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background-color: #dcfce7;
+            color: #166534;
+            border: 2px solid #22c55e;
+            box-shadow: 0 2px 4px rgba(34, 197, 94, 0.2);
+            animation: pulse-green 2s infinite;
+        }
+        
+        .dark .provided-badge {
+            background-color: #064e3b;
+            color: #4ade80;
+            border-color: #10b981;
+        }
+        
+        .missing-info-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            background-color: #fef2f2;
+            color: #dc2626;
+            border: 2px solid #ef4444;
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+            animation: pulse-red 2s infinite;
+        }
+        
+        .dark .missing-info-badge {
+            background-color: #450a0a;
+            color: #f87171;
+            border-color: #f87171;
+        }
+        
+        /* Enhanced visual feedback for info badges */
+        .provided-badge:hover {
+            background-color: #bbf7d0;
+            transform: scale(1.05);
+        }
+        
+        .dark .provided-badge:hover {
+            background-color: #065f46;
+        }
+        
+        .missing-info-badge:hover {
+            background-color: #fecaca;
+            transform: scale(1.05);
+        }
+        
+        .dark .missing-info-badge:hover {
+            background-color: #7f1d1d;
+        }
+        
+        /* Admin Feedback Section Styling */
+        .admin-feedback-card {
+            transition: all 0.3s ease-in-out;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .admin-feedback-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+        }
+        
+        .feedback-reason {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 1px solid #bfdbfe;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .feedback-reason::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+        }
+        
+        .dark .feedback-reason {
+            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+            border-color: #1d4ed8;
+        }
+        
+        .dark .feedback-reason::before {
+            background: linear-gradient(90deg, #60a5fa, #3b82f6);
+        }
+        
+        /* Clickable Field Styling */
+        .clickable-badge {
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .clickable-badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .edit-controls {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background-color: #f8fafc;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .dark .edit-controls {
+            background-color: #1f2937;
+            border-color: #374151;
+        }
+        
+        .edit-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            background-color: white;
+            color: #374151;
+            margin-bottom: 0.75rem;
+        }
+        
+        .dark .edit-input {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #f9fafb;
+        }
+        
+        .edit-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .edit-input[type="textarea"], textarea.edit-input {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+        
+        .edit-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .save-btn, .cancel-btn {
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            border: none;
+        }
+        
+        .save-btn {
+            background-color: #10b981;
+            color: white;
+        }
+        
+        .save-btn:hover {
+            background-color: #059669;
+        }
+        
+        .cancel-btn {
+            background-color: #6b7280;
+            color: white;
+        }
+        
+        .cancel-btn:hover {
+            background-color: #4b5563;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* Document Upload Controls Styling */
+        .document-controls {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background-color: #f8fafc;
+            border-radius: 0.5rem;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .dark .document-controls {
+            background-color: #1f2937;
+            border-color: #374151;
+        }
+        
+        .current-file {
+            padding: 0.5rem;
+            background-color: #f1f5f9;
+            border-radius: 0.375rem;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .dark .current-file {
+            background-color: #374151;
+            border-color: #4b5563;
+        }
+        
+        .document-input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            background-color: white;
+            color: #374151;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+        }
+        
+        .dark .document-input {
+            background-color: #374151;
+            border-color: #4b5563;
+            color: #f9fafb;
+        }
+        
+        .document-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .upload-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .upload-btn, .cancel-upload-btn {
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            border: none;
+        }
+        
+        .upload-btn {
+            background-color: #10b981;
+            color: white;
+        }
+        
+        .upload-btn:hover {
+            background-color: #059669;
+        }
+        
+        .cancel-upload-btn {
+            background-color: #6b7280;
+            color: white;
+        }
+        
+        .cancel-upload-btn:hover {
+            background-color: #4b5563;
+        }
+        
+        /* Document Action Buttons */
+        .uploaded-document-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .document-actions {
+            display: flex;
+            gap: 0.25rem;
+        }
+        
+
+        
+
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .document-status-card,
+            .info-status-card {
+                padding: 0.75rem;
+            }
+            
+            .uploaded-badge,
+            .missing-badge,
+            .provided-badge,
+            .missing-info-badge {
+                padding: 0.375rem 0.75rem;
+                font-size: 0.75rem;
+            }
+            
+            .edit-buttons {
+                flex-direction: column;
+            }
+            
+            .status-card {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="flex h-screen overflow-hidden" x-data="{ 
+        'loaded': true,
+        'darkMode': false, 
+        'stickyMenu': false, 
+        'sidebarToggle': false, 
+        'scrollTop': false
+    }">
+        
+        <!-- Sidebar -->
+        <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+            <!-- SIDEBAR HEADER -->
+            <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+                <a href="/">
+                    <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+                        <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                        <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                    </span>
+                    <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                </a>
+            </div>
+            
+            <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+                <nav x-data="{selected: $persist('Company Status')}">
+                    <div>
+                        <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+                            <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">
+                                {{ _('MENU') }}
+                            </span>
+                        </h3>
+                        <ul class="mb-6 flex flex-col gap-1">
+                            <!-- Dashboard Menu Item -->
+                            <li>
+                                <a class="menu-item group" href="/company_dashboard">
+                                    <svg class="menu-item-icon-inactive" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/>
+                                    </svg>
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Company Dashboard') }}</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+            <!-- Header -->
+            <header class="sticky top-0 z-99999 flex w-full border-gray-200 bg-white xl:border-b dark:border-gray-800 dark:bg-gray-900" x-data="{menuToggle: false}">
+                <div class="flex grow flex-col items-center justify-between xl:flex-row xl:px-6">
+                    <div class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:py-4 xl:justify-normal xl:border-b-0 xl:px-0 dark:border-gray-800">
+                        <button @click.stop="sidebarToggle = !sidebarToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 xl:h-11 xl:w-11 xl:border dark:border-gray-800 dark:text-gray-400">
+                            <svg class="hidden fill-current xl:block" fill="none" height="12" viewbox="0 0 16 12" width="16" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M0.583252 1C0.583252 0.585788 0.919038 0.25 1.33325 0.25H14.6666C15.0808 0.25 15.4166 0.585786 15.4166 1C15.4166 1.41421 15.0808 1.75 14.6666 1.75L1.33325 1.75C0.919038 1.75 0.583252 1.41422 0.583252 1ZM0.583252 11C0.583252 10.5858 0.919038 10.25 1.33325 10.25L14.6666 10.25C15.0808 10.25 15.4166 10.5858 15.4166 11C15.4166 11.4142 15.0808 11.75 14.6666 11.75L1.33325 10.25C0.919038 10.25 0.583252 10.5858 0.583252 11ZM1.33325 5.25C0.919038 5.25 0.583252 5.58579 0.583252 6C0.583252 6.41421 0.919038 6.75 1.33325 6.75L7.99992 6.75C8.41413 6.75 8.74992 6.41421 8.74992 6C8.74992 5.58579 8.41413 5.25 7.99992 5.25L1.33325 5.25Z" fill="" fill-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        
+                        <!-- Language Toggle Button -->
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm text-gray-600">Current: {{ get_locale() }}</span>
+                            <button onclick="setLanguageAndReload('en')" class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                English
+                            </button>
+                            <button onclick="setLanguageAndReload('ar')" class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                العربية
+                            </button>
+                            <button onclick="testLanguage()" class="px-2 py-2 text-xs text-gray-600 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200">
+                                Test
+                            </button>
+                        </div>
+                        
+                        <a class="xl:hidden" href="/">
+                            <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                            <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                        </a>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-y-auto">
+                <div class="mx-auto max-w-4xl p-4 md:p-6">
+                    <!-- Company Status Header -->
+                    <div class="text-center py-8">
+                        <h1 class="text-3xl font-bold text-gray-800 dark:text-white/90 mb-4">
+                            {{ _('Company Status') }}
+                        </h1>
+                        <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
+                            {{ _('View the current status of your registered company') }}
+                        </p>
+                    </div>
+                    
+                    <!-- Company Information Card -->
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                        <!-- Company Header -->
+                        <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-8 text-white">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h2 class="text-2xl font-bold mb-2">
+                                        {{ company.name_ar or company.name_en or _('Company Name') }}
+                                    </h2>
+                                    <p class="text-blue-100">
+                                        {{ company.sector or _('Sector not specified') }}
+                                    </p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm text-blue-100 mb-1">{{ _('Company ID') }}</div>
+                                    <div class="text-xl font-mono">#{{ company.id }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Company Details -->
+                        <div class="p-6 space-y-6">
+                            <!-- Simple Header -->
+                            <div class="text-center mb-6">
+                                <h1 class="text-2xl font-semibold text-gray-800 dark:text-white mb-2">{{ _('Company Status') }}</h1>
+                                <p class="text-gray-600 dark:text-gray-400">{{ _('Check your registration progress') }}</p>
+                            </div>
+                            <!-- Status Section -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                                <!-- Approval Status -->
+                                <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                                    <div class="flex items-center mb-3">
+                                        <div class="w-8 h-8 {% if company.is_approved %}bg-green-100{% else %}bg-yellow-100{% endif %} rounded-full flex items-center justify-center mr-3">
+                                            <svg class="w-4 h-4 {% if company.is_approved %}text-green-600{% else %}text-yellow-600{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                {% if company.is_approved %}
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                {% else %}
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                {% endif %}
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                                            {{ _('Approval Status') }}
+                                        </h3>
+                                    </div>
+                                    
+                                    {% if company.is_approved %}
+                                        <span class="inline-block px-3 py-1 rounded-full text-sm font-medium bg-green-500 text-white mb-2">
+                                            {{ _('Approved') }}
+                                        </span>
+                                        <p class="text-sm text-green-700 dark:text-green-400">
+                                            {{ _('Your company has been approved and is now active!') }}
+                                        </p>
+                                    {% else %}
+                                        <span class="inline-block px-3 py-1 rounded-full text-sm font-medium bg-yellow-500 text-white mb-2">
+                                            {{ _('Pending Review') }}
+                                        </span>
+                                        <p class="text-sm text-yellow-700 dark:text-yellow-400">
+                                            {{ _('Your registration is under review (24-48 hours).') }}
+                                        </p>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Active Status -->
+                                <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+                                    <div class="flex items-center mb-3">
+                                        <div class="w-8 h-8 {% if company.is_active %}bg-green-100{% else %}bg-red-100{% endif %} rounded-full flex items-center justify-center mr-3">
+                                            <svg class="w-4 h-4 {% if company.is_active %}text-green-600{% else %}text-red-600{% endif %}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                {% if company.is_active %}
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                                {% else %}
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L5.636 5.636"></path>
+                                                {% endif %}
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                                            {{ _('Active Status') }}
+                                        </h3>
+                                    </div>
+                                    
+                                    {% if company.is_active %}
+                                        <span class="inline-block px-3 py-1 rounded-full text-sm font-medium bg-green-500 text-white mb-2">
+                                            {{ _('Active') }}
+                                        </span>
+                                        <p class="text-sm text-green-700 dark:text-green-400">
+                                            {{ _('Your company is currently active!') }}
+                                        </p>
+                                    {% else %}
+                                        <span class="inline-block px-3 py-1 rounded-full text-sm font-medium bg-red-500 text-white mb-2">
+                                            {{ _('Inactive') }}
+                                        </span>
+                                        <p class="text-sm text-red-700 dark:text-red-400">
+                                            {{ _('Your company is currently inactive.') }}
+                                        </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Admin Feedback Section -->
+                            {% if company.status_history and (not company.is_approved or not company.is_active) %}
+                            <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 mb-6 admin-feedback-card">
+                                <div class="flex items-center mb-3">
+                                    <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mr-3">
+                                        <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                                        {% if request.cookies.get('language') == 'ar' %}ملاحظات المدير{% else %}Admin Feedback{% endif %}
+                                    </h3>
+                                </div>
+                                
+                                {% set latest_status = company.status_history[-1] %}
+                                {% if latest_status.reason %}
+                                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 feedback-reason">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                            <svg class="w-5 h-5 text-blue-500 dark:text-blue-400 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="ml-3">
+                                            <p class="text-sm text-blue-800 dark:text-blue-200 font-medium mb-1">
+                                                {% if request.cookies.get('language') == 'ar' %}السبب:{% else %}Reason:{% endif %}
+                                            </p>
+                                            <p class="text-sm text-blue-700 dark:text-blue-300 italic">
+                                                "{{ latest_status.reason }}"
+                                            </p>
+                                            <p class="text-xs text-blue-600 dark:text-blue-400 mt-2">
+                                                {% if request.cookies.get('language') == 'ar' %}تم التحديث في:{% else %}Updated on:{% endif %}
+                                                {{ latest_status.changed_at.strftime('%Y-%m-%d %H:%M') }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-3">
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                                        {% if request.cookies.get('language') == 'ar' %}لا توجد ملاحظات إضافية من المدير{% else %}No additional notes from admin{% endif %}
+                                    </p>
+                                </div>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Company Information -->
+                            <div class="border-t border-gray-200 dark:border-gray-600 pt-6">
+                                <div class="flex items-center mb-6">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">{{ _('Company Information') }}</h3>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="info-status-card clickable-field" data-field="legal_type" data-current-value="{{ company.legal_type or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Legal Type') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.legal_type %}
+                                                <span class="provided-badge clickable-badge">{{ company.legal_type }}</span>
+                                            {% else %}
+                                                <span class="missing-info-badge clickable-badge">{{ _('Not provided') }}</span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="edit-controls hidden">
+                                            <input type="text" class="edit-input" value="{{ company.legal_type or '' }}" placeholder="{{ _('Enter legal type') }}">
+                                            <div class="edit-buttons">
+                                                <button class="save-btn">{{ _('Save') }}</button>
+                                                <button class="cancel-btn">{{ _('Cancel') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info-status-card clickable-field" data-field="commercial_registration" data-current-value="{{ company.commercial_registration or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Commercial Registration') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.commercial_registration %}
+                                                <span class="provided-badge clickable-badge">{{ company.commercial_registration }}</span>
+                                            {% else %}
+                                                <span class="missing-info-badge clickable-badge">{{ _('Not provided') }}</span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="edit-controls hidden">
+                                            <input type="text" class="edit-input" value="{{ company.commercial_registration or '' }}" placeholder="{{ _('Enter commercial registration number') }}">
+                                            <div class="edit-buttons">
+                                                <button class="save-btn">{{ _('Save') }}</button>
+                                                <button class="cancel-btn">{{ _('Cancel') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info-status-card clickable-field" data-field="contact_person" data-current-value="{{ company.contact_person or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Contact Person') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.contact_person %}
+                                                <span class="provided-badge clickable-badge">{{ company.contact_person }}</span>
+                                            {% else %}
+                                                <span class="missing-info-badge clickable-badge">{{ _('Not provided') }}</span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="edit-controls hidden">
+                                            <input type="text" class="edit-input" value="{{ company.contact_person or '' }}" placeholder="{{ _('Enter contact person name') }}">
+                                            <div class="edit-buttons">
+                                                <button class="save-btn">{{ _('Save') }}</button>
+                                                <button class="cancel-btn">{{ _('Cancel') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info-status-card clickable-field" data-field="email" data-current-value="{{ company.email or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Email') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.email %}
+                                                <span class="provided-badge clickable-badge">{{ company.email }}</span>
+                                            {% else %}
+                                                <span class="missing-info-badge clickable-badge">{{ _('Not provided') }}</span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="edit-controls hidden">
+                                            <input type="email" class="edit-input" value="{{ company.email or '' }}" placeholder="{{ _('Enter email address') }}">
+                                            <div class="edit-buttons">
+                                                <button class="save-btn">{{ _('Save') }}</button>
+                                                <button class="cancel-btn">{{ _('Cancel') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info-status-card clickable-field" data-field="contact_position" data-current-value="{{ company.contact_position or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Contact Position') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.contact_position %}
+                                                <span class="provided-badge clickable-badge">{{ company.contact_position }}</span>
+                                            {% else %}
+                                                <span class="missing-info-badge clickable-badge">{{ _('Not provided') }}</span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="edit-controls hidden">
+                                            <input type="text" class="edit-input" value="{{ company.contact_position or '' }}" placeholder="{{ _('Enter contact position') }}">
+                                            <div class="edit-buttons">
+                                                <button class="save-btn">{{ _('Save') }}</button>
+                                                <button class="cancel-btn">{{ _('Cancel') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info-status-card clickable-field" data-field="owner_name" data-current-value="{{ company.owner_name or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Owner Name') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.owner_name %}
+                                                <span class="provided-badge clickable-badge">{{ company.owner_name }}</span>
+                                            {% else %}
+                                                <span class="missing-info-badge clickable-badge">{{ _('Not provided') }}</span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="edit-controls hidden">
+                                            <input type="text" class="edit-input" value="{{ company.owner_name or '' }}" placeholder="{{ _('Enter owner name') }}">
+                                            <div class="edit-buttons">
+                                                <button class="save-btn">{{ _('Save') }}</button>
+                                                <button class="cancel-btn">{{ _('Cancel') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info-status-card clickable-field" data-field="website" data-current-value="{{ company.website or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Website') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.website %}
+                                                <span class="provided-badge clickable-badge">{{ company.website }}</span>
+                                            {% else %}
+                                                <span class="missing-info-badge clickable-badge">{{ _('Not provided') }}</span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="edit-controls hidden">
+                                            <input type="url" class="edit-input" value="{{ company.website or '' }}" placeholder="{{ _('Enter website URL') }}">
+                                            <div class="edit-buttons">
+                                                <button class="save-btn">{{ _('Save') }}</button>
+                                                <button class="cancel-btn">{{ _('Cancel') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info-status-card clickable-field" data-field="office_phone" data-current-value="{{ company.office_phone or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Office Phone') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.office_phone %}
+                                                <span class="provided-badge clickable-badge">{{ company.office_phone }}</span>
+                                            {% else %}
+                                                <span class="missing-info-badge clickable-badge">{{ _('Not provided') }}</span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="edit-controls hidden">
+                                            <input type="tel" class="edit-input" value="{{ company.office_phone or '' }}" placeholder="{{ _('Enter office phone') }}">
+                                            <div class="edit-buttons">
+                                                <button class="save-btn">{{ _('Save') }}</button>
+                                                <button class="cancel-btn">{{ _('Cancel') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info-status-card clickable-field" data-field="mobile_contact" data-current-value="{{ company.mobile_contact or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Mobile Contact') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.mobile_contact %}
+                                                <span class="provided-badge clickable-badge">{{ company.mobile_contact }}</span>
+                                            {% else %}
+                                                <span class="missing-info-badge clickable-badge">{{ _('Not provided') }}</span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="edit-controls hidden">
+                                            <input type="tel" class="edit-input" value="{{ company.mobile_contact or '' }}" placeholder="{{ _('Enter mobile contact') }}">
+                                            <div class="edit-buttons">
+                                                <button class="save-btn">{{ _('Save') }}</button>
+                                                <button class="cancel-btn">{{ _('Cancel') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info-status-card clickable-field" data-field="tax_id" data-current-value="{{ company.tax_id or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Tax ID') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.tax_id %}
+                                                <span class="provided-badge clickable-badge">{{ company.tax_id }}</span>
+                                            {% else %}
+                                                <span class="missing-info-badge clickable-badge">{{ _('Not provided') }}</span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="edit-controls hidden">
+                                            <input type="text" class="edit-input" value="{{ company.tax_id or '' }}" placeholder="{{ _('Enter tax ID') }}">
+                                            <div class="edit-buttons">
+                                                <button class="save-btn">{{ _('Save') }}</button>
+                                                <button class="cancel-btn">{{ _('Cancel') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info-status-card clickable-field" data-field="vat_number" data-current-value="{{ company.vat_number or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('VAT Number') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.vat_number %}
+                                                <span class="provided-badge clickable-badge">{{ company.vat_number }}</span>
+                                            {% else %}
+                                                <span class="missing-info-badge clickable-badge">{{ _('Not provided') }}</span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="edit-controls hidden">
+                                            <input type="text" class="edit-input" value="{{ company.vat_number or '' }}" placeholder="{{ _('Enter VAT number') }}">
+                                            <div class="edit-buttons">
+                                                <button class="save-btn">{{ _('Save') }}</button>
+                                                <button class="cancel-btn">{{ _('Cancel') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info-status-card clickable-field" data-field="founded_year" data-current-value="{{ company.founded_year or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Founded Year') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.founded_year %}
+                                                <span class="provided-badge clickable-badge">{{ company.founded_year }}</span>
+                                            {% else %}
+                                                <span class="missing-info-badge clickable-badge">{{ _('Not provided') }}</span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="edit-controls hidden">
+                                            <input type="number" class="edit-input" value="{{ company.founded_year or '' }}" placeholder="{{ _('Enter founded year') }}" min="1900" max="2030">
+                                            <div class="edit-buttons">
+                                                <button class="save-btn">{{ _('Save') }}</button>
+                                                <button class="cancel-btn">{{ _('Cancel') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info-status-card clickable-field" data-field="employees_count" data-current-value="{{ company.employees_count or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Employees Count') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.employees_count %}
+                                                <span class="provided-badge clickable-badge">{{ company.employees_count }}</span>
+                                            {% else %}
+                                                <span class="missing-info-badge clickable-badge">{{ _('Not provided') }}</span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="edit-controls hidden">
+                                            <input type="number" class="edit-input" value="{{ company.employees_count or '' }}" placeholder="{{ _('Enter employees count') }}" min="1">
+                                            <div class="edit-buttons">
+                                                <button class="save-btn">{{ _('Save') }}</button>
+                                                <button class="cancel-btn">{{ _('Cancel') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info-status-card clickable-field md:col-span-2" data-field="registered_address" data-current-value="{{ company.registered_address or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Registered Address') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.registered_address %}
+                                                <span class="provided-badge clickable-badge">{{ company.registered_address }}</span>
+                                            {% else %}
+                                                <span class="missing-info-badge clickable-badge">{{ _('Not provided') }}</span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="edit-controls hidden">
+                                            <textarea class="edit-input" rows="3" placeholder="{{ _('Enter registered address') }}">{{ company.registered_address or '' }}</textarea>
+                                            <div class="edit-buttons">
+                                                <button class="save-btn">{{ _('Save') }}</button>
+                                                <button class="cancel-btn">{{ _('Cancel') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info-status-card clickable-field md:col-span-2" data-field="certifications" data-current-value="{{ company.certifications or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Certifications') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.certifications %}
+                                                <span class="provided-badge clickable-badge">{{ company.certifications }}</span>
+                                            {% else %}
+                                                <span class="missing-info-badge clickable-badge">{{ _('Not provided') }}</span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="edit-controls hidden">
+                                            <textarea class="edit-input" rows="3" placeholder="{{ _('Enter certifications') }}">{{ company.certifications or '' }}</textarea>
+                                            <div class="edit-buttons">
+                                                <button class="save-btn">{{ _('Save') }}</button>
+                                                <button class="cancel-btn">{{ _('Cancel') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info-status-card clickable-field md:col-span-2" data-field="operating_countries" data-current-value="{{ company.operating_countries or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Operating Countries') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.operating_countries %}
+                                                <span class="provided-badge clickable-badge">{{ company.operating_countries }}</span>
+                                            {% else %}
+                                                <span class="missing-info-badge clickable-badge">{{ _('Not provided') }}</span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="edit-controls hidden">
+                                            <textarea class="edit-input" rows="3" placeholder="{{ _('Enter operating countries') }}">{{ company.operating_countries or '' }}</textarea>
+                                            <div class="edit-buttons">
+                                                <button class="save-btn">{{ _('Save') }}</button>
+                                                <button class="cancel-btn">{{ _('Cancel') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Banking Information -->
+                            <div class="border-t border-gray-200 dark:border-gray-600 pt-6">
+                                <div class="flex items-center mb-6">
+                                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">{{ _('Banking Information') }}</h3>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="info-status-card clickable-field" data-field="bank_name" data-current-value="{{ company.bank_name or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Bank Name') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.bank_name %}
+                                                <span class="provided-badge clickable-badge">{{ company.bank_name }}</span>
+                                            {% else %}
+                                                <span class="missing-info-badge clickable-badge">{{ _('Not provided') }}</span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="edit-controls hidden">
+                                            <input type="text" class="edit-input" value="{{ company.bank_name or '' }}" placeholder="{{ _('Enter bank name') }}">
+                                            <div class="edit-buttons">
+                                                <button class="save-btn">{{ _('Save') }}</button>
+                                                <button class="cancel-btn">{{ _('Cancel') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info-status-card clickable-field" data-field="account_name" data-current-value="{{ company.account_name or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Account Name') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.account_name %}
+                                                <span class="provided-badge clickable-badge">{{ company.account_name }}</span>
+                                            {% else %}
+                                                <span class="missing-info-badge clickable-badge">{{ _('Not provided') }}</span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="edit-controls hidden">
+                                            <input type="text" class="edit-input" value="{{ company.account_name or '' }}" placeholder="{{ _('Enter account name') }}">
+                                            <div class="edit-buttons">
+                                                <button class="save-btn">{{ _('Save') }}</button>
+                                                <button class="cancel-btn">{{ _('Cancel') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info-status-card clickable-field" data-field="account_number" data-current-value="{{ company.account_number or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Account Number') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.account_number %}
+                                                <span class="provided-badge clickable-badge">{{ company.account_number }}</span>
+                                            {% else %}
+                                                <span class="missing-info-badge clickable-badge">{{ _('Not provided') }}</span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="edit-controls hidden">
+                                            <input type="text" class="edit-input" value="{{ company.account_number or '' }}" placeholder="{{ _('Enter account number') }}">
+                                            <div class="edit-buttons">
+                                                <button class="save-btn">{{ _('Save') }}</button>
+                                                <button class="cancel-btn">{{ _('Cancel') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info-status-card clickable-field" data-field="bank_branch" data-current-value="{{ company.bank_branch or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Bank Branch') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.bank_branch %}
+                                                <span class="provided-badge clickable-badge">{{ company.bank_branch }}</span>
+                                            {% else %}
+                                                <span class="missing-info-badge clickable-badge">{{ _('Not provided') }}</span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="edit-controls hidden">
+                                            <input type="text" class="edit-input" value="{{ company.bank_branch or '' }}" placeholder="{{ _('Enter bank branch') }}">
+                                            <div class="edit-buttons">
+                                                <button class="save-btn">{{ _('Save') }}</button>
+                                                <button class="cancel-btn">{{ _('Cancel') }}</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Document Uploads -->
+                            <div class="border-t border-gray-200 dark:border-gray-600 pt-6">
+                                <div class="flex items-center mb-6">
+                                    <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">{{ _('Document Uploads') }}</h3>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="document-status-card clickable-document" data-field="commercial_registration_doc" data-current-file="{{ company.commercial_registration_doc or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Commercial Registration Document') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.commercial_registration_doc %}
+                                                <span class="uploaded-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    {{ _('Uploaded') }}
+                                                </span>
+                                            {% else %}
+                                                <span class="missing-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                    {{ _('Not uploaded') }}
+                                                </span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="document-controls hidden">
+                                            {% if company.commercial_registration_doc %}
+                                                <div class="current-file mb-3">
+                                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ _('Current file:') }}</p>
+                                                    <a href="{{ url_for('download_document', filename=company.commercial_registration_doc) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm">
+                                                        📄 {{ company.commercial_registration_doc }}
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+                                            <form class="document-upload-form" enctype="multipart/form-data">
+                                                <input type="file" class="document-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" data-field="commercial_registration_doc">
+                                                <div class="upload-buttons">
+                                                    <button type="submit" class="upload-btn">{{ _('Upload') }}</button>
+                                                    <button type="button" class="cancel-upload-btn">{{ _('Cancel') }}</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="document-status-card clickable-document" data-field="tax_card_doc" data-current-file="{{ company.tax_card_doc or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Tax Card Document') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.tax_card_doc %}
+                                                <span class="uploaded-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    {{ _('Uploaded') }}
+                                                </span>
+                                            {% else %}
+                                                <span class="missing-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                    {{ _('Not uploaded') }}
+                                                </span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="document-controls hidden">
+                                            {% if company.tax_card_doc %}
+                                                <div class="current-file mb-3">
+                                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ _('Current file:') }}</p>
+                                                    <a href="{{ url_for('download_document', filename=company.tax_card_doc) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm">
+                                                        📄 {{ company.tax_card_doc }}
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+                                            <form class="document-upload-form" enctype="multipart/form-data">
+                                                <input type="file" class="document-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" data-field="tax_card_doc">
+                                                <div class="upload-buttons">
+                                                    <button type="submit" class="upload-btn">{{ _('Upload') }}</button>
+                                                    <button type="button" class="cancel-upload-btn">{{ _('Cancel') }}</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="document-status-card clickable-document" data-field="e_invoice_proof_doc" data-current-file="{{ company.e_invoice_proof_doc or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('E-Invoice Proof Document') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.e_invoice_proof_doc %}
+                                                <span class="uploaded-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    {{ _('Uploaded') }}
+                                                </span>
+                                            {% else %}
+                                                <span class="missing-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                    {{ _('Not uploaded') }}
+                                                </span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="document-controls hidden">
+                                            {% if company.e_invoice_proof_doc %}
+                                                <div class="current-file mb-3">
+                                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ _('Current file:') }}</p>
+                                                    <a href="{{ url_for('download_document', filename=company.e_invoice_proof_doc) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm">
+                                                        📄 {{ company.e_invoice_proof_doc }}
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+                                            <form class="document-upload-form" enctype="multipart/form-data">
+                                                <input type="file" class="document-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" data-field="e_invoice_proof_doc">
+                                                <div class="upload-buttons">
+                                                    <button type="submit" class="upload-btn">{{ _('Upload') }}</button>
+                                                    <button type="button" class="cancel-upload-btn">{{ _('Cancel') }}</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="document-status-card clickable-document" data-field="logo_doc" data-current-file="{{ company.logo_doc or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Logo Document') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.logo_doc %}
+                                                <span class="uploaded-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    {{ _('Uploaded') }}
+                                                </span>
+                                            {% else %}
+                                                <span class="missing-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                    {{ _('Not uploaded') }}
+                                                </span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="document-controls hidden">
+                                            {% if company.logo_doc %}
+                                                <div class="current-file mb-3">
+                                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ _('Current file:') }}</p>
+                                                    <a href="{{ url_for('download_document', filename=company.logo_doc) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm">
+                                                        📄 {{ company.logo_doc }}
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+                                            <form class="document-upload-form" enctype="multipart/form-data">
+                                                <input type="file" class="document-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" data-field="logo_doc">
+                                                <div class="upload-buttons">
+                                                    <button type="submit" class="upload-btn">{{ _('Upload') }}</button>
+                                                    <button type="button" class="cancel-upload-btn">{{ _('Cancel') }}</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="document-status-card clickable-document" data-field="letterhead_doc" data-current-file="{{ company.letterhead_doc or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Letterhead Document') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.letterhead_doc %}
+                                                <span class="uploaded-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    {{ _('Uploaded') }}
+                                                </span>
+                                            {% else %}
+                                                <span class="missing-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                    {{ _('Not uploaded') }}
+                                                </span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="document-controls hidden">
+                                            {% if company.letterhead_doc %}
+                                                <div class="current-file mb-3">
+                                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ _('Current file:') }}</p>
+                                                    <a href="{{ url_for('download_document', filename=company.letterhead_doc) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm">
+                                                        📄 {{ company.letterhead_doc }}
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+                                            <form class="document-upload-form" enctype="multipart/form-data">
+                                                <input type="file" class="document-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" data-field="letterhead_doc">
+                                                <div class="upload-buttons">
+                                                    <button type="submit" class="upload-btn">{{ _('Upload') }}</button>
+                                                    <button type="button" class="cancel-upload-btn">{{ _('Cancel') }}</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="document-status-card clickable-document" data-field="bank_letter_doc" data-current-file="{{ company.bank_letter_doc or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Bank Letter Document') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.bank_letter_doc %}
+                                                <span class="uploaded-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    {{ _('Uploaded') }}
+                                                </span>
+                                            {% else %}
+                                                <span class="missing-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                    {{ _('Not uploaded') }}
+                                                </span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="document-controls hidden">
+                                            {% if company.bank_letter_doc %}
+                                                <div class="current-file mb-3">
+                                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ _('Current file:') }}</p>
+                                                    <a href="{{ url_for('download_document', filename=company.bank_letter_doc) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm">
+                                                        📄 {{ company.bank_letter_doc }}
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+                                            <form class="document-upload-form" enctype="multipart/form-data">
+                                                <input type="file" class="document-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" data-field="bank_letter_doc">
+                                                <div class="upload-buttons">
+                                                    <button type="submit" class="upload-btn">{{ _('Upload') }}</button>
+                                                    <button type="button" class="cancel-upload-btn">{{ _('Cancel') }}</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="document-status-card clickable-document" data-field="owner_id_doc" data-current-file="{{ company.owner_id_doc or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Owner ID Document') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.owner_id_doc %}
+                                                <span class="uploaded-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    {{ _('Uploaded') }}
+                                                </span>
+                                            {% else %}
+                                                <span class="missing-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                    {{ _('Not uploaded') }}
+                                                </span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="document-controls hidden">
+                                            {% if company.owner_id_doc %}
+                                                <div class="current-file mb-3">
+                                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ _('Current file:') }}</p>
+                                                    <a href="{{ url_for('download_document', filename=company.owner_id_doc) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm">
+                                                        📄 {{ company.owner_id_doc }}
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+                                            <form class="document-upload-form" enctype="multipart/form-data">
+                                                <input type="file" class="document-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" data-field="owner_id_doc">
+                                                <div class="upload-buttons">
+                                                    <button type="submit" class="upload-btn">{{ _('Upload') }}</button>
+                                                    <button type="button" class="cancel-upload-btn">{{ _('Cancel') }}</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="document-status-card clickable-document" data-field="product_catalog_doc" data-current-file="{{ company.product_catalog_doc or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Product Catalog Document') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.product_catalog_doc %}
+                                                <span class="uploaded-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    {{ _('Uploaded') }}
+                                                </span>
+                                            {% else %}
+                                                <span class="missing-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                    {{ _('Not uploaded') }}
+                                                </span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="document-controls hidden">
+                                            {% if company.product_catalog_doc %}
+                                                <div class="current-file mb-3">
+                                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ _('Current file:') }}</p>
+                                                    <a href="{{ url_for('download_document', filename=company.product_catalog_doc) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm">
+                                                        📄 {{ company.product_catalog_doc }}
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+                                            <form class="document-upload-form" enctype="multipart/form-data">
+                                                <input type="file" class="document-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" data-field="product_catalog_doc">
+                                                <div class="upload-buttons">
+                                                    <button type="submit" class="upload-btn">{{ _('Upload') }}</button>
+                                                    <button type="button" class="cancel-upload-btn">{{ _('Cancel') }}</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="document-status-card clickable-document" data-field="quality_certificates_doc" data-current-file="{{ company.quality_certificates_doc or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Quality Certificates Document') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.quality_certificates_doc %}
+                                                <span class="uploaded-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    {{ _('Uploaded') }}
+                                                </span>
+                                            {% else %}
+                                                <span class="missing-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                    {{ _('Not uploaded') }}
+                                                </span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="document-controls hidden">
+                                            {% if company.quality_certificates_doc %}
+                                                <div class="current-file mb-3">
+                                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ _('Current file:') }}</p>
+                                                    <a href="{{ url_for('download_document', filename=company.quality_certificates_doc) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm">
+                                                        📄 {{ company.quality_certificates_doc }}
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+                                            <form class="document-upload-form" enctype="multipart/form-data">
+                                                <input type="file" class="document-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" data-field="quality_certificates_doc">
+                                                <div class="upload-buttons">
+                                                    <button type="submit" class="upload-btn">{{ _('Upload') }}</button>
+                                                    <button type="button" class="cancel-upload-btn">{{ _('Cancel') }}</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Registration Timeline -->
+                            <div class="border-t border-gray-200 dark:border-gray-600 pt-6">
+                                <div class="flex items-center mb-6">
+                                    <div class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center mr-3">
+                                        <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-xl font-semibold text-gray-900 dark:text-white">{{ _('Registration Timeline') }}</h3>
+                                </div>
+                                <div class="space-y-4">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            <p class="text-sm font-medium text-gray-800 dark:text-white">{{ _('Company Registered') }}</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                {{ company.created_at.strftime('%B %d, %Y at %I:%M %p') if company.created_at else 'Date not available' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    {% if company.is_approved %}
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            <p class="text-sm font-medium text-gray-800 dark:text-white">{{ _('Company Approved') }}</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">
+                                                {{ company.updated_at.strftime('%B %d, %Y at %I:%M %p') if company.updated_at else 'Date not available' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    {% else %}
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0">
+                                            <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
+                                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            <p class="text-sm font-medium text-gray-800 dark:text-white">{{ _('Under Review') }}</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ _('Currently being reviewed by our team') }}</p>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
+                        <a href="/dash" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors">
+                            {{ _('Go to Dashboard') }}
+                        </a>
+                        {% if not company.is_approved %}
+                        <a href="/company_register" class="inline-flex items-center px-6 py-3 border border-gray-300 text-base font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700 transition-colors">
+                            {{ _('Update Company Information') }}
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Make all clickable fields interactive
+            const clickableFields = document.querySelectorAll('.clickable-field');
+            
+            clickableFields.forEach(field => {
+                const badge = field.querySelector('.clickable-badge');
+                const editControls = field.querySelector('.edit-controls');
+                const editInput = field.querySelector('.edit-input');
+                const saveBtn = field.querySelector('.save-btn');
+                const cancelBtn = field.querySelector('.cancel-btn');
+                const fieldName = field.dataset.field;
+                
+                // Click on badge to edit
+                badge.addEventListener('click', function() {
+                    editControls.classList.remove('hidden');
+                    editInput.focus();
+                    editInput.select();
+                });
+                
+                // Save button
+                saveBtn.addEventListener('click', function() {
+                    const newValue = editInput.value.trim();
+                    if (newValue) {
+                        updateCompanyField(fieldName, newValue, field);
+                    }
+                });
+                
+                // Cancel button
+                cancelBtn.addEventListener('click', function() {
+                    editControls.classList.add('hidden');
+                    editInput.value = field.dataset.currentValue;
+                });
+                
+                // Enter key to save
+                editInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        saveBtn.click();
+                    }
+                });
+                
+                // Escape key to cancel
+                editInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape') {
+                        cancelBtn.click();
+                    }
+                });
+            });
+            
+            // Make all clickable documents interactive
+            const clickableDocuments = document.querySelectorAll('.clickable-document');
+            
+            clickableDocuments.forEach(doc => {
+                const badge = doc.querySelector('.clickable-badge');
+                const documentControls = doc.querySelector('.document-controls');
+                const documentInput = doc.querySelector('.document-input');
+                const uploadForm = doc.querySelector('.document-upload-form');
+                const cancelUploadBtn = doc.querySelector('.cancel-upload-btn');
+                const fieldName = doc.dataset.field;
+                
+                // Click on badge to show document controls
+                badge.addEventListener('click', function() {
+                    documentControls.classList.remove('hidden');
+                });
+                
+                // Cancel button
+                cancelUploadBtn.addEventListener('click', function() {
+                    documentControls.classList.add('hidden');
+                    documentInput.value = '';
+                });
+                
+                // Handle document upload
+                uploadForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const file = documentInput.files[0];
+                    if (file) {
+                        uploadDocument(fieldName, file, doc);
+                    }
+                });
+            });
+            
+            // Function to update company field
+            async function updateCompanyField(fieldName, newValue, fieldElement) {
+                try {
+                    const response = await fetch('/update_company_field', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            field: fieldName,
+                            value: newValue
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success) {
+                            // Update the badge
+                            const badge = fieldElement.querySelector('.clickable-badge');
+                            const editControls = fieldElement.querySelector('.edit-controls');
+                            
+                            // Update badge content and styling
+                            if (newValue) {
+                                badge.textContent = newValue;
+                                badge.className = 'provided-badge clickable-badge';
+                            } else {
+                                badge.textContent = '{{ _("Not provided") }}';
+                                badge.className = 'missing-info-badge clickable-badge';
+                            }
+                            
+                            // Update current value
+                            fieldElement.dataset.currentValue = newValue;
+                            
+                            // Hide edit controls
+                            editControls.classList.add('hidden');
+                            
+                            // Show success message
+                            showNotification('{{ _("Field updated successfully!") }}', 'success');
+                        } else {
+                            showNotification('{{ _("Failed to update field") }}: ' + data.error, 'error');
+                        }
+                    } else {
+                                                    showNotification('{{ _("Failed to update field") }}', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error updating field:', error);
+                                            showNotification('{{ _("Error updating field") }}', 'error');
+                }
+            }
+            
+            // Function to upload document
+            async function uploadDocument(fieldName, file, docElement) {
+                try {
+                    const formData = new FormData();
+                    formData.append('field', fieldName);
+                    formData.append('document', file);
+                    
+                    const response = await fetch('/upload_company_document', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success) {
+                            // Update the badge
+                            const badge = docElement.querySelector('.clickable-badge');
+                            const documentControls = docElement.querySelector('.document-controls');
+                            
+                            // Update badge to show uploaded status
+                            badge.innerHTML = `
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                {{ _('Uploaded') }}
+                            `;
+                            badge.className = 'uploaded-badge clickable-badge';
+                            
+                            // Update current file data
+                            docElement.dataset.currentFile = data.filename;
+                            
+                            // Hide document controls
+                            documentControls.classList.add('hidden');
+                            
+                            // Show success message
+                            showNotification('{{ _("Document uploaded successfully!") }}', 'success');
+                            
+                            // Refresh the page to show updated document status
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1000);
+                        } else {
+                            showNotification('{{ _("Failed to upload document") }}: ' + data.error, 'error');
+                        }
+                    } else {
+                                                    showNotification('{{ _("Failed to upload document") }}', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error uploading document:', error);
+                                            showNotification('{{ _("Error uploading document") }}', 'error');
+                }
+            }
+            
+            // Show notification
+            function showNotification(message, type) {
+                const notification = document.createElement('div');
+                notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+                    type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                }`;
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.remove();
+                }, 3000);
+            }
+            
+            // Function to test language setting
+            function testLanguage() {
+                console.log('Testing language setting...');
+                fetch('/set_language/ar')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Test response:', data);
+                        alert('Language set to: ' + data.language + '\nCheck console for details');
+                    })
+                    .catch(error => {
+                        console.error('Test error:', error);
+                        alert('Error: ' + error.message);
+                    });
+            }
+            
+            // Function to set language and reload page
+            function setLanguageAndReload(language) {
+                console.log('Setting language to:', language);
+                
+                // Show loading indicator
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = 'Loading...';
+                button.disabled = true;
+                
+                // Simple approach: set language and redirect
+                window.location.href = `/set_language/${language}`;
+            }
+            
+
+        });
+    </script>
+</body>
+</html>

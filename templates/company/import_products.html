@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+  <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+  <title>
+   {% if request.cookies.get('language') == 'ar' %}استيراد المنتجات{% else %}Import Products{% endif %}
+  </title>
+  <link href="favicon.ico" rel="icon"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+ </head>
+ <body :class="{'dark bg-gray-900': darkMode === true}" x-data="{ page: 'importProducts', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false, 'currentLanguage': '{{ request.cookies.get("language", "en") }}' }" x-init="
+         darkMode = JSON.parse(localStorage.getItem('darkMode'));
+         currentLanguage = localStorage.getItem('language') || '{{ request.cookies.get("language", "en") }}';
+         $watch('darkMode', value =&gt; localStorage.setItem('darkMode', JSON.stringify(value)));
+         $watch('currentLanguage', value =&gt; localStorage.setItem('language', value))">
+  <!-- ===== Preloader Start ===== -->
+  <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () =&gt; {setTimeout(() =&gt; loaded = false, 500)})" x-show="loaded">
+   <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent">
+   </div>
+  </div>
+  <!-- ===== Preloader End ===== -->
+  <!-- ===== Page Wrapper Start ===== -->
+  <div class="flex h-screen overflow-hidden">
+   <!-- ===== Sidebar Start ===== -->
+   <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+    <!-- SIDEBAR HEADER -->
+    <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+     <a href="/">
+      <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+       <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+       <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+      </span>
+      <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+     </a>
+    </div>
+    <!-- SIDEBAR HEADER -->
+    <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+     <!-- Sidebar Menu -->
+     <nav x-data="{selected: $persist('Dashboard')}">
+      <!-- Menu Group -->
+      <div>
+               <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+         <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">
+          {{ _('MENU') }}
+         </span>
+        <svg :class="sidebarToggle ? 'xl:block hidden' : 'hidden'" class="menu-group-icon mx-auto fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+         <path clip-rule="evenodd" d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.9716 18.9656 13.7551 17.9991 13.7551C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.9716 11.0326 13.7551 11.9991 13.7551C12.9656 13.7551 13.7491 12.9716 13.7491 12.0051V11.9951Z" fill="currentColor" fill-rule="evenodd">
+         </path>
+        </svg>
+       </h3>
+       <ul class="mb-6 flex flex-col gap-1">
+        <!-- Menu Item Dashboard -->
+          <li>
+         <a :class=" (selected === 'Dashboard') && (page === 'dashboard') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Dashboard' ? '':'Dashboard')" class="menu-item group" href="/company_dashboard">
+          <svg :class="(selected === 'Dashboard') && (page === 'dashboard') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Company Dashboard') }}
+          </span>
+         </a>
+        </li>
+        <!-- Menu Item Dashboard -->
+        <!-- AI Assistant Menu Item -->
+        <li>
+         <a :class=" (selected === 'AI Assistant') && (page === 'ai_chat') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'AI Assistant' ? '':'AI Assistant')" class="menu-item group" href="/company/ai_chat">
+          <svg :class="(selected === 'AI Assistant') && (page === 'ai_chat') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('AI Assistant') }}
+          </span>
+         </a>
+        </li>
+        <!-- AI Assistant Menu Item -->
+        <!-- Menu Item Calendar -->
+
+        <!-- Menu Item Calendar -->
+        <!-- Menu Item Profile -->
+        <li>
+         <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_profile">
+          <svg :class="(selected === 'Profile') && (page === 'profile') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Company Profile') }}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Registration') && (page === 'registration') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Registration' ? '':'Registration')" class="menu-item group" href="/company_register">
+          <svg :class="(selected === 'Registration') && (page === 'registration') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" fill="currentColor"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Company Registration') }}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_orders">
+<!--          <svg :class="(selected === 'Profile') &amp;&amp; (page === 'profile') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">-->
+<!--           <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="currentColor" fill-rule="evenodd">-->
+<!--           </path>-->
+<!--          </svg>-->
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Manage Orders') }}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_offers">
+<!--          <svg :class="(selected === 'Profile') &amp;&amp; (page === 'profile') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">-->
+<!--           <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="currentColor" fill-rule="evenodd">-->
+<!--           </path>-->
+<!--          </svg>-->
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('My Offers') }}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_inventory">
+<!--          <svg :class="(selected === 'Profile') && (page === 'profile') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">-->
+<!--           <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="currentColor" fill-rule="evenodd">-->
+<!--           </path>-->
+<!--          </svg>-->
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Inventory') }}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_employees">
+<!--          <svg :class="(selected === 'Profile') && (page === 'profile') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">-->
+<!--           <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="currentColor" fill-rule="evenodd">-->
+<!--           </path>-->
+<!--          </svg>-->
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Employee Management') }}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_chat">
+<!--          <svg :class="(selected === 'Profile') && (page === 'profile') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">-->
+<!--           <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="currentColor" fill-rule="evenodd">-->
+<!--           </path>-->
+<!--          </svg>-->
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Client Chats') }}
+          </span>
+         </a>
+        </li>
+        <!-- Menu Item Balance -->
+        <li>
+         <a :class=" (selected === 'Balance') && (page === 'balance') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Balance' ? '':'Balance')" class="menu-item group" href="/company_balance">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Balance') }}
+          </span>
+         </a>
+        </li>
+        <!-- Menu Item Packages -->
+        <li>
+         <a :class=" (selected === 'Packages') && (page === 'packages') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Packages' ? '':'Packages')" class="menu-item group" href="/company_packages">
+          <svg :class="(selected === 'Packages') && (page === 'packages') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Packages') }}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Analytics') && (page === 'analytics') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Analytics' ? '':'Analytics')" class="menu-item group" href="/company_analytics">
+          <svg :class="(selected === 'Analytics') && (page === 'analytics') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M3 3v18h18M9 9l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Analytics') }}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Settings') && (page === 'settings') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Settings' ? '':'Settings')" class="menu-item group" href="/company_settings">
+          <svg :class="(selected === 'Settings') && (page === 'settings') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+           <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="2"/>
+           <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="2"/>
+          </svg>
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Settings') }}
+          </span>
+         </a>
+        </li>
+        <!-- Menu Item Profile -->
+        <!-- Menu Item Task -->
+
+        <!-- Menu Item Task -->
+        <!-- Menu Item Forms -->
+
+        <!-- Menu Item Forms -->
+        <!-- Menu Item Tables -->
+
+        <!-- Menu Item Pages -->
+      <!-- Menu Item Pages -->
+       </ul>
+      </div>
+      <!-- Support Group -->
+
+     </nav>
+     <!-- Sidebar Menu -->
+     <!-- Promo Box -->
+     <!-- Promo Box -->
+    </div>
+   </aside>
+   <!-- ===== Sidebar End ===== -->
+   <!-- ===== Content Area Start ===== -->
+   <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+    <!-- Small Device Overlay Start -->
+    <div :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fixed z-50 h-screen w-full bg-gray-900/50">
+    </div>
+    <!-- Small Device Overlay End -->
+    <!-- ===== Header Start ===== -->
+    <header class="sticky top-0 z-99999 flex w-full border-gray-200 bg-white xl:border-b dark:border-gray-800 dark:bg-gray-900" x-data="{menuToggle: false}">
+     <div class="flex grow flex-col items-center justify-between xl:flex-row xl:px-6">
+      <div class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:py-4 xl:justify-normal xl:border-b-0 xl:px-0 dark:border-gray-800">
+       <!-- Hamburger Toggle BTN -->
+       <button :class="sidebarToggle ? 'xl:bg-transparent dark:xl:bg-transparent bg-gray-100 dark:bg-gray-800' : ''" @click.stop="sidebarToggle = !sidebarToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 xl:h-11 xl:w-11 xl:border dark:border-gray-800 dark:text-gray-400">
+        <svg class="fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+         <path clip-rule="evenodd" d="M3.5 6.5C3.5 5.67157 4.17157 5 5 5H19C19.8284 5 20.5 5.67157 20.5 6.5C20.5 7.32843 19.8284 8 19 8H5C4.17157 8 3.5 7.32843 3.5 6.5ZM3.5 12.5C3.5 11.6716 4.17157 11 5 11H19C19.8284 11 20.5 11.6716 20.5 12.5C20.5 13.3284 19.8284 14 19 14H5C4.17157 14 3.5 13.3284 3.5 12.5ZM3.5 18.5C3.5 17.6716 4.17157 17 5 17H19C19.8284 17 20.5 17.6716 20.5 18.5C20.5 19.3284 19.8284 20 19 20H5C4.17157 20 3.5 19.3284 3.5 18.5Z" fill="" fill-rule="evenodd">
+         </path>
+        </svg>
+       </button>
+       <!-- Hamburger Toggle BTN -->
+       <!-- Search Bar -->
+       <div class="flex grow items-center gap-2 xl:ml-6">
+        <div class="flex w-full items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 dark:border-gray-800 dark:bg-gray-800">
+         <svg class="fill-current" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+          <path clip-rule="evenodd" d="M8.5 3.5C5.73858 3.5 3.5 5.73858 3.5 8.5C3.5 11.2614 5.73858 13.5 8.5 13.5C11.2614 13.5 13.5 11.2614 13.5 8.5C13.5 5.73858 11.2614 3.5 8.5 3.5ZM1.5 8.5C1.5 4.63401 4.63401 1.5 8.5 1.5C12.366 1.5 15.5 4.63401 15.5 8.5C15.5 12.366 12.366 15.5 8.5 15.5C4.63401 15.5 1.5 12.366 1.5 8.5ZM14.2929 13.2929C14.6834 12.9024 15.3166 12.9024 15.7071 13.2929C16.0976 13.6834 16.0976 14.3166 15.7071 14.7071L13.2929 17.1213C12.9024 17.5118 12.2692 17.5118 11.8787 17.1213C11.4882 16.7308 11.4882 16.0976 11.8787 15.7071L14.2929 13.2929Z" fill="" fill-rule="evenodd">
+          </path>
+         </svg>
+         <input class="w-full border-0 bg-transparent px-2 text-sm font-medium text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-0 dark:text-white dark:placeholder:text-gray-400" placeholder="{% if request.cookies.get('language') == 'ar' %}البحث...{% else %}Search...{% endif %}" type="text"/>
+        </div>
+       </div>
+       <!-- Search Bar -->
+       <!-- Notification Menu Area -->
+       {% include 'partials/notification_dropdown.html' %}
+       
+       <!-- Language Toggle -->
+       <button @click.prevent="toggleLanguage()" class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white" :title="currentLanguage === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'">
+        <span x-text="currentLanguage === 'ar' ? 'EN' : 'عربي'" class="text-xs font-medium"></span>
+       </button>
+       <!-- Language Toggle -->
+       
+       <!-- User Area -->
+       <div class="flex items-center gap-3">
+        <!-- User Area -->
+        <div class="relative" x-data="{dropdownOpen: false}">
+         <button @click="dropdownOpen = !dropdownOpen" class="flex items-center gap-2">
+          <div class="h-9 w-9">
+           <img alt="User" class="h-full w-full rounded-full" src="https://img.icons8.com/?size=100&id=hu4SFxCb4UXH&format=png&color=000000"/>
+          </div>
+          <span class="hidden text-right lg:block">
+           <span class="block text-sm font-medium text-gray-800 dark:text-white">
+            {{ current_user.username }}
+           </span>
+           <span class="block text-xs text-gray-500 dark:text-gray-400">
+            Company
+           </span>
+          </span>
+         </button>
+        </div>
+       </div>
+       <!-- User Area -->
+      </div>
+     </div>
+    </header>
+    <!-- ===== Header End ===== -->
+    <!-- ===== Main Content Start ===== -->
+    <main>
+     <div class="mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6">
+      <!-- Breadcrumb Start -->
+      <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+       <div>
+        <h2 class="text-title-md2 font-bold text-gray-800 dark:text-white">
+         {% if request.cookies.get('language') == 'ar' %}استيراد المنتجات{% else %}Import Products{% endif %}
+        </h2>
+        <nav>
+         <ol class="flex items-center gap-2 font-medium">
+          <li class="text-sm">
+           <a class="text-gray-500 hover:text-brand-500 dark:text-gray-400 dark:hover:text-brand-500" href="/company_inventory">
+            {% if request.cookies.get('language') == 'ar' %}المخزون{% else %}Inventory{% endif %}
+           </a>
+          </li>
+          <li class="text-sm">
+           <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+           </svg>
+          </li>
+          <li class="text-sm text-brand-500">
+           {% if request.cookies.get('language') == 'ar' %}استيراد المنتجات{% else %}Import Products{% endif %}
+          </li>
+         </ol>
+        </nav>
+       </div>
+      </div>
+      <!-- Breadcrumb End -->
+      
+      <!-- Import Products Form -->
+      <div class="grid grid-cols-1 gap-6 xl:grid-cols-2">
+       <!-- Form Card -->
+       <div class="rounded-2xl border border-gray-200 bg-white px-6 pb-5 pt-6 dark:border-gray-800 dark:bg-white/[0.03]">
+        <div class="mb-6">
+         <div class="mb-6 flex items-center gap-3">
+          <div class="h-10 w-10">
+           <img alt="import-products" src="https://img.icons8.com/?size=100&id=upload&format=png&color=000000"/>
+          </div>
+          <div>
+           <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+            {% if request.cookies.get('language') == 'ar' %}استيراد المنتجات من CSV{% else %}Import Products from CSV{% endif %}
+           </h3>
+           <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+            {% if request.cookies.get('language') == 'ar' %}قم بتحميل ملف CSV لاستيراد منتجات متعددة{% else %}Upload a CSV file to import multiple products{% endif %}
+           </span>
+          </div>
+         </div>
+        </div>
+        
+        <form method="POST" enctype="multipart/form-data" class="space-y-6">
+         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+         <div class="space-y-4">
+          <!-- File Upload -->
+          <div>
+           <label class="mb-2 block text-sm font-medium text-gray-800 dark:text-white/90" for="file">
+            {% if request.cookies.get('language') == 'ar' %}ملف CSV{% else %}CSV File{% endif %} <span class="text-red-500">*</span>
+           </label>
+           <div class="flex items-center justify-center w-full">
+            <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+             <div class="flex flex-col items-center justify-center pt-5 pb-6">
+              <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+              </svg>
+              <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+               <span class="font-semibold">{% if request.cookies.get('language') == 'ar' %}انقر للتحميل{% else %}Click to upload{% endif %}</span> {% if request.cookies.get('language') == 'ar' %}أو اسحب وأفلت{% else %}or drag and drop{% endif %}
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">{% if request.cookies.get('language') == 'ar' %}ملفات CSV فقط{% else %}CSV files only{% endif %}</p>
+             </div>
+             <input class="hidden" id="file" name="file" required type="file" accept=".csv"/>
+            </label>
+           </div>
+          </div>
+         </div>
+         
+         <!-- Submit Buttons -->
+         <div class="flex gap-3 pt-4">
+          <a href="/company_inventory" class="flex-1 inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-4 py-3 text-center text-sm font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+           {% if request.cookies.get('language') == 'ar' %}إلغاء{% else %}Cancel{% endif %}
+          </a>
+          <button class="flex-1 inline-flex items-center justify-center rounded-lg bg-brand-500 px-4 py-3 text-center text-sm font-medium text-white hover:bg-brand-600" type="submit">
+           <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+           </svg>
+           {% if request.cookies.get('language') == 'ar' %}استيراد المنتجات{% else %}Import Products{% endif %}
+          </button>
+         </div>
+        </form>
+       </div>
+
+       <!-- Info Card -->
+       <div class="space-y-6">
+        <!-- CSV Format Card -->
+        <div class="rounded-2xl border border-gray-200 bg-white px-6 pb-5 pt-6 dark:border-gray-800 dark:bg-white/[0.03]">
+         <div class="mb-6 flex items-center gap-3">
+          <div class="h-10 w-10">
+           <img alt="csv-format" src="https://img.icons8.com/?size=100&id=document&format=png&color=000000"/>
+          </div>
+          <div>
+           <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+            {% if request.cookies.get('language') == 'ar' %}تنسيق CSV{% else %}CSV Format{% endif %}
+           </h3>
+           <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+            {% if request.cookies.get('language') == 'ar' %}الأعمدة المطلوبة{% else %}Required columns{% endif %}
+           </span>
+          </div>
+         </div>
+         <div class="space-y-3">
+          <div class="text-sm">
+           <p class="font-medium text-gray-800 dark:text-white/90 mb-2">{% if request.cookies.get('language') == 'ar' %}الأعمدة المطلوبة:{% else %}Required Columns:{% endif %}</p>
+           <ul class="space-y-1 text-gray-600 dark:text-gray-400">
+            <li class="flex items-center gap-2">
+             <span class="inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-300">{% if request.cookies.get('language') == 'ar' %}مطلوب{% else %}Required{% endif %}</span>
+             <span>name, category, sku, price, quantity</span>
+            </li>
+            <li class="flex items-center gap-2">
+             <span class="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">{% if request.cookies.get('language') == 'ar' %}اختياري{% else %}Optional{% endif %}</span>
+             <span>description, cost, min_quantity, unit, location, supplier, supplier_contact, requirements</span>
+            </li>
+           </ul>
+          </div>
+         </div>
+        </div>
+
+        <!-- Guidelines Card -->
+        <div class="rounded-2xl border border-gray-200 bg-white px-6 pb-5 pt-6 dark:border-gray-800 dark:bg-white/[0.03]">
+         <div class="mb-6 flex items-center gap-3">
+          <div class="h-10 w-10">
+           <img alt="guidelines" src="https://img.icons8.com/?size=100&id=info&format=png&color=000000"/>
+          </div>
+          <div>
+           <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+            {% if request.cookies.get('language') == 'ar' %}الإرشادات{% else %}Guidelines{% endif %}
+           </h3>
+           <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+            {% if request.cookies.get('language') == 'ar' %}معلومات مهمة{% else %}Important information{% endif %}
+           </span>
+          </div>
+         </div>
+         <div class="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+          <div class="flex items-start gap-2">
+           <svg class="mt-0.5 h-4 w-4 text-brand-500" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+           </svg>
+           <span>{% if request.cookies.get('language') == 'ar' %}يجب أن يكون SKU فريداً عبر جميع المنتجات{% else %}SKU must be unique across all products{% endif %}</span>
+          </div>
+          <div class="flex items-start gap-2">
+           <svg class="mt-0.5 h-4 w-4 text-brand-500" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+           </svg>
+           <span>{% if request.cookies.get('language') == 'ar' %}يجب أن يكون السعر والكمية أرقام صحيحة{% else %}Price and quantity must be valid numbers{% endif %}</span>
+          </div>
+          <div class="flex items-start gap-2">
+           <svg class="mt-0.5 h-4 w-4 text-brand-500" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+           </svg>
+           <span>{% if request.cookies.get('language') == 'ar' %}يجب أن تكون الفئة واحدة من الخيارات المحددة مسبقاً{% else %}Category must be one of the predefined options{% endif %}</span>
+          </div>
+          <div class="flex items-start gap-2">
+           <svg class="mt-0.5 h-4 w-4 text-brand-500" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+           </svg>
+           <span>{% if request.cookies.get('language') == 'ar' %}سيتم تخطي الصفوف التي تحتوي على أخطاء{% else %}Rows with errors will be skipped{% endif %}</span>
+          </div>
+         </div>
+        </div>
+
+        <!-- Download Sample Card -->
+        <div class="rounded-2xl border border-gray-200 bg-white px-6 pb-5 pt-6 dark:border-gray-800 dark:bg-white/[0.03]">
+         <div class="mb-6 flex items-center gap-3">
+          <div class="h-10 w-10">
+           <img alt="download" src="https://img.icons8.com/?size=100&id=download&format=png&color=000000"/>
+          </div>
+          <div>
+           <h3 class="text-base font-semibold text-gray-800 dark:text-white/90">
+            {% if request.cookies.get('language') == 'ar' %}نموذج CSV{% else %}Sample CSV{% endif %}
+           </h3>
+           <span class="block text-theme-xs text-gray-500 dark:text-gray-400">
+            {% if request.cookies.get('language') == 'ar' %}تحميل النموذج{% else %}Download template{% endif %}
+           </span>
+          </div>
+         </div>
+         <div class="space-y-3">
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+           {% if request.cookies.get('language') == 'ar' %}قم بتحميل ملف CSV نموذجي لرؤية التنسيق والهيكل الصحيح.{% else %}Download a sample CSV file to see the correct format and structure.{% endif %}
+          </p>
+          <a href="/download_sample_csv" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-brand-600 bg-brand-50 rounded-lg hover:bg-brand-100 dark:bg-brand-900 dark:text-brand-300 dark:hover:bg-brand-800">
+           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+           </svg>
+           {% if request.cookies.get('language') == 'ar' %}تحميل نموذج CSV{% else %}Download Sample CSV{% endif %}
+          </a>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </main>
+    <!-- ===== Main Content End ===== -->
+   </div>
+   <!-- ===== Content Area End ===== -->
+  </div>
+  <!-- ===== Page Wrapper End ===== -->
+  <script src="{{ url_for('static', filename='js/script_1.js') }}"></script>
+  
+  <!-- Arabic Translation System -->
+  <script>
+  // Language toggle function
+  function toggleLanguage() {
+      const currentLang = document.cookie.includes('language=ar') ? 'en' : 'ar';
+      document.cookie = `language=${currentLang}; path=/; max-age=31536000`;
+      window.location.reload();
+  }
+
+  // Translation dictionary
+  const translations = {
+      'en': {
+          'Import Products': 'Import Products',
+          'Import Products from CSV': 'Import Products from CSV',
+          'Upload a CSV file to import multiple products': 'Upload a CSV file to import multiple products',
+          'CSV File': 'CSV File',
+          'Click to upload': 'Click to upload',
+          'or drag and drop': 'or drag and drop',
+          'CSV files only': 'CSV files only',
+          'Cancel': 'Cancel',
+          'Import Products': 'Import Products',
+          'CSV Format': 'CSV Format',
+          'Required columns': 'Required columns',
+          'Required Columns:': 'Required Columns:',
+          'Required': 'Required',
+          'Optional': 'Optional',
+          'Guidelines': 'Guidelines',
+          'Important information': 'Important information',
+          'SKU must be unique across all products': 'SKU must be unique across all products',
+          'Price and quantity must be valid numbers': 'Price and quantity must be valid numbers',
+          'Category must be one of the predefined options': 'Category must be one of the predefined options',
+          'Rows with errors will be skipped': 'Rows with errors will be skipped',
+          'Sample CSV': 'Sample CSV',
+          'Download template': 'Download template',
+          'Download a sample CSV file to see the correct format and structure.': 'Download a sample CSV file to see the correct format and structure.',
+          'Download Sample CSV': 'Download Sample CSV',
+          'Search...': 'Search...',
+          'MENU': 'MENU',
+          'Company Dashboard': 'Company Dashboard',
+          'Company Profile': 'Company Profile',
+          'Manage Orders': 'Manage Orders',
+          'Inventory': 'Inventory',
+          'Client Chats': 'Client Chats',
+          'Employee Management': 'Employee Management'
+      },
+      'ar': {
+          'Import Products': 'استيراد المنتجات',
+          'Import Products from CSV': 'استيراد المنتجات من CSV',
+          'Upload a CSV file to import multiple products': 'قم بتحميل ملف CSV لاستيراد منتجات متعددة',
+          'CSV File': 'ملف CSV',
+          'Click to upload': 'انقر للتحميل',
+          'or drag and drop': 'أو اسحب وأفلت',
+          'CSV files only': 'ملفات CSV فقط',
+          'Cancel': 'إلغاء',
+          'Import Products': 'استيراد المنتجات',
+          'CSV Format': 'تنسيق CSV',
+          'Required columns': 'الأعمدة المطلوبة',
+          'Required Columns:': 'الأعمدة المطلوبة:',
+          'Required': 'مطلوب',
+          'Optional': 'اختياري',
+          'Guidelines': 'الإرشادات',
+          'Important information': 'معلومات مهمة',
+          'SKU must be unique across all products': 'يجب أن يكون SKU فريداً عبر جميع المنتجات',
+          'Price and quantity must be valid numbers': 'يجب أن يكون السعر والكمية أرقام صحيحة',
+          'Category must be one of the predefined options': 'يجب أن تكون الفئة واحدة من الخيارات المحددة مسبقاً',
+          'Rows with errors will be skipped': 'سيتم تخطي الصفوف التي تحتوي على أخطاء',
+          'Sample CSV': 'نموذج CSV',
+          'Download template': 'تحميل النموذج',
+          'Download a sample CSV file to see the correct format and structure.': 'قم بتحميل ملف CSV نموذجي لرؤية التنسيق والهيكل الصحيح.',
+          'Download Sample CSV': 'تحميل نموذج CSV',
+          'Search...': 'البحث...',
+          'MENU': 'القائمة',
+          'Company Dashboard': 'لوحة تحكم الشركة',
+          'Company Profile': 'الملف الشخصي للشركة',
+          'Manage Orders': 'إدارة الطلبات',
+          'Inventory': 'المخزون',
+          'Client Chats': 'دردشات العملاء',
+          'Employee Management': 'إدارة الموظفين'
+      }
+  };
+
+  // Function to get translated text
+  function getText(key) {
+      const currentLang = document.cookie.includes('language=ar') ? 'ar' : 'en';
+      return translations[currentLang][key] || key;
+  }
+
+  // Function to translate the page
+  function translatePage() {
+      const currentLang = document.cookie.includes('language=ar') ? 'ar' : 'en';
+      
+      // Update title
+      document.title = getText('Import Products');
+      
+      // Update all translatable elements
+      Object.keys(translations.en).forEach(key => {
+          const elements = document.querySelectorAll(`*:not(script):not(style)`);
+          elements.forEach(element => {
+              if (element.childNodes.length === 1 && element.childNodes[0].nodeType === Node.TEXT_NODE) {
+                  const text = element.textContent.trim();
+                  if (text === translations.en[key]) {
+                      element.textContent = translations[currentLang][key];
+                  }
+              }
+          });
+      });
+  }
+
+  // Apply translations when page loads
+  document.addEventListener('DOMContentLoaded', function() {
+      translatePage();
+  });
+
+  // Make functions globally available
+  window.toggleLanguage = toggleLanguage;
+  window.getText = getText;
+  window.translatePage = translatePage;
+  </script>
+ </body>
+</html>

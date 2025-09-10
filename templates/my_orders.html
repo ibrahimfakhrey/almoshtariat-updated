@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - PurchaseFlowWebsite</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAJElEQVQoU2NkIAj/5+7D/2+6/1nL8MWXgNmwqKzA0K6Q8U1l8EOrVXrUAAAAASUVORK5CYII=') repeat;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 20px;
+        }
+        .nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #333;
+        }
+        .nav a:hover {
+            color: #ff4500;
+        }
+        .orders-container {
+            text-align: center;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .orders-container h2 {
+            margin-bottom: 20px;
+        }
+        .order {
+            margin-bottom: 30px;
+        }
+        .order h3 {
+            color: #ff4500;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #ff4500;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .action-btn {
+            padding: 5px 10px;
+            margin: 2px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            background-color: #ff4500;
+            color: white;
+        }
+        .action-btn:hover {
+            background-color: #e03a00;
+        }
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        .flash-messages div {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .flash-messages .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .flash-messages .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .footer {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #f8f8f8;
+            border-top: 1px solid #ccc;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            text-align: left;
+        }
+        .footer-section {
+            flex: 1;
+            min-width: 150px;
+            margin: 10px;
+        }
+        .footer-section h3 {
+            color: #ff4500;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        .footer-section p {
+            color: #666;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .footer-section a {
+            color: #666;
+            text-decoration: none;
+            display: block;
+            margin: 5px 0;
+        }
+        .footer-section a:hover {
+            color: #ff4500;
+        }
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid #ccc;
+            color: #666;
+            font-size: 12px;
+            margin-top: 20px;
+        }
+        .footer-bottom a {
+            color: #666;
+            margin: 0 10px;
+            text-decoration: none;
+        }
+        .footer-bottom a:hover {
+            color: #ff4500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>PurchaseFlowWebsite 🛒</div>
+            <div class="nav">
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="#">How it Works</a>
+                <a href="#">Features</a>
+                <a href="#">Testimonials</a>
+                <a href="#">Contact</a>
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('my_orders') }}">My Orders</a>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                {% else %}
+                    <a href="{{ url_for('login') }}">Login</a>
+                    <a href="{{ url_for('register_enhanced') }}">Register</a>
+                {% endif %}
+            </div>
+            <a href="{{ url_for('new_purchase') }}"><button class="submit-btn">Make Purchase</button></a>
+        </div>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <div class="orders-container">
+            <h2>My Orders</h2>
+            {% if orders %}
+                {% for order in orders %}
+                    <div class="order">
+                        <h3>Order #{{ order.id }} - {{ order.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</h3>
+                        {% if order.purchases %}
+                            <table>
+                                <tr>
+                                    <th>Sector</th>
+                                    <th>Part Name</th>
+                                    <th>Quantity</th>
+                                    <th>Description</th>
+                                </tr>
+                                {% for purchase in order.purchases %}
+                                    <tr>
+                                        <td>{{ purchase.sector }}</td>
+                                        <td>{{ purchase.part_name }}</td>
+                                        <td>{{ purchase.quantity }}</td>
+                                        <td>{{ purchase.description }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        {% else %}
+                            <p>No purchases in this order.</p>
+                        {% endif %}
+                        <h4>Offers</h4>
+                        {% if order.offers %}
+                            {% for offer in order.offers %}
+                                <p>Company: {{ offer.company.name }} - Price: ${{ offer.total_price }} - {{ offer.description }} ({{ offer.status }})</p>
+                                {% if offer.status == 'pending' %}
+                                    <form action="{{ url_for('accept_offer', offer_id=offer.id) }}" method="POST" style="display:inline;">
+                                        <button type="submit" class="action-btn">Accept</button>
+                                    </form>
+                                    <form action="{{ url_for('reject_offer', offer_id=offer.id) }}" method="POST" style="display:inline;">
+                                        <button type="submit" class="action-btn">Reject</button>
+                                    </form>
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <p>No offers yet.</p>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No orders found.</p>
+            {% endif %}
+        </div>
+        <footer class="footer">
+            <div class="footer-section">
+                <h3>PurchaseFlowWebsite</h3>
+                <p>Streamlining your purchasing process with ease and efficiency.</p>
+                <div>
+                    <a href="#"></a>
+                    <a href="#"></a>
+                    <a href="#"></a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="#">About Us</a>
+                <a href="#">How it Works</a>
+                <a href="#">Testimonial</a>
+                <a href="#">Contact</a>
+            </div>
+            <div class="footer-section">
+                <h3>Our Services</h3>
+                <a href="#">Bulk Orders</a>
+                <a href="#">Express Delivery</a>
+                <a href="#">Custom Parts</a>
+                <a href="#">Order Tracking</a>
+                <a href="#">Support</a>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>123 Purchase Street, Suite Ordertown, OT 78901</p>
+                <p>✆ +1 (555) 123-4567</p>
+                <p> info@purchaseflowwebsite.com</p>
+            </div>
+        </footer>
+        <div class="footer-bottom">
+            © 2023 PurchaseFlowWebsite. All rights reserved.
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+        </div>
+    </div>
+</body>
+</html>

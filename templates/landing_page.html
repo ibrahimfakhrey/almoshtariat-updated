@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PurchaseFlowSimplified</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      line-height: 1.6;
+      color: #333;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    nav a {
+      margin: 0 1rem;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+    }
+    .btn-primary {
+      padding: 0.6rem 1.2rem;
+      background: #f39c12;
+      border: none;
+      color: #fff;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .btn-primary:hover {
+      background: #d97706;
+    }
+    .hero {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-size: cover;
+      background-position: center;
+      height: 90vh;
+      text-align: center;
+      color: #fff;
+      padding: 2rem;
+    }
+    .hero h1 {
+      font-size: 2.8rem;
+      margin-bottom: 1rem;
+    }
+    .section {
+      padding: 4rem 2rem;
+      background-color: #f9f9f9;
+    }
+
+    .how-it-works {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 3rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .how-it-works img {
+      max-width: 480px;
+      width: 100%;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .how-it-works div {
+      max-width: 600px;
+    }
+
+    .how-it-works h2 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #333;
+    }
+
+    .how-it-works ol {
+      padding-left: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .how-it-works li {
+      font-size: 1.1rem;
+      margin-bottom: 0.8rem;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .btn-primary {
+      padding: 0.75rem 1.5rem;
+      background-color: #ff6a00;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: #cc5500;
+    }
+
+    /* Responsive for smaller devices */
+    @media (max-width: 768px) {
+      .how-it-works {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .how-it-works div {
+        max-width: 100%;
+      }
+    }
+    .features, .testimonials {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .feature, .testimonial {
+      background: #f8f8f8;
+      padding: 2rem;
+      border-radius: 10px;
+      flex: 1 1 300px;
+      text-align: center;
+    }
+    .feature img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      margin-bottom: 1rem;
+    }
+    .feature h3, .testimonial h4 {
+      margin-bottom: 1rem;
+    }
+    .how-it-works {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 2rem;
+    }
+    .how-it-works img {
+      width: 100%;
+      max-width: 500px;
+    }
+    .custom-footer {
+  background-color: #1a1a1a;
+  color: #fff;
+  padding-top: 40px;
+  font-family: Arial, sans-serif;
+}
+
+.custom-footer .footer-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 2rem;
+}
+
+.custom-footer .footer-column {
+  flex: 1 1 250px;
+  margin-bottom: 2rem;
+}
+
+.custom-footer .footer-column h3 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #f4f4f4;
+}
+
+.custom-footer .footer-column p,
+.custom-footer .footer-column a {
+  font-size: 0.95rem;
+  color: #ccc;
+  line-height: 1.6;
+  text-decoration: none;
+}
+
+.custom-footer .footer-column ul {
+  list-style: none;
+  padding: 0;
+}
+
+.custom-footer .footer-column ul li {
+  margin-bottom: 0.5rem;
+}
+
+.custom-footer .footer-column ul li a:hover {
+  color: #ff6a00;
+}
+
+.custom-footer .footer-column i {
+  margin-right: 8px;
+  color: #ff6a00;
+}
+
+.custom-footer .footer-bottom {
+  text-align: center;
+  padding: 1rem 2rem;
+  background-color: #111;
+  color: #aaa;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 768px) {
+  .custom-footer .footer-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .custom-footer .footer-column {
+    margin-bottom: 2rem;
+  }
+
+  .custom-footer .footer-column i {
+    display: inline-block;
+    width: 20px;
+  }
+}
+
+    .call-to-action {
+      background: #ffe9cf;
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+    .call-to-action h2 {
+      margin-bottom: 1rem;
+    }
+    @media (max-width: 768px) {
+      .features, .testimonials, .how-it-works, .footer-content {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h2>PurchaseFlowSimplified</h2>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#features">Features</a>
+      <a href="#testimonials">Testimonials</a>
+      <a href="#contact">Contact</a>
+         {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('logout') }}"><button class="btn-primary">Logout</button></a>
+                {% else %}
+                    <a href="{{ url_for('login') }}"><button class="btn-primary">Login</button></a>
+                    <a href="{{ url_for('register_enhanced') }}"><button class="btn-primary">register</button></a>
+                {% endif %}
+    </nav>
+
+  </header>
+
+  <section class="hero" style="background-image: url('https://img.freepik.com/free-photo/people-business-meeting-high-angle_23-2148911819.jpg');">
+    <h1>Streamline Your Purchasing Process</h1>
+    <p>Experience faster, smarter, and more efficient order management.</p>
+      <br>
+        <a href="/new_purchase"> <button class="btn-primary">Make Purchase</button></a>
+  </section>
+
+  <section class="section" id="features">
+    <h2 style="text-align:center; margin-bottom:2rem;">Why Choose Our Platform</h2>
+    <div class="features">
+      <div class="feature">
+        <img src="https://cdn-icons-png.flaticon.com/512/860/860814.png" alt="Lightning Fast">
+        <h3>Lightning Fast</h3>
+        <p>Place and track your orders quickly and effortlessly.</p>
+      </div>
+      <div class="feature">
+        <img src="https://www.pngmart.com/files/7/Security-PNG-Transparent-Picture.png" alt="Seamless Transactions">
+        <h3>Secure Transactions</h3>
+        <p>Enjoy a smooth purchasing journey with no interruptions.</p>
+      </div>
+      <div class="feature">
+        <img src="https://cdn-icons-png.flaticon.com/512/597/597177.png" alt="24/7 Support">
+        <h3>24/7 Support</h3>
+        <p>We're always here to help you when you need us.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+  <div class="how-it-works">
+    <img src="https://img.freepik.com/premium-vector/colorful-circle-social-media-with-words-social-network-bottom_951778-62716.jpg" alt="Process Illustration">
+    <div>
+      <h2>How It Works</h2>
+      <ol>
+        <li><strong>Browse Items:</strong> Find what you need from a wide range of suppliers.</li>
+        <li><strong>Review Your Order:</strong> Check and confirm your items before proceeding.</li>
+        <li><strong>Complete Payment:</strong> Use integrated payment methods with ease.</li>
+        <li><strong>Get Your Items:</strong> Orders are processed and tracked for your delivery.</li>
+      </ol>
+        <a href="/new_purchase"> <button class="btn-primary">Make Purchase</button></a>
+    </div>
+  </div>
+</section>
+
+  <section class="section" id="testimonials">
+    <h2 style="text-align:center; margin-bottom:2rem;">What Our Customers Say</h2>
+    <div class="testimonials">
+      <div class="testimonial">
+        <h4>Marissa Thompson</h4>
+        <p>"This platform revolutionized our procurement department. Orders are 3x faster!"</p>
+      </div>
+      <div class="testimonial">
+        <h4>Jordan Edwards</h4>
+        <p>"We saved hours every week thanks to the seamless workflow. Highly recommended!"</p>
+      </div>
+      <div class="testimonial">
+        <h4>Lauren Smith</h4>
+        <p>"Support is amazing. Questions answered instantly and orders always on time."</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="call-to-action">
+    <h2>Ready to Streamline Your Purchasing?</h2>
+    <p>Join thousands of satisfied customers who have simplified their purchasing process.</p>
+        <a href="/new_purchase"> <button class="btn-primary">Make Purchase</button></a>
+  </section>
+
+  <!-- FOOTER SECTION -->
+<footer class="custom-footer">
+  <div class="footer-container">
+    <div class="footer-column">
+      <h3>About Us</h3>
+      <p>We connect you with top suppliers to get what you need quickly and reliably.</p>
+    </div>
+    <div class="footer-column">
+      <h3>Quick Links</h3>
+      <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">How It Works</a></li>
+        <li><a href="#">Services</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-column">
+      <h3>Contact</h3>
+      <p><i class="fas fa-map-marker-alt"></i> 123 Market St, Cairo, Egypt</p>
+      <p><i class="fas fa-envelope"></i> support@example.com</p>
+      <p><i class="fas fa-phone"></i> +20 123 456 789</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    &copy; 2025 Your Company. All rights reserved.
+  </div>
+</footer>
+
+</body>
+</html>

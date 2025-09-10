@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+  <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+  <title>
+   New Orders by Sector
+  </title>
+  <link href="favicon.ico" rel="icon"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+ </head>
+ <body :class="{'dark bg-gray-900': darkMode === true}" x-data="{ page: 'newOrders', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }" x-init="
+         darkMode = JSON.parse(localStorage.getItem('darkMode'));
+         $watch('darkMode', value =&gt; localStorage.setItem('darkMode', JSON.stringify(value)))">
+  <!-- ===== Preloader Start ===== -->
+  <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () =&gt; {setTimeout(() =&gt; loaded = false, 500)})" x-show="loaded">
+   <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent">
+   </div>
+  </div>
+  <!-- ===== Preloader End ===== -->
+  <!-- ===== Page Wrapper Start ===== -->
+  <div class="flex h-screen overflow-hidden">
+   <!-- ===== Sidebar Start ===== -->
+   <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+    <!-- SIDEBAR HEADER -->
+    <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+     <a href="/">
+      <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+       <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+       <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+      </span>
+      <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+     </a>
+    </div>
+    <!-- SIDEBAR HEADER -->
+    <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+     <!-- Sidebar Menu -->
+     <nav x-data="{selected: $persist('Dashboard')}">
+      <!-- Menu Group -->
+      <div>
+       <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+        <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">
+         MENU
+        </span>
+        <svg :class="sidebarToggle ? 'xl:block hidden' : 'hidden'" class="menu-group-icon mx-auto fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+         <path clip-rule="evenodd" d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.9716 18.9656 13.7551 17.9991 13.7551C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.9716 11.0326 13.7551 11.9991 13.7551C12.9656 13.7551 13.7491 12.9716 13.7491 12.0051V11.9951Z" fill="currentColor" fill-rule="evenodd">
+         </path>
+        </svg>
+       </h3>
+       <ul class="mb-6 flex flex-col gap-1">
+        <!-- Menu Item Dashboard -->
+          <li>
+         <a :class=" (selected === 'Profile') &amp;&amp; (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_dashboard">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           Company Dashboard
+          </span>
+         </a>
+        </li>
+        <!-- Menu Item Profile -->
+        <li>
+         <a :class=" (selected === 'Profile') &amp;&amp; (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_profile">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           Company Profile
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') &amp;&amp; (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_orders">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           Manage Orders
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') &amp;&amp; (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_inventory">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           Inventory
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') &amp;&amp; (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_chat">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           Client Chats
+          </span>
+         </a>
+        </li>
+       </ul>
+      </div>
+     </nav>
+     <!-- Sidebar Menu -->
+    </div>
+   </aside>
+   <!-- ===== Sidebar End ===== -->
+   <!-- ===== Content Area Start ===== -->
+   <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+    <!-- Small Device Overlay Start -->
+    <div :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fixed z-50 h-screen w-full bg-gray-900/50">
+    </div>
+    <!-- Small Device Overlay End -->
+    <!-- ===== Header Start ===== -->
+    <header class="sticky top-0 z-99999 flex w-full border-gray-200 bg-white xl:border-b dark:border-gray-800 dark:bg-gray-900" x-data="{menuToggle: false}">
+     <div class="flex grow flex-col items-center justify-between xl:flex-row xl:px-6">
+      <div class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:py-4 xl:justify-normal xl:border-b-0 xl:px-0 dark:border-gray-800">
+       <!-- Hamburger Toggle BTN -->
+       <button :class="sidebarToggle ? 'xl:bg-transparent dark:xl:bg-transparent bg-gray-100 dark:bg-gray-800' : ''" @click.stop="sidebarToggle = !sidebarToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 xl:h-11 xl:w-11 xl:border dark:border-gray-800 dark:text-gray-400">
+        <svg class="fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+         <path clip-rule="evenodd" d="M3.5 6.5C3.5 5.67157 4.17157 5 5 5H19C19.8284 5 20.5 5.67157 20.5 6.5C20.5 7.32843 19.8284 8 19 8H5C4.17157 8 3.5 7.32843 3.5 6.5ZM3.5 12.5C3.5 11.6716 4.17157 11 5 11H19C19.8284 11 20.5 11.6716 20.5 12.5C20.5 13.3284 19.8284 14 19 14H5C4.17157 14 3.5 13.3284 3.5 12.5ZM3.5 18.5C3.5 17.6716 4.17157 17 5 17H19C19.8284 17 20.5 17.6716 20.5 18.5C20.5 19.3284 19.8284 20 19 20H5C4.17157 20 3.5 19.3284 3.5 18.5Z" fill="" fill-rule="evenodd">
+         </path>
+        </svg>
+       </button>
+       <!-- Hamburger Toggle BTN -->
+       <!-- Search Bar -->
+       <div class="flex grow items-center gap-2 xl:ml-6">
+        <div class="flex w-full items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 dark:border-gray-800 dark:bg-gray-800">
+         <svg class="fill-current" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+          <path clip-rule="evenodd" d="M8.5 3.5C5.73858 3.5 3.5 5.73858 3.5 8.5C3.5 11.2614 5.73858 13.5 8.5 13.5C11.2614 13.5 13.5 11.2614 13.5 8.5C13.5 5.73858 11.2614 3.5 8.5 3.5ZM1.5 8.5C1.5 4.63401 4.63401 1.5 8.5 1.5C12.366 1.5 15.5 4.63401 15.5 8.5C15.5 12.366 12.366 15.5 8.5 15.5C4.63401 15.5 1.5 12.366 1.5 8.5ZM14.2929 13.2929C14.6834 12.9024 15.3166 12.9024 15.7071 13.2929C16.0976 13.6834 16.0976 14.3166 15.7071 14.7071L13.2929 17.1213C12.9024 17.5118 12.2692 17.5118 11.8787 17.1213C11.4882 16.7308 11.4882 16.0976 11.8787 15.7071L14.2929 13.2929Z" fill="" fill-rule="evenodd">
+          </path>
+         </svg>
+         <input class="w-full border-0 bg-transparent px-2 text-sm font-medium text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-0 dark:text-white dark:placeholder:text-gray-400" placeholder="Search..." type="text"/>
+        </div>
+       </div>
+       <!-- Search Bar -->
+       <!-- Notification Menu Area -->
+       {% include 'partials/notification_dropdown.html' %}
+       <!-- User Area -->
+       <div class="flex items-center gap-3">
+        <!-- User Area -->
+        <div class="relative" x-data="{dropdownOpen: false}">
+         <button @click="dropdownOpen = !dropdownOpen" class="flex items-center gap-2">
+          <div class="h-9 w-9">
+           <img alt="User" class="h-full w-full rounded-full" src="https://img.icons8.com/?size=100&id=hu4SFxCb4UXH&format=png&color=000000"/>
+          </div>
+          <span class="hidden text-right lg:block">
+           <span class="block text-sm font-medium text-gray-800 dark:text-white">
+            {{ current_user.username }}
+           </span>
+           <span class="block text-xs text-gray-500 dark:text-gray-400">
+            Company
+           </span>
+          </span>
+         </button>
+        </div>
+       </div>
+       <!-- User Area -->
+      </div>
+     </div>
+    </header>
+    <!-- ===== Header End ===== -->
+    <!-- ===== Main Content Start ===== -->
+    <main>
+     <div class="mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6">
+      <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+       <div>
+        <h2 class="text-title-md2 font-bold text-gray-800 dark:text-white">
+         New Orders by Sector
+        </h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+         View and respond to new orders organized by sector
+        </p>
+       </div>
+       <a href="/company_dashboard" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Back to Dashboard
+       </a>
+      </div>
+
+      {% if orders_by_sector %}
+        {% for sector, orders in orders_by_sector.items() %}
+        <div class="mb-8">
+         <div class="mb-4 flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
+           {{ sector }} Sector
+          </h3>
+          <span class="px-3 py-1 text-sm font-medium bg-brand-100 text-brand-800 rounded-full dark:bg-brand-900 dark:text-brand-200">
+           {{ orders|length }} Order{{ 's' if orders|length != 1 else '' }}
+          </span>
+         </div>
+         
+         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {% for order in orders %}
+          <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+           <div class="mb-4">
+            <div class="flex items-center justify-between mb-2">
+             <h4 class="font-semibold text-gray-800 dark:text-white">
+              Order #{{ order.id }}
+             </h4>
+             <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full dark:bg-green-900 dark:text-green-200">
+              New
+             </span>
+            </div>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">
+             Created: {{ order.created_at.strftime('%Y-%m-%d %H:%M') }}
+            </p>
+            
+            <div class="space-y-2">
+             {% for purchase in order.purchases %}
+             <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg dark:bg-gray-700">
+              <div>
+               <p class="font-medium text-gray-800 dark:text-white">{{ purchase.part_name }}</p>
+               <p class="text-sm text-gray-600 dark:text-gray-400">{{ purchase.description }}</p>
+              </div>
+              <div class="text-right">
+               <p class="font-semibold text-gray-800 dark:text-white">{{ purchase.quantity }} units</p>
+               <p class="text-xs text-gray-500 dark:text-gray-400">{{ purchase.sector }}</p>
+              </div>
+             </div>
+             {% endfor %}
+            </div>
+           </div>
+           
+           <div class="flex gap-2">
+            <a href="/order_details/{{ order.id }}" class="flex-1 text-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+             View Details
+            </a>
+            <a href="/make_offer/{{ order.id }}" class="flex-1 text-center px-4 py-2 text-sm font-medium text-white bg-brand-500 rounded-lg hover:bg-brand-600 transition-colors">
+             Make Offer
+            </a>
+           </div>
+          </div>
+          {% endfor %}
+         </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="text-center py-12">
+         <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center dark:bg-gray-800">
+          <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+         </div>
+         <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">
+          No New Orders Available
+         </h3>
+         <p class="text-gray-600 dark:text-gray-400">
+          There are currently no new orders in any sector. Check back later for new opportunities.
+         </p>
+        </div>
+      {% endif %}
+     </div>
+    </main>
+    <!-- ===== Main Content End ===== -->
+   </div>
+   <!-- ===== Content Area End ===== -->
+  </div>
+  <!-- ===== Page Wrapper End ===== -->
+  <script src="{{ url_for('static', filename='js/script_1.js') }}"></script>
+ </body>
+</html> 

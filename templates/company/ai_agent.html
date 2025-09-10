@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+    <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>الوكيل الذكي | لوحة تحكم الشركة</title>
+    <link href="favicon.ico" rel="icon"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+    <script>
+        function aiAgentApp() {
+            return {
+                tasks: JSON.parse(localStorage.getItem('ai_agent_tasks')) || [],
+                taskTypes: [
+                    { id: 'content_creation', name: 'إنشاء المحتوى', description: 'إنشاء محتوى تسويقي وإبداعي' },
+                    { id: 'data_analysis', name: 'تحليل البيانات', description: 'تحليل البيانات واستخراج الرؤى' },
+                    { id: 'customer_service', name: 'خدمة العملاء', description: 'الرد على استفسارات العملاء' },
+                    { id: 'market_research', name: 'بحث السوق', description: 'دراسة السوق والمنافسين' },
+                    { id: 'social_media', name: 'وسائل التواصل', description: 'إدارة وسائل التواصل الاجتماعي' },
+                    { id: 'bill_management', name: 'إدارة الفواتير', description: 'إدارة ومتابعة الفواتير والمدفوعات' }
+                ],
+                newTask: {
+                    task_type: '',
+                    description: '',
+                    priority: 'medium',
+                    parameters: {}
+                },
+                isLoading: false,
+                isCreatingTask: false,
+                selectedTask: null,
+                showTaskModal: false,
+                showCreateModal: false,
+                page: 'ai_agent',
+                loaded: true,
+                darkMode: JSON.parse(localStorage.getItem('ai_agent_dark_mode')) || false,
+                selected: 'AI Agent',
+                stickyMenu: false,
+                sidebarToggle: false,
+                scrollTop: false,
+                isMobile: false,
+                
+                async init() {
+                    // Load data if not already persisted
+                    if (this.taskTypes.length === 0) {
+                        await this.loadTaskTypes();
+                    }
+                    if (this.tasks.length === 0) {
+                        await this.loadTasks();
+                    }
+                },
+                
+                async loadTaskTypes() {
+                    try {
+                        const response = await fetch('/api/ai_agent/task_types?language=ar');
+                        const data = await response.json();
+                        if (data.task_types) {
+                            this.taskTypes = data.task_types;
+                            this.saveTaskTypes();
+                        }
+                    } catch (error) {
+                        console.error('Error loading task types:', error);
+                    }
+                },
+                
+                async loadTasks() {
+                    try {
+                        this.isLoading = true;
+                        const response = await fetch('/api/ai_agent/tasks');
+                        const data = await response.json();
+                        if (data.tasks) {
+                            this.tasks = data.tasks;
+                            this.saveTasks();
+                        }
+                    } catch (error) {
+                        console.error('Error loading tasks:', error);
+                    } finally {
+                        this.isLoading = false;
+                    }
+                },
+                
+                async refreshData() {
+                    await this.loadTaskTypes();
+                    await this.loadTasks();
+                },
+                
+                saveTasks() {
+                    localStorage.setItem('ai_agent_tasks', JSON.stringify(this.tasks));
+                },
+                
+                saveTaskTypes() {
+                    localStorage.setItem('ai_agent_task_types', JSON.stringify(this.taskTypes));
+                },
+                
+                saveDarkMode() {
+                    localStorage.setItem('ai_agent_dark_mode', JSON.stringify(this.darkMode));
+                },
+                
+                async createTask() {
+                    if (!this.newTask.title || !this.newTask.type) {
+                        alert('يرجى ملء جميع الحقول المطلوبة');
+                        return;
+                    }
+                    
+                    try {
+                        const response = await fetch('/api/ai_agent/tasks', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                title: this.newTask.title,
+                                description: this.newTask.description,
+                                task_type: this.newTask.type,
+                                priority: this.newTask.priority
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            const task = await response.json();
+                            this.tasks.unshift(task);
+                            this.saveTasks();
+                            
+                            // Reset form
+                            this.newTask = {
+                                title: '',
+                                description: '',
+                                type: '',
+                                priority: 'medium'
+                            };
+                            this.showTaskForm = false;
+                            
+                            alert('تم إنشاء المهمة بنجاح!');
+                        } else {
+                            throw new Error('فشل في إنشاء المهمة');
+                        }
+                    } catch (error) {
+                        console.error('Error creating task:', error);
+                        alert('حدث خطأ أثناء إنشاء المهمة');
+                    }
+                },
+                
+                async executeTask(taskId) {
+                    if (!confirm('هل أنت متأكد من تنفيذ هذه المهمة؟')) {
+                        return;
+                    }
+                    
+                    try {
+                        const response = await fetch(`/api/ai_agent/tasks/${taskId}/execute`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                            }
+                        });
+                        
+                        const data = await response.json();
+                        if (data.success) {
+                            await this.loadTasks();
+                            alert('تم تنفيذ المهمة بنجاح!');
+                        } else {
+                            alert(data.error || 'حدث خطأ أثناء تنفيذ المهمة');
+                        }
+                    } catch (error) {
+                        console.error('Error executing task:', error);
+                        alert('حدث خطأ أثناء تنفيذ المهمة');
+                    }
+                },
+                
+                async viewTaskDetails(taskId) {
+                    try {
+                        const response = await fetch(`/api/ai_agent/tasks/${taskId}/status`);
+                        const data = await response.json();
+                        if (!data.error) {
+                            this.selectedTask = data;
+                            this.showTaskModal = true;
+                        }
+                    } catch (error) {
+                        console.error('Error loading task details:', error);
+                    }
+                },
+                
+                resetNewTask() {
+                    this.newTask = {
+                        task_type: '',
+                        description: '',
+                        priority: 'medium',
+                        parameters: {}
+                    };
+                },
+                
+                getStatusColor(status) {
+                    switch (status) {
+                        case 'pending': return 'bg-yellow-100 text-yellow-800';
+                        case 'running': return 'bg-blue-100 text-blue-800';
+                        case 'completed': return 'bg-green-100 text-green-800';
+                        case 'failed': return 'bg-red-100 text-red-800';
+                        default: return 'bg-gray-100 text-gray-800';
+                    }
+                },
+                
+                getStatusText(status) {
+                    switch (status) {
+                        case 'pending': return 'في الانتظار';
+                        case 'running': return 'قيد التنفيذ';
+                        case 'completed': return 'مكتملة';
+                        case 'failed': return 'فشلت';
+                        default: return status;
+                    }
+                },
+                
+                getPriorityColor(priority) {
+                    switch (priority) {
+                        case 'high': return 'text-red-600';
+                        case 'medium': return 'text-yellow-600';
+                        case 'low': return 'text-green-600';
+                        default: return 'text-gray-600';
+                    }
+                },
+                
+                getPriorityText(priority) {
+                    switch (priority) {
+                        case 'high': return 'عالية';
+                        case 'medium': return 'متوسطة';
+                        case 'low': return 'منخفضة';
+                        default: return priority;
+                    }
+                },
+                
+                formatDate(dateString) {
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('ar-EG', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                }
+            }
+        }
+    </script>
+</head>
+<body x-data="aiAgentApp()" x-init="init()" class="font-satoshi text-base font-normal text-body bg-whiten relative z-1">
+    <!-- ===== Page Wrapper Start ===== -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- ===== Sidebar Start ===== -->
+        <aside :class="sidebarToggle ? 'translate-x-0' : '-translate-x-full'" class="absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0" @click.outside="sidebarToggle = false">
+            <!-- SIDEBAR HEADER -->
+            <div class="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
+                <a href="/company_dashboard">
+                    <img src="{{ url_for('static', filename='images/logo/logo.svg') }}" alt="Logo" class="h-8 w-auto" />
+                </a>
+                <button class="block lg:hidden" @click="sidebarToggle = !sidebarToggle">
+                    <svg class="fill-current" width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 8.175H2.98748L9.36248 1.6875C9.69998 1.35 9.69998 0.825 9.36248 0.4875C9.02498 0.15 8.49998 0.15 8.16248 0.4875L0.399976 8.3625C0.0624756 8.7 0.0624756 9.225 0.399976 9.5625L8.16248 17.4375C8.31248 17.5875 8.53748 17.7 8.76248 17.7C8.98748 17.7 9.17498 17.625 9.36248 17.475C9.69998 17.1375 9.69998 16.6125 9.36248 16.275L3.02498 9.8625H19C19.45 9.8625 19.825 9.4875 19.825 9.0375C19.825 8.55 19.45 8.175 19 8.175Z" fill=""/>
+                    </svg>
+                </button>
+            </div>
+            <!-- SIDEBAR HEADER -->
+            
+            <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+                <!-- Sidebar Menu -->
+                <nav class="mt-5 py-4 px-4 lg:mt-9 lg:px-6">
+                    <div>
+                        <h3 class="mb-4 ml-4 text-sm font-semibold text-bodydark2">القائمة</h3>
+                        <ul class="mb-6 flex flex-col gap-1.5">
+                            <!-- Menu Item Dashboard -->
+                            <li>
+                                <a :class="(selected === 'Dashboard') && (page === 'dashboard') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Dashboard' ? '':'Dashboard')" class="menu-item group" href="/company_dashboard">
+                                    <svg class="menu-item-icon" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z" fill="currentColor"/>
+                                    </svg>
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">لوحة التحكم</span>
+                                </a>
+                            </li>
+                            
+                            <!-- Menu Item AI Agent -->
+                            <li>
+                                <a :class="(selected === 'AI Agent') && (page === 'ai_agent') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'AI Agent' ? '':'AI Agent')" class="menu-item group" href="/ai_agent">
+                                    <svg class="menu-item-icon" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/>
+                                    </svg>
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">الوكيل الذكي</span>
+                                </a>
+                            </li>
+                            
+                            <!-- Menu Item AI Analytics -->
+                            <li>
+                                <a :class="(selected === 'AI Analytics') && (page === 'ai_chat') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'AI Analytics' ? '':'AI Analytics')" class="menu-item group" href="/company_ai_chat">
+                                    <svg class="menu-item-icon" fill="none" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12C2 13.54 2.36 14.99 3.01 16.28L1.71 19.71C1.32 20.53 2.47 21.68 3.29 21.29L6.72 19.99C8.01 20.64 9.46 21 11 21H13C18.52 21 23 16.52 23 11C23 5.48 18.52 1 13 1H12C6.48 1 2 5.48 2 11V12C2 17.52 6.48 22 12 22Z" fill="currentColor"/>
+                                    </svg>
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">التحليلات الذكية</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </aside>
+        <!-- ===== Sidebar End ===== -->
+        
+        <!-- ===== Content Area Start ===== -->
+        <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+            <!-- ===== Header Start ===== -->
+            <header class="sticky top-0 z-999 flex w-full bg-white drop-shadow-1 dark:bg-boxdark dark:drop-shadow-none">
+                <div class="flex flex-grow items-center justify-between px-4 py-4 shadow-2 md:px-6 2xl:px-11">
+                    <div class="flex items-center gap-2 sm:gap-4 lg:hidden">
+                        <!-- Hamburger Toggle BTN -->
+                        <button @click="sidebarToggle = !sidebarToggle" class="z-99999 block rounded-sm border border-stroke bg-white p-1.5 shadow-sm dark:border-strokedark dark:bg-boxdark lg:hidden">
+                            <span class="relative block h-5.5 w-5.5 cursor-pointer">
+                                <span class="du-block absolute right-0 h-full w-full">
+                                    <span class="relative left-0 top-0 my-1 block h-0.5 rounded-sm bg-black duration-200 ease-in-out dark:bg-white" :class="!sidebarToggle ? 'w-full' : 'w-0'"></span>
+                                    <span class="relative left-0 top-0 my-1 block h-0.5 rounded-sm bg-black duration-200 ease-in-out dark:bg-white" :class="!sidebarToggle ? 'w-full' : 'w-0'"></span>
+                                    <span class="relative left-0 top-0 my-1 block h-0.5 rounded-sm bg-black duration-200 ease-in-out dark:bg-white" :class="!sidebarToggle ? 'w-full' : 'w-0'"></span>
+                                </span>
+                                <span class="absolute right-0 h-full w-full rotate-45">
+                                    <span class="absolute left-2.5 top-0 block w-0.5 rounded-sm bg-black duration-200 ease-in-out dark:bg-white" :class="!sidebarToggle ? 'h-0' : 'h-full'"></span>
+                                    <span class="absolute left-0 top-2.5 block w-full rounded-sm bg-black duration-200 ease-in-out dark:bg-white" :class="!sidebarToggle ? 'h-0' : 'h-0.5'"></span>
+                                </span>
+                            </span>
+                        </button>
+                        <!-- Hamburger Toggle BTN -->
+                    </div>
+                    
+                    <div class="hidden sm:block">
+                        <h1 class="text-title-md2 font-semibold text-black dark:text-white">الوكيل الذكي</h1>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">إدارة وتنفيذ المهام الذكية لعملك</p>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 2xsm:gap-7">
+                        <!-- Dark Mode Toggler -->
+                        <li class="list-none">
+                            <label :class="darkMode ? 'bg-primary' : 'bg-stroke'" @click="darkMode = !darkMode" class="relative m-0 block h-7.5 w-14 rounded-full">
+                                <input class="dur absolute top-0 z-50 m-0 h-full w-full cursor-pointer opacity-0" type="checkbox"/>
+                                <span :class="darkMode && '!right-1 !translate-x-full'" class="absolute left-1 top-1/2 flex h-6 w-6 -translate-y-1/2 translate-x-0 items-center justify-center rounded-full bg-white shadow-switcher duration-75 ease-linear">
+                                    <span class="dark:hidden">
+                                        <svg class="fill-current stroke-current" fill="none" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8zM8 14c-3.3 0-6-2.7-6-6s2.7-6 6-6 6 2.7 6 6-2.7 6-6 6z" fill="currentColor"/>
+                                        </svg>
+                                    </span>
+                                    <span class="hidden dark:inline-block">
+                                        <svg class="fill-current stroke-current" fill="none" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M6.99 0C3.14 0 0 3.14 0 6.99C0 10.84 3.14 13.98 6.99 13.98C10.84 13.98 13.98 10.84 13.98 6.99C13.98 3.14 10.84 0 6.99 0ZM6.99 12.78C3.81 12.78 1.2 10.17 1.2 6.99C1.2 3.81 3.81 1.2 6.99 1.2C10.17 1.2 12.78 3.81 12.78 6.99C12.78 10.17 10.17 12.78 6.99 12.78Z" fill="currentColor"/>
+                                        </svg>
+                                    </span>
+                                </span>
+                            </label>
+                        </li>
+                        <!-- Dark Mode Toggler -->
+                    </div>
+                </div>
+            </header>
+            <!-- ===== Header End ===== -->
+            
+            <!-- ===== Main Content Start ===== -->
+            <main class="flex-1 overflow-y-auto p-4 md:p-6 2xl:p-10">
+                <div class="mx-auto max-w-7xl">
+                    <!-- Page Header -->
+                    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <h2 class="text-title-md2 font-semibold text-black dark:text-white">الوكيل الذكي</h2>
+                            <p class="text-sm text-gray-600 dark:text-gray-400">إنشاء وإدارة المهام الذكية لتحسين عمليات شركتك</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button @click="refreshData()" :disabled="isLoading" class="inline-flex items-center justify-center rounded-md border border-stroke bg-white px-4 py-2 text-center font-medium text-black hover:bg-gray-50 disabled:opacity-50 dark:border-strokedark dark:bg-boxdark dark:text-white dark:hover:bg-gray-800">
+                                <svg class="ml-2 h-4 w-4" :class="isLoading ? 'animate-spin' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                                تحديث
+                            </button>
+                            <button @click="showCreateModal = true" class="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-center font-medium text-white hover:bg-opacity-90">
+                                <svg class="ml-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                إنشاء مهمة جديدة
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Tasks Grid -->
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        <!-- Loading State -->
+                        <template x-show="isLoading">
+                            <div class="col-span-full flex items-center justify-center py-12">
+                                <div class="flex items-center gap-3">
+                                    <svg class="h-6 w-6 animate-spin text-primary" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span class="text-gray-600 dark:text-gray-400">جاري تحميل المهام...</span>
+                                </div>
+                            </div>
+                        </template>
+                        
+                        <!-- Empty State -->
+                        <template x-show="!isLoading && tasks.length === 0">
+                            <div class="col-span-full flex flex-col items-center justify-center py-12">
+                                <svg class="h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                                </svg>
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">لا توجد مهام حتى الآن</h3>
+                                <p class="text-gray-600 dark:text-gray-400 mb-4">ابدأ بإنشاء مهمة جديدة للوكيل الذكي</p>
+                                <button @click="showCreateModal = true" class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-opacity-90">
+                                    إنشاء مهمة جديدة
+                                </button>
+                            </div>
+                        </template>
+                        
+                        <!-- Task Cards -->
+                        <template x-for="task in tasks" :key="task.id">
+                            <div class="rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="flex-1">
+                                        <h3 class="text-lg font-semibold text-black dark:text-white mb-2" x-text="task.description"></h3>
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium" :class="getStatusColor(task.status)" x-text="getStatusText(task.status)"></span>
+                                            <span class="text-xs font-medium" :class="getPriorityColor(task.priority)" x-text="getPriorityText(task.priority)"></span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 dark:text-gray-400" x-text="task.task_type"></p>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400" x-text="'تم الإنشاء: ' + formatDate(task.created_at)"></p>
+                                    <p x-show="task.completed_at" class="text-xs text-gray-500 dark:text-gray-400" x-text="'تم الإكمال: ' + formatDate(task.completed_at)"></p>
+                                </div>
+                                
+                                <div class="flex items-center gap-2">
+                                    <button @click="viewTaskDetails(task.id)" class="flex-1 rounded bg-gray-100 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
+                                        عرض التفاصيل
+                                    </button>
+                                    <button x-show="task.status === 'pending'" @click="executeTask(task.id)" class="flex-1 rounded bg-primary px-3 py-2 text-xs font-medium text-white hover:bg-opacity-90">
+                                        تنفيذ
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </main>
+            <!-- ===== Main Content End ===== -->
+        </div>
+        <!-- ===== Content Area End ===== -->
+    </div>
+    <!-- ===== Page Wrapper End ===== -->
+    
+    <!-- Create Task Modal -->
+    <div x-show="showCreateModal" class="fixed inset-0 z-99999 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="mx-4 w-full max-w-md rounded-lg bg-white p-6 dark:bg-boxdark">
+            <div class="mb-4 flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-black dark:text-white">إنشاء مهمة جديدة</h3>
+                <button @click="showCreateModal = false" class="text-gray-400 hover:text-gray-600">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <form @submit.prevent="createTask()">
+                <div class="mb-4">
+                    <label class="mb-2 block text-sm font-medium text-black dark:text-white">نوع المهمة</label>
+                    <select x-model="newTask.task_type" class="w-full rounded border border-stroke bg-gray px-4 py-3 text-black focus:border-primary focus:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white" required>
+                        <option value="">اختر نوع المهمة</option>
+                        <template x-for="taskType in taskTypes" :key="taskType.id">
+                            <option :value="taskType.id" x-text="taskType.name"></option>
+                        </template>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label class="mb-2 block text-sm font-medium text-black dark:text-white">وصف المهمة</label>
+                    <textarea x-model="newTask.description" rows="3" class="w-full rounded border border-stroke bg-gray px-4 py-3 text-black focus:border-primary focus:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white" placeholder="اكتب وصفاً مفصلاً للمهمة..." required></textarea>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="mb-2 block text-sm font-medium text-black dark:text-white">الأولوية</label>
+                    <select x-model="newTask.priority" class="w-full rounded border border-stroke bg-gray px-4 py-3 text-black focus:border-primary focus:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white">
+                        <option value="low">منخفضة</option>
+                        <option value="medium">متوسطة</option>
+                        <option value="high">عالية</option>
+                    </select>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <button type="submit" :disabled="isCreatingTask" class="flex-1 rounded bg-primary px-4 py-3 text-center font-medium text-white hover:bg-opacity-90 disabled:opacity-50">
+                        <span x-show="!isCreatingTask">إنشاء المهمة</span>
+                        <span x-show="isCreatingTask" class="flex items-center justify-center gap-2">
+                            <svg class="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            جاري الإنشاء...
+                        </span>
+                    </button>
+                    <button type="button" @click="showCreateModal = false" class="rounded border border-stroke px-4 py-3 text-center font-medium text-black hover:bg-gray dark:border-strokedark dark:text-white">
+                        إلغاء
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Task Details Modal -->
+    <div x-show="showTaskModal" class="fixed inset-0 z-99999 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="mx-4 w-full max-w-2xl rounded-lg bg-white p-6 dark:bg-boxdark">
+            <div class="mb-4 flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-black dark:text-white">تفاصيل المهمة</h3>
+                <button @click="showTaskModal = false" class="text-gray-400 hover:text-gray-600">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <template x-if="selectedTask">
+                <div>
+                    <div class="mb-4">
+                        <h4 class="text-md font-medium text-black dark:text-white mb-2" x-text="selectedTask.description"></h4>
+                        <div class="flex items-center gap-4 mb-4">
+                            <span class="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium" :class="getStatusColor(selectedTask.status)" x-text="getStatusText(selectedTask.status)"></span>
+                            <span class="text-sm font-medium" :class="getPriorityColor(selectedTask.priority)" x-text="'الأولوية: ' + getPriorityText(selectedTask.priority)"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h5 class="text-sm font-medium text-black dark:text-white mb-2">معلومات المهمة</h5>
+                        <div class="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                                <span class="text-gray-600 dark:text-gray-400">نوع المهمة:</span>
+                                <span class="text-black dark:text-white" x-text="selectedTask.task_type"></span>
+                            </div>
+                            <div>
+                                <span class="text-gray-600 dark:text-gray-400">تاريخ الإنشاء:</span>
+                                <span class="text-black dark:text-white" x-text="formatDate(selectedTask.created_at)"></span>
+                            </div>
+                            <div x-show="selectedTask.started_at">
+                                <span class="text-gray-600 dark:text-gray-400">تاريخ البدء:</span>
+                                <span class="text-black dark:text-white" x-text="formatDate(selectedTask.started_at)"></span>
+                            </div>
+                            <div x-show="selectedTask.completed_at">
+                                <span class="text-gray-600 dark:text-gray-400">تاريخ الإكمال:</span>
+                                <span class="text-black dark:text-white" x-text="formatDate(selectedTask.completed_at)"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div x-show="selectedTask.result" class="mb-4">
+                        <h5 class="text-sm font-medium text-black dark:text-white mb-2">نتيجة المهمة</h5>
+                        <div class="rounded border border-stroke bg-gray-50 p-3 dark:border-strokedark dark:bg-gray-800">
+                            <p class="text-sm text-black dark:text-white" x-text="selectedTask.result"></p>
+                        </div>
+                    </div>
+                    
+                    <div x-show="selectedTask.error" class="mb-4">
+                        <h5 class="text-sm font-medium text-red-600 mb-2">خطأ في التنفيذ</h5>
+                        <div class="rounded border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-900">
+                            <p class="text-sm text-red-800 dark:text-red-200" x-text="selectedTask.error"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-3">
+                        <button x-show="selectedTask.status === 'pending'" @click="executeTask(selectedTask.id); showTaskModal = false" class="rounded bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-opacity-90">
+                            تنفيذ المهمة
+                        </button>
+                        <button @click="showTaskModal = false" class="rounded border border-stroke px-4 py-2 text-sm font-medium text-black hover:bg-gray dark:border-strokedark dark:text-white">
+                            إغلاق
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+    
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+</body>
+</html>

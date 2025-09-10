@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+  <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+  <title>
+   {% if request.cookies.get('language') == 'ar' %}مخزون الشركة{% else %}Company Inventory{% endif %}
+  </title>
+  <link href="favicon.ico" rel="icon"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+ </head>
+ <body :class="{'dark bg-gray-900': darkMode === true}" x-data="{ page: 'companyInventory', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false, 'currentLanguage': '{{ request.cookies.get("language", "en") }}' }" x-init="
+         darkMode = JSON.parse(localStorage.getItem('darkMode'));
+         currentLanguage = localStorage.getItem('language') || '{{ request.cookies.get("language", "en") }}';
+         $watch('darkMode', value =&gt; localStorage.setItem('darkMode', JSON.stringify(value)));
+         $watch('currentLanguage', value =&gt; localStorage.setItem('language', value))">
+  <!-- ===== Preloader Start ===== -->
+  <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () =&gt; {setTimeout(() =&gt; loaded = false, 500)})" x-show="loaded">
+   <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent">
+   </div>
+  </div>
+  <!-- ===== Preloader End ===== -->
+  <!-- ===== Page Wrapper Start ===== -->
+  <div class="flex h-screen overflow-hidden">
+   <!-- ===== Sidebar Start ===== -->
+   <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+    <!-- SIDEBAR HEADER -->
+    <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+     <a href="/">
+      <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+       <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+       <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+      </span>
+      <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+     </a>
+    </div>
+    <!-- SIDEBAR HEADER -->
+    <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+     <!-- Sidebar Menu -->
+     <nav x-data="{selected: $persist('Dashboard')}">
+      <!-- Menu Group -->
+      <div>
+       <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+        <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">
+         {% if request.cookies.get('language') == 'ar' %}القائمة{% else %}MENU{% endif %}
+        </span>
+        <svg :class="sidebarToggle ? 'xl:block hidden' : 'hidden'" class="menu-group-icon mx-auto fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+         <path clip-rule="evenodd" d="M5.99915 10.2451C6.96564 10.2451 7.74915 11.0286 7.74915 11.9951V12.0051C7.74915 12.9716 6.96564 13.7551 5.99915 13.7551C5.03265 13.7551 4.24915 12.9716 4.24915 12.0051V11.9951C4.24915 11.0286 5.03265 10.2451 5.99915 10.2451ZM17.9991 10.2451C18.9656 10.2451 19.7491 11.0286 19.7491 11.9951V12.0051C19.7491 12.9716 18.9656 13.7551 17.9991 13.7551C17.0326 13.7551 16.2491 12.9716 16.2491 12.0051V11.9951C16.2491 11.0286 17.0326 10.2451 17.9991 10.2451ZM13.7491 11.9951C13.7491 11.0286 12.9656 10.2451 11.9991 10.2451C11.0326 10.2451 10.2491 11.0286 10.2491 11.9951V12.0051C10.2491 12.9716 11.0326 13.7551 11.9991 13.7551C12.9656 13.7551 13.7491 12.9716 13.7491 12.0051V11.9951Z" fill="currentColor" fill-rule="evenodd">
+         </path>
+        </svg>
+       </h3>
+       <ul class="mb-6 flex flex-col gap-1">
+        <!-- Menu Item Dashboard -->
+          <li>
+         <a :class=" (selected === 'Profile') &amp;&amp; (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_dashboard">
+<!--          <svg :class="(selected === 'Profile') &amp;&amp; (page === 'profile') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">-->
+<!--           <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="currentColor" fill-rule="evenodd">-->
+<!--           </path>-->
+<!--          </svg>-->
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}لوحة تحكم الشركة{% else %}Company Dashboard{% endif %}
+          </span>
+         </a>
+        </li>
+        <!-- Menu Item Dashboard -->
+        <!-- Menu Item AI -->
+
+        <!-- Menu Item AI -->
+        <!-- Menu Item Calendar -->
+
+        <!-- Menu Item Calendar -->
+        <!-- Menu Item Profile -->
+        <li>
+         <a :class=" (selected === 'Profile') &amp;&amp; (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_profile">
+<!--          <svg :class="(selected === 'Profile') &amp;&amp; (page === 'profile') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">-->
+<!--           <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="currentColor" fill-rule="evenodd">-->
+<!--           </path>-->
+<!--          </svg>-->
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}الملف الشخصي للشركة{% else %}Company Profile{% endif %}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') &amp;&amp; (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_register">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}تسجيل الشركة{% else %}Company Registration{% endif %}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') &amp;&amp; (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_orders">
+<!--          <svg :class="(selected === 'Profile') &amp;&amp; (page === 'profile') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">-->
+<!--           <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="currentColor" fill-rule="evenodd">-->
+<!--           </path>-->
+<!--          </svg>-->
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}إدارة الطلبات{% else %}Manage Orders{% endif %}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') &amp;&amp; (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_offers">
+<!--          <svg :class="(selected === 'Profile') &amp;&amp; (page === 'profile') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">-->
+<!--           <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="currentColor" fill-rule="evenodd">-->
+<!--           </path>-->
+<!--          </svg>-->
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}عروضي{% else %}My Offers{% endif %}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') &amp;&amp; (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_inventory">
+<!--          <svg :class="(selected === 'Profile') &amp;&amp; (page === 'profile') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">-->
+<!--           <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="currentColor" fill-rule="evenodd">-->
+<!--           </path>-->
+<!--          </svg>-->
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}المخزون{% else %}Inventory{% endif %}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') &amp;&amp; (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_employees">
+<!--          <svg :class="(selected === 'Profile') &amp;&amp; (page === 'profile') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">-->
+<!--           <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="currentColor" fill-rule="evenodd">-->
+<!--           </path>-->
+<!--          </svg>-->
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}إدارة الموظفين{% else %}Employee Management{% endif %}
+          </span>
+         </a>
+        </li>
+         <li>
+         <a :class=" (selected === 'Profile') &amp;&amp; (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/company_chat">
+<!--          <svg :class="(selected === 'Profile') &amp;&amp; (page === 'profile') ?  'menu-item-icon-active'  :'menu-item-icon-inactive'" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">-->
+<!--           <path clip-rule="evenodd" d="M12 3.5C7.30558 3.5 3.5 7.30558 3.5 12C3.5 14.1526 4.3002 16.1184 5.61936 17.616C6.17279 15.3096 8.24852 13.5955 10.7246 13.5955H13.2746C15.7509 13.5955 17.8268 15.31 18.38 17.6167C19.6996 16.119 20.5 14.153 20.5 12C20.5 7.30558 16.6944 3.5 12 3.5ZM17.0246 18.8566V18.8455C17.0246 16.7744 15.3457 15.0955 13.2746 15.0955H10.7246C8.65354 15.0955 6.97461 16.7744 6.97461 18.8455V18.856C8.38223 19.8895 10.1198 20.5 12 20.5C13.8798 20.5 15.6171 19.8898 17.0246 18.8566ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM11.9991 7.25C10.8847 7.25 9.98126 8.15342 9.98126 9.26784C9.98126 10.3823 10.8847 11.2857 11.9991 11.2857C13.1135 11.2857 14.0169 10.3823 14.0169 9.26784C14.0169 8.15342 13.1135 7.25 11.9991 7.25ZM8.48126 9.26784C8.48126 7.32499 10.0563 5.75 11.9991 5.75C13.9419 5.75 15.5169 7.32499 15.5169 9.26784C15.5169 11.2107 13.9419 12.7857 11.9991 12.7857C10.0563 12.7857 8.48126 11.2107 8.48126 9.26784Z" fill="currentColor" fill-rule="evenodd">-->
+<!--           </path>-->
+<!--          </svg>-->
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {% if request.cookies.get('language') == 'ar' %}دردشات العملاء{% else %}Client Chats{% endif %}
+          </span>
+         </a>
+        </li>
+        <!-- Menu Item Profile -->
+        <!-- Menu Item Task -->
+
+        <!-- Menu Item Task -->
+        <!-- Menu Item Forms -->
+
+        <!-- Menu Item Forms -->
+        <!-- Menu Item Tables -->
+
+        <!-- Menu Item Pages -->
+      <!-- Menu Item Pages -->
+       </ul>
+      </div>
+     </nav>
+     <!-- Sidebar Menu -->
+    </div>
+   </aside>
+   <!-- ===== Sidebar End ===== -->
+   <!-- ===== Content Area Start ===== -->
+   <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+    <!-- Small Device Overlay Start -->
+    <div :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fixed z-50 h-screen w-full bg-gray-900/50">
+    </div>
+    <!-- Small Device Overlay End -->
+    <!-- ===== Header Start ===== -->
+    <header class="sticky top-0 z-99999 flex w-full border-gray-200 bg-white xl:border-b dark:border-gray-800 dark:bg-gray-900" x-data="{menuToggle: false}">
+     <div class="flex grow flex-col items-center justify-between xl:flex-row xl:px-6">
+      <div class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:py-4 xl:justify-normal xl:border-b-0 xl:px-0 dark:border-gray-800">
+       <!-- Hamburger Toggle BTN -->
+       <button :class="sidebarToggle ? 'xl:bg-transparent dark:xl:bg-transparent bg-gray-100 dark:bg-gray-800' : ''" @click.stop="sidebarToggle = !sidebarToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 xl:h-11 xl:w-11 xl:border dark:border-gray-800 dark:text-gray-400">
+        <svg class="fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+         <path clip-rule="evenodd" d="M3.5 6.5C3.5 5.67157 4.17157 5 5 5H19C19.8284 5 20.5 5.67157 20.5 6.5C20.5 7.32843 19.8284 8 19 8H5C4.17157 8 3.5 7.32843 3.5 6.5ZM3.5 12.5C3.5 11.6716 4.17157 11 5 11H19C19.8284 11 20.5 11.6716 20.5 12.5C20.5 13.3284 19.8284 14 19 14H5C4.17157 14 3.5 13.3284 3.5 12.5ZM3.5 18.5C3.5 17.6716 4.17157 17 5 17H19C19.8284 17 20.5 17.6716 20.5 18.5C20.5 19.3284 19.8284 20 19 20H5C4.17157 20 3.5 19.3284 3.5 18.5Z" fill="" fill-rule="evenodd">
+         </path>
+        </svg>
+       </button>
+       <!-- Hamburger Toggle BTN -->
+
+       <!-- Notification Menu Area -->
+       {% include 'partials/notification_dropdown.html' %}
+       
+       <!-- Language Toggle -->
+       <button @click.prevent="toggleLanguage()" class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white" :title="currentLanguage === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'">
+        <span x-text="currentLanguage === 'ar' ? 'EN' : 'عربي'" class="text-xs font-medium"></span>
+       </button>
+       <!-- Language Toggle -->
+       
+       <!-- User Area -->
+       <div class="flex items-center gap-3">
+        <!-- User Area -->
+        <div class="relative" x-data="{dropdownOpen: false}">
+         <button @click="dropdownOpen = !dropdownOpen" class="flex items-center gap-2">
+          <div class="h-9 w-9">
+           <img alt="User" class="h-full w-full rounded-full" src="https://img.icons8.com/?size=100&id=hu4SFxCb4UXH&format=png&color=000000"/>
+          </div>
+          <span class="hidden text-right lg:block">
+           <span class="block text-sm font-medium text-gray-800 dark:text-white">
+            {{ current_user.username }}
+           </span>
+           <span class="block text-xs text-gray-500 dark:text-gray-400">
+            Company
+           </span>
+          </span>
+         </button>
+        </div>
+       </div>
+       <!-- User Area -->
+      </div>
+     </div>
+    </header>
+    <!-- ===== Header End ===== -->
+    <!-- ===== Main Content Start ===== -->
+    <main>
+     <div class="mx-auto max-w-(--breakpoint-2xl) p-4 md:p-6">
+      <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+       <div>
+        <h2 class="text-title-md2 font-bold text-gray-800 dark:text-white">
+         {% if request.cookies.get('language') == 'ar' %}مخزون الشركة{% else %}Company Inventory{% endif %}
+        </h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+         {% if request.cookies.get('language') == 'ar' %}إدارة مخزون شركتك ومستويات المخزون{% else %}Manage your company's inventory and stock levels{% endif %}
+        </p>
+       </div>
+       <div class="flex gap-3">
+        <a href="/add_product" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-500 rounded-lg hover:bg-brand-600 transition-colors">
+         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+         </svg>
+         {% if request.cookies.get('language') == 'ar' %}إضافة منتج{% else %}Add Product{% endif %}
+        </a>
+        <a href="/import_products" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+         </svg>
+         {% if request.cookies.get('language') == 'ar' %}استيراد CSV{% else %}Import CSV{% endif %}
+        </a>
+       </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+       <!-- Inventory Summary -->
+       <div class="lg:col-span-2 space-y-6">
+        <!-- Inventory Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+         <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+          <div class="flex items-center justify-between">
+           <div>
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">{% if request.cookies.get('language') == 'ar' %}إجمالي العناصر{% else %}Total Items{% endif %}</p>
+            <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ total_items }}</p>
+           </div>
+           <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center dark:bg-blue-900">
+            <svg class="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+            </svg>
+           </div>
+          </div>
+         </div>
+         
+         <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+          <div class="flex items-center justify-between">
+           <div>
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">{% if request.cookies.get('language') == 'ar' %}مخزون منخفض{% else %}Low Stock{% endif %}</p>
+            <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ low_stock_count }}</p>
+           </div>
+           <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center dark:bg-orange-900">
+            <svg class="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+           </div>
+          </div>
+         </div>
+         
+         <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+          <div class="flex items-center justify-between">
+           <div>
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">{% if request.cookies.get('language') == 'ar' %}نفذ المخزون{% else %}Out of Stock{% endif %}</p>
+            <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ out_of_stock_count }}</p>
+           </div>
+           <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center dark:bg-red-900">
+            <svg class="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+           </div>
+          </div>
+         </div>
+         
+         <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+          <div class="flex items-center justify-between">
+           <div>
+            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">{% if request.cookies.get('language') == 'ar' %}القيمة الإجمالية{% else %}Total Value{% endif %}</p>
+            <p class="text-2xl font-bold text-gray-800 dark:text-white">{{ "%.2f"|format(total_value) }} EGP</p>
+           </div>
+           <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center dark:bg-green-900">
+            <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+            </svg>
+           </div>
+          </div>
+         </div>
+        </div>
+
+        <!-- Inventory Items -->
+        <div class="rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+         <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+          <div class="flex items-center justify-between">
+           <div>
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
+             {% if request.cookies.get('language') == 'ar' %}عناصر المخزون{% else %}Inventory Items{% endif %}
+            </h3>
+            <p class="text-sm text-gray-600 dark:text-gray-400">
+             {% if request.cookies.get('language') == 'ar' %}إدارة عناصر مخزون شركتك{% else %}Manage your company's inventory items{% endif %}
+            </p>
+           </div>
+           <div class="flex gap-2">
+            <a href="/add_product" class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-brand-500 rounded-lg hover:bg-brand-600 transition-colors">
+             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+             </svg>
+             Add Product
+            </a>
+           </div>
+          </div>
+         </div>
+         
+         <div class="p-6">
+          {% if products %}
+           <!-- Search and Filter -->
+           <div class="mb-6">
+            <form method="GET" class="flex flex-col gap-4 md:flex-row md:items-center">
+             <div class="flex-1">
+              <input class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-sm font-medium outline-none transition focus:border-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" name="search" placeholder="{% if request.cookies.get('language') == 'ar' %}البحث عن المنتجات...{% else %}Search products...{% endif %}" type="text" value="{{ search }}"/>
+             </div>
+             <div class="flex gap-2">
+              <select class="rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-sm font-medium outline-none transition focus:border-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" name="category">
+               <option value="">{% if request.cookies.get('language') == 'ar' %}جميع الفئات{% else %}All Categories{% endif %}</option>
+               <option value="Electronics" {% if category == 'Electronics' %}selected{% endif %}>{% if request.cookies.get('language') == 'ar' %}الإلكترونيات{% else %}Electronics{% endif %}</option>
+               <option value="Automotive" {% if category == 'Automotive' %}selected{% endif %}>{% if request.cookies.get('language') == 'ar' %}السيارات{% else %}Automotive{% endif %}</option>
+               <option value="Manufacturing" {% if category == 'Manufacturing' %}selected{% endif %}>{% if request.cookies.get('language') == 'ar' %}التصنيع{% else %}Manufacturing{% endif %}</option>
+               <option value="Raw Materials" {% if category == 'Raw Materials' %}selected{% endif %}>{% if request.cookies.get('language') == 'ar' %}المواد الخام{% else %}Raw Materials{% endif %}</option>
+               <option value="Tools" {% if category == 'Tools' %}selected{% endif %}>{% if request.cookies.get('language') == 'ar' %}الأدوات{% else %}Tools{% endif %}</option>
+               <option value="Other" {% if category == 'Other' %}selected{% endif %}>{% if request.cookies.get('language') == 'ar' %}أخرى{% else %}Other{% endif %}</option>
+              </select>
+              <select class="rounded-lg border border-gray-200 bg-transparent px-4 py-2 text-sm font-medium outline-none transition focus:border-brand-500 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:focus:border-brand-500" name="status">
+               <option value="">{% if request.cookies.get('language') == 'ar' %}جميع الحالات{% else %}All Status{% endif %}</option>
+               <option value="in_stock" {% if status == 'in_stock' %}selected{% endif %}>{% if request.cookies.get('language') == 'ar' %}متوفر في المخزون{% else %}In Stock{% endif %}</option>
+               <option value="low_stock" {% if status == 'low_stock' %}selected{% endif %}>{% if request.cookies.get('language') == 'ar' %}مخزون منخفض{% else %}Low Stock{% endif %}</option>
+               <option value="out_of_stock" {% if status == 'out_of_stock' %}selected{% endif %}>{% if request.cookies.get('language') == 'ar' %}نفذ المخزون{% else %}Out of Stock{% endif %}</option>
+              </select>
+              <button class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-500 rounded-lg hover:bg-brand-600 transition-colors" type="submit">
+               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+               </svg>
+               {% if request.cookies.get('language') == 'ar' %}البحث{% else %}Search{% endif %}
+              </button>
+             </div>
+            </form>
+           </div>
+           
+           <!-- Products Table -->
+           <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+              <tr>
+               <th class="px-6 py-3" scope="col">{% if request.cookies.get('language') == 'ar' %}المنتج{% else %}Product{% endif %}</th>
+               <th class="px-6 py-3" scope="col">SKU</th>
+               <th class="px-6 py-3" scope="col">{% if request.cookies.get('language') == 'ar' %}الفئة{% else %}Category{% endif %}</th>
+               <th class="px-6 py-3" scope="col">{% if request.cookies.get('language') == 'ar' %}الكمية{% else %}Quantity{% endif %}</th>
+               <th class="px-6 py-3" scope="col">{% if request.cookies.get('language') == 'ar' %}السعر{% else %}Price{% endif %}</th>
+               <th class="px-6 py-3" scope="col">{% if request.cookies.get('language') == 'ar' %}الحالة{% else %}Status{% endif %}</th>
+               <th class="px-6 py-3" scope="col">{% if request.cookies.get('language') == 'ar' %}الإجراءات{% else %}Actions{% endif %}</th>
+              </tr>
+             </thead>
+             <tbody>
+              {% for product in products %}
+              <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+               <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                <div>
+                 <div class="font-semibold">{{ product.name }}</div>
+                 {% if product.description %}
+                 <div class="text-xs text-gray-500 dark:text-gray-400">{{ product.description[:50] }}{% if product.description|length > 50 %}...{% endif %}</div>
+                 {% endif %}
+                </div>
+               </td>
+               <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white">{{ product.sku }}</td>
+               <td class="px-6 py-4 whitespace-nowrap">
+                <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">{{ product.category }}</span>
+               </td>
+               <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white">
+                {{ product.quantity }} {{ product.unit }}
+               </td>
+               <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-white">{{ "%.2f"|format(product.price) }} EGP</td>
+               <td class="px-6 py-4 whitespace-nowrap">
+                {% if product.stock_status == 'out_of_stock' %}
+                 <span class="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900 dark:text-red-300">{% if request.cookies.get('language') == 'ar' %}نفذ المخزون{% else %}Out of Stock{% endif %}</span>
+                {% elif product.stock_status == 'low_stock' %}
+                                    <span class="inline-flex items-center rounded-full bg-orange-100 px-2.5 py-0.5 text-xs font-medium text-orange-800 dark:bg-orange-900 dark:text-orange-300">{% if request.cookies.get('language') == 'ar' %}مخزون منخفض{% else %}Low Stock{% endif %}</span>
+                {% else %}
+                                    <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300">{% if request.cookies.get('language') == 'ar' %}متوفر في المخزون{% else %}In Stock{% endif %}</span>
+                {% endif %}
+               </td>
+               <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center gap-2">
+                 <a href="/edit_product/{{ product.id }}" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-600 bg-blue-100 rounded hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                  </svg>
+                  {% if request.cookies.get('language') == 'ar' %}تعديل{% else %}Edit{% endif %}
+                 </a>
+                 <form method="POST" action="/delete_product/{{ product.id }}" class="inline" onsubmit="return confirm('Are you sure you want to delete this product?')">
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                  <button class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-red-600 bg-red-100 rounded hover:bg-red-200 dark:bg-red-900 dark:text-red-300 dark:hover:bg-red-800" type="submit">
+                   <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                   </svg>
+                   {% if request.cookies.get('language') == 'ar' %}حذف{% else %}Delete{% endif %}
+                  </button>
+                 </form>
+                </div>
+               </td>
+              </tr>
+              {% endfor %}
+             </tbody>
+            </table>
+           </div>
+          {% else %}
+           <div class="text-center py-12">
+            <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center dark:bg-gray-800">
+             <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+             </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-2">
+             {% if search or category or status %}{% if request.cookies.get('language') == 'ar' %}لم يتم العثور على منتجات{% else %}No Products Found{% endif %}{% else %}{% if request.cookies.get('language') == 'ar' %}لا توجد عناصر مخزون{% else %}No Inventory Items{% endif %}{% endif %}
+            </h3>
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+             {% if search or category or status %}
+              {% if request.cookies.get('language') == 'ar' %}لا توجد منتجات تطابق معايير البحث الخاصة بك. حاول تعديل المرشحات.{% else %}No products match your search criteria. Try adjusting your filters.{% endif %}
+             {% else %}
+              {% if request.cookies.get('language') == 'ar' %}لم تقم بإضافة أي عناصر مخزون بعد. ابدأ بإضافة أول عنصر لك.{% else %}You haven't added any inventory items yet. Start by adding your first item.{% endif %}
+             {% endif %}
+            </p>
+            <a href="/add_product" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-brand-500 rounded-lg hover:bg-brand-600 transition-colors">
+             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+             </svg>
+             {% if request.cookies.get('language') == 'ar' %}إضافة أول منتج{% else %}Add First Product{% endif %}
+            </a>
+           </div>
+          {% endif %}
+         </div>
+        </div>
+       </div>
+
+       <!-- Quick Actions -->
+       <div class="space-y-6">
+        <!-- Quick Actions -->
+        <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+         <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+          {% if request.cookies.get('language') == 'ar' %}إجراءات سريعة{% else %}Quick Actions{% endif %}
+         </h3>
+         
+         <div class="space-y-3">
+          <a href="/add_product" class="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-brand-500 rounded-lg hover:bg-brand-600 transition-colors">
+           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+           </svg>
+           {% if request.cookies.get('language') == 'ar' %}إضافة منتج جديد{% else %}Add New Product{% endif %}
+          </a>
+          
+          <a href="/import_products" class="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+           </svg>
+           {% if request.cookies.get('language') == 'ar' %}استيراد CSV{% else %}Import CSV{% endif %}
+          </a>
+          
+          <a href="/export_products" class="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+           </svg>
+           {% if request.cookies.get('language') == 'ar' %}تصدير المخزون{% else %}Export Inventory{% endif %}
+          </a>
+          
+          <a href="/download_sample_csv" class="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-600">
+           <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+           </svg>
+           {% if request.cookies.get('language') == 'ar' %}تحميل نموذج CSV{% else %}Download Sample CSV{% endif %}
+          </a>
+         </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+         <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+          {% if request.cookies.get('language') == 'ar' %}النشاط الأخير{% else %}Recent Activity{% endif %}
+         </h3>
+         
+         <div class="space-y-4">
+          <div class="text-center py-8">
+           <div class="w-12 h-12 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center dark:bg-gray-800">
+            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+           </div>
+           <p class="text-sm text-gray-600 dark:text-gray-400">
+            {% if request.cookies.get('language') == 'ar' %}لا يوجد نشاط حديث{% else %}No recent activity{% endif %}
+           </p>
+          </div>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </main>
+    <!-- ===== Main Content End ===== -->
+   </div>
+   <!-- ===== Content Area End ===== -->
+  </div>
+  <!-- ===== Page Wrapper End ===== -->
+  <script src="{{ url_for('static', filename='js/script_1.js') }}"></script>
+  
+  <!-- Arabic Translation System -->
+  <script>
+  // Language toggle function
+  function toggleLanguage() {
+      const currentLang = document.cookie.includes('language=ar') ? 'en' : 'ar';
+      document.cookie = `language=${currentLang}; path=/; max-age=31536000`;
+      window.location.reload();
+  }
+
+  // Translation dictionary
+  const translations = {
+      'en': {
+          'Company Inventory': 'Company Inventory',
+          'Manage your company\'s inventory and stock levels': 'Manage your company\'s inventory and stock levels',
+          'Add Product': 'Add Product',
+          'Import CSV': 'Import CSV',
+          'Total Items': 'Total Items',
+          'Low Stock': 'Low Stock',
+          'Out of Stock': 'Out of Stock',
+          'Total Value': 'Total Value',
+          'Inventory Items': 'Inventory Items',
+          'Manage your company\'s inventory items': 'Manage your company\'s inventory items',
+          'Search products...': 'Search products...',
+          'All Categories': 'All Categories',
+          'Electronics': 'Electronics',
+          'Automotive': 'Automotive',
+          'Manufacturing': 'Manufacturing',
+          'Raw Materials': 'Raw Materials',
+          'Tools': 'Tools',
+          'Other': 'Other',
+          'All Status': 'All Status',
+          'In Stock': 'In Stock',
+          'Low Stock': 'Low Stock',
+          'Out of Stock': 'Out of Stock',
+          'Search': 'Search',
+          'Product': 'Product',
+          'Category': 'Category',
+          'Quantity': 'Quantity',
+          'Price': 'Price',
+          'Status': 'Status',
+          'Actions': 'Actions',
+          'Edit': 'Edit',
+          'Delete': 'Delete',
+          'No Products Found': 'No Products Found',
+          'No Inventory Items': 'No Inventory Items',
+          'No products match your search criteria. Try adjusting your filters.': 'No products match your search criteria. Try adjusting your filters.',
+          'You haven\'t added any inventory items yet. Start by adding your first item.': 'You haven\'t added any inventory items yet. Start by adding your first item.',
+          'Add First Product': 'Add First Product',
+          'Quick Actions': 'Quick Actions',
+          'Add New Product': 'Add New Product',
+          'Export Inventory': 'Export Inventory',
+          'Download Sample CSV': 'Download Sample CSV',
+          'Recent Activity': 'Recent Activity',
+          'No recent activity': 'No recent activity',
+          'MENU': 'MENU',
+          'Company Dashboard': 'Company Dashboard',
+          'Company Profile': 'Company Profile',
+          'Manage Orders': 'Manage Orders',
+          'My Offers': 'My Offers',
+          'Inventory': 'Inventory',
+          'Employee Management': 'Employee Management',
+          'Client Chats': 'Client Chats'
+      },
+      'ar': {
+          'Company Inventory': 'مخزون الشركة',
+          'Manage your company\'s inventory and stock levels': 'إدارة مخزون شركتك ومستويات المخزون',
+          'Add Product': 'إضافة منتج',
+          'Import CSV': 'استيراد CSV',
+          'Total Items': 'إجمالي العناصر',
+          'Low Stock': 'مخزون منخفض',
+          'Out of Stock': 'نفذ المخزون',
+          'Total Value': 'القيمة الإجمالية',
+          'Inventory Items': 'عناصر المخزون',
+          'Manage your company\'s inventory items': 'إدارة عناصر مخزون شركتك',
+          'Search products...': 'البحث عن المنتجات...',
+          'All Categories': 'جميع الفئات',
+          'Electronics': 'الإلكترونيات',
+          'Automotive': 'السيارات',
+          'Manufacturing': 'التصنيع',
+          'Raw Materials': 'المواد الخام',
+          'Tools': 'الأدوات',
+          'Other': 'أخرى',
+          'All Status': 'جميع الحالات',
+          'In Stock': 'متوفر في المخزون',
+          'Low Stock': 'مخزون منخفض',
+          'Out of Stock': 'نفذ المخزون',
+          'Search': 'البحث',
+          'Product': 'المنتج',
+          'Category': 'الفئة',
+          'Quantity': 'الكمية',
+          'Price': 'السعر',
+          'Status': 'الحالة',
+          'Actions': 'الإجراءات',
+          'Edit': 'تعديل',
+          'Delete': 'حذف',
+          'No Products Found': 'لم يتم العثور على منتجات',
+          'No Inventory Items': 'لا توجد عناصر مخزون',
+          'No products match your search criteria. Try adjusting your filters.': 'لا توجد منتجات تطابق معايير البحث الخاصة بك. حاول تعديل المرشحات.',
+          'You haven\'t added any inventory items yet. Start by adding your first item.': 'لم تقم بإضافة أي عناصر مخزون بعد. ابدأ بإضافة أول عنصر لك.',
+          'Add First Product': 'إضافة أول منتج',
+          'Quick Actions': 'إجراءات سريعة',
+          'Add New Product': 'إضافة منتج جديد',
+          'Export Inventory': 'تصدير المخزون',
+          'Download Sample CSV': 'تحميل نموذج CSV',
+          'Recent Activity': 'النشاط الأخير',
+          'No recent activity': 'لا يوجد نشاط حديث',
+          'MENU': 'القائمة',
+          'Company Dashboard': 'لوحة تحكم الشركة',
+          'Company Profile': 'الملف الشخصي للشركة',
+          'Manage Orders': 'إدارة الطلبات',
+          'My Offers': 'عروضي',
+          'Inventory': 'المخزون',
+          'Employee Management': 'إدارة الموظفين',
+          'Client Chats': 'دردشات العملاء'
+      }
+  };
+
+  // Function to get translated text
+  function getText(key) {
+      const currentLang = document.cookie.includes('language=ar') ? 'ar' : 'en';
+      return translations[currentLang][key] || key;
+  }
+
+  // Function to translate the page
+  function translatePage() {
+      const currentLang = document.cookie.includes('language=ar') ? 'ar' : 'en';
+      
+      // Update title
+      document.title = getText('Company Inventory');
+      
+      // Update all translatable elements
+      Object.keys(translations.en).forEach(key => {
+          const elements = document.querySelectorAll(`*:not(script):not(style)`);
+          elements.forEach(element => {
+              if (element.childNodes.length === 1 && element.childNodes[0].nodeType === Node.TEXT_NODE) {
+                  const text = element.textContent.trim();
+                  if (text === translations.en[key]) {
+                      element.textContent = translations[currentLang][key];
+                  }
+              }
+          });
+      });
+  }
+
+  // Apply translations when page loads
+  document.addEventListener('DOMContentLoaded', function() {
+      translatePage();
+  });
+
+  // Make functions globally available
+  window.toggleLanguage = toggleLanguage;
+  window.getText = getText;
+  window.translatePage = translatePage;
+  </script>
+ </body>
+</html>

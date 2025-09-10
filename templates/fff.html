@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Company Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      background: #f5f9fc;
+      color: #333;
+    }
+    header {
+      background: #1e90ff;
+      color: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    nav {
+      background: #fff;
+      padding: 1rem;
+      width: 220px;
+      position: fixed;
+      top: 64px;
+      bottom: 0;
+      overflow-y: auto;
+      border-right: 1px solid #ddd;
+    }
+    nav a {
+      display: block;
+      color: #333;
+      padding: 0.5rem 0;
+      text-decoration: none;
+    }
+    nav a:hover {
+      font-weight: bold;
+    }
+    .main {
+      margin-left: 240px;
+      padding: 2rem;
+    }
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 1.25rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .card h3 {
+      margin-top: 0;
+    }
+    .label {
+      font-size: 0.85rem;
+      color: #777;
+    }
+    .metrics {
+      display: flex;
+      justify-content: space-between;
+      padding-top: 0.5rem;
+    }
+    .metrics div {
+      text-align: center;
+    }
+    .deadline {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      background: #fff8f0;
+      border-left: 4px solid #f97316;
+      margin-bottom: 0.5rem;
+    }
+    .status-clear {
+      color: green;
+      font-weight: 600;
+    }
+    .check {
+      color: green;
+      font-weight: bold;
+    }
+    .quick-actions button {
+      display: block;
+      width: 100%;
+      margin-bottom: 0.5rem;
+      padding: 0.5rem;
+      background: #e0f0ff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .notif {
+      background: #eef2f8;
+      padding: 0.75rem;
+      border-left: 4px solid #3b82f6;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div><strong>Company Portal</strong></div>
+    <div>
+      <button style="margin-right:1rem;">Register Company</button>
+      <span>Alex Morgan (Administrator)</span>
+    </div>
+  </header>
+
+  <nav>
+    <a href="#">Company Registration</a>
+    <a href="#">Dashboard</a>
+    <a href="#">Sectors</a>
+    <a href="#">Activities</a>
+    <a href="#">Analytics</a>
+    <a href="#">Settings</a>
+    <a href="#">Help & Support</a>
+    <a href="#">Logout</a>
+  </nav>
+
+  <main class="main">
+    <h2>Company Dashboard</h2>
+    <div class="dashboard">
+
+      <div class="card">
+        <h3>Company Status</h3>
+        <p><strong>TechSolutions Inc.</strong></p>
+        <p><span class="label">Registration ID:</span> TS-2023-45678</p>
+        <p><span class="label">Registration Date:</span> May 15, 2023</p>
+        <p><span class="label">Status:</span> <span style="color:green">Active</span></p>
+        <p><span class="label">Sector:</span> Information Technology</p>
+        <p><span class="label">Compliance:</span> <span style="color:green">100% Complete</span></p>
+      </div>
+
+      <div class="card">
+        <h3>Performance Metrics</h3>
+        <div class="metrics">
+          <div>
+            <strong>24</strong><br><span class="label">Submissions</span>
+          </div>
+          <div>
+            <strong>21</strong><br><span class="label">Approvals</span>
+          </div>
+          <div>
+            <strong>3</strong><br><span class="label">Pending</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Upcoming Deadlines</h3>
+        <div class="deadline">
+          <strong>Annual Report Submission</strong><br>
+          <span>Due in 5 days</span><br>
+          <button>Start Now</button>
+        </div>
+        <div class="deadline">
+          <strong>Tax Declaration</strong><br>
+          <span>Due in 15 days</span><br>
+          <button>Review</button>
+        </div>
+        <div class="deadline">
+          <strong>License Renewal</strong><br>
+          <span>Due in 45 days</span><br>
+          <button>Remind Me</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Recent Activities</h3>
+        <ul>
+          <li>Document Uploaded - Financial Statement Q2 2023</li>
+          <li>Approval Received - Expansion Request</li>
+          <li>Profile Updated - Address Change</li>
+          <li>New Comment - Regulator feedback</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Industry News & Updates</h3>
+        <ul>
+          <li>New cybersecurity compliance laws announced - Jul 14</li>
+          <li>Tech sector growth exceeds expectations - Jul 12</li>
+          <li>Tax incentives for SMEs - Jul 8</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Compliance Status</h3>
+        <ul>
+          <li>Document Verification <span class="check">✓</span></li>
+          <li>Financial Reporting <span class="check">✓</span></li>
+          <li>Tax Compliance <span class="check">✓</span></li>
+          <li>Regulatory Requirements <span class="check">✓</span></li>
+          <li>Industry Standards <span class="check">✓</span></li>
+        </ul>
+        <p class="status-clear">All Clear</p>
+      </div>
+
+      <div class="card quick-actions">a
+        <h3>Quick Actions</h3>
+        <button>Upload Document</button>
+        <button>Schedule Meeting</button>
+        <button>Generate Report</button>
+        <button>Add User</button>
+        <button>Edit Registration</button>
+        <button>Get Support</button>
+      </div>
+
+      <div class="card">
+        <h3>Notifications</h3>
+        <div class="notif">Document Review Complete - 2 hours ago</div>
+        <div class="notif">Action Required - Update contact info</div>
+        <div class="notif">System Maintenance on July 20</div>
+        <div class="notif">Feedback Request - Complete our survey</div>
+      </div>
+
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}" dir="{{ 'rtl' if get_locale() == 'ar' else 'ltr' }}">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+    <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>{{ _('Simple Test Form') }}</title>
+    <link href="favicon.ico" rel="icon"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css', v=version) }}">
+</head>
+<body :class="{'dark bg-gray-900': darkMode === true}" x-data="{ page: 'simple_test_form', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }" x-init="
+         darkMode = JSON.parse(localStorage.getItem('darkMode'));
+         $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))">
+    
+    <!-- ===== Preloader Start ===== -->
+    <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => loaded = false, 500)})" x-show="loaded">
+        <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent">
+        </div>
+    </div>
+    <!-- ===== Preloader End ===== -->
+    
+    <!-- ===== Page Wrapper Start ===== -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- ===== Sidebar Start ===== -->
+        <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+            <!-- SIDEBAR HEADER -->
+            <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+                <a href="/">
+                    <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+                        <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                        <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                    </span>
+                    <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                </a>
+            </div>
+            <!-- SIDEBAR HEADER -->
+            <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+                <!-- Sidebar Menu -->
+                <nav x-data="{selected: $persist('Create Order')}">
+                    <!-- Menu Group -->
+                    <div>
+                        <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+                            <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">
+                                {{ _('MENU') }}
+                            </span>
+                        </h3>
+                        <ul class="mb-6 flex flex-col gap-1">
+                            <!-- Menu Item Dashboard -->
+                            <li>
+                                <a :class=" (selected === 'Dashboard') && (page === 'dashboard') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Dashboard' ? '':'Dashboard')" class="menu-item group" href="/dash">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {{ _('Dashboard') }}
+                                    </span>
+                                </a>
+                            </li>
+                            <!-- Menu Item Profile -->
+                            <li>
+                                <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/profile">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {{ _('User Profile') }}
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/orders">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {{ _('My Orders') }}
+                                    </span>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a :class=" (selected === 'Create Order') && (page === 'create_order') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Create Order' ? '':'Create Order')" class="menu-item group" href="/new_purchase">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {{ _('create order') }}
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a :class=" (selected === 'Suppliers') && (page === 'suppliers') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Suppliers' ? '':'Suppliers')" class="menu-item group" href="/suppliers">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {{ _('Suppliers') }}
+                                    </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/chat">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {{ _('chats') }}
+                                    </span>
+                                </a>
+                            </li>
+                            <!-- Company Registration Menu Item -->
+                            <li>
+                                <a :class=" (selected === 'Company Registration') && (page === 'company_register') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Company Registration' ? '':'Company Registration')" class="menu-item group" href="/company_register">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+                                        {{ _('Company Registration') }}
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="relative flex flex-1 flex-col overflow-hidden xl:ml-[290px]">
+            <!-- Header -->
+            <header class="sticky top-0 z-999 flex w-full items-center justify-between gap-3 bg-white px-4 py-4 shadow-sm dark:bg-black sm:px-6">
+                <div class="flex items-center gap-2">
+                    <h1 class="text-xl font-semibold text-gray-800 dark:text-white/90">{{ _('Simple Test Form') }}</h1>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <span class="text-theme-sm mr-1 block font-medium">{{ current_user.username }}</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-y-auto">
+                <div class="mx-auto max-w-4xl p-4 md:p-6">
+                    
+                    <div class="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+                        <div class="px-5 py-4 sm:px-6 sm:py-5">
+                            <h3 class="text-base font-medium text-gray-800 dark:text-white/90">{{ _('Simple Test Form') }}</h3>
+                        </div>
+                        <div class="space-y-6 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-800">
+                            
+                            <form action="{{ url_for('new_purchase') }}" method="POST" enctype="multipart/form-data">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                
+                                <!-- Order Name -->
+                                <div class="w-full mb-4">
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Order Name') }} *</label>
+                                    <input type="text" name="order_name" 
+                                           placeholder="{{ _('Enter order name') }}" required 
+                                           class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"/>
+                                </div>
+
+                                <!-- Sector -->
+                                <div class="w-full mb-4">
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Sector') }} *</label>
+                                    <select name="sector" required
+                                            class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90">
+<option value="Technology">Technology</option>
+<option value="Electronics">Electronics</option>
+<option value="IT">IT</option>
+<option value="Software">Software</option>
+<option value="Hardware">Hardware</option>
+<option value="General">General</option>
+<option value="Other">Other</option>
+</select>
+                                </div>
+
+                                <!-- Product Name -->
+                                <div class="w-full mb-4">
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Product Name') }} *</label>
+                                    <input type="text" name="products[0][product_name]" 
+                                           placeholder="{{ _('Enter product name') }}" required 
+                                           class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"/>
+                                </div>
+
+                                <!-- Quantity -->
+                                <div class="w-full mb-4">
+                                    <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Quantity') }} *</label>
+                                    <input type="number" name="products[0][quantity]" required min="1"
+                                           placeholder="{{ _('Quantity') }}"
+                                           class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30"/>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="flex justify-center pt-6">
+                                    <button type="submit" 
+                                            class="bg-brand-500 hover:bg-brand-600 flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-medium text-white transition-colors">
+                                        {{ _('Submit Order') }}
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <script defer src="{{ url_for('static', filename='js/script_1.js', v=version) }}"></script>
+    
+    <script>
+        // Function to set language and force page reload
+        function setLanguageAndReload(language) {
+            // Set language in session via AJAX
+            fetch(`/set_language/${language}`)
+                .then(() => {
+                    // Force page reload with cache busting
+                    window.location.reload(true);
+                })
+                .catch(() => {
+                    // If AJAX fails, just reload
+                    window.location.reload(true);
+                });
+        }
+        
+        // Add cache-busting to all internal links
+        document.addEventListener('DOMContentLoaded', function() {
+            const links = document.querySelectorAll('a[href^="/"]');
+            links.forEach(link => {
+                if (link.href.includes('?')) {
+                    link.href += '&v=' + Date.now();
+                } else {
+                    link.href += '?v=' + Date.now();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

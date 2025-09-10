@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SupplyMatch - Suggested Offers</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background: #f7f7f7;
+            color: #333;
+        }
+        header {
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header nav a {
+            margin: 0 1rem;
+            color: #000;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .active {
+            color: #f97316;
+        }
+        .container {
+            padding: 2rem;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .card, .match-box {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        h2, h3 {
+            margin-top: 0;
+        }
+        .grid {
+            display: flex;
+            gap: 1.5rem;
+        }
+        .col {
+            flex: 1;
+        }
+        .label {
+            font-size: 0.85rem;
+            color: #777;
+        }
+        .highlight {
+            color: #f97316;
+            font-weight: bold;
+        }
+        .spec-list {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+        .spec-list li {
+            margin-bottom: 0.5rem;
+        }
+        .match {
+            color: green;
+            font-weight: 500;
+        }
+        .mismatch {
+            color: red;
+            font-weight: 500;
+        }
+        .btn {
+            background: #f97316;
+            color: #fff;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        footer {
+            background: #111;
+            color: #ccc;
+            padding: 2rem;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        footer .col-footer {
+            flex: 1;
+            margin: 1rem;
+        }
+        .rating {
+            color: #fbbf24;
+        }
+        .match-score {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #fef3c7;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-weight: bold;
+        }
+        .top-section {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+        .top-section .box {
+            flex: 1 1 30%;
+            padding: 1rem;
+        }
+        .bottom-links a {
+            display: block;
+            color: #ccc;
+            margin-bottom: 0.5rem;
+            text-decoration: none;
+        }
+        .bottom-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div><strong>SupplyMatch</strong></div>
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">Orders</a>
+            <a href="#">Suppliers</a>
+            <a href="#" class="active">Suggested Offers</a>
+            <a href="#">Account</a>
+        </nav>
+        <div>
+            <span>John Smith</span>
+        </div>
+    </header>
+    <div class="container">
+        <h2>Suggested Offers</h2>
+        <p>We’ve found suppliers that match your order requirements. Review the offers below.</p>
+
+        <div class="card">
+            <div class="top-section">
+                <div class="box">
+                    <div class="label">Product</div>
+                    <div><strong>Industrial Fasteners</strong></div>
+                    <div class="label">Quantity</div>
+                    <div>10,000 units</div>
+                    <div class="label">Material</div>
+                    <div>Stainless Steel</div>
+                    <div class="label">Delivery by</div>
+                    <div>June 30, 2023</div>
+                </div>
+                <div class="box">
+                    <div class="label">Size</div>
+                    <div>M8 x 1.25</div>
+                    <div class="label">Grade</div>
+                    <div>304</div>
+                    <div class="label">Finish</div>
+                    <div>Polished</div>
+                    <div class="label">Certification</div>
+                    <div>ISO 9001</div>
+                </div>
+                <div class="box">
+                    <div class="label">Budget</div>
+                    <div class="highlight">$5,200</div>
+                    <div class="label">Target price range</div>
+                    <div>$4,800 - $5,200</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card col" style="position: relative;">
+                <div class="match-score">94%</div>
+                <h3>FastenTech Industries</h3>
+                <div>Shanghai, China • Established 2005</div>
+                <div class="label">Price Offer</div>
+                <div>$4,950</div>
+                <div class="label">Delivery Time</div>
+                <div>25 days</div>
+                <div class="label">Quality Rating</div>
+                <div class="rating">★★★★☆ (4.7)</div>
+                <ul class="spec-list">
+                    <li class="match">✓ M8 x 1.25 Stainless Steel Fasteners</li>
+                    <li class="match">✓ Grade 304 with Polished Finish</li>
+                    <li class="match">✓ ISO 9001 Certified</li>
+                    <li class="mismatch">✗ Minimum order quantity: 8,000 units</li>
+                </ul>
+                <button class="btn">Contact Supplier</button>
+            </div>
+
+            <div class="card col" style="position: relative;">
+                <div class="match-score">87%</div>
+                <h3>Global Supply Solutions</h3>
+                <div>Munich, Germany • Established 1998</div>
+                <div class="label">Price Offer</div>
+                <div>$5,100</div>
+                <div class="label">Delivery Time</div>
+                <div>21 days</div>
+                <div class="label">Quality Rating</div>
+                <div class="rating">★★★★★ (4.9)</div>
+                <ul class="spec-list">
+                    <li class="match">✓ M8 x 1.25 Stainless Steel Fasteners</li>
+                    <li class="match">✓ Grade 304 with Polished Finish</li>
+                    <li class="match">✓ ISO 9001 Certified</li>
+                    <li class="mismatch">✗ Additional certification fee: $200</li>
+                </ul>
+                <button class="btn">Contact Supplier</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Other Orders with Suggested Matches</h3>
+            <div class="top-section">
+                <div class="box">
+                    <div class="label">Product</div>
+                    <div>PCB Components</div>
+                    <div class="label">Quantity</div>
+                    <div>5,000 units</div>
+                    <div class="label">Material</div>
+                    <div>FR-4</div>
+                    <div class="label">Delivery by</div>
+                    <div>June 15, 2023</div>
+                </div>
+                <div class="box">
+                    <div class="label">Top Match</div>
+                    <div>ElectroTech Solutions</div>
+                    <div class="label">Match Score</div>
+                    <div class="highlight">91%</div>
+                </div>
+                <div class="box">
+                    <button class="btn" style="margin-top: 2rem;">View Matches</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="col-footer">
+            <strong>SupplyMatch</strong><br>
+            Connecting businesses with the perfect suppliers through intelligent matching algorithms.
+        </div>
+        <div class="col-footer bottom-links">
+            <strong>Quick Links</strong><br>
+            <a href="#">Home</a>
+            <a href="#">About Us</a>
+            <a href="#">How It Works</a>
+            <a href="#">Pricing</a>
+            <a href="#">Contact Us</a>
+        </div>
+        <div class="col-footer bottom-links">
+            <strong>Services</strong><br>
+            <a href="#">Supplier Matching</a>
+            <a href="#">Order Management</a>
+            <a href="#">Quality Control</a>
+            <a href="#">Logistics Support</a>
+            <a href="#">Supply Chain Analytics</a>
+        </div>
+        <div class="col-footer bottom-links">
+            <strong>Contact</strong><br>
+            123 Business Avenue, San Francisco, CA 94107<br>
+            +1 (555) 123-4567<br>
+            info@supplymatch.com
+        </div>
+    </footer>
+</body>
+</html>

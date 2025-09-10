@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}" dir="{{ 'rtl' if get_locale() == 'ar' else 'ltr' }}">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+  <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>{{ _('Balance & Transactions') }}</title>
+  <link href="favicon.ico" rel="icon"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css', v=version) }}">
+  <style>
+    /* RTL Support for Language Switching */
+    [dir="rtl"] .language-switcher {
+      direction: rtl;
+    }
+    
+    [dir="rtl"] .sidebar {
+      border-right: none;
+      border-left: 1px solid rgb(229 231 235);
+    }
+    
+    [dir="rtl"] .sidebar-header {
+      flex-direction: row-reverse;
+    }
+    
+    [dir="rtl"] .menu-item-text {
+      text-align: right;
+    }
+    
+    [dir="rtl"] .search-input {
+      padding-left: 3rem;
+      padding-right: 1rem;
+    }
+    
+    [dir="rtl"] .search-icon {
+      left: 1rem;
+      right: auto;
+    }
+    
+    [dir="rtl"] .user-dropdown {
+      margin-left: 0;
+      margin-right: 0.75rem;
+    }
+    
+    [dir="rtl"] .breadcrumb-arrow {
+      transform: rotate(180deg);
+    }
+    
+    [dir="rtl"] .language-switcher .dropdown {
+      right: auto;
+      left: 0;
+    }
+    
+    /* Simple Balance Page Styling */
+    .balance-card {
+      background-color: #f8f9fa;
+      border: 1px solid #e9ecef;
+    }
+    
+    .balance-card .text-xl {
+      color: #2563eb;
+    }
+    
+    .spent-card {
+      background-color: #f8f9fa;
+      border: 1px solid #e9ecef;
+    }
+    
+    .spent-card .text-xl {
+      color: #dc2626;
+    }
+    
+    .received-card {
+      background-color: #f8f9fa;
+      border: 1px solid #e9ecef;
+    }
+    
+    .received-card .text-xl {
+      color: #059669;
+    }
+    
+    .transaction-card {
+      background-color: #f8f9fa;
+      border: 1px solid #e9ecef;
+    }
+    
+    .transaction-card .text-xl {
+      color: #7c3aed;
+    }
+    
+    .download-btn {
+      background-color: #2563eb;
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    
+    .download-btn:hover {
+      background-color: #1d4ed8;
+    }
+    
+
+  </style>
+ </head>
+ <body :class="{'dark bg-gray-900': darkMode === true}" x-data="{ page: 'balance', 'loaded': true, 'darkMode': false, 'stickyMenu': false, 'sidebarToggle': false, 'scrollTop': false }" x-init="
+         darkMode = JSON.parse(localStorage.getItem('darkMode'));
+         $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))">
+  <!-- ===== Preloader Start ===== -->
+  <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => loaded = false, 500)})" x-show="loaded">
+   <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent">
+   </div>
+  </div>
+  <!-- ===== Preloader End ===== -->
+  <!-- ===== Page Wrapper Start ===== -->
+  <div class="flex h-screen overflow-hidden">
+   <!-- ===== Sidebar Start ===== -->
+   <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+    <!-- SIDEBAR HEADER -->
+    <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+     <a href="/">
+      <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+       <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+       <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+      </span>
+      <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+     </a>
+    </div>
+    <!-- SIDEBAR HEADER -->
+    <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+     <!-- Sidebar Menu -->
+     <nav x-data="{selected: $persist('Balance')}">
+      <!-- Menu Group -->
+      <div>
+       <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+        <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">
+         {{ _('MENU') }}
+        </span>
+       </h3>
+       <ul class="mb-6 flex flex-col gap-1">
+        <!-- Menu Item Dashboard -->
+        <li>
+         <a :class=" (selected === 'Dashboard') && (page === 'dashboard') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Dashboard' ? '':'Dashboard')" class="menu-item group" href="/dash">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Dashboard') }}
+          </span>
+         </a>
+        </li>
+        <!-- Menu Item Profile -->
+        <li>
+         <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/profile">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('User Profile') }}
+          </span>
+         </a>
+        </li>
+        <li>
+         <a :class=" (selected === 'Orders') && (page === 'orders') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Orders' ? '':'Orders')" class="menu-item group" href="/orders">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('My Orders') }}
+          </span>
+         </a>
+        </li>
+        <li>
+         <a :class=" (selected === 'Deliveries') && (page === 'deliveries') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Deliveries' ? '':'Deliveries')" class="menu-item group" href="/my_deliveries">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('My Deliveries') }}
+          </span>
+         </a>
+        </li>
+        <li>
+         <a :class=" (selected === 'CreateOrder') && (page === 'create_order') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'CreateOrder' ? '':'CreateOrder')" class="menu-item group" href="/new_purchase">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('create order') }}
+          </span>
+         </a>
+        </li>
+        <li>
+         <a :class=" (selected === 'Suppliers') && (page === 'suppliers') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Suppliers' ? '':'Suppliers')" class="menu-item group" href="/suppliers">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Suppliers') }}
+          </span>
+         </a>
+        </li>
+        <!-- Balance Menu Item -->
+        <li>
+         <a :class=" (selected === 'Balance') && (page === 'balance') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Balance' ? '':'Balance')" class="menu-item group" href="/balance">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Balance') }}
+          </span>
+         </a>
+        </li>
+        <!-- AI Assistant Menu Item -->
+        <li>
+         <a :class=" (selected === 'AI Assistant') && (page === 'ai_chat') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'AI Assistant' ? '':'AI Assistant')" class="menu-item group" href="/client/ai_chat">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('AI Assistant') }}
+          </span>
+         </a>
+        </li>
+        <li>
+         <a :class=" (selected === 'Chat') && (page === 'chat') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Chat' ? '':'Chat')" class="menu-item group" href="/chat">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('chats') }}
+          </span>
+         </a>
+        </li>
+        <!-- Company Registration Menu Item -->
+        <li>
+         <a :class=" (selected === 'Company Registration') && (page === 'company_register') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Company Registration' ? '':'Company Registration')" class="menu-item group" href="/company_register">
+          <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
+           {{ _('Company Registration') }}
+          </span>
+         </a>
+        </li>
+       </ul>
+      </div>
+     </nav>
+    </div>
+   </aside>
+   <!-- ===== Sidebar End ===== -->
+   <!-- ===== Content Area Start ===== -->
+   <div class="relative flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
+    <!-- ===== Header Start ===== -->
+    <header class="sticky top-0 z-99999 flex w-full border-gray-200 bg-white xl:border-b dark:border-gray-800 dark:bg-gray-900" x-data="{menuToggle: false}">
+     <div class="flex grow flex-col items-center justify-between xl:flex-row xl:px-6">
+      <div class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:py-4 xl:justify-normal xl:border-b-0 xl:px-0 dark:border-gray-800">
+       <!-- Hamburger Toggle BTN -->
+       <button :class="sidebarToggle ? 'xl:bg-transparent dark:xl:bg-transparent bg-gray-100 dark:bg-gray-800' : ''" @click.stop="sidebarToggle = !sidebarToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 xl:h-11 xl:w-11 xl:border dark:border-gray-800 dark:text-gray-400">
+        <svg class="hidden fill-current xl:block" fill="none" height="12" viewbox="0 0 16 12" width="16" xmlns="http://www.w3.org/2000/svg">
+         <path clip-rule="evenodd" d="M0.583252 1C0.583252 0.585788 0.919038 0.25 1.33325 0.25H14.6666C15.0808 0.25 15.4166 0.585786 15.4166 1C15.4166 1.41421 15.0808 1.75 14.6666 1.75L1.33325 1.75C0.919038 1.75 0.583252 1.41422 0.583252 1ZM0.583252 11C0.583252 10.5858 0.919038 10.25 1.33325 10.25L14.6666 10.25C15.0808 10.25 15.4166 10.5858 15.4166 11C15.4166 11.4142 15.0808 11.75 14.6666 11.75L1.33325 11.75C0.919038 11.75 0.583252 11.4142 0.583252 11ZM1.33325 5.25C0.919038 5.25 0.583252 5.58579 0.583252 6C0.583252 6.41421 0.919038 6.75 1.33325 6.75L7.99992 6.75C8.41413 6.75 8.74992 6.41421 8.74992 6C8.74992 5.58579 8.41413 5.25 7.99992 5.25L1.33325 5.25Z" fill="" fill-rule="evenodd">
+         </path>
+        </svg>
+       </button>
+       <!-- User Area -->
+       <div class="flex items-center gap-3 2xsm:gap-7">
+        <!-- Dark Mode Toggler -->
+        <ul class="flex items-center gap-2 2xsm:gap-4">
+         <li>
+          <label :class="darkMode ? 'bg-brand-500' : 'bg-gray-200'" class="relative m-0 block h-7.5 w-14 rounded-full" for="toggle">
+           <input :checked="darkMode" @change="darkMode = !darkMode" class="dur absolute top-0 z-50 m-0 h-full w-full cursor-pointer opacity-0" id="toggle" type="checkbox"/>
+           <span :class="darkMode ? 'right-1 bg-white' : 'right-6 bg-white'" class="absolute top-1/2 flex h-6 w-6 -translate-y-1/2 translate-x-0 items-center justify-center rounded-full shadow-switcher duration-75 ease-linear">
+           </span>
+          </label>
+         </li>
+        </ul>
+        <!-- User Area -->
+        <div class="relative" x-data="{dropdownOpen: false}" @click.outside="dropdownOpen = false">
+         <a @click="dropdownOpen = ! dropdownOpen" class="flex items-center gap-4" href="#">
+          <span class="hidden text-right lg:block">
+           <span class="block text-sm font-medium text-black dark:text-white">{{ current_user.username }}</span>
+           <span class="block text-xs">{{ current_user.role.title() }}</span>
+          </span>
+          <span class="h-12 w-12 rounded-full">
+           <img alt="User" src="https://img.icons8.com/?size=100&id=7820&format=png&color=000000"/>
+          </span>
+         </a>
+         <!-- Dropdown Start -->
+         <div :class="dropdownOpen ? 'block' : 'hidden'" class="absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-gray-200 bg-white shadow-default dark:border-gray-800 dark:bg-gray-800">
+          <ul class="flex flex-col gap-5 border-b border-gray-200 px-6 py-7.5 dark:border-gray-800">
+           <li>
+            <a class="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-brand-500 lg:text-base" href="/profile">
+             {{ _('My Profile') }}
+            </a>
+           </li>
+          </ul>
+          <button class="flex items-center gap-3.5 px-6 py-4 text-sm font-medium duration-300 ease-in-out hover:text-brand-500 lg:text-base" onclick="window.location.href='/logout'">
+           {{ _('Logout') }}
+          </button>
+         </div>
+        </div>
+       </div>
+      </div>
+     </div>
+    </header>
+    <!-- ===== Header End ===== -->
+    <!-- ===== Main Content Start ===== -->
+    <main>
+     <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+      <!-- Breadcrumb Start -->
+      <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+       <h2 class="text-title-md2 font-bold text-black dark:text-white">
+        {{ _('Balance & Transactions') }}
+       </h2>
+       <nav>
+        <ol class="flex items-center gap-2">
+         <li>
+          <a class="font-medium" href="/dash">{{ _('Dashboard') }} /</a>
+         </li>
+         <li class="font-medium text-brand-500">{{ _('Balance') }}</li>
+        </ol>
+       </nav>
+      </div>
+      <!-- Breadcrumb End -->
+      
+      <!-- Download Report Button -->
+      <div class="mb-6 flex justify-end">
+        <button onclick="downloadReport()" class="download-btn flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          {{ _('Download Report') }}
+        </button>
+      </div>
+      
+      <!-- Balance Overview Cards -->
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5 mb-6">
+       <!-- Current Balance Card -->
+        <div class="balance-card rounded-lg px-4 py-4 shadow-lg">
+         <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100">
+          <span class="text-lg">💰</span>
+         </div>
+         <div class="mt-3 flex items-end justify-between">
+          <div>
+           <h4 class="text-xl font-bold">
+            {{ balance.current_balance }} {{ balance.currency }}
+           </h4>
+           <span class="text-xs font-medium text-gray-600">{{ _('Current Balance') }}</span>
+          </div>
+         </div>
+        </div>
+       
+       <!-- Total Spent Card -->
+        <div class="spent-card rounded-lg px-4 py-4 shadow-lg">
+         <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100">
+          <span class="text-lg">📉</span>
+         </div>
+         <div class="mt-3 flex items-end justify-between">
+          <div>
+           <h4 class="text-xl font-bold">
+            {{ total_spent }} {{ balance.currency }}
+           </h4>
+           <span class="text-xs font-medium text-gray-600">{{ _('Total Spent') }}</span>
+          </div>
+         </div>
+        </div>
+       
+       <!-- Total Received Card -->
+        <div class="received-card rounded-lg px-4 py-4 shadow-lg">
+         <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100">
+          <span class="text-lg">📈</span>
+         </div>
+         <div class="mt-3 flex items-end justify-between">
+          <div>
+           <h4 class="text-xl font-bold">
+            {{ total_received }} {{ balance.currency }}
+           </h4>
+           <span class="text-xs font-medium text-gray-600">{{ _('Total Received') }}</span>
+          </div>
+         </div>
+        </div>
+       
+       <!-- Transaction Count Card -->
+        <div class="transaction-card rounded-lg px-4 py-4 shadow-lg">
+         <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gray-100">
+          <span class="text-lg">📊</span>
+         </div>
+         <div class="mt-3 flex items-end justify-between">
+          <div>
+           <h4 class="text-xl font-bold">
+            {{ transactions|length }}
+           </h4>
+           <span class="text-xs font-medium text-gray-600">{{ _('Total Transactions') }}</span>
+          </div>
+         </div>
+        </div>
+      </div>
+      
+      <!-- Recent Transactions Table -->
+      <div class="rounded-sm border border-gray-200 bg-white shadow-default dark:border-gray-800 dark:bg-gray-800">
+       <div class="px-4 py-6 md:px-6 xl:px-7.5">
+        <h4 class="text-xl font-semibold text-black dark:text-white">
+         {{ _('Recent Transactions') }}
+        </h4>
+       </div>
+       
+       <div class="grid grid-cols-6 border-t border-gray-200 px-4 py-4.5 dark:border-gray-800 sm:grid-cols-8 md:px-6 2xl:px-7.5">
+        <div class="col-span-2 flex items-center">
+         <p class="font-medium">{{ _('Date') }}</p>
+        </div>
+        <div class="col-span-2 hidden items-center sm:flex">
+         <p class="font-medium">{{ _('Type') }}</p>
+        </div>
+        <div class="col-span-1 flex items-center">
+         <p class="font-medium">{{ _('Amount') }}</p>
+        </div>
+        <div class="col-span-2 flex items-center">
+         <p class="font-medium">{{ _('Description') }}</p>
+        </div>
+        <div class="col-span-1 flex items-center">
+         <p class="font-medium">{{ _('Status') }}</p>
+        </div>
+       </div>
+       
+       {% for transaction in transactions %}
+       <div class="transaction-row grid grid-cols-6 border-t border-gray-200 px-4 py-4.5 dark:border-gray-800 sm:grid-cols-8 md:px-6 2xl:px-7.5">
+        <div class="col-span-2 flex items-center">
+         <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+          <p class="text-sm text-black dark:text-white">
+           {{ transaction.created_at.strftime('%Y-%m-%d %H:%M') }}
+          </p>
+         </div>
+        </div>
+        <div class="col-span-2 hidden items-center sm:flex">
+         <p class="text-sm text-black dark:text-white">
+          {% if transaction.transaction_type == 'credit' %}
+           <span class="inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success">
+            {{ _('Credit') }}
+           </span>
+          {% else %}
+           <span class="inline-flex rounded-full bg-danger bg-opacity-10 px-3 py-1 text-sm font-medium text-danger">
+            {{ _('Debit') }}
+           </span>
+          {% endif %}
+         </p>
+        </div>
+        <div class="col-span-1 flex items-center">
+         <p class="text-sm text-black dark:text-white">
+          {% if transaction.transaction_type == 'credit' %}
+           <span class="text-success">+{{ transaction.amount }}</span>
+          {% else %}
+           <span class="text-danger">-{{ transaction.amount }}</span>
+          {% endif %}
+          {{ transaction.currency }}
+         </p>
+        </div>
+        <div class="col-span-2 flex items-center">
+         <p class="text-sm text-black dark:text-white">
+          {{ transaction.description or _('No description') }}
+         </p>
+        </div>
+        <div class="col-span-1 flex items-center">
+         <p class="text-sm text-black dark:text-white">
+          <span class="status-badge inline-flex rounded-full bg-success bg-opacity-10 px-3 py-1 text-sm font-medium text-success">
+           {{ _('Completed') }}
+          </span>
+         </p>
+        </div>
+       </div>
+       {% endfor %}
+       
+       {% if not transactions %}
+       <div class="border-t border-gray-200 px-4 py-8 text-center dark:border-gray-800">
+        <p class="text-gray-500 dark:text-gray-400">{{ _('No transactions found') }}</p>
+       </div>
+       {% endif %}
+      </div>
+     </div>
+    </main>
+    <!-- ===== Main Content End ===== -->
+   </div>
+   <!-- ===== Content Area End ===== -->
+  </div>
+  <!-- ===== Page Wrapper End ===== -->
+  
+  <!-- Alpine.js -->
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  
+  <!-- Download Report Script -->
+  <script>
+    function downloadReport() {
+      // Show loading state
+      const button = event.target.closest('button');
+      const originalText = button.innerHTML;
+      button.innerHTML = `
+        <svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+        </svg>
+        {{ _('Generating...') }}
+      `;
+      button.disabled = true;
+      
+      // Create download link
+      const link = document.createElement('a');
+      link.href = '/download_balance_report';
+      link.download = 'balance_report.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Reset button after 2 seconds
+      setTimeout(() => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+      }, 2000);
+    }
+  </script>
+ </body>
+</html>

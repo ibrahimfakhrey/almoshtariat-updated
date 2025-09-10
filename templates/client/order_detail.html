@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}" dir="{{ 'rtl' if get_locale() == 'ar' else 'ltr' }}">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
+    <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
+    <title>{{ _('Order') }} #{{ order.id }} {{ _('Details') }} - {{ _('B2B Platform') }}</title>
+    <link href="favicon.ico" rel="icon"/>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
+</head>
+<body :class="{'dark bg-gray-900': darkMode === true}" x-data="{ 
+    page: 'order-detail', 
+    'loaded': true, 
+    'darkMode': false, 
+    'stickyMenu': false, 
+    'sidebarToggle': false, 
+    'scrollTop': false,
+    'user_notifications': [],
+    'unread_notifications_count': 0,
+    'activeTab': 'overview'
+}" x-init="
+    darkMode = JSON.parse(localStorage.getItem('darkMode'));
+    $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)));
+    
+    // Initialize notification data
+    user_notifications = [];
+    unread_notifications_count = 0;
+    
+    // Load notifications
+    fetch('/notifications/get_notifications')
+        .then(response => response.json())
+        .then(data => {
+            user_notifications = data.notifications || [];
+            unread_notifications_count = data.unread_count || 0;
+        })
+        .catch(error => console.error('Error loading notifications:', error));
+">
+    <!-- Preloader -->
+    <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => loaded = false, 500)})" x-show="loaded">
+        <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent"></div>
+                </div>
+
+    <!-- Page Wrapper -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside :class="sidebarToggle ? 'translate-x-0 xl:w-[90px]' : '-translate-x-full'" @click.outside="sidebarToggle = false" class="sidebar fixed top-0 left-0 z-9999 flex h-screen w-[290px] flex-col overflow-y-auto border-r border-gray-200 bg-white px-5 transition-all duration-300 xl:static xl:translate-x-0 dark:border-gray-800 dark:bg-black">
+            <!-- SIDEBAR HEADER -->
+            <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
+                <a href="/">
+                    <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
+                        <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                        <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                    </span>
+                    <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                </a>
+            </div>
+            
+            <!-- Sidebar Menu -->
+            <div class="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
+                <nav x-data="{selected: $persist('Orders')}">
+                    <div>
+                        <h3 class="mb-4 text-xs leading-[20px] text-gray-400 uppercase">
+                            <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-group-title">{{ _('MENU') }}</span>
+                        </h3>
+                        <ul class="mb-6 flex flex-col gap-1">
+                            <li>
+                                <a :class="(selected === 'Dashboard') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Dashboard'" class="menu-item group" href="/dash">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Dashboard') }}</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a :class="(selected === 'Profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Profile'" class="menu-item group" href="/profile">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('User Profile') }}</span>
+                                </a>
+                            </li>
+                                     <li>
+                                <a :class="(selected === 'Orders') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Orders'" class="menu-item group" href="/orders">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('My Orders') }}</span>
+         </a>
+        </li>
+         <li>
+                                <a :class="(selected === 'Deliveries') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Deliveries'" class="menu-item group" href="/my_deliveries">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('My Deliveries') }}</span>
+         </a>
+        </li>
+                  <li>
+                                <a :class="(selected === 'CreateOrder') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'CreateOrder'" class="menu-item group" href="/new_purchase">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Create Order') }}</span>
+         </a>
+        </li>
+         <li>
+                                <a :class="(selected === 'Suppliers') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Suppliers'" class="menu-item group" href="/suppliers">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Suppliers') }}</span>
+         </a>
+        </li>
+         <li>
+                                <a :class="(selected === 'Chat') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Chat'" class="menu-item group" href="/chat">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Chats') }}</span>
+         </a>
+        </li>
+         <li>
+                                <a :class="(selected === 'Balance') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'Balance'" class="menu-item group" href="/balance">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('Balance') }}</span>
+         </a>
+        </li>
+         <li>
+                                <a :class="(selected === 'AI Assistant') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = 'AI Assistant'" class="menu-item group" href="/client/ai_chat">
+                                    <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">{{ _('AI Assistant') }}</span>
+         </a>
+        </li>
+                        </ul>
+                    </div>
+                </nav>
+                    </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="relative flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
+            <!-- Header -->
+            <header class="sticky top-0 z-99999 flex w-full border-gray-200 bg-white xl:border-b dark:border-gray-800 dark:bg-gray-900" x-data="{menuToggle: false}">
+                <div class="flex grow flex-col items-center justify-between xl:flex-row xl:px-6">
+                    <div class="flex w-full items-center justify-between gap-2 border-b border-gray-200 px-3 py-3 sm:gap-4 lg:py-4 xl:justify-normal xl:border-b-0 xl:px-0 dark:border-gray-800">
+                        <!-- Hamburger Toggle BTN -->
+                        <button :class="sidebarToggle ? 'xl:bg-transparent dark:xl:bg-transparent bg-gray-100 dark:bg-gray-800' : ''" @click.stop="sidebarToggle = !sidebarToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg border-gray-200 text-gray-500 xl:h-11 xl:w-11 xl:border dark:border-gray-800 dark:text-gray-400">
+                            <svg class="hidden fill-current xl:block" fill="none" height="12" viewbox="0 0 16 12" width="16" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M0.583252 1C0.583252 0.585788 0.919038 0.25 1.33325 0.25H14.6666C15.0808 0.25 15.4166 0.585786 15.4166 1C15.4166 1.41421 15.0808 1.75 14.6666 1.75L1.33325 1.75C0.919038 1.75 0.583252 1.41422 0.583252 1ZM0.583252 11C0.583252 10.5858 0.919038 10.25 1.33325 10.25L14.6666 10.25C15.0808 10.25 15.4166 10.5858 15.4166 11C15.4166 11.4142 15.0808 11.75 14.6666 11.75L1.33325 11.75C0.919038 11.75 0.583252 11.4142 0.583252 11ZM1.33325 5.25C0.919038 5.25 0.583252 5.58579 0.583252 6C0.583252 6.41421 0.919038 6.75 1.33325 6.75L7.99992 6.75C8.41413 6.75 8.74992 6.41421 8.74992 6C8.74992 5.58579 8.41413 5.25 7.99992 5.25L1.33325 5.25Z" fill="" fill-rule="evenodd"></path>
+                            </svg>
+                            <svg :class="sidebarToggle ? 'hidden' : 'block xl:hidden'" class="fill-current xl:hidden" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M3.25 6C3.25 5.58579 3.58579 5.25 4 5.25L20 5.25C20.4142 5.25 20.75 5.58579 20.75 6C20.75 6.41421 20.4142 6.75 20 6.75L4 6.75C3.58579 6.75 3.25 6.41422 3.25 6ZM3.25 18C3.25 17.5858 3.58579 17.25 4 17.25L20 17.25C20.4142 17.25 20.75 17.5858 20.75 18C20.75 18.4142 20.4142 18.75 20 18.75L4 18.75C3.58579 18.75 3.25 18.4142 3.25 18ZM4 11.25C3.58579 11.25 3.25 11.5858 3.25 12C3.25 12.4142 3.58579 12.75 4 12.75L12 12.75C12.4142 12.75 12.75 12.4142 12.75 12C12.75 11.5858 12.4142 11.25 12 11.25L4 11.25Z" fill="" fill-rule="evenodd"></path>
+                            </svg>
+                            <!-- cross icon -->
+                            <svg :class="sidebarToggle ? 'block xl:hidden' : 'hidden'" class="fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M6.21967 7.28131C5.92678 6.98841 5.92678 6.51354 6.21967 6.22065C6.51256 5.92775 6.98744 5.92775 7.28033 6.22065L11.999 10.9393L16.7176 6.22078C17.0105 5.92789 17.4854 5.92788 17.7782 6.22078C18.0711 6.51367 18.0711 6.98855 17.7782 7.28144L13.0597 12L17.7782 16.7186C18.0711 17.0115 18.0711 17.4863 17.7782 17.7792C17.4854 18.0721 17.0105 18.0721 16.7176 17.7792L11.999 13.0607L7.28033 17.7794C6.98744 18.0722 6.51256 18.0722 6.21967 17.7794C5.92678 17.4865 5.92678 17.0116 6.21967 16.7187L10.9384 12L6.21967 7.28131Z" fill="" fill-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        
+                        <a class="xl:hidden" href="/">
+                            <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                            <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+                        </a>
+                        
+                        <button :class="menuToggle ? 'bg-gray-100 dark:bg-gray-800' : ''" @click.stop="menuToggle = !menuToggle" class="z-99999 flex h-10 w-10 items-center justify-center rounded-lg text-gray-700 hover:bg-gray-100 xl:hidden dark:text-gray-400 dark:hover:bg-gray-800">
+                            <svg class="fill-current" fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                                <path clip-rule="evenodd" d="M5.99902 10.4951C6.82745 10.4951 7.49902 11.1667 7.49902 11.9951V12.0051C7.49902 12.8335 6.82745 13.5051 5.99902 13.5051C5.1706 13.5051 4.49902 12.8335 4.49902 12.0051V11.9951C4.49902 11.1667 5.1706 10.4951 5.99902 10.4951ZM17.999 10.4951C18.8275 10.4951 19.499 11.1667 19.499 11.9951V12.0051C19.499 12.8335 18.8275 13.5051 17.999 13.5051C17.1706 13.5051 16.499 12.8335 16.499 12.0051V11.9951C16.499 11.1667 17.1706 10.4951 17.999 10.4951ZM13.499 11.9951C13.499 11.1667 12.8275 10.4951 11.999 10.4951C11.1706 10.4951 10.499 11.1667 10.499 11.9951V12.0051C10.499 12.8335 11.1706 13.5051 11.999 13.5051C12.8275 13.5051 13.499 12.8335 13.499 12.0051V11.9951Z" fill="" fill-rule="evenodd"></path>
+                            </svg>
+                        </button>
+                        
+                        <div class="hidden xl:block">
+                            <div class="flex items-center space-x-4">
+                                <span class="text-sm text-gray-600 dark:text-gray-400">{{ _('Order Details') }}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Arabic Header - Conditional Display -->
+                        {% if get_locale() == 'ar' %}
+                        <div class="hidden xl:block mt-2">
+                            <div class="flex items-center justify-end">
+                                <span class="text-sm text-gray-600 dark:text-gray-400" dir="rtl" lang="ar">تفاصيل الطلب</span>
+                            </div>
+                        </div>
+                        {% endif %}
+            </div>
+
+                    <div :class="menuToggle ? 'flex' : 'hidden'" class="shadow-theme-md w-full items-center justify-between gap-4 px-5 py-4 xl:flex xl:justify-end xl:px-0 xl:shadow-none">
+                        <div class="2xsm:gap-3 flex items-center gap-2">
+                            <!-- Dark Mode Toggler -->
+                            <button @click.prevent="darkMode = !darkMode" class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white">
+                                <svg class="hidden dark:block" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                                    <path clip-rule="evenodd" d="M9.99998 1.5415C10.4142 1.5415 10.75 1.87729 10.75 2.2915V3.5415C10.75 3.95572 10.4142 4.2915 9.99998 4.2915C9.58577 4.2915 9.24998 3.95572 9.24998 3.5415V2.2915C9.24998 1.87729 9.58577 1.5415 9.99998 1.5415ZM10.0009 6.79327C8.22978 6.79327 6.79402 8.22904 6.79402 10.0001C6.79402 11.7712 8.22978 13.207 10.0009 13.207C11.772 13.207 13.2078 11.7712 13.2078 10.0001C13.2078 8.22904 11.772 6.79327 10.0009 6.79327ZM5.29402 10.0001C5.29402 7.40061 7.40135 5.29327 10.0009 5.29327C12.6004 5.29327 14.7078 7.40061 14.7078 10.0001C14.7078 12.5997 12.6004 14.707 10.0009 14.707C7.40135 14.707 5.29402 12.5997 5.29402 10.0001ZM15.9813 5.08035C16.2742 4.78746 16.2742 4.31258 15.9813 4.01969C15.6884 3.7268 15.2135 3.7268 14.9207 4.01969L14.0368 4.90357C13.7439 5.19647 13.7439 5.67134 14.0368 5.96423C14.3297 6.25713 14.8045 6.25713 15.0974 5.96423L15.9813 5.08035ZM18.4577 10.0001C18.4577 10.4143 18.1219 10.7501 17.7077 10.7501H16.4577C16.0435 10.7501 15.7077 10.4143 15.7077 10.0001C15.7077 9.58592 16.0435 9.25013 16.4577 9.25013H17.7077C18.1219 9.25013 18.4577 9.58592 18.4577 10.0001ZM14.9207 15.9806C15.2135 16.2735 15.6884 16.2735 15.9813 15.9806C16.2742 15.6877 16.2742 15.2128 15.9813 14.9199L15.0974 14.036C14.8045 13.7431 14.3297 13.7431 14.0368 14.036C13.7439 14.3289 13.7439 14.8038 14.0368 15.0967L14.9207 15.9806ZM9.99998 15.7088C10.4142 15.7088 10.75 16.0445 10.75 16.4588V17.7088C10.75 18.123 10.4142 18.4588 9.99998 18.4588C9.58577 18.4588 9.24998 18.123 9.24998 17.7088V16.4588C9.24998 16.0445 9.58577 15.7088 9.99998 15.7088ZM5.96356 15.0972C6.25646 14.8043 6.25646 14.3295 5.96356 14.0366C5.67067 13.7437 5.1958 13.7437 4.9029 14.0366L4.01902 14.9204C3.72613 15.2133 3.72613 15.6882 4.01902 15.9811C4.31191 16.274 4.78679 16.274 5.07968 15.9811L5.96356 15.0972ZM4.29224 10.0001C4.29224 10.4143 3.95645 10.7501 3.54224 10.7501H2.29224C1.87802 10.7501 1.54224 10.4143 1.54224 10.0001C1.54224 9.58592 1.87802 9.25013 2.29224 9.25013H3.54224C3.95645 9.25013 4.29224 9.58592 4.29224 10.0001ZM4.9029 5.9637C5.1958 6.25659 5.67067 6.25659 5.96356 5.9637C6.25646 5.6708 6.25646 5.19593 5.96356 4.90303L5.07968 4.01915C4.78679 3.72626 4.31191 3.72626 4.01902 4.01915C3.72613 4.31204 3.72613 4.78692 4.01902 5.07981L4.9029 5.9637Z" fill="currentColor" fill-rule="evenodd"></path>
+                                </svg>
+                                <svg class="dark:hidden" fill="none" height="20" viewbox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M17.4547 11.97L18.1799 12.1611C18.265 11.8383 18.1265 11.4982 17.8401 11.3266C17.5538 11.1551 17.1885 11.1934 16.944 11.4207L17.4547 11.97ZM8.0306 2.5459L8.57989 3.05657C8.80718 2.81209 8.84554 2.44682 8.67398 2.16046C8.50243 1.8741 8.16227 1.73559 7.83948 1.82066L8.0306 2.5459ZM12.9154 13.0035C9.64678 13.0035 6.99707 10.3538 6.99707 7.08524H5.49707C5.49707 11.1823 8.81835 14.5035 12.9154 14.5035V13.0035ZM16.944 11.4207C15.8869 12.4035 14.4721 13.0035 12.9154 13.0035V14.5035C14.8657 14.5035 16.6418 13.7499 17.9654 12.5193L16.944 11.4207ZM16.7295 11.7789C15.9437 14.7607 13.2277 16.9586 10.0003 16.9586V18.4586C13.9257 18.4586 17.2249 15.7853 18.1799 12.1611L16.7295 11.7789ZM10.0003 16.9586C6.15734 16.9586 3.04199 13.8433 3.04199 10.0003H1.54199C1.54199 14.6717 5.32892 18.4586 10.0003 18.4586V16.9586ZM3.04199 10.0003C3.04199 6.77289 5.23988 4.05695 8.22173 3.27114L7.83948 1.82066C4.21532 2.77574 1.54199 6.07486 1.54199 10.0003H3.04199ZM6.99707 7.08524C6.99707 5.52854 7.5971 4.11366 8.57989 3.05657L7.48132 2.03522C6.25073 3.35885 5.49707 5.13487 5.49707 7.08524H6.99707Z" fill="currentColor"></path>
+                                </svg>
+                            </button>
+                            
+                            <!-- Notification Menu Area -->
+                            {% include 'partials/notification_dropdown.html' %}
+                        </div>
+                        
+                        <!-- User Area -->
+                        <div @click.outside="dropdownOpen = false" class="relative" x-data="{ dropdownOpen: false }">
+                            <a @click.prevent="dropdownOpen = ! dropdownOpen" class="flex items-center text-gray-700 dark:text-gray-400" href="#">
+                                <span class="mr-3 h-11 w-11 overflow-hidden rounded-full">
+                                    <img alt="User" src="https://png.pngtree.com/png-vector/20231019/ourmid/pngtree-user-profile-avatar-png-image_10211467.png"/>
+                                </span>
+                                <span class="text-theme-sm mr-1 block font-medium">{{ current_user.username }}</span>
+                                <svg :class="dropdownOpen && 'rotate-180'" class="stroke-gray-500 dark:stroke-gray-400" fill="none" height="20" viewbox="0 0 18 20" width="18" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4.3125 8.65625L9 13.3437L13.6875 8.65625" stroke="" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"></path>
+                                </svg>
+                            </a>
+                            <!-- Dropdown Start -->
+                            <div class="shadow-theme-lg dark:bg-gray-dark absolute right-0 mt-[17px] flex w-[260px] flex-col rounded-2xl border border-gray-200 bg-white p-3 dark:border-gray-800" x-show="dropdownOpen">
+                                <div>
+                                    <span class="text-theme-sm block font-medium text-gray-700 dark:text-gray-400">{{ current_user.name }}</span>
+                                    <span class="text-theme-xs mt-0.5 block text-gray-500 dark:text-gray-400">{{ current_user.email }}</span>
+                                </div>
+                                <ul class="flex flex-col gap-1 border-b border-gray-200 pt-4 pb-3 dark:border-gray-800">
+                                    <li>
+                                        <a class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300" href="{{ url_for('profile') }}">{{ _('Edit profile') }}</a>
+                                    </li>
+                                    <li>
+                                        <a class="group text-theme-sm flex items-center gap-3 rounded-lg px-3 py-2 font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300" href="{{ url_for('logout') }}">{{ _('Sign out') }}</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main>
+                <div class="mx-auto max-w-screen-2xl px-5 py-4 md:p-6">
+                    <!-- Breadcrumb -->
+                                            <div class="flex flex-wrap items-center justify-between gap-3 pb-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-800 dark:text-white/90">Order #{{ order.id }}</h2>
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ order.order_name or 'Order Details' }}</p>
+                            </div>
+                            <div class="flex flex-col items-end">
+                                <nav>
+                                    <ol class="flex items-center gap-1.5">
+                                        <li>
+                                            <a class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400" href="/">
+                                                {{ _('Home') }}
+                                                <svg class="stroke-current" fill="none" height="16" viewbox="0 0 17 16" width="17" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M6.0765 12.667L10.2432 8.50033L6.0765 4.33366" stroke="" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"></path>
+                                                </svg>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400" href="{{ url_for('orders') }}">
+                                                {{ _('Orders') }}
+                                                <svg class="stroke-current" fill="none" height="16" viewbox="0 0 17 16" width="17" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M6.0765 12.667L10.2432 8.50033L6.0765 4.33366" stroke="" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"></path>
+                                                </svg>
+                                            </a>
+                                        </li>
+                                        <li class="text-sm text-gray-800 dark:text-white/90">{{ _('Order') }} #{{ order.id }}</li>
+                                    </ol>
+                                </nav>
+                                
+                                <!-- Arabic Breadcrumb - Conditional Display -->
+                                {% if get_locale() == 'ar' %}
+                                <nav class="mt-3" dir="rtl" lang="ar">
+                                    <ol class="flex items-center gap-1.5">
+                                        <li>
+                                            <a class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400" href="/">
+                                                الرئيسية
+                                                <svg class="stroke-current" fill="none" height="16" viewbox="0 0 17 16" width="17" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M6.0765 12.667L10.2432 8.50033L6.0765 4.33366" stroke="" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"></path>
+                                                </svg>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400" href="{{ url_for('orders') }}">
+                                                الطلبات
+                                                <svg class="stroke-current" fill="none" height="16" viewbox="0 0 17 16" width="17" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M6.0765 12.667L10.2432 8.50033L6.0765 4.33366" stroke="" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.2"></path>
+                                                </svg>
+                                            </a>
+                                        </li>
+                                        <li class="text-sm text-gray-800 dark:text-white/90">الطلب رقم #{{ order.id }}</li>
+                                    </ol>
+                                </nav>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                    <!-- Status Banner -->
+                    <div class="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl border border-blue-200 dark:border-blue-800 p-6 mb-6">
+                        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                            <div class="flex items-center space-x-4">
+                                {% set accepted_offers = order.offers|selectattr('status', 'equalto', 'accepted')|list %}
+                                {% set pending_offers = order.offers|selectattr('status', 'equalto', 'pending')|list %}
+                                {% set rejected_offers = order.offers|selectattr('status', 'equalto', 'rejected')|list %}
+                                
+                                <div class="flex-shrink-0">
+                                    {% if accepted_offers|length > 0 %}
+                                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+                                            <svg class="h-6 w-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        </div>
+                                    {% elif pending_offers|length > 0 %}
+                                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/30">
+                                            <svg class="h-6 w-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        </div>
+                                    {% else %}
+                                        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
+                                            <svg class="h-6 w-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                            </svg>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                        {% if accepted_offers|length > 0 %}
+                                            {{ _('Order Accepted!') }}
+                                        {% elif pending_offers|length > 0 %}
+                                            {{ _('Awaiting Response') }}
+                                        {% else %}
+                                            {{ _('Order Submitted') }}
+                                        {% endif %}
+                                    </h3>
+                                    <p class="text-sm text-gray-600 dark:text-gray-300">
+                                        {% if accepted_offers|length > 0 %}
+                                            {{ _('Your order has been accepted by') }} {{ accepted_offers|length }} {{ _('company(ies). You can now proceed with the next steps.') }}
+                                        {% elif pending_offers|length > 0 %}
+                                            {{ pending_offers|length }} {{ _('company(ies) have submitted offers. Review and respond to their proposals.') }}
+                                        {% else %}
+                                            {{ _('Your order is being reviewed by companies. You\'ll receive notifications when offers are submitted.') }}
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex flex-col space-y-3">
+                                {% if order.offers|length > 0 %}
+                                    <a href="{{ url_for('view_offers', order_id=order.id) }}" class="bg-brand-500 hover:bg-brand-600 inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        {{ _('View Offers') }} ({{ order.offers|length }})
+                                    </a>
+                                {% endif %}
+                                <a href="{{ url_for('orders') }}" class="bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                    </svg>
+                                    {{ _('Back to Orders') }}
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <!-- Arabic Status Banner - Conditional Display -->
+                        {% if get_locale() == 'ar' %}
+                        <div dir="rtl" lang="ar" class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                                <div class="flex items-center space-x-4">
+                                    <div class="flex-shrink-0">
+                                        {% if accepted_offers|length > 0 %}
+                                            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+                                                <svg class="h-6 w-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                </svg>
+                                            </div>
+                                        {% elif pending_offers|length > 0 %}
+                                            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/30">
+                                                <svg class="h-6 w-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                            </div>
+                                        {% else %}
+                                            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
+                                                <svg class="h-6 w-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                </svg>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                            {% if accepted_offers|length > 0 %}
+                                                تم قبول الطلب!
+                                            {% elif pending_offers|length > 0 %}
+                                                في انتظار الرد
+                                            {% else %}
+                                                تم تقديم الطلب
+                                            {% endif %}
+                                        </h3>
+                                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                                            {% if accepted_offers|length > 0 %}
+                                                تم قبول طلبك من قبل {{ accepted_offers|length }} شركة. يمكنك الآن المتابعة مع الخطوات التالية.
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex flex-col space-y-3">
+                                    {% if order.offers|length > 0 %}
+                                        <a href="{{ url_for('view_offers', order_id=order.id) }}" class="bg-brand-500 hover:bg-brand-600 inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                            </svg>
+                                            عرض العروض ({{ order.offers|length }})
+                                        </a>
+                                    {% endif %}
+                                    <a href="{{ url_for('orders') }}" class="bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                        </svg>
+                                        العودة إلى الطلبات
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Tabs Navigation -->
+                    <div class="border-b border-gray-200 dark:border-gray-700 mb-6">
+                        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                            <button @click="activeTab = 'overview'" :class="activeTab === 'overview' ? 'border-brand-500 text-brand-600 dark:text-brand-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'" class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors">
+                                {{ _('Overview') }}
+                            </button>
+                            <button @click="activeTab = 'products'" :class="activeTab === 'products' ? 'border-brand-500 text-brand-600 dark:text-brand-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'" class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors">
+                                {{ _('Products') }} ({{ order.purchases|length }})
+                            </button>
+                            <button @click="activeTab = 'offers'" :class="activeTab === 'offers' ? 'border-brand-500 text-brand-600 dark:text-brand-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'" class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors">
+                                {{ _('Offers') }} ({{ order.offers|length }})
+                            </button>
+                        </nav>
+                        
+                        <!-- Arabic Tabs Navigation - Conditional Display -->
+                        {% if get_locale() == 'ar' %}
+                        <nav class="-mb-px flex space-x-8 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700" aria-label="Arabic Tabs" dir="rtl" lang="ar">
+                            <button @click="activeTab = 'overview'" :class="activeTab === 'overview' ? 'border-brand-500 text-brand-600 dark:text-brand-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'" class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors">
+                                نظرة عامة
+                            </button>
+                            <button @click="activeTab = 'products'" :class="activeTab === 'products' ? 'border-brand-500 text-brand-600 dark:text-brand-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'" class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors">
+                                المنتجات ({{ order.purchases|length }})
+                            </button>
+                            <button @click="activeTab = 'offers'" :class="activeTab === 'offers' ? 'border-brand-500 text-brand-600 dark:text-brand-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'" class="whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm transition-colors">
+                                العروض ({{ order.offers|length }})
+                            </button>
+                        </nav>
+                        {% endif %}
+                        </div>
+                        
+                    <!-- Tab Content -->
+                    <div>
+                        <!-- Overview Tab -->
+                        <div x-show="activeTab === 'overview'" x-transition>
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                <!-- Order Information -->
+                                <div class="lg:col-span-2">
+                                    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+                                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">{{ _('Order Information') }}</h3>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ _('Order Name') }}</label>
+                                                <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 rounded-lg p-3">{{ order.order_name or 'N/A' }}</p>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ _('Sector') }}</label>
+                                                <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 rounded-lg p-3">{{ order.sector or 'N/A' }}</p>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ _('Order Type') }}</label>
+                                                <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 rounded-lg p-3">{{ order.order_type or 'N/A' }}</p>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ _('Created') }}</label>
+                                                <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 rounded-lg p-3">{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                                            </div>
+                                            {% if order.delivery_date %}
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ _('Delivery Date') }}</label>
+                                                <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 rounded-lg p-3">{{ order.delivery_date.strftime('%Y-%m-%d') }}</p>
+                                            </div>
+                                            {% endif %}
+                                            {% if order.delivery_time %}
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ _('Delivery Time') }}</label>
+                                                <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 rounded-lg p-3">{{ order.delivery_time }}</p>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        {% if order.description %}
+                                        <div class="mt-6">
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{{ _('Description') }}</label>
+                                            <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 rounded-lg p-3">{{ order.description }}</p>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        <!-- Arabic Order Information -->
+                                        <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700" dir="rtl" lang="ar">
+                                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">معلومات الطلب</h3>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">اسم الطلب</label>
+                                                    <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 rounded-lg p-3">{{ order.order_name or 'غير محدد' }}</p>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">القطاع</label>
+                                                    <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 rounded-lg p-3">{{ order.sector or 'غير محدد' }}</p>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">نوع الطلب</label>
+                                                    <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 rounded-lg p-3">{{ order.order_type or 'غير محدد' }}</p>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">تاريخ الإنشاء</label>
+                                                    <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 rounded-lg p-3">{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                                                </div>
+                                                {% if order.delivery_date %}
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">تاريخ التوصيل</label>
+                                                    <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 rounded-lg p-3">{{ order.delivery_date.strftime('%Y-%m-%d') }}</p>
+                                                </div>
+                                                {% endif %}
+                                                {% if order.delivery_time %}
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">وقت التوصيل</label>
+                                                    <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 rounded-lg p-3">{{ order.delivery_time }}</p>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            {% if order.description %}
+                                            <div class="mt-6">
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">الوصف</label>
+                                                <p class="text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 rounded-lg p-3">{{ order.description }}</p>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Order Statistics -->
+                                <div>
+                                    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+                                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">{{ _('Order Statistics') }}</h3>
+                                        <div class="space-y-4">
+                                            <div class="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                                <div class="flex items-center space-x-3">
+                                                    <div class="flex-shrink-0">
+                                                        <svg class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-sm font-medium text-blue-900 dark:text-blue-100">{{ _('Products') }}</p>
+                                                        <p class="text-xs text-blue-600 dark:text-blue-400">{{ _('Items requested') }}</p>
+                                                    </div>
+                                                </div>
+                                                <span class="text-lg font-bold text-blue-600 dark:text-blue-400">{{ order.purchases|length }}</span>
+                                            </div>
+                                            
+                                            <div class="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                                                <div class="flex items-center space-x-3">
+                                                    <div class="flex-shrink-0">
+                                                        <svg class="h-6 w-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-sm font-medium text-green-900 dark:text-green-100">{{ _('Accepted Offers') }}</p>
+                                                        <p class="text-xs text-green-600 dark:text-green-400">{{ _('Ready to proceed') }}</p>
+                                                    </div>
+                                                </div>
+                                                <span class="text-lg font-bold text-green-600 dark:text-green-400">{{ accepted_offers|length }}</span>
+                                            </div>
+                                            
+                                            <div class="flex items-center justify-between p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                                                <div class="flex items-center space-x-3">
+                                                    <div class="flex-shrink-0">
+                                                        <svg class="h-6 w-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-sm font-medium text-yellow-900 dark:text-yellow-100">{{ _('Pending Offers') }}</p>
+                                                        <p class="text-xs text-yellow-600 dark:text-yellow-400">{{ _('Awaiting response') }}</p>
+                                                    </div>
+                                                </div>
+                                                <span class="text-lg font-bold text-yellow-600 dark:text-yellow-400">{{ pending_offers|length }}</span>
+                                            </div>
+                                            
+                                            <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                                <div class="flex items-center space-x-3">
+                                                    <div class="flex-shrink-0">
+                                                        <svg class="h-6 w-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ _('Total Offers') }}</p>
+                                                        <p class="text-xs text-gray-600 dark:text-gray-400">{{ _('All submissions') }}</p>
+                                                    </div>
+                                                </div>
+                                                <span class="text-lg font-bold text-gray-600 dark:text-gray-400">{{ order.offers|length }}</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Arabic Order Statistics -->
+                                        <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700" dir="rtl" lang="ar">
+                                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">إحصائيات الطلب</h3>
+                                            <div class="space-y-4">
+                                                <div class="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                                    <div class="flex items-center space-x-3">
+                                                        <div class="flex-shrink-0">
+                                                            <svg class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                            </svg>
+                                                        </div>
+                                                        <div>
+                                                            <p class="text-sm font-medium text-blue-900 dark:text-blue-100">المنتجات</p>
+                                                            <p class="text-xs text-blue-600 dark:text-blue-400">العناصر المطلوبة</p>
+                                                        </div>
+                                                    </div>
+                                                    <span class="text-lg font-bold text-blue-600 dark:text-blue-400">{{ order.purchases|length }}</span>
+                                                </div>
+                                                
+                                                <div class="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                                                    <div class="flex items-center space-x-3">
+                                                        <div class="flex-shrink-0">
+                                                            <svg class="h-6 w-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                            </svg>
+                                                        </div>
+                                                        <div>
+                                                            <p class="text-sm font-medium text-green-900 dark:text-green-100">العروض المقبولة</p>
+                                                            <p class="text-xs text-green-600 dark:text-green-400">جاهز للمتابعة</p>
+                                                        </div>
+                                                    </div>
+                                                    <span class="text-lg font-bold text-green-600 dark:text-green-400">{{ accepted_offers|length }}</span>
+                                                </div>
+                                                
+                                                <div class="flex items-center justify-between p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                                                    <div class="flex items-center space-x-3">
+                                                        <div class="flex-shrink-0">
+                                                            <svg class="h-6 w-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                            </svg>
+                                                        </div>
+                                                        <div>
+                                                            <p class="text-sm font-medium text-yellow-900 dark:text-yellow-100">العروض المعلقة</p>
+                                                            <p class="text-xs text-yellow-600 dark:text-yellow-400">في انتظار الرد</p>
+                                                        </div>
+                                                    </div>
+                                                    <span class="text-lg font-bold text-yellow-600 dark:text-yellow-400">{{ pending_offers|length }}</span>
+                                                </div>
+                                                
+                                                <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                                    <div class="flex items-center space-x-3">
+                                                        <div class="flex-shrink-0">
+                                                            <svg class="h-6 w-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                                            </svg>
+                                                        </div>
+                                                        <div>
+                                                            <p class="text-sm font-medium text-gray-900 dark:text-gray-100">إجمالي العروض</p>
+                                                            <p class="text-xs text-gray-600 dark:text-gray-400">جميع التقديمات</p>
+                                                        </div>
+                                                    </div>
+                                                    <span class="text-lg font-bold text-gray-600 dark:text-gray-400">{{ order.offers|length }}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Products Tab -->
+                        <div x-show="activeTab === 'products'" x-transition>
+                            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+                                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ _('Requested Products') }}</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ order.purchases|length }} {{ _('item(s) in this order') }}</p>
+                                </div>
+                                
+                                <!-- Arabic Products Header - Conditional Display -->
+                                {% if get_locale() == 'ar' %}
+                                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 mt-4" dir="rtl" lang="ar">
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">المنتجات المطلوبة</h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ order.purchases|length }} عنصر في هذا الطلب</p>
+                                </div>
+                                {% endif %}
+                                <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                                    {% for purchase in order.purchases %}
+                                    <div class="p-6">
+                                        <div class="flex items-start justify-between">
+                                            <div class="flex-1">
+                                                <h4 class="text-lg font-medium text-gray-900 dark:text-white">{{ purchase.part_name }}</h4>
+                                                {% if purchase.description %}
+                                                <p class="text-sm text-gray-600 dark:text-gray-300 mt-2">{{ purchase.description }}</p>
+                                                {% endif %}
+                                                <div class="flex flex-wrap items-center gap-4 mt-4">
+                                                                                                    {% if purchase.quantity %}
+                                                <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+                                                    {{ _('Qty') }}: {{ purchase.quantity }}
+                                                </span>
+                                                {% endif %}
+                                                {% if purchase.sector %}
+                                                <span class="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-900/20 dark:text-purple-400">
+                                                    {{ purchase.sector }}
+                                                </span>
+                                                {% endif %}
+                                                {% if purchase.unit %}
+                                                <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                                                    {{ _('Unit') }}: {{ purchase.unit }}
+                                                </span>
+                                                {% endif %}
+                                                {% if purchase.material %}
+                                                <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/20 dark:text-green-400">
+                                                    {{ purchase.material }}
+                                                </span>
+                                                {% endif %}
+                                            </div>
+                                            {% if purchase.technical_specs %}
+                                            <div class="mt-4 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                                <p class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{{ _('Technical Specifications') }}:</p>
+                                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ purchase.technical_specs }}</p>
+                                            </div>
+                        {% endif %}
+                                        
+                                        <!-- Arabic Product Details -->
+                                        <div class="mt-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg" dir="rtl" lang="ar">
+                                            <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ purchase.part_name }}</h4>
+                                            {% if purchase.description %}
+                                            <p class="text-sm text-gray-600 dark:text-gray-300 mb-3">{{ purchase.description }}</p>
+                                            {% endif %}
+                                            <div class="flex flex-wrap items-center gap-3">
+                                                {% if purchase.quantity %}
+                                                <span class="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+                                                    الكمية: {{ purchase.quantity }}
+                                                </span>
+                                                {% endif %}
+                                                {% if purchase.sector %}
+                                                <span class="inline-flex items-center rounded-full bg-purple-100 px-2.5 py-0.5 text-xs font-medium text-purple-800 dark:bg-purple-900/20 dark:text-purple-400">
+                                                    {{ purchase.sector }}
+                                                </span>
+                                                {% endif %}
+                                                {% if purchase.unit %}
+                                                <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                                                    الوحدة: {{ purchase.unit }}
+                                                </span>
+                                                {% endif %}
+                                                {% if purchase.material %}
+                                                <span class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800 dark:bg-green-900/20 dark:text-green-400">
+                                                    {{ purchase.material }}
+                                                </span>
+                                                {% endif %}
+                                            </div>
+                                            {% if purchase.technical_specs %}
+                                            <div class="mt-4 p-3 bg-gray-100 dark:bg-gray-600 rounded-lg">
+                                                <p class="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">المواصفات التقنية:</p>
+                                                <p class="text-sm text-gray-600 dark:text-gray-400">{{ purchase.technical_specs }}</p>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                            </div>
+                                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                </div>
+            </div>
+
+                        <!-- Offers Tab -->
+                        <div x-show="activeTab === 'offers'" x-transition>
+                            {% if order.offers %}
+                            <!-- Offers Summary Banner -->
+                            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-800 p-6 mb-6">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex-shrink-0">
+                                            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
+                                                <svg class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-lg font-semibold text-blue-900 dark:text-blue-100">{{ _('Offers Received') }}</h3>
+                                            <p class="text-sm text-blue-700 dark:text-blue-300">{{ order.offers|length }} {{ _('company(ies) have submitted offers for your order') }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ order.offers|length }}</div>
+                                        <div class="text-sm text-blue-600 dark:text-blue-400">{{ _('Total Offers') }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Arabic Offers Summary Banner - Conditional Display -->
+                            {% if get_locale() == 'ar' %}
+                            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200 dark:border-blue-800 p-6 mb-6 mt-6" dir="rtl" lang="ar">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-4">
+                                        <div class="flex-shrink-0">
+                                            <div class="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
+                                                <svg class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-lg font-semibold text-blue-900 dark:text-blue-100">العروض المستلمة</h3>
+                                            <p class="text-sm text-blue-700 dark:text-blue-300">{{ order.offers|length }} شركة قدمت عروض لطلبك</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ order.offers|length }}</div>
+                                        <div class="text-sm text-blue-600 dark:text-blue-400">إجمالي العروض</div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Compare Offers Button - Show if there are multiple offers -->
+                            {% if order.offers|length > 1 %}
+                            <div class="mb-6 flex justify-center">
+                                <a href="{{ url_for('compare_offers_page', order_id=order.id) }}" 
+                                   class="inline-flex items-center gap-3 px-8 py-3 rounded-xl text-lg font-semibold transition-all duration-200 border-2"
+                                   style="background-color: #7c3aed !important; color: white !important; border-color: #6d28d9 !important; opacity: 1 !important;">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                    {{ _('Compare Offers') }}
+                                </a>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                {% for offer in order.offers %}
+                                <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden {% if offer.status == 'accepted' %}ring-2 ring-green-500 shadow-lg{% elif offer.status == 'rejected' %}ring-2 ring-red-500{% endif %} transition-all duration-200 hover:shadow-md">
+                                    <!-- Offer Header -->
+                                    <div class="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-center space-x-3">
+                                                <div class="flex-shrink-0">
+                                                    <div class="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                                                        <span class="text-white font-bold text-sm">{{ (offer.company.name_en or offer.company.name_ar or 'C')[0] }}</span>
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white">{{ offer.company.name_en or offer.company.name_ar or 'Company #' + offer.company.id|string }}</h4>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">{{ _('Submitted') }} {{ offer.created_at.strftime('%Y-%m-%d') }}</p>
+                                                </div>
+                                                
+                                                <!-- Arabic Company Info - Conditional Display -->
+                                                {% if get_locale() == 'ar' %}
+                                                <div dir="rtl" lang="ar">
+                                                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white">{{ offer.company.name_ar or offer.company.name_en or 'شركة رقم ' + offer.company.id|string }}</h4>
+                                                    <p class="text-sm text-gray-500 dark:text-gray-400">تم التقديم في {{ offer.created_at.strftime('%Y-%m-%d') }}</p>
+                                                </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="text-right">
+                                                <span class="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium
+                                                    {% if offer.status == 'accepted' %}bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400
+                                                    {% elif offer.status == 'rejected' %}bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400
+                                                    {% else %}bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400{% endif %}">
+                                                    {% if offer.status == 'accepted' %}
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                        </svg>
+                                                    {% elif offer.status == 'rejected' %}
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                        </svg>
+                                                    {% else %}
+                                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                        </svg>
+                                                    {% endif %}
+                                                    {{ offer.status|title }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Offer Content -->
+                                    <div class="p-6">
+                                        {% if offer.description %}
+                                        <div class="mb-6">
+                                            <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
+                                                <svg class="w-4 h-4 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                </svg>
+                                                {{ _('Offer Description') }}
+                                            </h5>
+                                            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                                                <p class="text-sm text-gray-700 dark:text-gray-300">{{ offer.description }}</p>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                        
+                                        <!-- Arabic Offer Description - Conditional Display -->
+                                        {% if get_locale() == 'ar' and offer.description %}
+                                        <div class="mb-6" dir="rtl" lang="ar">
+                                            <h5 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
+                                                <svg class="w-4 h-4 ml-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                </svg>
+                                                وصف العرض
+                                            </h5>
+                                            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                                                <p class="text-sm text-gray-700 dark:text-gray-300">{{ offer.description }}</p>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                        <!-- Offer Details Grid -->
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                            {% if offer.total_price %}
+                                            <div class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg p-4 border border-green-200 dark:border-green-800">
+                                                <div class="flex items-center space-x-3">
+                                                    <div class="flex-shrink-0">
+                                                        <svg class="h-6 w-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-xs font-medium text-green-700 dark:text-green-300">{{ _('Total Price') }}</p>
+                                                        <p class="text-lg font-bold text-green-800 dark:text-green-200">EGP {{ "%.2f"|format(offer.total_price) }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+
+                                            {% if offer.delivery_time %}
+                                            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                                                <div class="flex items-center space-x-3">
+                                                    <div class="flex-shrink-0">
+                                                        <svg class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-xs font-medium text-blue-700 dark:text-blue-300">{{ _('Delivery Time') }}</p>
+                                                        <p class="text-lg font-bold text-blue-800 dark:text-blue-200">{{ offer.delivery_time }}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                            
+                                            <!-- Arabic Offer Details - Conditional Display -->
+                                            {% if get_locale() == 'ar' %}
+                                                {% if offer.total_price %}
+                                                <div class="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg p-4 border border-green-200 dark:border-green-800 mt-4" dir="rtl" lang="ar">
+                                                    <div class="flex items-center space-x-3">
+                                                        <div class="flex-shrink-0">
+                                                            <svg class="h-6 w-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                                            </svg>
+                                                        </div>
+                                                        <div>
+                                                            <p class="text-xs font-medium text-green-700 dark:text-green-300">السعر الإجمالي</p>
+                                                            <p class="text-lg font-bold text-green-800 dark:text-green-200">جنيه مصري {{ "%.2f"|format(offer.total_price) }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+
+                                                {% if offer.delivery_time %}
+                                                <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:border-blue-800 mt-4" dir="rtl" lang="ar">
+                                                    <div class="flex items-center space-x-3">
+                                                        <div class="flex-shrink-0">
+                                                            <svg class="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                                            </svg>
+                                                        </div>
+                                                        <div>
+                                                            <p class="text-xs font-medium text-blue-700 dark:text-blue-300">وقت التوصيل</p>
+                                                            <p class="text-lg font-bold text-blue-800 dark:text-blue-200">{{ offer.delivery_time }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Action Buttons -->
+                                        <div class="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+                                            <div class="flex space-x-2">
+                                                <!-- View Offer Details Button -->
+                                                <a href="{{ url_for('offer_details', offer_id=offer.id) }}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5" style="background-color: #2563eb !important; color: white !important; opacity: 1 !important; visibility: visible !important; display: inline-flex !important; border: 2px solid #1d4ed8 !important;">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                    </svg>
+                                                    {{ _('View Details') }}
+                                                </a>
+                                                
+                                                {% if offer.status == 'pending' %}
+                                                <form method="POST" action="{{ url_for('accept_offer', offer_id=offer.id) }}" class="inline">
+                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                                    <button type="submit" class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                        </svg>
+                                                        {{ _('Accept Offer') }}
+                                                    </button>
+                                                </form>
+                                                <form method="POST" action="{{ url_for('reject_offer', offer_id=offer.id) }}" class="inline">
+                                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                                    <button type="submit" class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                        </svg>
+                                                        {{ _('Reject') }}
+                                                    </button>
+                                                </form>
+                                                {% else %}
+                                                <span class="text-sm text-gray-500 dark:text-gray-400">
+                                                    {% if offer.status == 'accepted' %}
+                                                        <span class="text-green-600 dark:text-green-400">✓ {{ _('Offer Accepted') }}</span>
+                                                    {% elif offer.status == 'rejected' %}
+                                                        <span class="text-red-600 dark:text-red-400">✗ {{ _('Offer Rejected') }}</span>
+                                                    {% endif %}
+                                                </span>
+                                                {% endif %}
+                                            </div>
+                                            
+                                            <a href="{{ url_for('start_chat', company_id=offer.company.id) }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 px-4 py-2 text-sm font-medium text-white transition-colors">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                                </svg>
+                                                {{ _('Chat with Company') }}
+                                            </a>
+                                            
+                                            <!-- Arabic Chat Button - Conditional Display -->
+                                            {% if get_locale() == 'ar' %}
+                                            <a href="{{ url_for('start_chat', company_id=offer.company.id) }}" class="inline-flex items-center gap-2 rounded-lg bg-blue-600 hover:bg-blue-700 px-4 py-2 text-sm font-medium text-white transition-colors mt-2" dir="rtl" lang="ar">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                                </svg>
+                                                الدردشة مع الشركة
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% else %}
+                            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-12 text-center">
+                                <svg class="mx-auto h-16 w-16 text-gray-400 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                </svg>
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">{{ _('No Offers Yet') }}</h3>
+                                <p class="text-gray-500 dark:text-gray-400 mb-6">{{ _('Companies are reviewing your order and will submit offers soon. You\'ll receive notifications when new offers arrive.') }}</p>
+                                <a href="{{ url_for('orders') }}" class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                    </svg>
+                                    {{ _('Back to Orders') }}
+                                </a>
+                            </div>
+                            
+                            <!-- Arabic No Offers Section - Conditional Display -->
+                            {% if get_locale() == 'ar' %}
+                            <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-12 text-center mt-8" dir="rtl" lang="ar">
+                                <svg class="mx-auto h-16 w-16 text-gray-400 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                </svg>
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">لا توجد عروض بعد</h3>
+                                <p class="text-gray-500 dark:text-gray-400 mb-6">الشركات تقوم بمراجعة طلبك وستقدم عروض قريباً. ستتلقى إشعارات عند وصول عروض جديدة.</p>
+                                <a href="{{ url_for('orders') }}" class="inline-flex items-center gap-2 rounded-lg bg-brand-500 px-4 py-2 text-sm font-medium text-white hover:bg-brand-600 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                                    </svg>
+                                    العودة إلى الطلبات
+                                </a>
+                            </div>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script_1.js') }}" defer></script>
+</body>
+</html>

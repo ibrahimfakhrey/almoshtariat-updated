@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en" x-data="{ darkMode: false }" :class="{ 'dark': darkMode }">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if request.cookies.get('language') == 'ar' %}تم التسليم بنجاح{% else %}Delivery Confirmed{% endif %} - Almoshtariat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .success-animation {
+            animation: successPulse 2s ease-in-out infinite;
+        }
+        @keyframes successPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center">
+    <div class="max-w-md w-full mx-4">
+        <!-- Success Card -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+            <!-- Success Icon -->
+            <div class="bg-green-500 px-6 py-8 text-center">
+                <div class="success-animation inline-block">
+                    <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto">
+                        <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h1 class="text-2xl font-bold text-white mt-4">
+                    {% if request.cookies.get('language') == 'ar' %}
+                        تم التسليم بنجاح!
+                    {% else %}
+                        Delivery Confirmed!
+                    {% endif %}
+                </h1>
+            </div>
+            
+            <!-- Package Details -->
+            <div class="px-6 py-6">
+                <div class="text-center mb-6">
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                        {% if request.cookies.get('language') == 'ar' %}
+                            تم تأكيد تسليم الطرد بنجاح
+                        {% else %}
+                            Package delivery has been successfully confirmed
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <!-- Package Information -->
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                        {% if request.cookies.get('language') == 'ar' %}تفاصيل الطرد{% else %}Package Details{% endif %}
+                    </h3>
+                    <div class="space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600 dark:text-gray-300">
+                                {% if request.cookies.get('language') == 'ar' %}رقم الطرد:{% else %}Package Number:{% endif %}
+                            </span>
+                            <span class="font-medium text-gray-900 dark:text-white">{{ package.package_number }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600 dark:text-gray-300">
+                                {% if request.cookies.get('language') == 'ar' %}رقم الطلب:{% else %}Order ID:{% endif %}
+                            </span>
+                            <span class="font-medium text-gray-900 dark:text-white">#{{ package.order_id }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600 dark:text-gray-300">
+                                {% if request.cookies.get('language') == 'ar' %}تاريخ التسليم:{% else %}Delivered At:{% endif %}
+                            </span>
+                            <span class="font-medium text-gray-900 dark:text-white">
+                                {{ package.delivered_at.strftime('%Y-%m-%d %H:%M') if package.delivered_at else 'N/A' }}
+                            </span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600 dark:text-gray-300">
+                                {% if request.cookies.get('language') == 'ar' %}الحالة:{% else %}Status:{% endif %}
+                            </span>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                {% if request.cookies.get('language') == 'ar' %}تم التسليم{% else %}Delivered{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="space-y-3">
+                    <a href="{{ url_for('package_details', package_id=package.id) }}" 
+                       class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors text-center block">
+                        {% if request.cookies.get('language') == 'ar' %}
+                            عرض تفاصيل الطرد
+                        {% else %}
+                            View Package Details
+                        {% endif %}
+                    </a>
+                    <a href="{{ url_for('dash') }}" 
+                       class="w-full bg-gray-600 hover:bg-gray-700 text-white font-medium py-3 px-4 rounded-lg transition-colors text-center block">
+                        {% if request.cookies.get('language') == 'ar' %}
+                            العودة إلى لوحة التحكم
+                        {% else %}
+                            Back to Dashboard
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Additional Information -->
+        <div class="mt-6 text-center">
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+                {% if request.cookies.get('language') == 'ar' %}
+                    سيتم إشعار العميل بتأكيد التسليم
+                {% else %}
+                    The customer will be notified of the delivery confirmation
+                {% endif %}
+            </p>
+        </div>
+    </div>
+</body>
+</html>
