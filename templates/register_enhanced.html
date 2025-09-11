@@ -5,6 +5,7 @@
     <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" name="viewport"/>
     <meta content="ie=edge" http-equiv="X-UA-Compatible"/>
     <title>Enhanced Registration</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link href="favicon.ico" rel="icon"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
 </head>
@@ -151,7 +152,19 @@
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="email-address">Email Address *</label>
-                                        <input type="email" name="email" required class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-800 placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-brand-500">
+                                        <div class="relative">
+                                            <input type="email" name="email" id="email" required 
+                                                   class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-800 placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-brand-500 pr-10"
+                                                   placeholder="Enter your email address">
+                                            
+                                            <!-- Email checking loading indicator -->
+                                            <div id="email-loading" class="absolute right-3 top-1/2 transform -translate-y-1/2 hidden">
+                                                <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-brand-500"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Email feedback message -->
+                                        <div id="email-feedback" class="mt-2 text-sm hidden"></div>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="username">Username *</label>
@@ -251,11 +264,21 @@
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="country">Country *</label>
-                                        <input type="text" name="country" required class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-800 placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-brand-500">
+                                        <select name="country" id="country" required class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-800 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-brand-500">
+                                            <option value="">Select Country</option>
+                                            <option value="Egypt">Egypt</option>
+                                            <option value="Syria">Syria</option>
+                                            <option value="KSA">KSA</option>
+                                            <option value="UAE">UAE</option>
+                                            <option value="Others">Others</option>
+                                        </select>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="city">City *</label>
-                                        <input type="text" name="city" required class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-800 placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-brand-500">
+                                        <select name="city" id="city" required class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-800 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-brand-500" disabled>
+                                            <option value="">Select City</option>
+                                        </select>
+                                        <input type="text" name="city_other" id="city_other" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-800 placeholder:text-gray-400 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-brand-500 mt-2 hidden" placeholder="Enter city name">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="phone-number">Phone Number *</label>
@@ -476,6 +499,7 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('meta[name=csrf-token]').getAttribute('content')
                         },
                         body: JSON.stringify({ username: username })
                     });
@@ -819,6 +843,7 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('meta[name=csrf-token]').getAttribute('content')
                 },
                 body: JSON.stringify({ username: username })
             })
@@ -920,6 +945,171 @@
                 const username = this.value.trim();
                 if (username) {
                     checkUsernameAvailability(username);
+                }
+            });
+        }
+        
+        // Email availability checking
+        document.addEventListener('DOMContentLoaded', function() {
+            const emailInput = document.getElementById('email');
+            const emailFeedback = document.getElementById('email-feedback');
+            const emailLoading = document.getElementById('email-loading');
+            let emailTimeout;
+        
+        async function checkEmailAvailability(email) {
+            if (!email || email.length < 3) {
+                hideEmailFeedback();
+                return;
+            }
+            
+            // Show loading indicator
+            showEmailLoading();
+            
+            try {
+                const response = await fetch('/check_email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('meta[name=csrf-token]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+                
+                const data = await response.json();
+                
+                // Hide loading indicator
+                hideEmailLoading();
+                
+                if (data.available) {
+                    showEmailAvailable(data.message);
+                } else {
+                    showEmailTaken(data.message);
+                }
+            } catch (error) {
+                console.error('Error checking email availability:', error);
+                hideEmailLoading();
+                hideEmailFeedback();
+            }
+        }
+        
+        function showEmailLoading() {
+            if (emailLoading) {
+                emailLoading.classList.remove('hidden');
+            }
+        }
+        
+        function hideEmailLoading() {
+            if (emailLoading) {
+                emailLoading.classList.add('hidden');
+            }
+        }
+        
+        function showEmailAvailable(message) {
+            if (emailFeedback) {
+                emailFeedback.classList.remove('hidden', 'text-red-600', 'text-yellow-600');
+                emailFeedback.classList.add('text-green-600');
+                emailFeedback.textContent = message || 'Email is available';
+                emailInput.classList.remove('border-red-500', 'border-yellow-500');
+                emailInput.classList.add('border-green-500');
+            }
+        }
+        
+        function showEmailTaken(message) {
+            if (emailFeedback) {
+                emailFeedback.classList.remove('hidden', 'text-green-600', 'text-yellow-600');
+                emailFeedback.classList.add('text-red-600');
+                emailFeedback.textContent = message || 'Email is already registered';
+                emailInput.classList.remove('border-green-500', 'border-yellow-500');
+                emailInput.classList.add('border-red-500');
+            }
+        }
+        
+        function hideEmailFeedback() {
+            if (emailFeedback) {
+                emailFeedback.classList.add('hidden');
+                emailInput.classList.remove('border-green-500', 'border-red-500', 'border-yellow-500');
+            }
+        }
+        
+        // Add event listener for email input
+        if (emailInput) {
+            emailInput.addEventListener('input', function() {
+                const email = this.value.trim();
+                
+                // Clear previous timeout
+                if (emailTimeout) {
+                    clearTimeout(emailTimeout);
+                }
+                
+                // Set new timeout for debounced checking
+                emailTimeout = setTimeout(() => {
+                    checkEmailAvailability(email);
+                }, 500); // Wait 500ms after user stops typing
+            });
+            
+            emailInput.addEventListener('blur', function() {
+                const email = this.value.trim();
+                if (email) {
+                    checkEmailAvailability(email);
+                }
+            });
+        }
+        });
+        
+        // Country and City dropdown functionality
+        const countrySelect = document.getElementById('country');
+        const citySelect = document.getElementById('city');
+        const cityOtherInput = document.getElementById('city_other');
+        
+        // Egypt governorates list
+        const egyptGovernorates = [
+            'Cairo', 'Alexandria', 'Giza', 'Shubra El Kheima', 'Port Said', 'Suez',
+            'Luxor', 'Mansoura', 'El Mahalla El Kubra', 'Tanta', 'Asyut', 'Ismailia',
+            'Fayyum', 'Zagazig', 'Aswan', 'Damietta', 'Damanhur', 'Minya', 'Beni Suef',
+            'Hurghada', 'Qena', 'Sohag', 'Shibin El Kom', 'Banha', 'Kafr El Sheikh',
+            'Arish', 'Mallawi', 'Bilbays', 'Marsa Matruh'
+        ];
+        
+        if (countrySelect && citySelect) {
+            countrySelect.addEventListener('change', function() {
+                const selectedCountry = this.value;
+                
+                // Clear city options
+                citySelect.innerHTML = '<option value="">Select City</option>';
+                citySelect.disabled = false;
+                
+                // Hide/show city input based on country selection
+                if (selectedCountry === 'Egypt') {
+                    // Populate with Egypt governorates
+                    egyptGovernorates.forEach(governorate => {
+                        const option = document.createElement('option');
+                        option.value = governorate;
+                        option.textContent = governorate;
+                        citySelect.appendChild(option);
+                    });
+                    citySelect.classList.remove('hidden');
+                    cityOtherInput.classList.add('hidden');
+                    cityOtherInput.required = false;
+                    citySelect.required = true;
+                } else if (selectedCountry === 'Others' || selectedCountry === '') {
+                    // Show text input for other countries
+                    if (selectedCountry === 'Others') {
+                        citySelect.classList.add('hidden');
+                        cityOtherInput.classList.remove('hidden');
+                        cityOtherInput.required = true;
+                        citySelect.required = false;
+                    } else {
+                        citySelect.disabled = true;
+                        cityOtherInput.classList.add('hidden');
+                        cityOtherInput.required = false;
+                        citySelect.required = true;
+                    }
+                } else {
+                    // For Syria, KSA, UAE - show text input
+                    citySelect.classList.add('hidden');
+                    cityOtherInput.classList.remove('hidden');
+                    cityOtherInput.required = true;
+                    citySelect.required = false;
                 }
             });
         }

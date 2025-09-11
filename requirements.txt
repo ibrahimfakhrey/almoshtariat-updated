@@ -29,3 +29,4 @@ Flask-SocketIO==5.3.6
 groq==0.4.1
 requests==2.31.0
 google-generativeai==0.3.2
+weasyprint==62.3

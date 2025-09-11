@@ -74,15 +74,15 @@ except ImportError:
 
 
 # Notification utility functions
-def create_notification(title: str, description: str, notification_type: str, priority: str = 'normal',
+def create_notification(title: str = "", description: str = "", notification_type: str = 'info', priority: str = 'normal',
                         user_id: Optional[int] = None, company_id: Optional[int] = None, 
                         related_order_id: Optional[int] = None, related_offer_id: Optional[int] = None, 
-                        related_chat_id: Optional[int] = None, related_product_id: Optional[int] = None) -> Optional[Notification]:
+                        related_chat_id: Optional[int] = None, related_product_id: Optional[int] = None) -> Optional['Notification']:
     """Create a new notification with real-time delivery"""
     try:
         notification = Notification(
-            title=title,
-            description=description,
+            title=title or "Notification",
+            description=description or "No description",
             notification_type=notification_type,
             priority=priority,
             user_id=user_id,
@@ -171,7 +171,7 @@ def mark_notification_read(notification_id: int, user_id: Optional[int] = None) 
     """Mark a notification as read"""
     notification = Notification.query.get(notification_id)
     if notification and (user_id is None or notification.user_id == user_id):
-        if hasattr(notification, 'mark_as_read'):
+        if notification and hasattr(notification, 'mark_as_read'):
             notification.mark_as_read()
         else:
             notification.is_read = True
@@ -314,10 +314,10 @@ def process_purchase_preferences_file(file_path: str, user_id: int):
 
                 # Create UserPreference object
                 preference = UserPreference(
-                    user_id=user_id,
-                    product_name=product_name,
+                    user_id=user_id or 0,
+                    product_name=product_name or "Unknown Product",
                     product_category=str(row.get('product_category', '')).strip() if pd.notna(
-                        row.get('product_category')) else None,
+                        row.get('product_category')) else "General",
                     product_description=str(row.get('description', '')).strip() if pd.notna(
                         row.get('description')) else None,
                     quantity=quantity,
@@ -790,10 +790,15 @@ def login():
         session.pop('_flashes', None)
 
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
+        username = request.form.get('username') or ''
+        password = request.form.get('password') or ''
         user = User.query.filter_by(username=username).first()
-        if user and check_password_hash(user.password_hash, password):
+        if user and user.password_hash and check_password_hash(user.password_hash, password):
+            # Check if email is verified
+            if not user.is_verified:
+                flash('Please verify your email before logging in. Check your email for verification code.', 'warning')
+                return redirect(url_for('verify_email', email=user.email))
+            
             login_user(user)
             flash(_('Login successful!'), 'success')
 
@@ -823,10 +828,10 @@ def registerr():
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     if request.method == 'POST':
-        username = request.form.get('username')
-        email = request.form.get('email')
-        password = request.form.get('password')
-        confirm_password = request.form.get('confirm_password')
+        username = request.form.get('username') or ''
+        email = request.form.get('email') or ''
+        password = request.form.get('password') or ''
+        confirm_password = request.form.get('confirm_password') or ''
         role = request.form.get('role', 'client')  # Default to client, allow company selection
 
         if password != confirm_password:
@@ -841,7 +846,7 @@ def registerr():
             flash(_('Email already registered'), 'error')
             return redirect(url_for('register'))
 
-        password_hash = generate_password_hash(password, method='pbkdf2:sha256')
+        password_hash = generate_password_hash(password, method='pbkdf2:sha256') if password else ''
         
         # Get or create default company for user
         default_company = Company.query.filter_by(company_type='client').first()
@@ -979,7 +984,7 @@ def company_register():
                 file = request.files[field]
                 if file and file.filename != '':
                     # Secure filename and save file
-                    filename = secure_filename(file.filename)
+                    filename = secure_filename(file.filename or 'unnamed_file')
                     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
                     filename = f"{timestamp}_{filename}"
                     file_path = os.path.join(upload_folder, filename)
@@ -1260,7 +1265,7 @@ def upload_company_document():
 
         # Generate unique filename
         timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
-        safe_filename = secure_filename(document_file.filename)
+        safe_filename = secure_filename(document_file.filename or 'unnamed_document')
         filename = f"{field_name}_{timestamp}_{safe_filename}"
         file_path = os.path.join(upload_folder, filename)
 
@@ -1458,6 +1463,7 @@ def debug_company_status():
 
 
 @app.route('/check_username', methods=['POST'])
+@csrf.exempt
 def check_username():
     """Check if username is available and suggest alternatives if taken"""
     data = request.get_json()
@@ -1480,6 +1486,37 @@ def check_username():
         'suggestions': suggestions,
         'message': f'Username "{username}" is already taken. Here are some suggestions:'
     })
+
+
+@app.route('/check_email', methods=['POST'])
+@csrf.exempt
+def check_email():
+    """Check if email is already registered"""
+    data = request.get_json()
+    email = data.get('email', '').strip().lower()
+
+    if not email:
+        return jsonify({'available': True, 'message': ''})
+
+    # Check if email exists
+    existing_user = User.query.filter_by(email=email).first()
+    
+    if existing_user:
+        return jsonify({
+            'available': False,
+            'message': f'Email "{email}" is already registered. Please use a different email address.'
+        })
+    
+    return jsonify({
+        'available': True,
+        'message': 'Email is available'
+    })
+
+
+@app.route('/test_validation')
+def test_validation():
+    """Test page for email and username validation"""
+    return render_template('test_validation.html')
 
 
 def generate_username_suggestions(base_username: str):
@@ -1545,14 +1582,18 @@ def register_enhanced():
         password = request.form.get('password')
         country = request.form.get('country')
         city = request.form.get('city')
+        city_other = request.form.get('city_other')
         phone_number = request.form.get('phone_number')
         company_name = request.form.get('company_name')
         sector = request.form.get('sector')
         tax_number = request.form.get('tax_number')
         account_type = request.form.get('account_type')
+        
+        # Determine final city value based on country selection
+        final_city = city if city else city_other
 
         # Validate required fields
-        if not all([name, email, username, password, country, city, phone_number, account_type]):
+        if not all([name, email, username, password, country, final_city, phone_number, account_type]):
             flash('Please fill in all required fields.', 'error')
             return render_template('register_enhanced.html')
 
@@ -1634,7 +1675,7 @@ def register_enhanced():
             password_hash=password_hash,
             name=name or username,
             country=country or '',
-            city=city or '',
+            city=final_city or '',
             phone_number=phone_number or '',
             company_name=company_name or '',
             sector=sector or '',
@@ -1663,7 +1704,7 @@ def register_enhanced():
                         preferences_file.seek(0)
 
                         # Save the preferences file
-                        filename = secure_filename(preferences_file.filename)
+                        filename = secure_filename(preferences_file.filename or 'unnamed_preferences')
                         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
                         filename = f"preferences_{timestamp}_{filename}"
                         file_path = os.path.join(upload_folder, filename)
@@ -1708,23 +1749,182 @@ def register_enhanced():
                             os.remove(file_path)
                         return render_template('register_enhanced.html')
 
-            # Create welcome notification
-            create_notification(
-                title="Welcome to B2B Platform!",
-                description=f"Thank you for registering, {name}! Your account has been created successfully.",
-                notification_type='system',
-                priority='normal',
-                user_id=new_user.id
-            )
-
-            flash('Registration successful! Please log in.', 'success')
-            return redirect(url_for('login'))
+            # Generate and send verification code
+            from email_service import email_service
+            verification_code = email_service.generate_verification_code()
+            new_user.verification_code = verification_code
+            new_user.verification_sent_at = datetime.utcnow()
+            db.session.commit()
+            
+            # Send verification email
+            try:
+                email_service.send_verification_email(email, verification_code, name or username)
+                
+                # Create welcome notification
+                try:
+                    welcome_notification = Notification(
+                        user_id=new_user.id,
+                        title="Welcome to B2B Platform!",
+                        message=f"Thank you for registering, {name}! Please check your email to verify your account.",
+                        notification_type='system',
+                        priority='normal',
+                        timestamp=datetime.utcnow(),
+                        is_read=False
+                    )
+                    db.session.add(welcome_notification)
+                    db.session.commit()
+                except Exception as e:
+                    print(f"Failed to create notification: {e}")
+                
+                flash(_('Registration successful! Please check your email for verification code.'), 'success')
+                return redirect(url_for('verify_email', email=email))
+            except Exception as e:
+                print(f"Failed to send verification email: {e}")
+                flash(_('Registration successful but failed to send verification email. Please contact support.'), 'warning')
+                return redirect(url_for('login'))
         except Exception as e:
             db.session.rollback()
             flash(f'Registration failed: {str(e)}', 'error')
             return render_template('register_enhanced.html')
 
     return render_template('register_enhanced.html')
+
+
+@app.route('/verify_email')
+def verify_email():
+    email = request.args.get('email')
+    if not email:
+        flash('Invalid verification link.', 'error')
+        return redirect(url_for('login'))
+    
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        flash('User not found.', 'error')
+        return redirect(url_for('login'))
+    
+    if user.is_verified:
+        flash('Email already verified. Please log in.', 'info')
+        return redirect(url_for('login'))
+    
+    # Generate and send initial verification code if not already sent recently
+    from email_service import email_service
+    should_send_email = True
+    
+    # Check if verification was sent recently (within last 5 minutes)
+    if user.verification_sent_at:
+        time_since_last_sent = datetime.utcnow() - user.verification_sent_at
+        if time_since_last_sent.total_seconds() < 300:  # 5 minutes
+            should_send_email = False
+    
+    if should_send_email:
+        verification_code = email_service.generate_verification_code()
+        user.verification_code = verification_code
+        user.verification_sent_at = datetime.utcnow()
+        db.session.commit()
+        
+        # Send verification email
+        if email_service.send_verification_email(email, verification_code, user.name or user.username):
+            flash('Verification code sent to your email! Please check your inbox.', 'success')
+        else:
+            flash('Failed to send verification email. Please try again later.', 'error')
+    
+    return render_template('verify_email.html', email=email)
+
+
+@app.route('/verify_code', methods=['POST'])
+def verify_code():
+    email = request.form.get('email')
+    code = request.form.get('verification_code')
+    
+    if not email or not code:
+        flash('Please provide both email and verification code.', 'error')
+        return redirect(url_for('verify_email', email=email))
+    
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        flash('User not found.', 'error')
+        return redirect(url_for('login'))
+    
+    if user.is_verified:
+        flash('Email already verified. Please log in.', 'info')
+        return redirect(url_for('login'))
+    
+    # Check if code matches and is not expired
+    from email_service import email_service
+    if user.verification_code != code:
+        flash('Invalid verification code. Please try again.', 'error')
+        return redirect(url_for('verify_email', email=email))
+    
+    if email_service.is_code_expired(user.verification_sent_at):
+        flash('Verification code has expired. Please request a new one.', 'error')
+        return redirect(url_for('verify_email', email=email))
+    
+    # Verify the user
+    user.is_verified = True
+    user.verification_code = None
+    user.verification_sent_at = None
+    db.session.commit()
+    
+    # Create verification success notification
+    try:
+        success_notification = Notification(
+            user_id=user.id,
+            title="Email Verified Successfully!",
+            message="Your email has been verified. You can now log in to your account.",
+            notification_type='system',
+            priority='normal',
+            timestamp=datetime.utcnow(),
+            is_read=False
+        )
+        db.session.add(success_notification)
+    except Exception as e:
+        print(f"Failed to create notification: {e}")
+    
+    # Log in the user automatically after successful verification
+    from flask_login import login_user
+    login_user(user)
+    
+    flash('Email verified successfully! Welcome to your dashboard.', 'success')
+    return redirect(url_for('dash'))
+
+
+@app.route('/resend_verification', methods=['POST'])
+@csrf.exempt
+def resend_verification():
+    email = request.form.get('email')
+    
+    if not email:
+        flash('Email is required.', 'error')
+        return redirect(url_for('login'))
+    
+    user = User.query.filter_by(email=email).first()
+    if not user:
+        flash('User not found.', 'error')
+        return redirect(url_for('login'))
+    
+    if user.is_verified:
+        flash('Email already verified. Please log in.', 'info')
+        return redirect(url_for('login'))
+    
+    # Generate new verification code
+    from email_service import email_service
+    verification_code = email_service.generate_verification_code()
+    user.verification_code = verification_code
+    user.verification_sent_at = datetime.utcnow()
+    db.session.commit()
+    
+    # Send verification email
+    if email_service.send_verification_email(email, verification_code, user.name or user.username):
+        flash('Verification code sent successfully! Please check your email.', 'success')
+    else:
+        flash('Failed to send verification email. Please try again later.', 'error')
+    
+    return redirect(url_for('verify_email', email=email))
+
+
+@app.route('/verification_success')
+def verification_success():
+    return render_template('verification_success.html')
 
 
 @app.route('/company_management', methods=['GET', 'POST'])
@@ -1901,7 +2101,7 @@ def new_purchase():
                         os.makedirs(upload_folder)
 
                     from werkzeug.utils import secure_filename
-                    filename = secure_filename(product_data['uploaded_file'].filename)
+                    filename = secure_filename(product_data['uploaded_file'].filename or 'unnamed_product_file')
                     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
                     filename = f"{timestamp}_{filename}"
                     file_path = os.path.join(upload_folder, filename)
@@ -2223,9 +2423,9 @@ def update_order_status():
         return redirect(url_for('index'))
 
     # Update the order status
-    if hasattr(offer, 'order_status'):
+    if offer and hasattr(offer, 'order_status'):
         offer.order_status = new_status
-    else:
+    elif offer:
         # If order_status doesn't exist, create it
         offer.order_status = new_status
 
@@ -2273,7 +2473,7 @@ def reset_password():
         confirm_password = request.form.get('confirm_password')
 
         # Validate current password
-        if not check_password_hash(current_user.password_hash, current_password):
+        if not current_user.password_hash or not check_password_hash(current_user.password_hash, current_password or ''):
             flash('Current password is incorrect.', 'error')
             return redirect(url_for('profile'))
 
@@ -2288,7 +2488,7 @@ def reset_password():
             return redirect(url_for('profile'))
 
         # Update password
-        current_user.password_hash = generate_password_hash(new_password)
+        current_user.password_hash = generate_password_hash(new_password or '', method='pbkdf2:sha256')
         db.session.commit()
 
         flash('Password updated successfully!', 'success')
@@ -6746,8 +6946,8 @@ def compare_offers_page(order_id):
         for offer in offers:
             try:
                 # Ensure company relationship is loaded
-                if not hasattr(offer, 'company') or offer.company is None:
-                    print(f"WARNING: Offer {offer.id} has no company relationship")
+                if not offer or not hasattr(offer, 'company') or offer.company is None:
+                    print(f"WARNING: Offer {getattr(offer, 'id', 'unknown')} has no company relationship")
                     continue
 
                 print(
@@ -7108,12 +7308,12 @@ def admin_company_action(company_id):
         flash(f'Company {field_name} accepted successfully!', 'success')
     elif action == 'refuse':
         # Set the field to None or empty string
-        if hasattr(company, field_name):
-            if field_name.endswith('_doc'):
+        if company and hasattr(company, field_name):
+            if field_name and field_name.endswith('_doc'):
                 setattr(company, field_name, None)
             else:
                 setattr(company, field_name, '')
-        flash(f'Company {field_name} refused and removed!', 'success')
+        flash(f'Company {field_name or "field"} refused and removed!', 'success')
 
     db.session.commit()
     return redirect(url_for('admin_company_details', company_id=company_id))
@@ -7162,7 +7362,7 @@ def admin_download_document(company_id, field_name):
     print(f"Download request: company_id={company_id}, field_name={field_name}")
     print(f"Company: {company.name_en or company.name_ar}")
 
-    if hasattr(company, field_name):
+    if company and hasattr(company, field_name):
         file_path = getattr(company, field_name)
         print(f"File path: {file_path}")
 
@@ -7243,7 +7443,7 @@ def admin_debug_company(company_id):
     }
 
     for field in document_fields:
-        if hasattr(company, field):
+        if company and hasattr(company, field):
             value = getattr(company, field)
             debug_info['document_fields'][field] = {
                 'value': value,

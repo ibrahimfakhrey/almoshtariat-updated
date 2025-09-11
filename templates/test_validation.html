@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Validation Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
+        <h1 class="text-2xl font-bold mb-6">Test Username & Email Validation</h1>
+        
+        <div class="grid md:grid-cols-2 gap-6">
+            <!-- Username Test -->
+            <div class="border rounded-lg p-4">
+                <h2 class="text-lg font-semibold mb-4 text-blue-600">Username Validation</h2>
+                <div class="space-y-3">
+                    <input type="text" id="test-username" class="w-full border rounded px-3 py-2" placeholder="Enter username to test">
+                    <button onclick="testUsername()" class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Check Username</button>
+                    <div id="username-result" class="min-h-[60px] p-2 bg-gray-50 rounded text-sm"></div>
+                </div>
+            </div>
+            
+            <!-- Email Test -->
+            <div class="border rounded-lg p-4">
+                <h2 class="text-lg font-semibold mb-4 text-green-600">Email Validation</h2>
+                <div class="space-y-3">
+                    <input type="email" id="test-email" class="w-full border rounded px-3 py-2" placeholder="Enter email to test">
+                    <button onclick="testEmail()" class="w-full bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Check Email</button>
+                    <div id="email-result" class="min-h-[60px] p-2 bg-gray-50 rounded text-sm"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Test Instructions -->
+        <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <h3 class="font-semibold text-yellow-800 mb-2">Test Instructions:</h3>
+            <ul class="text-sm text-yellow-700 space-y-1">
+                <li>• Try existing usernames like "admin", "test", "user" to see taken messages</li>
+                <li>• Try new usernames to see available messages</li>
+                <li>• Try existing emails to see taken messages</li>
+                <li>• Try new emails to see available messages</li>
+                <li>• Check that suggestions appear for taken usernames</li>
+            </ul>
+        </div>
+        
+        <!-- Link to Registration Page -->
+        <div class="mt-6 text-center">
+            <a href="/register_enhanced" class="inline-block bg-purple-500 text-white px-6 py-2 rounded hover:bg-purple-600">Go to Registration Page</a>
+        </div>
+    </div>
+
+    <script>
+        function getCSRFToken() {
+            return document.querySelector('meta[name=csrf-token]').getAttribute('content');
+        }
+
+        async function testUsername() {
+            const username = document.getElementById('test-username').value;
+            const resultDiv = document.getElementById('username-result');
+            
+            if (!username) {
+                resultDiv.innerHTML = '<span class="text-red-500">Please enter a username</span>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="flex items-center"><div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500 mr-2"></div>Checking username...</div>';
+            
+            try {
+                const response = await fetch('/check_username', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    body: JSON.stringify({ username: username })
+                });
+                
+                const data = await response.json();
+                
+                if (data.available) {
+                    resultDiv.innerHTML = `<div class="text-green-600"><strong>✓ Available:</strong> ${data.message}</div>`;
+                } else {
+                    let html = `<div class="text-red-600"><strong>✗ Taken:</strong> ${data.message}</div>`;
+                    if (data.suggestions && data.suggestions.length > 0) {
+                        html += `<div class="mt-2"><strong>Suggestions:</strong><br>`;
+                        data.suggestions.forEach(suggestion => {
+                            html += `<span class="inline-block bg-blue-100 text-blue-700 px-2 py-1 rounded text-xs mr-1 mt-1">${suggestion}</span>`;
+                        });
+                        html += `</div>`;
+                    }
+                    resultDiv.innerHTML = html;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="text-red-500"><strong>Error:</strong> ${error.message}</div>`;
+            }
+        }
+
+        async function testEmail() {
+            const email = document.getElementById('test-email').value;
+            const resultDiv = document.getElementById('email-result');
+            
+            if (!email) {
+                resultDiv.innerHTML = '<span class="text-red-500">Please enter an email</span>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="flex items-center"><div class="animate-spin rounded-full h-4 w-4 border-b-2 border-green-500 mr-2"></div>Checking email...</div>';
+            
+            try {
+                const response = await fetch('/check_email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+                
+                const data = await response.json();
+                
+                if (data.available) {
+                    resultDiv.innerHTML = `<div class="text-green-600"><strong>✓ Available:</strong> ${data.message}</div>`;
+                } else {
+                    resultDiv.innerHTML = `<div class="text-red-600"><strong>✗ Taken:</strong> ${data.message}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="text-red-500"><strong>Error:</strong> ${error.message}</div>`;
+            }
+        }
+        
+        // Auto-test functionality on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add real-time validation to inputs
+            const usernameInput = document.getElementById('test-username');
+            const emailInput = document.getElementById('test-email');
+            
+            let usernameTimeout, emailTimeout;
+            
+            usernameInput.addEventListener('input', function() {
+                clearTimeout(usernameTimeout);
+                usernameTimeout = setTimeout(() => {
+                    if (this.value.trim().length >= 3) {
+                        testUsername();
+                    }
+                }, 500);
+            });
+            
+            emailInput.addEventListener('input', function() {
+                clearTimeout(emailTimeout);
+                emailTimeout = setTimeout(() => {
+                    if (this.value.trim().length >= 3) {
+                        testEmail();
+                    }
+                }, 500);
+            });
+        });
+    </script>
+</body>
+</html>

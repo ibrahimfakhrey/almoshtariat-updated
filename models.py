@@ -153,6 +153,11 @@ class User(db.Model, UserMixin):
     role = db.Column(db.String(20), default='client', nullable=False)  # 'client', 'company', 'employee', or 'admin'
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=False)  # Now required!
     
+    # Email verification fields
+    is_verified = db.Column(db.Boolean, default=False, nullable=False)
+    verification_code = db.Column(db.String(6), nullable=True)
+    verification_sent_at = db.Column(db.DateTime, nullable=True)
+    
     # New fields for enhanced user registration
     name = db.Column(db.String(100), nullable=True)  # Made nullable for existing users
     country = db.Column(db.String(100), nullable=True)  # Made nullable for existing users
