@@ -473,8 +473,23 @@ Respond in a conversational manner and explain what actions you're taking.
                 order_id = int(order_id_match.group(1))
                 function_calls.append({'name': 'get_order_details', 'args': {'order_id': order_id}})
             
-            # Check for recent orders requests
-            if any(keyword in user_message_lower for keyword in ['orders', 'طلبات', 'طلباتي', 'أحدث الطلبات', 'recent orders']):
+            # Check for order creation requests (Arabic and English)
+            create_order_keywords_ar = [
+                'إنشاء طلب', 'انشيء طلب', 'أنشئ طلب', 'اعمل طلب', 'كون طلب', 'اطلب', 'أريد طلب', 'محتاج طلب',
+                'طلب لشراء', 'طلبية لشراء', 'اريد اشتري', 'أريد أشتري', 'بدي اطلب', 'بدي أطلب',
+                'عايز اطلب', 'عايز أطلب', 'محتاج اطلب', 'محتاج أطلب', 'انشيء', 'أنشيء', 'اعمل', 'أعمل',
+                'احتاج', 'أحتاج', 'اريد', 'أريد', 'ابغى', 'أبغى', 'شراء', 'اشتري', 'أشتري'
+            ]
+            create_order_keywords_en = [
+                'create order', 'make order', 'new order', 'place order', 'order for', 'i want to order', 'i need to order',
+                'create', 'make', 'order', 'buy', 'purchase', 'need', 'want', 'book', 'reserve',
+                'buy some', 'purchase some', 'get me', 'i need to buy', 'i want to buy'
+            ]
+            
+            is_create_order_request = any(keyword in user_message_lower for keyword in create_order_keywords_ar + create_order_keywords_en)
+            
+            # Check for recent orders requests (but not creation requests)
+            if any(keyword in user_message_lower for keyword in ['orders', 'طلبات', 'طلباتي', 'أحدث الطلبات', 'recent orders']) and not is_create_order_request:
                 if any(keyword in user_message_lower for keyword in ['recent', 'latest', 'أحدث', 'حديثة', 'الأخيرة', 'رؤية']):
                     function_calls.append({'name': 'get_recent_orders', 'args': {'limit': 10}})
                 elif 'طلباتي' in user_message_lower or 'my orders' in user_message_lower:
@@ -498,6 +513,48 @@ Respond in a conversational manner and explain what actions you're taking.
             # Check for company information requests
             if any(keyword in user_message_lower for keyword in ['company info', 'معلومات الشركة', 'بيانات الشركة', 'تفاصيل الشركة']):
                 function_calls.append({'name': 'get_company_information', 'args': {}})
+            
+            # Check for order creation requests (Arabic and English)
+            create_order_keywords_ar = [
+                'إنشاء طلب', 'انشيء طلب', 'أنشئ طلب', 'اعمل طلب', 'كون طلب', 'اطلب', 'أريد طلب', 'محتاج طلب',
+                'طلب لشراء', 'طلبية لشراء', 'اريد اشتري', 'أريد أشتري', 'بدي اطلب', 'بدي أطلب',
+                'عايز اطلب', 'عايز أطلب', 'محتاج اطلب', 'محتاج أطلب', 'انشيء', 'أنشيء', 'اعمل', 'أعمل',
+                'احتاج', 'أحتاج', 'اريد', 'أريد', 'ابغى', 'أبغى', 'شراء', 'اشتري', 'أشتري'
+            ]
+            create_order_keywords_en = [
+                'create order', 'make order', 'new order', 'place order', 'order for', 'i want to order', 'i need to order',
+                'create', 'make', 'order', 'buy', 'purchase', 'need', 'want', 'book', 'reserve',
+                'buy some', 'purchase some', 'get me', 'i need to buy', 'i want to buy'
+            ]
+            
+            is_create_order_request = any(keyword in user_message_lower for keyword in create_order_keywords_ar + create_order_keywords_en)
+            
+            # If this is an order creation request, handle it
+            if is_create_order_request:
+                # Extract product information from the message
+                quantity_matches = re.findall(r'(\d+)\s*(?:جهاز|أجهزة|قطعة|قطع|وحدة|وحدات|piece|pieces|unit|units)', user_message_lower)
+                product_matches = re.findall(r'(?:كمبيوتر|حاسوب|laptop|computer|dell|hp|lenovo|اجهزة|أجهزة)', user_message_lower)
+                
+                # Create order with extracted information
+                order_args = {
+                    'order_name': f"طلب {datetime.now().strftime('%Y-%m-%d %H:%M')}",
+                    'description': user_message,
+                    'sector': 'تكنولوجيا المعلومات',
+                    'products': []
+                }
+                
+                # Add extracted products if any
+                if product_matches or quantity_matches:
+                    for i, product in enumerate(product_matches):
+                        quantity = int(quantity_matches[i]) if i < len(quantity_matches) else 1
+                        order_args['products'].append({
+                            'product_name': product,
+                            'quantity': quantity,
+                            'unit': 'pcs'
+                        })
+                
+                # Call create_order function directly
+                function_calls.append({'name': 'create_order', 'args': order_args})
             
             # Check for analytics requests
             if any(keyword in user_message_lower for keyword in ['تحليل', 'analytics', 'analysis', 'أداء', 'performance', 'إحصائيات']):

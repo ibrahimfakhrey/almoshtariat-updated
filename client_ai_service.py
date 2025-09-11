@@ -84,6 +84,11 @@ class ClientAIAnalysisService:
                 error_msg = "المستخدم غير موجود" if language == 'ar' else "User not found"
                 return {"error": error_msg}
             
+            # Check if this is an order creation request first
+            is_order_creation = self._is_order_creation_request(query, language)
+            if is_order_creation:
+                return self._handle_order_creation_request(user_id, query, language)
+            
             # Determine if this is a user-specific query or general question
             is_user_specific = self._is_user_specific_query(query, language)
             
@@ -121,12 +126,20 @@ class ClientAIAnalysisService:
                 elif msg["role"] == "assistant":
                     conversation_text += f"Assistant: {msg['content']}\n\n"
             
-            # Get AI response from OpenAI
+            # Get AI response from Gemini
             response = self.ai_config.generate_content(
                 conversation_text,
                 max_tokens=200,
                 temperature=0.8
             )
+            
+            # Debug logging
+            logger.info(f"Raw Gemini response: {repr(response)}")
+            
+            # Handle empty or undefined responses
+            if not response or response.strip() == "" or response.strip().lower() == "undefined":
+                response = "عذراً، لم أتمكن من معالجة طلبك. يرجى المحاولة مرة أخرى." if language == 'ar' else "Sorry, I couldn't process your request. Please try again."
+                logger.warning(f"Empty response detected, using fallback: {response}")
 
             return {
                 "response": response,
@@ -190,12 +203,16 @@ class ClientAIAnalysisService:
             # Convert messages to conversation text for Gemini
             conversation_text = "\n\n".join([f"{msg['role'].title()}: {msg['content']}" for msg in messages]) + "\n\n"
             
-            # Get AI response from OpenAI
+            # Get AI response from Gemini
             response = self.ai_config.generate_content(
                 conversation_text,
                 max_tokens=200,
                 temperature=0.7
             )
+            
+            # Handle empty or undefined responses
+            if not response or response.strip() == "" or response.strip().lower() == "undefined":
+                response = "عذراً، لم أتمكن من معالجة طلبك. يرجى المحاولة مرة أخرى." if language == 'ar' else "Sorry, I couldn't process your request. Please try again."
 
             return {
                 "response": response,
@@ -834,6 +851,86 @@ User Query: "{query}"
 
 Provide specific, actionable recommendations with clear reasoning.
 """
+
+    def _is_order_creation_request(self, query, language='en'):
+        """Determine if the query is requesting to create a new order"""
+        if language == 'ar':
+            # More specific keywords that clearly indicate order creation intent
+            order_creation_keywords = [
+                'إنشاء طلب', 'انشيء طلب', 'أنشئ طلب', 'اعمل طلب', 'كون طلب', 
+                'أريد طلب', 'محتاج طلب', 'بدي اطلب', 'بدي أطلب',
+                'عايز اطلب', 'عايز أطلب', 'محتاج اطلب', 'محتاج أطلب',
+                'طلب لشراء', 'طلبية لشراء', 'اريد اشتري', 'أريد أشتري',
+                'انشيء طلب', 'أنشيء طلب', 'اعمل طلب', 'أعمل طلب',
+                'احتاج طلب', 'أحتاج طلب', 'اريد طلب', 'ابغى طلب', 'أبغى طلب'
+            ]
+        else:
+            # More specific keywords that clearly indicate order creation intent
+            order_creation_keywords = [
+                'create order', 'make order', 'new order', 'place order', 'order for', 
+                'i want to order', 'i need to order', 'i want to buy', 'i need to buy',
+                'buy some', 'purchase some', 'get me some', 'order some'
+            ]
+        
+        query_lower = query.lower()
+        return any(keyword in query_lower for keyword in order_creation_keywords)
+    
+    def _handle_order_creation_request(self, user_id, query, language='en'):
+        """Handle order creation requests by extracting information and creating the order"""
+        try:
+            from agentic_ai_service import AgenticAIService
+            
+            # Use the agentic AI service to handle order creation
+            agentic_service = AgenticAIService()
+            
+            # Get user's company_id
+            user = User.query.get(user_id)
+            if not user or not user.company_id:
+                error_msg = "لا يمكن إنشاء طلب. المستخدم غير مرتبط بشركة." if language == 'ar' else "Cannot create order. User not associated with a company."
+                return {
+                    "response": error_msg,
+                    "timestamp": datetime.now().isoformat()
+                }
+            
+            # Process the order creation request using agentic service
+            result = agentic_service.process_user_request(user.company_id, query, None, language)
+            
+            # Debug logging for agentic service result
+            logger.info(f"Agentic service result: {repr(result)}")
+            
+            # Format the response properly for the frontend
+            if isinstance(result, dict):
+                if 'error' in result:
+                    response_text = result['error']
+                elif 'message' in result:
+                    response_text = result['message']
+                elif 'response' in result:
+                    response_text = result['response']
+                else:
+                    # Convert the entire result to a readable message
+                    if result.get('success'):
+                        response_text = "تم إنشاء الطلب بنجاح!" if language == 'ar' else "Order created successfully!"
+                        if 'order_name' in result:
+                            response_text += f" اسم الطلب: {result['order_name']}" if language == 'ar' else f" Order name: {result['order_name']}"
+                    else:
+                        response_text = "فشل في إنشاء الطلب" if language == 'ar' else "Failed to create order"
+            else:
+                response_text = str(result) if result else ("فشل في إنشاء الطلب" if language == 'ar' else "Failed to create order")
+            
+            return {
+                "response": response_text,
+                "timestamp": datetime.now().isoformat()
+            }
+            
+        except Exception as e:
+            import traceback
+            current_app.logger.error(f"Order Creation Error: {str(e)}")
+            current_app.logger.error(f"Full traceback: {traceback.format_exc()}")
+            error_msg = "فشل في إنشاء الطلب. يرجى المحاولة مرة أخرى." if language == 'ar' else "Failed to create order. Please try again."
+            return {
+                "response": error_msg,
+                "timestamp": datetime.now().isoformat()
+            }
 
 # Global AI service instance
 client_ai_service = ClientAIAnalysisService()

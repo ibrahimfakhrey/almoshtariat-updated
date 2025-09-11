@@ -337,7 +337,7 @@
                             <div class="border-t border-gray-200 dark:border-gray-600 pt-4">
                                 <div class="text-center">
                                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ _('Delivery Confirmation Code') }}</p>
-                                    <div class="delivery-code" x-text="package.delivery_code || 'PENDING'"></div>
+                                    <div class="delivery-code" x-text="package.delivery_code || '{{ _('PENDING') }}'"></div>
                                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
                                         {{ _('Provide this code to the delivery company to confirm receipt') }}
                                     </p>

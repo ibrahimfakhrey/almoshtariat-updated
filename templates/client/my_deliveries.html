@@ -127,11 +127,11 @@
                                                 
                                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                                     <div>
-                                                        <p class="text-sm text-gray-600 mb-1">Receiver Name</p>
+                                                        <p class="text-sm text-gray-600 mb-1">{{ _('Receiver Name') }}</p>
                                                         <p class="font-medium text-gray-900" x-text="package.receiver_name"></p>
                                                     </div>
                                                     <div>
-                                                        <p class="text-sm text-gray-600 mb-1">Receiver Phone</p>
+                                                        <p class="text-sm text-gray-600 mb-1">{{ _('Receiver Phone') }}</p>
                                                         <p class="font-medium text-gray-900" x-text="package.receiver_phone"></p>
                                                     </div>
                                                     <div class="md:col-span-2">
@@ -149,11 +149,11 @@
                                                 
                                                 <div class="flex items-center text-sm text-gray-500">
                                                     <i class="fas fa-calendar mr-2"></i>
-                                                    <span x-text="'Created: ' + new Date(package.created_at).toLocaleDateString()"></span>
+                                                    <span x-text="'{{ _('Created') }}: ' + new Date(package.created_at).toLocaleDateString()"></span>
                                                     <template x-if="package.shipped_at">
                                                         <span class="ml-4">
                                                             <i class="fas fa-shipping-fast mr-2"></i>
-                                                            <span x-text="'Shipped: ' + new Date(package.shipped_at).toLocaleDateString()"></span>
+                                                            <span x-text="'{{ _('Shipped') }}: ' + new Date(package.shipped_at).toLocaleDateString()"></span>
                                                         </span>
                                                     </template>
                                                 </div>

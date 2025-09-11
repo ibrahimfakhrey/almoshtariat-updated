@@ -10127,6 +10127,161 @@ def api_ai_config():
         app.logger.error(f'AI Config API Error: {str(e)}')
         return jsonify({'error': 'Internal server error'}), 500
 
+@app.route('/api/create_order', methods=['POST'])
+@csrf.exempt
+def api_create_order():
+    """API endpoint for AI to create orders"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+        
+        # Get company_id and user_id from the request
+        company_id = data.get('company_id')
+        if not company_id:
+            return jsonify({'error': 'Company ID is required'}), 400
+        
+        # Find a user for this company
+        from models import User
+        user = User.query.filter_by(company_id=company_id).first()
+        if not user:
+            return jsonify({'error': 'No user found for this company'}), 400
+        
+        # Extract order data
+        order_name = data.get('order_name', f'AI Order - {datetime.now().strftime("%Y-%m-%d %H:%M")}')
+        description = data.get('description', '')
+        sector = data.get('sector', 'Electronics')
+        order_type = data.get('order_type', 'direct')
+        
+        # Delivery details
+        delivery_date_str = data.get('delivery_date')
+        delivery_date = None
+        if delivery_date_str:
+            try:
+                delivery_date = datetime.strptime(delivery_date_str, '%Y-%m-%d').date()
+            except ValueError:
+                pass
+        
+        delivery_time = data.get('delivery_time', '')
+        delivery_address = data.get('delivery_address', '')
+        delivery_notes = data.get('delivery_notes', '')
+        receiver_name = data.get('receiver_name', '')
+        receiver_phone = data.get('receiver_phone', '')
+        
+        # Payment details
+        payment_way = data.get('payment_way', '')
+        payment_steps_data = data.get('payment_steps', [])
+        import json
+        payment_steps_json = json.dumps(payment_steps_data) if payment_steps_data else None
+        
+        # Settings
+        direct_negotiation = data.get('direct_negotiation', False)
+        accept_unregistered_suppliers = data.get('accept_unregistered_suppliers', True)
+        max_suppliers = data.get('max_suppliers', 10)
+        
+        # Create the order
+        order = Order(
+            user_id=user.id,
+            company_id=company_id,
+            order_name=order_name,
+            description=description,
+            sector=sector,
+            order_type=order_type,
+            delivery_date=delivery_date,
+            delivery_time=delivery_time,
+            delivery_address=delivery_address,
+            delivery_notes=delivery_notes,
+            receiver_name=receiver_name,
+            receiver_phone=receiver_phone,
+            payment_way=payment_way,
+            payment_steps=payment_steps_json,
+            direct_negotiation=direct_negotiation,
+            accept_unregistered_suppliers=accept_unregistered_suppliers,
+            max_suppliers=max_suppliers
+        )
+        
+        db.session.add(order)
+        db.session.commit()  # Commit to get order.id
+        
+        # Handle products
+        products = data.get('products', [])
+        created_products = []
+        
+        for product_data in products:
+            product_name = product_data.get('product_name') or product_data.get('part_name', 'منتج افتراضي')
+            technical_specs = product_data.get('technical_specs') or product_data.get('description', '')
+            quantity = int(product_data.get('quantity', 1))
+            unit = product_data.get('unit', 'pcs')
+            max_price_per_unit = product_data.get('max_price_per_unit')
+            product_code = product_data.get('product_code', '')
+            best_supplier = product_data.get('best_supplier', '')
+            
+            purchase = Purchase(
+                sector=sector,
+                quantity=quantity,
+                part_name=product_name,
+                description=technical_specs,
+                technical_specs=technical_specs,
+                unit=unit,
+                max_price_per_unit=float(max_price_per_unit) if max_price_per_unit else None,
+                product_code=product_code,
+                best_supplier=best_supplier,
+                order_id=order.id
+            )
+            db.session.add(purchase)
+            created_products.append({
+                'product_name': product_name,
+                'quantity': quantity,
+                'technical_specs': technical_specs
+            })
+        
+        db.session.commit()
+        
+        # Find matching products and create notifications (same as new_purchase route)
+        all_suggestions = []
+        total_matches = 0
+        
+        for product_data in products:
+            product_name = product_data.get('product_name') or product_data.get('part_name', '')
+            technical_specs = product_data.get('technical_specs') or product_data.get('description', '')
+            
+            if product_name:  # Only search if we have a product name
+                matches = find_matching_products(product_name, technical_specs, sector)
+                
+                if matches:
+                    total_matches += len(matches)
+                    all_suggestions.append({
+                        'product': product_data,
+                        'matches': matches
+                    })
+        
+        # Create notifications for companies that have matching products
+        for suggestion in all_suggestions:
+            for match in suggestion['matches']:
+                create_notification(
+                    title='طلب جديد متاح',
+                    description=f'طلب جديد متاح: {order.order_name}',
+                    notification_type='new_order',
+                    company_id=match['company'].id,
+                    related_order_id=order.id
+                )
+        
+        return jsonify({
+            'success': True,
+            'order_id': order.id,
+            'order_name': order.order_name,
+            'products_created': len(created_products),
+            'notifications_sent': total_matches,
+            'message': f'تم إنشاء الطلب بنجاح. رقم الطلب: {order.id}'
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f'API Create Order Error: {str(e)}')
+        import traceback
+        app.logger.error(f'Full traceback: {traceback.format_exc()}')
+        return jsonify({'error': f'Failed to create order: {str(e)}'}), 500
+
 # AI Agent Routes
 @app.route('/api/ai_agent/tasks', methods=['POST'])
 @csrf.exempt

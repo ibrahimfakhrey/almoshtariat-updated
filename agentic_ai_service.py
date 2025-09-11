@@ -1,7 +1,7 @@
 from typing import Dict, List, Any, Optional, cast
 import google.generativeai as genai
 from ai_config import ai_config
-from models import Order, Purchase, Company, Offer, ProductOffer, CompanyBalance, CompanyTransaction, Bill, BillItem
+from models import Order, Purchase, Company, Offer, ProductOffer, CompanyBalance, CompanyTransaction, Bill, BillItem, User
 from app_init import db
 from datetime import datetime, timedelta
 import json
@@ -451,8 +451,23 @@ Respond in a conversational manner and explain what actions you're taking.
                 order_id = int(order_id_match.group(1))
                 function_calls.append({'name': 'get_order_details', 'args': {'order_id': order_id}})
             
-            # Check for recent orders requests
-            if any(keyword in user_message_lower for keyword in ['orders', 'طلبات', 'طلباتي', 'أحدث الطلبات', 'recent orders']):
+            # Check for order creation requests (Arabic and English)
+            create_order_keywords_ar = [
+                'إنشاء طلب', 'انشيء طلب', 'أنشئ طلب', 'اعمل طلب', 'كون طلب', 'اطلب', 'أريد طلب', 'محتاج طلب',
+                'طلب لشراء', 'طلبية لشراء', 'اريد اشتري', 'أريد أشتري', 'بدي اطلب', 'بدي أطلب',
+                'عايز اطلب', 'عايز أطلب', 'محتاج اطلب', 'محتاج أطلب', 'انشيء', 'أنشيء', 'اعمل', 'أعمل',
+                'احتاج', 'أحتاج', 'اريد', 'أريد', 'ابغى', 'أبغى', 'شراء', 'اشتري', 'أشتري'
+            ]
+            create_order_keywords_en = [
+                'create order', 'make order', 'new order', 'place order', 'order for', 'i want to order', 'i need to order',
+                'create', 'make', 'order', 'buy', 'purchase', 'need', 'want', 'book', 'reserve',
+                'buy some', 'purchase some', 'get me', 'i need to buy', 'i want to buy'
+            ]
+            
+            is_create_order_request = any(keyword in user_message_lower for keyword in create_order_keywords_ar + create_order_keywords_en)
+            
+            # Check for recent orders requests (but not creation requests)
+            if any(keyword in user_message_lower for keyword in ['orders', 'طلبات', 'طلباتي', 'أحدث الطلبات', 'recent orders']) and not is_create_order_request:
                 if any(keyword in user_message_lower for keyword in ['recent', 'latest', 'أحدث', 'حديثة', 'الأخيرة', 'رؤية']):
                     function_calls.append({'name': 'get_recent_orders', 'args': {'limit': 10}})
                 elif 'طلباتي' in user_message_lower or 'my orders' in user_message_lower:
@@ -499,6 +514,36 @@ Respond in a conversational manner and explain what actions you're taking.
                 if paid_bill_match:
                     bill_id = int(paid_bill_match.group(1))
                     function_calls.append({'name': 'mark_bill_as_paid', 'args': {'bill_id': bill_id}})
+            
+            # Handle order creation requests with similarity check
+            if is_create_order_request:
+                # Extract product information from the message for order creation
+                import re
+                
+                # Extract quantities and product names
+                quantity_matches = re.findall(r'(\d+)\s*(?:جهاز|أجهزة|قطعة|قطع|وحدة|وحدات|piece|pieces|unit|units)', user_message_lower)
+                product_matches = re.findall(r'(?:كمبيوتر|حاسوب|laptop|computer|dell|hp|lenovo|اجهزة|أجهزة)', user_message_lower)
+                
+                # Create order with extracted information
+                order_args = {
+                    'order_name': f"طلب {datetime.now().strftime('%Y-%m-%d %H:%M')}",
+                    'description': user_message,
+                    'industry': 'تكنولوجيا المعلومات',
+                    'products': []
+                }
+                
+                # Add extracted products if any
+                if product_matches or quantity_matches:
+                    for i, product in enumerate(product_matches):
+                        quantity = int(quantity_matches[i]) if i < len(quantity_matches) else 1
+                        order_args['products'].append({
+                            'name': product,
+                            'quantity': quantity,
+                            'unit_price': 1000.0  # Default price
+                        })
+                
+                # Call create_order function directly
+                function_calls.append({'name': 'create_order', 'args': order_args})
             
             # Check if we detected any function calls
             if function_calls:
@@ -1610,176 +1655,266 @@ Respond in a conversational manner and explain what actions you're taking.
             return {'error': f'Error generating bills from orders: {str(e)}'}
     
     def _create_order(self, company_id: int, args: Dict[str, Any]) -> Dict[str, Any]:
-        """Create a new order with products - matches the flask_app.py new_purchase functionality"""
+        """Create a new order by calling the Flask API endpoint"""
         try:
-            from models import User
+            import requests
             import json
+            from datetime import datetime, timedelta
             
-            # Get order details (Panel 1)
-            order_name = args.get('order_name', 'New Order')
-            description = args.get('description', '')
-            sector = args.get('sector', 'Other')
-            order_type = args.get('order_type', 'direct')
-            
-            # Get delivery details (Panel 3)
-            delivery_date_str = args.get('delivery_date')
-            delivery_date = None
-            if delivery_date_str:
-                try:
-                    if isinstance(delivery_date_str, str):
-                        delivery_date = datetime.strptime(delivery_date_str, '%Y-%m-%d').date()
-                    else:
-                        delivery_date = delivery_date_str
-                except ValueError:
-                    pass
-            
-            delivery_time = args.get('delivery_time', '')
-            delivery_address = args.get('delivery_address', '')
-            delivery_notes = args.get('delivery_notes', '')
-            receiver_name = args.get('receiver_name', '')
-            receiver_phone = args.get('receiver_phone', '')
-            
-            # Get payment details (Panel 4)
-            payment_way = args.get('payment_way', '')
-            payment_steps_data = args.get('payment_steps', [])
-            payment_steps_json = json.dumps(payment_steps_data) if payment_steps_data else None
-            
-            # Get settings (Panel 5)
-            direct_negotiation = args.get('direct_negotiation', False)
-            accept_unregistered_suppliers = args.get('accept_unregistered_suppliers', False)
-            max_suppliers = args.get('max_suppliers', 10)
-            
-            # Get products (Panel 2)
-            products = args.get('products', [])
-            
-            # Smart validation - ask for missing critical information
-            missing_info = []
-            if not order_name or order_name == 'New Order':
-                missing_info.append('order name')
-            if not sector or sector == 'Other':
-                missing_info.append('sector/industry')
-            if not delivery_date:
-                missing_info.append('delivery date')
-            if not delivery_address:
-                missing_info.append('delivery address')
-            if not products:
-                missing_info.append('product details')
-            if not payment_way:
-                missing_info.append('payment method')
-            
-            # Check product details
-            for i, product in enumerate(products):
-                if not product.get('product_name') and not product.get('part_name'):
-                    missing_info.append(f'product {i+1} name')
-                if not product.get('quantity'):
-                    missing_info.append(f'product {i+1} quantity')
-                if not product.get('unit'):
-                    missing_info.append(f'product {i+1} unit')
-            
-            if missing_info:
+            # Check for similar orders first
+            similar_orders = self._check_similar_orders(company_id, args)
+            if similar_orders['has_similar']:
+                similar_orders_list = similar_orders['orders']
+                message = f'تم العثور على {len(similar_orders_list)} طلب مشابه:\n\n'
+                
+                for i, order in enumerate(similar_orders_list, 1):
+                    message += f'{i}. {order["order_name"]} - {order["created_at"]}\n'
+                    message += f'   السبب: {order["similarity_reason"]}\n'
+                    if order.get('description'):
+                        message += f'   الوصف: {order["description"]}\n'
+                    message += '\n'
+                
+                message += 'هل تريد المتابعة وإنشاء طلب جديد أم مراجعة الطلبات الموجودة؟'
+                
                 return {
                     'success': False,
-                    'missing_fields': missing_info,
-                    'message': f'I need more information to create your order. Please provide: {", ".join(missing_info)}. What additional details can you share?'
+                    'similar_orders_found': True,
+                    'similar_orders': similar_orders_list,
+                    'message': message
                 }
             
-            # Get user for this company
-            user = User.query.filter_by(company_id=company_id).first()
-            if not user:
-                return {'error': 'No user found for this company'}
-            
-            # Create the order with all fields matching flask_app.py
-            order = Order()
-            order.user_id = user.id
-            order.company_id = company_id
-            order.order_name = order_name
-            order.description = description
-            order.sector = sector
-            order.order_type = order_type
-            order.delivery_date = delivery_date
-            order.delivery_time = delivery_time
-            order.delivery_address = delivery_address
-            order.delivery_notes = delivery_notes
-            order.receiver_name = receiver_name
-            order.receiver_phone = receiver_phone
-            order.payment_way = payment_way
-            order.payment_steps = payment_steps_json
-            order.direct_negotiation = direct_negotiation
-            order.accept_unregistered_suppliers = accept_unregistered_suppliers
-            order.max_suppliers = max_suppliers
-            order.status = 'pending'
-            order.priority = 'medium'
-            
-            db.session.add(order)
-            db.session.flush()  # Get the order ID
-            
-            # Create purchases for each product
-            total_amount = Decimal('0.00')
-            created_products = []
-            
-            for product in products:
-                # Handle both product_name and part_name for compatibility
-                product_name = product.get('product_name') or product.get('part_name')
-                
-                # Convert max_price_per_unit to float if provided
-                max_price = None
-                if product.get('max_price_per_unit'):
-                    try:
-                        max_price = float(product['max_price_per_unit'])
-                    except (ValueError, TypeError):
-                        max_price = None
-                
-                purchase = Purchase()
-                purchase.order_id = order.id
-                purchase.sector = sector
-                purchase.quantity = int(product['quantity'])
-                purchase.part_name = product_name
-                purchase.description = product.get('technical_specs') or product.get('description', '')
-                purchase.technical_specs = product.get('technical_specs', '')
-                purchase.unit = product.get('unit', 'pcs')
-                purchase.max_price_per_unit = max_price
-                purchase.product_code = product.get('product_code', '')
-                purchase.best_supplier = product.get('best_supplier', '')
-                purchase.uploaded_file = None  # File uploads handled separately
-                
-                db.session.add(purchase)
-                
-                # Calculate total if price is provided
-                if max_price:
-                    product_total = Decimal(str(purchase.quantity)) * Decimal(str(max_price))
-                    total_amount += product_total
+            # Prepare order data for API call
+            order_name = args.get('order_name')
+            if not order_name:
+                # Generate smart order name based on products
+                products = args.get('products', [])
+                if products and len(products) > 0:
+                    first_product = products[0].get('product_name') or products[0].get('part_name', 'منتج')
+                    quantity = products[0].get('quantity', 1)
+                    order_name = f'طلب {quantity} {first_product}'
                 else:
-                    product_total = Decimal('0.00')
+                    order_name = f'طلب جديد - {datetime.now().strftime("%Y-%m-%d")}'
+            
+            # Prepare API payload
+            api_data = {
+                'company_id': company_id,
+                'order_name': order_name,
+                'description': args.get('description', ''),
+                'sector': args.get('sector', 'Electronics'),
+                'order_type': args.get('order_type', 'direct'),
+                'delivery_date': args.get('delivery_date'),
+                'delivery_time': args.get('delivery_time', ''),
+                'delivery_address': args.get('delivery_address', ''),
+                'delivery_notes': args.get('delivery_notes', ''),
+                'receiver_name': args.get('receiver_name', ''),
+                'receiver_phone': args.get('receiver_phone', ''),
+                'payment_way': args.get('payment_way', ''),
+                'payment_steps': args.get('payment_steps', []),
+                'direct_negotiation': args.get('direct_negotiation', False),
+                'accept_unregistered_suppliers': args.get('accept_unregistered_suppliers', True),
+                'max_suppliers': args.get('max_suppliers', 10),
+                'products': args.get('products', [])
+            }
+            
+            # Make API call to create order
+            try:
+                logger.info(f"Making API call to create order with data: {api_data}")
+                response = requests.post(
+                    'http://127.0.0.1:8001/api/create_order',
+                    json=api_data,
+                    headers={'Content-Type': 'application/json'},
+                    timeout=30
+                )
+                logger.info(f"API response status: {response.status_code}, content: {response.text[:500]}")
                 
-                created_products.append({
-                    'product_name': purchase.part_name,
-                    'quantity': purchase.quantity,
-                    'unit': purchase.unit,
-                    'max_price_per_unit': max_price,
-                    'total': float(product_total) if product_total else 0.00
-                })
+                if response.status_code == 200:
+                    result = response.json()
+                    return {
+                        'success': True,
+                        'order_id': result.get('order_id'),
+                        'order_name': result.get('order_name'),
+                        'message': result.get('message', 'تم إنشاء الطلب بنجاح'),
+                        'products_created': result.get('products_created', 0),
+                        'notifications_sent': result.get('notifications_sent', 0)
+                    }
+                else:
+                    error_data = response.json() if response.headers.get('content-type') == 'application/json' else {}
+                    return {
+                        'success': False,
+                        'error': error_data.get('error', f'HTTP {response.status_code}: Failed to create order')
+                    }
+                    
+            except requests.exceptions.RequestException as e:
+                logger.error(f"API request failed: {str(e)}")
+                return {
+                    'success': False,
+                    'error': f'فشل في الاتصال بخدمة إنشاء الطلبات: {str(e)}'
+                }
+                
+        except Exception as e:
+            logger.error(f"Error creating order: {str(e)}")
+            return {
+                'success': False,
+                'error': f'خطأ في إنشاء الطلب: {str(e)}'
+            }
+    
+    def _check_similar_orders(self, company_id: int, args: Dict[str, Any]) -> Dict[str, Any]:
+        """Check for similar orders to avoid duplicates"""
+        try:
+            from datetime import datetime, timedelta
             
-            # Update order total
-            order.total_amount = total_amount
+            # Get recent orders from the last 30 days
+            recent_date = datetime.now() - timedelta(days=30)
+            recent_orders = Order.query.filter(
+                Order.company_id == company_id,
+                Order.created_at >= recent_date
+            ).all()
             
-            db.session.commit()
+            products = args.get('products', [])
+            order_description = args.get('description', '').lower()
+            order_name = args.get('order_name', '').lower()
+            
+            similar_orders = []
+            
+            for order in recent_orders:
+                is_similar = False
+                similarity_reason = ""
+                
+                # Method 1: Check order description similarity
+                if order_description and order.description:
+                    order_desc_lower = order.description.lower()
+                    # Check if descriptions contain similar keywords (at least 2 matching words)
+                    desc_keywords = [word for word in order_description.split() if len(word) > 2]
+                    matching_keywords = [word for word in desc_keywords if word in order_desc_lower]
+                    if len(matching_keywords) >= 2:
+                        is_similar = True
+                        similarity_reason = f"وصف مشابه: {order.description[:50]}..."
+                
+                # Method 2: Check order name similarity
+                if not is_similar and order_name and order.order_name:
+                    order_name_lower = order.order_name.lower()
+                    name_keywords = [word for word in order_name.split() if len(word) > 2]
+                    matching_name_keywords = [word for word in name_keywords if word in order_name_lower]
+                    if len(matching_name_keywords) >= 1:
+                        is_similar = True
+                        similarity_reason = f"اسم مشابه: {order.order_name}"
+                
+                # Method 3: Check if order has similar products (existing logic)
+                if not is_similar and products:
+                    order_purchases = Purchase.query.filter_by(order_id=order.id).all()
+                    
+                    for product in products:
+                        product_name = (product.get('product_name') or product.get('part_name', '')).lower()
+                        product_quantity = product.get('quantity', 0)
+                        
+                        for purchase in order_purchases:
+                            purchase_name = (purchase.part_name or '').lower()
+                            
+                            # Check for similar product names (contains similar keywords)
+                            if any(keyword in purchase_name for keyword in product_name.split() if len(keyword) > 2):
+                                # Check if quantities are similar (within 20% difference)
+                                if abs(purchase.quantity - product_quantity) <= max(1, product_quantity * 0.2):
+                                    is_similar = True
+                                    similarity_reason = f"منتج مشابه: {purchase.part_name} (كمية: {purchase.quantity})"
+                                    break
+                        
+                        if is_similar:
+                            break
+                
+                # Method 4: Check for similar keywords in order description vs product names
+                if not is_similar and products and order.description:
+                    order_desc_lower = order.description.lower()
+                    for product in products:
+                        product_name = (product.get('product_name') or product.get('part_name', '')).lower()
+                        product_keywords = [word for word in product_name.split() if len(word) > 2]
+                        if any(keyword in order_desc_lower for keyword in product_keywords):
+                            is_similar = True
+                            similarity_reason = f"منتج مشابه في الوصف: {order.description[:50]}..."
+                            break
+                
+                if is_similar:
+                    similar_orders.append({
+                        'order_id': order.id,
+                        'order_name': order.order_name,
+                        'created_at': order.created_at.strftime('%Y-%m-%d') if order.created_at else 'N/A',
+                        'description': order.description[:100] if order.description else '',
+                        'status': order.status,
+                        'similarity_reason': similarity_reason
+                    })
             
             return {
-                'success': True,
-                'order_id': order.id,
-                'order_name': order.order_name,
-                'sector': order.sector,
-                'delivery_date': order.delivery_date.isoformat() if order.delivery_date else None,
-                'delivery_address': order.delivery_address,
-                'total_amount': float(total_amount),
-                'products_count': len(created_products),
-                'products': created_products,
-                'message': f'✅ Order "{order_name}" has been created successfully with {len(created_products)} product(s). Order ID: {order.id}'
+                'has_similar': len(similar_orders) > 0,
+                'orders': similar_orders[:3]  # Return max 3 similar orders
             }
             
         except Exception as e:
-            db.session.rollback()
-            logger.error(f"Error creating order: {str(e)}")
-            return {'error': f'Error creating order: {str(e)}'}
+             logger.error(f"Error checking similar orders: {str(e)}")
+             return {'has_similar': False, 'orders': []}
+    
+    def _extract_products_from_text(self, text: str) -> List[Dict[str, Any]]:
+        """Extract products from Arabic/English text using pattern matching"""
+        try:
+            import re
+            
+            products = []
+            text = text.lower()
+            
+            # Common product patterns with quantities
+            patterns = [
+                # Arabic patterns
+                r'(\d+)\s*(أجهزة?\s*كمبيوتر|كمبيوتر|حاسوب|لابتوب)\s*(\w+)?',
+                r'(\d+)\s*(طابعة|طابعات)\s*(\w+)?',
+                r'(\d+)\s*(شاشة|شاشات)\s*(\w+)?',
+                r'(\d+)\s*(ماوس|فأرة)\s*(\w+)?',
+                r'(\d+)\s*(كيبورد|لوحة مفاتيح)\s*(\w+)?',
+                # English patterns
+                r'(\d+)\s*(computer|laptop|pc|desktop)s?\s*(\w+)?',
+                r'(\d+)\s*(printer)s?\s*(\w+)?',
+                r'(\d+)\s*(monitor|screen|display)s?\s*(\w+)?',
+                r'(\d+)\s*(mouse|mice)\s*(\w+)?',
+                r'(\d+)\s*(keyboard)s?\s*(\w+)?'
+            ]
+            
+            for pattern in patterns:
+                matches = re.findall(pattern, text, re.IGNORECASE)
+                for match in matches:
+                    quantity = int(match[0]) if match[0].isdigit() else 1
+                    product_type = match[1]
+                    brand = match[2] if len(match) > 2 and match[2] else ''
+                    
+                    # Map Arabic to English product names
+                    product_mapping = {
+                        'أجهزة كمبيوتر': 'Computer',
+                        'كمبيوتر': 'Computer',
+                        'حاسوب': 'Computer',
+                        'لابتوب': 'Laptop',
+                        'طابعة': 'Printer',
+                        'طابعات': 'Printer',
+                        'شاشة': 'Monitor',
+                        'شاشات': 'Monitor',
+                        'ماوس': 'Mouse',
+                        'فأرة': 'Mouse',
+                        'كيبورد': 'Keyboard',
+                        'لوحة مفاتيح': 'Keyboard'
+                    }
+                    
+                    product_name = product_mapping.get(product_type, product_type.title())
+                    if brand:
+                        product_name = f'{brand.upper()} {product_name}'
+                    
+                    products.append({
+                        'product_name': product_name,
+                        'part_name': product_name,
+                        'quantity': quantity,
+                        'unit': 'قطعة',
+                        'description': f'{product_name} - تم استخراجه تلقائياً من النص',
+                        'specifications': brand if brand else 'غير محدد'
+                    })
+            
+            return products
+            
+        except Exception as e:
+            logger.error(f"Error extracting products from text: {str(e)}")
+            return []
 
 agentic_ai_service = AgenticAIService()

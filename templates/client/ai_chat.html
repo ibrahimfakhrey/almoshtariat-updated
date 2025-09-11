@@ -356,10 +356,10 @@
                             throw new Error(data.error);
                         }
                         
-                        // Check if response is empty or null
+                        // Check if response is empty, null, or undefined
                         let responseContent = data.response;
-                        if (!responseContent || responseContent.trim() === '') {
-                            console.warn('Empty AI response received:', data);
+                        if (!responseContent || responseContent === 'undefined' || responseContent.toString().trim() === '' || responseContent.toString().trim() === 'undefined') {
+                            console.warn('Empty or undefined AI response received:', data);
                             responseContent = 'تم استلام الطلب ولكن لم يتم الحصول على رد من المساعد الذكي.';
                         }
                         
@@ -714,7 +714,7 @@
                             <li>
                                 <a :class=" (selected === 'Profile') && (page === 'profile') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Profile' ? '':'Profile')" class="menu-item group" href="/new_purchase">
                                     <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
-                                        {{ _('create order') }}
+                                        {{ _('Create Order') }}
                                     </span>
                                 </a>
                             </li>
@@ -858,7 +858,7 @@
                                         <div class="rounded-lg bg-gray-100 p-3 dark:bg-gray-800">
                                             <p class="text-sm text-gray-900 dark:text-white">مرحباً! أنا شلبي، مساعدك الذكي. يمكنني الإجابة على أي سؤال عام أو مساعدتك في تحليل طلباتك وفهم اتجاهات السوق وتقديم رؤى حول أداء عملك. ماذا تريد أن تعرف؟</p>
                                         </div>
-                                        <p class="mt-1 text-xs text-gray-500">المساعد الذكي</p>
+                                        <p class="mt-1 text-xs text-gray-500">{{ _('AI Assistant') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -877,7 +877,7 @@
                                             <div class="rounded-lg p-3" :class="message.type === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100 dark:bg-gray-800'" :style="message.type === 'user' ? 'background-color: #3b82f6 !important; color: white !important; opacity: 1 !important;' : ''">
                                                 <div x-html="message.type === 'ai' && hasStructuredData(message.content) ? renderStructuredMessage(message.content) : `<p class='text-sm ${message.type === 'user' ? 'text-white' : 'text-gray-900 dark:text-white'}'>${message.content}</p>`"></div>
                                             </div>
-                                            <p class="mt-1 text-xs text-gray-500" :class="message.type === 'user' ? 'text-right' : ''" x-text="message.type === 'user' ? 'أنت' : 'المساعد الذكي'"></p>
+                                            <p class="mt-1 text-xs text-gray-500" :class="message.type === 'user' ? 'text-right' : ''" x-text="message.type === 'user' ? '{{ _('You') }}' : '{{ _('AI Assistant') }}'"></p>
                                         </div>
                                     </div>
                                 </div>

@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: \n"
-"PO-Revision-Date: \n"
+"POT-Creation-Date: 2024-01-01 12:00\n"
+"PO-Revision-Date: 2024-01-01 12:00\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ar\n"
@@ -215,7 +215,6 @@ msgstr "إنشاء طلب"
 
 #: templates/client/form_layout.html:154
 #: templates/client/new_order_form.html:379
-#, fuzzy
 msgid "chats"
 msgstr "المحادثات"
 
@@ -682,6 +681,12 @@ msgstr "الموردون"
 msgid "Chats"
 msgstr "المحادثات"
 
+msgid "My Deliveries"
+msgstr "توصيلاتي"
+
+msgid "Balance"
+msgstr "الرصيد"
+
 #: templates/client/orders.html:197 templates/client/orders.html:345
 msgid "Search orders..."
 msgstr "البحث في الطلبات..."
@@ -747,7 +752,6 @@ msgid "Search or type command..."
 msgstr "البحث في الطلبات..."
 
 #: templates/client/stocks.html:371
-#, fuzzy
 msgid "Total Orders"
 msgstr "إجمالي الطلبات"
 
@@ -767,7 +771,6 @@ msgid "New Order"
 msgstr "طلب جديد"
 
 #: templates/client/stocks.html:406
-#, fuzzy
 msgid "Pending Orders"
 msgstr "الطلبات المعلقة"
 
@@ -803,7 +806,6 @@ msgid "View Offers"
 msgstr "عرض العروض"
 
 #: templates/client/stocks.html:470
-#, fuzzy
 msgid "Cart Items"
 msgstr "عناصر السلة"
 
@@ -2047,4 +2049,16 @@ msgstr "لقد قرأت كل شيء!"
 
 msgid "View all notifications"
 msgstr "عرض جميع الإشعارات"
+
+msgid "My Deliveries"
+msgstr "توصيلاتي"
+
+msgid "Balance"
+msgstr "الرصيد"
+
+msgid "AI Assistant"
+msgstr "المساعد الذكي"
+
+msgid "You"
+msgstr "أنت"
 
