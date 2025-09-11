@@ -80,18 +80,17 @@ def create_notification(title: str = "", description: str = "", notification_typ
                         related_chat_id: Optional[int] = None, related_product_id: Optional[int] = None) -> Optional['Notification']:
     """Create a new notification with real-time delivery"""
     try:
-        notification = Notification(
-            title=title or "Notification",
-            description=description or "No description",
-            notification_type=notification_type,
-            priority=priority,
-            user_id=user_id,
-            company_id=company_id,
-            related_order_id=related_order_id,
-            related_offer_id=related_offer_id,
-            related_chat_id=related_chat_id,
-            related_product_id=related_product_id
-        )
+        notification = Notification()
+        notification.title = title or "Notification"
+        notification.description = description or "No description"
+        notification.notification_type = notification_type
+        notification.priority = priority
+        notification.user_id = user_id
+        notification.company_id = company_id
+        notification.related_order_id = related_order_id
+        notification.related_offer_id = related_offer_id
+        notification.related_chat_id = related_chat_id
+        notification.related_product_id = related_product_id
         db.session.add(notification)
         db.session.commit()
         
@@ -313,36 +312,56 @@ def process_purchase_preferences_file(file_path: str, user_id: int):
                         typical_order_size = None
 
                 # Create UserPreference object
-                preference = UserPreference(
-                    user_id=user_id or 0,
-                    product_name=product_name or "Unknown Product",
-                    product_category=str(row.get('product_category', '')).strip() if pd.notna(
-                        row.get('product_category')) else "General",
-                    product_description=str(row.get('description', '')).strip() if pd.notna(
-                        row.get('description')) else None,
-                    quantity=quantity,
-                    unit=str(row.get('unit', 'pcs')).strip() if pd.notna(row.get('unit')) else 'pcs',
-                    frequency=str(row.get('frequency', '')).strip() if pd.notna(row.get('frequency')) else None,
-                    last_purchased=last_purchased,
-                    typical_order_size=typical_order_size,
-                    preferred_suppliers=str(row.get('preferred_suppliers', '')).strip() if pd.notna(
-                        row.get('preferred_suppliers')) else None,
-                    max_price_per_unit=max_price,
-                    quality_preference=str(row.get('quality_preference', '')).strip() if pd.notna(
-                        row.get('quality_preference')) else None,
-                    payment_preference=str(row.get('payment_preference', '')).strip() if pd.notna(
-                        row.get('payment_preference')) else None,
-                    extracted_at=datetime.utcnow(),
-                    preferred_delivery_time=str(row.get('preferred_delivery_time', '')).strip() if pd.notna(
-                        row.get('preferred_delivery_time')) else None,
-                    source_file=str(file_path) if file_path else None,
-                    confidence_score=1.0
-                )
+                preference = UserPreference()
+                preference.user_id = user_id or 0
+                preference.product_name = product_name or "Unknown Product"
+                # Handle product category
+                cat_val = row.get('product_category')
+                preference.product_category = str(cat_val).strip() if cat_val is not None and pd.notna(cat_val) else "General"
+                
+                # Handle product description
+                desc_val = row.get('description')
+                preference.product_description = str(desc_val).strip() if desc_val is not None and pd.notna(desc_val) else None
+                
+                preference.quantity = quantity
+                
+                # Handle unit
+                unit_val = row.get('unit', 'pcs')
+                preference.unit = str(unit_val).strip() if unit_val is not None and pd.notna(unit_val) else 'pcs'
+                
+                # Handle frequency
+                freq_val = row.get('frequency')
+                preference.frequency = str(freq_val).strip() if freq_val is not None and pd.notna(freq_val) else None
+                
+                preference.last_purchased = last_purchased
+                preference.typical_order_size = typical_order_size
+                
+                # Handle preferred suppliers
+                supp_val = row.get('preferred_suppliers')
+                preference.preferred_suppliers = str(supp_val).strip() if supp_val is not None and pd.notna(supp_val) else None
+                
+                preference.max_price_per_unit = max_price
+                
+                # Handle quality preference
+                qual_val = row.get('quality_preference')
+                preference.quality_preference = str(qual_val).strip() if qual_val is not None and pd.notna(qual_val) else None
+                
+                # Handle payment preference
+                pay_val = row.get('payment_preference')
+                preference.payment_preference = str(pay_val).strip() if pay_val is not None and pd.notna(pay_val) else None
+                
+                preference.extracted_at = datetime.utcnow()
+                
+                # Handle preferred delivery time
+                del_val = row.get('preferred_delivery_time')
+                preference.preferred_delivery_time = str(del_val).strip() if del_val is not None and pd.notna(del_val) else None
+                preference.source_file = str(file_path) if file_path else None
+                preference.confidence_score = 1.0
 
                 preferences.append(preference)
 
             except Exception as e:
-                print(f"Error processing row {index + 1}: {e}")
+                print(f"Error processing row {index}: {e}")
                 continue
 
         if not preferences:
@@ -536,6 +555,18 @@ def delivery_success(package_id: int):
 
 def get_product_suggestions(user_id: int, sector: str, limit: int = 10):
     """Get product suggestions based on user preferences and sector"""
+    # Get products from the database based on sector
+    products = Product.query.filter_by(sector=sector).limit(limit * 2).all()
+    
+    # Create suggestions with basic relevance scoring
+    suggested_products = []
+    for product in products:
+        suggestion = {
+            'product': product,
+            'relevance_score': 1.0  # Basic scoring, can be enhanced later
+        }
+        suggested_products.append(suggestion)
+    
     # Sort by relevance score and remove duplicates
     seen_products = set()
     unique_suggestions = []
@@ -567,25 +598,24 @@ def add_products_to_user_preferences(user_id: int, products_data: list, sector: 
 
             if not existing_preference:
                 # Create new preference from order data
-                new_preference = UserPreference(
-                    user_id=user_id,
-                    product_name=product_data['product_name'],
-                    product_category=sector,
-                    product_description=product_data['technical_specs'],
-                    quantity=product_data['quantity'],
-                    unit=product_data['unit'],
-                    frequency='as_needed',  # Default frequency
-                    max_price_per_unit=float(product_data['max_price_per_unit']) if product_data[
-                        'max_price_per_unit'] else None,
-                    preferred_suppliers=product_data['best_supplier'] if product_data['best_supplier'] else None,
-                    quality_preference='standard',  # Default quality preference
-                    payment_preference='standard',  # Default payment preference
-                    preferred_delivery_time='standard',  # Default delivery preference
-                    typical_order_size=product_data['quantity'],
-                    last_purchased=datetime.utcnow().date(),
-                    source_file='order_creation',  # Indicate this came from order creation
-                    confidence_score=0.8  # High confidence since it's from actual order
-                )
+                new_preference = UserPreference()
+                new_preference.user_id = user_id
+                new_preference.product_name = product_data['product_name']
+                new_preference.product_category = sector
+                new_preference.product_description = product_data['technical_specs']
+                new_preference.quantity = product_data['quantity']
+                new_preference.unit = product_data['unit']
+                new_preference.frequency = 'as_needed'  # Default frequency
+                new_preference.max_price_per_unit = float(product_data['max_price_per_unit']) if product_data[
+                    'max_price_per_unit'] else None
+                new_preference.preferred_suppliers = product_data['best_supplier'] if product_data['best_supplier'] else None
+                new_preference.quality_preference = 'standard'  # Default quality preference
+                new_preference.payment_preference = 'standard'  # Default payment preference
+                new_preference.preferred_delivery_time = 'standard'  # Default delivery preference
+                new_preference.typical_order_size = product_data['quantity']
+                new_preference.last_purchased = datetime.utcnow().date()
+                new_preference.source_file = 'order_creation'  # Indicate this came from order creation
+                new_preference.confidence_score = 0.8  # High confidence since it's from actual order
 
                 db.session.add(new_preference)
                 added_count += 1
@@ -777,7 +807,11 @@ def index():
         else:
             return redirect(url_for('dash'))
 
-    return render_template('landing_page.html')
+    # Clear any flash messages that shouldn't appear on the main page
+    # This prevents verification messages from showing on the landing page
+    session.pop('_flashes', None)
+    
+    return render_template('index.html')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -800,6 +834,12 @@ def login():
                 return redirect(url_for('verify_email', email=user.email))
             
             login_user(user)
+            
+            # Check if user has accepted terms and conditions (except for admin)
+            if user.role != 'admin' and not user.terms_accepted:
+                flash('مرحباً بك! يرجى قبول الشروط والأحكام للمتابعة واستخدام المنصة.', 'info')
+                return redirect(url_for('terms_and_conditions'))
+            
             flash(_('Login successful!'), 'success')
 
             # Redirect based on user role
@@ -846,24 +886,33 @@ def registerr():
             flash(_('Email already registered'), 'error')
             return redirect(url_for('register'))
 
-        password_hash = generate_password_hash(password, method='pbkdf2:sha256') if password else ''
+        if password:
+            password_hash = generate_password_hash(str(password) if password else '', method='pbkdf2:sha256')
+        else:
+            password_hash = ''
         
         # Get or create default company for user
         default_company = Company.query.filter_by(company_type='client').first()
         if not default_company:
-            default_company = Company(
-                name_ar='شركة العميل الافتراضية',
-                name_en='Default Client Company',
-                email='clients@almoshtariat.com',
-                company_type='client',
-                is_approved=True,
-                is_active=True,
-                sector='General'
-            )
+            default_company = Company()
+            default_company.name_ar = 'شركة العميل الافتراضية'
+            default_company.name_en = 'Default Client Company'
+            default_company.email = 'clients@almoshtariat.com'
+            default_company.company_type = 'client'
+            default_company.is_approved = True
+            default_company.is_active = True
+            default_company.sector = 'General'
             db.session.add(default_company)
             db.session.commit()
         
-        user = User(username=username, email=email, password_hash=password_hash, role=role, company_id=default_company.id, name=username)
+        user = User()
+        user.username = username
+        user.email = email
+        user.password_hash = password_hash
+        user.company_id = default_company.id
+        user.role = 'client'
+        user.company_id = default_company.id
+        user.name = username
 
         if role == 'company':
             return redirect(url_for('company_register'))
@@ -929,7 +978,7 @@ def company_register():
         validation_errors = {}
 
         # Required fields validation
-        if not name_ar or name_ar.strip() == '':
+        if not name_ar or (isinstance(name_ar, str) and name_ar.strip() == ''):
             validation_errors['name_ar'] = 'اسم الشركة بالعربية مطلوب'
 
         if not email or email.strip() == '':
@@ -992,56 +1041,55 @@ def company_register():
                     document_paths[field] = file_path
 
         # Create company with comprehensive information
-        company = Company(
-            # Basic Information
-            name_ar=name_ar,
-            name_en=name_en,
-            email=email,
+        company = Company()
+        # Basic Information
+        company.name_ar = name_ar if name_ar else ''
+        company.name_en = name_en
+        company.email = email
 
-            # Legal Information
-            legal_type=legal_type,
-            tax_id=tax_id,
-            commercial_registration=commercial_registration,
-            vat_number=vat_number,
+        # Legal Information
+        company.legal_type = legal_type
+        company.tax_id = tax_id
+        company.commercial_registration = commercial_registration
+        company.vat_number = vat_number
 
-            # Contact Information
-            registered_address=registered_address,
-            website=website,
-            office_phone=office_phone,
-            mobile_contact=mobile_contact,
+        # Contact Information
+        company.registered_address = registered_address
+        company.website = website
+        company.office_phone = office_phone
+        company.mobile_contact = mobile_contact
 
-            # Contact Person
-            contact_person=contact_person,
-            contact_position=contact_position,
-            owner_name=owner_name,
+        # Contact Person
+        company.contact_person = contact_person
+        company.contact_position = contact_position
+        company.owner_name = owner_name
 
-            # Banking Information
-            bank_name=bank_name,
-            account_name=account_name,
-            account_number=account_number,
-            bank_branch=bank_branch,
+        # Banking Information
+        company.bank_name = bank_name
+        company.account_name = account_name
+        company.account_number = account_number
+        company.bank_branch = bank_branch
 
-            # Business Information
-            sector=sector,
-            founded_year=int(founded_year) if founded_year else None,
-            employees_count=employees_count,
+        # Business Information
+        company.sector = sector
+        company.founded_year = int(founded_year) if founded_year else None
+        company.employees_count = employees_count
 
-            # Document Paths
-            commercial_registration_doc=document_paths.get('commercial_registration_doc'),
-            tax_card_doc=document_paths.get('tax_card_doc'),
-            e_invoice_proof_doc=document_paths.get('e_invoice_proof_doc'),
-            logo_doc=document_paths.get('logo_doc'),
-            letterhead_doc=document_paths.get('letterhead_doc'),
-            bank_letter_doc=document_paths.get('bank_letter_doc'),
-            owner_id_doc=document_paths.get('owner_id_doc'),
-            product_catalog_doc=document_paths.get('product_catalog_doc'),
-            quality_certificates_doc=document_paths.get('quality_certificates_doc'),
+        # Document Paths
+        company.commercial_registration_doc = document_paths.get('commercial_registration_doc')
+        company.tax_card_doc = document_paths.get('tax_card_doc')
+        company.e_invoice_proof_doc = document_paths.get('e_invoice_proof_doc')
+        company.logo_doc = document_paths.get('logo_doc')
+        company.letterhead_doc = document_paths.get('letterhead_doc')
+        company.bank_letter_doc = document_paths.get('bank_letter_doc')
+        company.owner_id_doc = document_paths.get('owner_id_doc')
+        company.product_catalog_doc = document_paths.get('product_catalog_doc')
+        company.quality_certificates_doc = document_paths.get('quality_certificates_doc')
 
-            # Status
-            company_type='supplier',
-            is_approved=get_system_setting('auto_approve_companies', False),  # Auto-approve based on setting
-            is_active=get_system_setting('auto_approve_companies', False)  # Auto-activate if auto-approved
-        )
+        # Status
+        company.company_type = 'supplier'
+        company.is_approved = get_system_setting('auto_approve_companies', False)  # Auto-approve based on setting
+        company.is_active = get_system_setting('auto_approve_companies', False)  # Auto-activate if auto-approved
 
         try:
             # First add the company to the database
@@ -1244,7 +1292,7 @@ def upload_company_document():
 
         # Check file type
         allowed_extensions = {'.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png'}
-        file_ext = os.path.splitext(document_file.filename)[1].lower()
+        file_ext = os.path.splitext(document_file.filename if document_file.filename else '')[1].lower()
         if file_ext not in allowed_extensions:
             return jsonify(
                 {'success': False, 'error': 'File type not allowed. Use PDF, DOC, DOCX, JPG, JPEG, or PNG'}), 400
@@ -1396,7 +1444,10 @@ def view_document(filename):
 
         if os.path.exists(file_path):
             # Get file extension to determine content type
-            file_ext = os.path.splitext(filename)[1].lower()
+            if filename:
+                file_ext = os.path.splitext(filename if filename else '')[1].lower()
+            else:
+                file_ext = ''
 
             # Set appropriate content type
             content_types = {
@@ -1586,6 +1637,7 @@ def register_enhanced():
         phone_number = request.form.get('phone_number')
         company_name = request.form.get('company_name')
         sector = request.form.get('sector')
+        subsector = request.form.get('subsector')
         tax_number = request.form.get('tax_number')
         account_type = request.form.get('account_type')
         
@@ -1612,12 +1664,15 @@ def register_enhanced():
             os.makedirs(upload_folder)
 
         # Handle file upload
-        uploaded_file_path = None
+        uploaded_file_path = ''
         if 'uploaded_file' in request.files:
             file = request.files['uploaded_file']
             if file and file.filename != '':
                 # Secure filename and save file
-                filename = secure_filename(file.filename)
+                if file.filename:
+                    filename = secure_filename(file.filename)
+                else:
+                    filename = ''
                 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
                 filename = f"{timestamp}_{filename}"
                 file_path = os.path.join(upload_folder, filename)
@@ -1625,7 +1680,7 @@ def register_enhanced():
                 uploaded_file_path = file_path
 
         # Create new user with enhanced fields
-        password_hash = generate_password_hash(password, method='pbkdf2:sha256')
+        password_hash = generate_password_hash(str(password) if password else '', method='pbkdf2:sha256')
 
         # Determine company assignment based on account type
         if account_type == 'client':
@@ -1634,15 +1689,14 @@ def register_enhanced():
             default_client_company = Company.query.filter_by(company_type='client').first()
             if not default_client_company:
                 # Create default client company if it doesn't exist
-                default_client_company = Company(
-                    name_ar='شركة العميل الافتراضية',
-                    name_en='Default Client Company',
-                    email='clients@almoshtariat.com',
-                    company_type='client',
-                    is_approved=True,
-                    is_active=True,
-                    sector='General'
-                )
+                default_client_company = Company()
+                default_client_company.name_ar = 'شركة العميل الافتراضية'
+                default_client_company.name_en = 'Default Client Company'
+                default_client_company.email = 'clients@almoshtariat.com'
+                default_client_company.company_type = 'client'
+                default_client_company.is_approved = True
+                default_client_company.is_active = True
+                default_client_company.sector = 'General'
                 db.session.add(default_client_company)
                 db.session.commit()
 
@@ -1654,37 +1708,36 @@ def register_enhanced():
             default_supplier_company = Company.query.filter_by(company_type='supplier').first()
             if not default_supplier_company:
                 # Create default supplier company if it doesn't exist
-                default_supplier_company = Company(
-                    name_ar='شركة المورد الافتراضية',
-                    name_en='Default Supplier Company',
-                    email='suppliers@almoshtariat.com',
-                    company_type='supplier',
-                    is_approved=True,
-                    is_active=True,
-                    sector='General'
-                )
+                default_supplier_company = Company()
+                default_supplier_company.name_ar = 'شركة المورد الافتراضية'
+                default_supplier_company.name_en = 'Default Supplier Company'
+                default_supplier_company.email = 'suppliers@almoshtariat.com'
+                default_supplier_company.company_type = 'supplier'
+                default_supplier_company.is_approved = True
+                default_supplier_company.is_active = True
+                default_supplier_company.sector = 'General'
                 db.session.add(default_supplier_company)
                 db.session.commit()
 
             company_id = default_supplier_company.id
             role = 'company'
 
-        new_user = User(
-            username=username,
-            email=email,
-            password_hash=password_hash,
-            name=name or username,
-            country=country or '',
-            city=final_city or '',
-            phone_number=phone_number or '',
-            company_name=company_name or '',
-            sector=sector or '',
-            tax_number=tax_number or '',
-            account_type=account_type or 'client',
-            uploaded_file=uploaded_file_path,
-            role=role,
-            company_id=company_id  # Now required field
-        )
+        new_user = User()
+        new_user.username = username
+        new_user.email = email
+        new_user.password_hash = password_hash
+        new_user.name = name or username
+        new_user.country = country or ''
+        new_user.city = final_city or ''
+        new_user.phone_number = phone_number or ''
+        new_user.company_name = company_name or ''
+        new_user.sector = sector or ''
+        new_user.subsector = subsector or ''
+        new_user.tax_number = tax_number or ''
+        new_user.account_type = account_type or 'client'
+        new_user.uploaded_file = uploaded_file_path
+        new_user.role = role
+        new_user.company_id = company_id
 
         try:
             db.session.add(new_user)
@@ -1738,15 +1791,15 @@ def register_enhanced():
                         flash(f'File format error: {str(e)}. Please check the column names and data format.', 'error')
                         print(f"File format error: {e}")
                         # Clean up the uploaded file
-                        if os.path.exists(file_path):
-                            os.remove(file_path)
+                        if uploaded_file_path and os.path.exists(uploaded_file_path):
+                             os.remove(uploaded_file_path)
                         return render_template('register_enhanced.html')
                     except Exception as e:
                         flash(f'Error processing purchase preferences file: {str(e)}', 'error')
                         print(f"Error processing preferences file: {e}")
                         # Clean up the uploaded file
-                        if os.path.exists(file_path):
-                            os.remove(file_path)
+                        if uploaded_file_path and os.path.exists(uploaded_file_path):
+                             os.remove(uploaded_file_path)
                         return render_template('register_enhanced.html')
 
             # Generate and send verification code
@@ -1762,15 +1815,13 @@ def register_enhanced():
                 
                 # Create welcome notification
                 try:
-                    welcome_notification = Notification(
-                        user_id=new_user.id,
-                        title="Welcome to B2B Platform!",
-                        message=f"Thank you for registering, {name}! Please check your email to verify your account.",
-                        notification_type='system',
-                        priority='normal',
-                        timestamp=datetime.utcnow(),
-                        is_read=False
-                    )
+                    welcome_notification = Notification()
+                    welcome_notification.user_id = new_user.id
+                    welcome_notification.title = "Welcome to B2B Platform!"
+                    welcome_notification.description = f"Thank you for registering, {name}! Please check your email to verify your account."
+                    welcome_notification.notification_type = 'system'
+                    welcome_notification.priority = 'normal'
+                    welcome_notification.is_read = False
                     db.session.add(welcome_notification)
                     db.session.commit()
                 except Exception as e:
@@ -1883,6 +1934,11 @@ def verify_code():
     # Log in the user automatically after successful verification
     from flask_login import login_user
     login_user(user)
+    
+    # Check if user has accepted terms and conditions
+    if not user.terms_accepted:
+        flash('تم التحقق من بريدك الإلكتروني بنجاح! يرجى قبول الشروط والأحكام للمتابعة.', 'success')
+        return redirect(url_for('terms_and_conditions'))
     
     flash('Email verified successfully! Welcome to your dashboard.', 'success')
     return redirect(url_for('dash'))
@@ -2011,25 +2067,24 @@ def new_purchase():
             max_suppliers = int(request.form.get('max_suppliers', 10))
 
             # Create order with new fields
-            order = Order(
-                user_id=current_user.id,
-                company_id=current_user.company_id,  # Automatically set from user's company
-                order_name=order_name,
-                description=description,
-                sector=sector,
-                order_type=order_type,
-                delivery_date=delivery_date,
-                delivery_time=delivery_time,
-                delivery_address=delivery_address,
-                delivery_notes=delivery_notes,
-                receiver_name=receiver_name,
-                receiver_phone=receiver_phone,
-                payment_way=payment_way,
-                payment_steps=payment_steps_json,
-                direct_negotiation=direct_negotiation,
-                accept_unregistered_suppliers=accept_unregistered_suppliers,
-                max_suppliers=max_suppliers
-            )
+            order = Order()
+            order.user_id = current_user.id
+            order.company_id = current_user.company_id  # Automatically set from user's company
+            order.order_name = order_name
+            order.description = description
+            order.sector = sector
+            order.order_type = order_type
+            order.delivery_date = delivery_date
+            order.delivery_time = delivery_time
+            order.delivery_address = delivery_address
+            order.delivery_notes = delivery_notes
+            order.receiver_name = receiver_name
+            order.receiver_phone = receiver_phone
+            order.payment_way = payment_way
+            order.payment_steps = payment_steps_json
+            order.direct_negotiation = direct_negotiation
+            order.accept_unregistered_suppliers = accept_unregistered_suppliers
+            order.max_suppliers = max_suppliers
 
             # Ensure company_id is set (fallback to user's company if not set)
             if not order.company_id and current_user.company:
@@ -2488,7 +2543,7 @@ def reset_password():
             return redirect(url_for('profile'))
 
         # Update password
-        current_user.password_hash = generate_password_hash(new_password or '', method='pbkdf2:sha256')
+        current_user.password_hash = generate_password_hash(str(new_password) if new_password else '', method='pbkdf2:sha256')
         db.session.commit()
 
         flash('Password updated successfully!', 'success')
@@ -4545,7 +4600,7 @@ def add_employee():
             flash(_('Username already exists'), 'error')
             return redirect(url_for('add_employee'))
 
-        password_hash = generate_password_hash(password, method='pbkdf2:sha256')
+        password_hash = generate_password_hash(str(password) if password else '', method='pbkdf2:sha256')
         employee = User(
             username=username,
             email=email,
@@ -4626,7 +4681,7 @@ def edit_employee(employee_id):
 
         # Update password if provided
         if new_password:
-            employee.password_hash = generate_password_hash(new_password, method='pbkdf2:sha256')
+            employee.password_hash = generate_password_hash(str(new_password) if new_password else '', method='pbkdf2:sha256')
 
         try:
             db.session.commit()
@@ -4675,22 +4730,21 @@ def add_product():
             return redirect(url_for('add_product'))
 
         try:
-            product = Product(
-                name=name,
-                description=description,
-                category=category,
-                sku=sku,
-                price=float(price),
-                cost=float(cost) if cost else None,
-                quantity=int(quantity),
-                min_quantity=int(min_quantity) if min_quantity else 0,
-                unit=unit,
-                location=location,
-                supplier=supplier,
-                supplier_contact=supplier_contact,
-                requirements=requirements,
-                company_id=company.id
-            )
+            product = Product()
+            product.name = name
+            product.description = description
+            product.category = category
+            product.sku = sku
+            product.price = float(price)
+            product.cost = float(cost) if cost else None
+            product.quantity = int(quantity)
+            product.min_quantity = int(min_quantity) if min_quantity else 0
+            product.unit = unit
+            product.location = location
+            product.supplier = supplier
+            product.supplier_contact = supplier_contact
+            product.requirements = requirements
+            product.company_id = company.id
 
             db.session.add(product)
             db.session.commit()
@@ -7564,7 +7618,7 @@ def admin_register_company():
                     # Check if user already exists
                     if not User.query.filter_by(username=admin_username).first() and not User.query.filter_by(
                             email=admin_email).first():
-                        password_hash = generate_password_hash(admin_password, method='pbkdf2:sha256')
+                        password_hash = generate_password_hash(str(admin_password) if admin_password else '', method='pbkdf2:sha256')
                         admin_user = User(
                             username=admin_username,
                             email=admin_email,
@@ -9536,6 +9590,11 @@ def create_package(offer_id):
 @login_required
 def dash():
     """User dashboard page"""
+    # Check if user has accepted terms and conditions (except for admin)
+    if current_user.role != 'admin' and not current_user.terms_accepted:
+        flash('يجب عليك قبول الشروط والأحكام قبل الوصول إلى لوحة التحكم.', 'warning')
+        return redirect(url_for('terms_and_conditions'))
+    
     if current_user.role == 'admin':
         return render_template('site_admin/index.html')
     elif current_user.role == 'company':
@@ -11502,6 +11561,52 @@ def get_chat_sessions():
         app.logger.error(f'Get Chat Sessions Error: {str(e)}')
         return jsonify({'error': 'Failed to retrieve chat sessions'}), 500
 
+
+@app.route('/terms-and-conditions')
+def terms_and_conditions():
+    """Display terms and conditions page"""
+    current_date = datetime.now().strftime('%B %Y')
+    return render_template('terms_and_conditions.html', current_date=current_date)
+
+
+@app.route('/accept-terms', methods=['POST'])
+@login_required
+def accept_terms():
+    """Handle terms and conditions acceptance"""
+    action = request.form.get('action')
+    
+    if action == 'accept':
+        # Update user's terms acceptance
+        current_user.terms_accepted = True
+        current_user.terms_accepted_at = datetime.utcnow()
+        db.session.commit()
+        
+        # Create notification for terms acceptance
+        try:
+            terms_notification = Notification(
+                user_id=current_user.id,
+                title="Terms and Conditions Accepted",
+                message="You have successfully accepted the terms and conditions. Welcome to the platform!",
+                notification_type='system',
+                priority='normal',
+                timestamp=datetime.utcnow(),
+                is_read=False
+            )
+            db.session.add(terms_notification)
+            db.session.commit()
+        except Exception as e:
+            print(f"Failed to create terms acceptance notification: {e}")
+        
+        flash('شكراً لك! تم قبول الشروط والأحكام بنجاح. مرحباً بك في منصة المشتريات الذكية!', 'success')
+        return redirect(url_for('dash'))
+    
+    elif action == 'decline':
+        flash('يجب عليك قبول الشروط والأحكام للمتابعة واستخدام المنصة.', 'warning')
+        return redirect(url_for('terms_and_conditions'))
+    
+    return redirect(url_for('terms_and_conditions'))
+
+
 if __name__ == '__main__':
     # Configure logging to ensure token usage logs are visible
     import logging
@@ -11510,7 +11615,43 @@ if __name__ == '__main__':
     # Set specific loggers to INFO level
     logging.getLogger('ai_config').setLevel(logging.INFO)
     logging.getLogger('agentic_ai_service').setLevel(logging.INFO)
+
+
+# Additional pages routes
+@app.route('/about')
+def about():
+    """Display about us page"""
+    return render_template('about.html')
+
+
+@app.route('/contact', methods=['GET', 'POST'])
+def contact():
+    """Display contact page and handle contact form submissions"""
+    if request.method == 'POST':
+        # Handle contact form submission
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        company = request.form.get('company')
+        subject = request.form.get('subject')
+        message = request.form.get('message')
+        
+        # Here you would typically save to database or send email
+        # For now, just flash a success message
+        flash('Thank you for your message! We will get back to you within 24 hours.', 'success')
+        return redirect(url_for('contact'))
     
+    return render_template('contact.html')
+
+
+@app.route('/pricing')
+def pricing():
+    """Display pricing page"""
+    return render_template('pricing.html')
+
+
+if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     # For PythonAnywhere deployment, use host='0.0.0.0' and remove debug

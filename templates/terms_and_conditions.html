@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>الشروط والأحكام وسياسة الخصوصية – المشتريات الذكية "Almoshtriyat – Git It Right"</title>
+      <meta name="csrf-token" content="{{ csrf_token() }}">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #1f2937;
+    }
+    .terms-container {
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin: 20px auto;
+      max-width: 1100px;
+    }
+    .terms-header {
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      color: #fff;
+      padding: 30px;
+      border-radius: 15px 15px 0 0;
+      text-align: center;
+    }
+    .terms-content { padding: 32px; line-height: 1.9; }
+    .section-title { color: #2c3e50; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; margin: 30px 0 15px; }
+    .accept-section { background: #f8f9fa; padding: 24px; border-radius: 0 0 15px 15px; border-top: 1px solid #e5e7eb; }
+    .btn-accept { background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); border: none; padding: 12px 28px; font-size: 18px; border-radius: 25px; transition: all 0.3s ease; }
+    .btn-accept:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(76,175,80,.35); }
+    .btn-decline { background: #6c757d; border: none; padding: 12px 28px; font-size: 18px; border-radius: 25px; margin-inline-start: 12px; }
+    .platform-logo { font-size: 2.5rem; margin-bottom: 10px; }
+    .lead-note { background:#eefbf0; border:1px solid #b7ecc0; padding:14px 16px; border-radius:10px; }
+    .accordion-button::after { margin-left: 0; margin-right: auto; }
+    .list-compact li { margin-bottom: .4rem; }
+    .small-muted { color:#6b7280; font-size:.95rem; }
+    code.kbd { background:#f3f4f6; border-radius:6px; padding:.1rem .4rem; }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="terms-container">
+      <div class="terms-header">
+        <div class="platform-logo"><i class="fas fa-shopping-cart"></i></div>
+        <h1 class="mb-1">الشروط والأحكام وسياسة الخصوصية</h1>
+        <h2 class="h5 mb-2">منصة المشتريات الذكية – "Almoshtriyat – Git It Right"</h2>
+        <p class="mb-0">يرجى قراءة البنود بعناية قبل استخدام المنصة.</p>
+      </div>
+
+      <div class="terms-content">
+        <div class="alert alert-info" role="alert">
+          <i class="fas fa-info-circle me-2"></i>
+          بالتسجيل أو الاستخدام، فأنت توافق على هذه الشروط وسياسة الخصوصية وأي سياسات مكملة. تحتفظ المنصة بالحق في التعديل بإشعار عبر الموقع/التطبيق.
+        </div>
+
+        <!-- مقدمة -->
+        <h3 class="section-title"><i class="fas fa-handshake me-2"></i>مقدمة</h3>
+        <p>إن هذه الشروط والأحكام ("الاتفاقية") تمثل اتفاقًا قانونيًا ملزمًا بين منصة المشتريات الذكية "المشتريات – Git It Right" (ويُشار إليها فيما يلي بـ "المنصة") وبين مستخدميها من المشترين والموردين وغيرهم. يعتبر أي استخدام للمنصة موافقة صريحة على الاتفاقية وسياسة الخصوصية وكافة الإشعارات المكملة.</p>
+
+        <!-- Accordion for all sections -->
+        <div class="accordion" id="termsAccordion">
+          <!-- التعريفات -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="head-defs">
+              <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#sec-defs" aria-expanded="true" aria-controls="sec-defs">
+                1) التعريفات
+              </button>
+            </h2>
+            <div id="sec-defs" class="accordion-collapse collapse show" aria-labelledby="head-defs" data-bs-parent="#termsAccordion">
+              <div class="accordion-body">
+                <ul class="list-compact">
+                  <li><strong>المنصة:</strong> موقع وتطبيق "Almoshtriyat – Git It Right" للتجارة الإلكترونية بين الشركات (B2B) لإدارة طلبات الشراء والعروض وإبرام العقود إلكترونيًا.</li>
+                  <li><strong>المستخدم:</strong> أي شخص أو جهة تجارية تقوم بالتسجيل أو الاستخدام (مشتري/مورد)، بما يشمل ممثلي الشركات المصرّح لهم.</li>
+                  <li><strong>المشتري:</strong> الجهة التي تطرح طلبات شراء أو تصدر أوامر الشراء عبر المنصة.</li>
+                  <li><strong>المورّد:</strong> الجهة التي تقدم عروض توريد سلع/خدمات عبر المنصة وتبرم عقودًا مع المشترين.</li>
+                  <li><strong>طلب عرض أسعار (RFQ):</strong> طلب إلكتروني يتضمن المواصفات والكميات والمهلة والشروط.</li>
+                  <li><strong>العرض:</strong> العرض التجاري الذي يقدمه المورد استجابة لطلب المشتري.</li>
+                  <li><strong>أمر الشراء (PO):</strong> أمر يصدره المشتري لتوثيق الموافقة على العرض ويُعد عقدًا ملزمًا.</li>
+                  <li><strong>الاتفاقية الإلكترونية:</strong> أي عقد يُبرم إلكترونيًا عبر المنصة وله حجية قانونية.</li>
+                  <li><strong>الخدمات:</strong> جميع الخدمات الإلكترونية للمنصة، ومنها الدفع الإلكتروني، التوقيع الرقمي، التحقق من الهوية، والدعم الفني.</li>
+                  <li><strong>سياسة الخصوصية:</strong> وثيقة منفصلة تُعد جزءًا لا يتجزأ من هذه الاتفاقية.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- الأهلية والحساب -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="head-eligibility">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-eligibility" aria-expanded="false" aria-controls="sec-eligibility">
+                2) أهلية الاستخدام والتسجيل & الحساب والسرية الأمنية
+              </button>
+            </h2>
+            <div id="sec-eligibility" class="accordion-collapse collapse" aria-labelledby="head-eligibility" data-bs-parent="#termsAccordion">
+              <div class="accordion-body">
+                <p>يشترط أن يكون المستخدم راشدًا (18+) متمتعًا بالأهلية القانونية أو كيانًا تجاريًا قائمًا نظاميًا، ومخولًا لإبرام هذه الاتفاقية. يجب تقديم معلومات دقيقة ومحدثة وعدم انتهاك حقوق الغير. للمنصة حق رفض/إلغاء الحساب المخالف.</p>
+                <p><strong>الحساب والسرية الأمنية:</strong> يتحمل المستخدم مسؤولية سرية بيانات الدخول، ويجب إبلاغ المنصة فورًا بأي خرق. توصى المصادقة الثنائية (OTP/2FA). قد تُعلّق المنصة أي حساب تُشتبه إساءة استخدامه.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- وصف الخدمة ودور المنصة -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="head-service">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-service" aria-expanded="false" aria-controls="sec-service">
+                3) وصف الخدمة ودور المنصة
+              </button>
+            </h2>
+            <div id="sec-service" class="accordion-collapse collapse" aria-labelledby="head-service" data-bs-parent="#termsAccordion">
+              <div class="accordion-body">
+                <p>المنصة وسيط إلكتروني لتيسير طرح طلبات الشراء وتلقي العروض والتفاوض والتعاقد الرقمي والدفع والتحصيل وإدارة سلاسل الإمداد. ليست طرفًا في عقود البيع/الشراء بين المشتري والمورد.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- إجراءات إبرام العقود الإلكترونية -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="head-econtract">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-econtract" aria-expanded="false" aria-controls="sec-econtract">
+                4) إجراءات إبرام العقود الإلكترونية
+              </button>
+            </h2>
+            <div id="sec-econtract" class="accordion-collapse collapse" aria-labelledby="head-econtract" data-bs-parent="#termsAccordion">
+              <div class="accordion-body">
+                <ol>
+                  <li>يطرح المشتري <strong>طلب عرض أسعار (RFQ)</strong>.</li>
+                  <li>يقدم المورد <strong>عرضًا إلكترونيًا</strong> ملتزمًا خلال مدة صلاحيته.</li>
+                  <li>يراجع المشتري العروض ويختار المناسب.</li>
+                  <li>إصدار <strong>أمر شراء (PO)</strong> للمورد الفائز متضمنًا تفاصيل الاتفاق.</li>
+                  <li>بقبول المورد لأمر الشراء ينشأ <strong>عقد إلكتروني ملزم</strong>، والتأكيد الرقمي يعد توقيعًا ملزمًا.</li>
+                </ol>
+                <p>تحتفظ المنصة بسجلات إلكترونية معتبرة قانونًا. لا يُلغى/يُعدّل العقد إلا وفق الشروط المتفق عليها وعبر موافقات إلكترونية موثقة.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- التزامات المشتري -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="head-buyer">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-buyer" aria-expanded="false" aria-controls="sec-buyer">
+                5) التزامات المشتري
+              </button>
+            </h2>
+            <div id="sec-buyer" class="accordion-collapse collapse" aria-labelledby="head-buyer" data-bs-parent="#termsAccordion">
+              <div class="accordion-body">
+                <ul>
+                  <li><strong>مشروعية الغرض:</strong> طرح طلبات لأغراض تجارية مشروعة وعدم تضمين سلع/خدمات محظورة.</li>
+                  <li><strong>معلومات واضحة:</strong> توفير مواصفات دقيقة وكميات ومهل زمنية وشروط واضحة.</li>
+                  <li><strong>الالتزام بالعروض المقبولة:</strong> تنفيذ العقد واستلام البضاعة وفحصها خلال مدة معقولة.</li>
+                  <li><strong>الدفع في الوقت المحدد:</strong> سداد المبالغ وفق الشروط وبدون فوائد ربوية.</li>
+                  <li><strong>النزاهة:</strong> الامتناع عن التواطؤ والإخلال بالمنافسة وإفشاء العروض.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- التزامات المورد -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="head-supplier">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-supplier" aria-expanded="false" aria-controls="sec-supplier">
+                6) التزامات المورد
+              </button>
+            </h2>
+            <div id="sec-supplier" class="accordion-collapse collapse" aria-labelledby="head-supplier" data-bs-parent="#termsAccordion">
+              <div class="accordion-body">
+                <ul>
+                  <li><strong>المصداقية ومشروعية المنتجات:</strong> ملكية البضاعة/الحق في بيعها، ومطابقة المواصفات وخلوها من العيوب.</li>
+                  <li><strong>احترام مدة العرض:</strong> الالتزام بشروط السعر خلال مدة السريان.</li>
+                  <li><strong>تنفيذ العقد والتسليم:</strong> التسليم في الموعد والمكان المتفقين، وتوفير وثائق الشحن والضمان.</li>
+                  <li><strong>التقيد بالجودة والضمان:</strong> مطابقة المواصفات والاستجابة لمعالجة العيوب وفق الضمان.</li>
+                  <li><strong>الامتناع عن الممارسات غير المشروعة:</strong> عدم التواطؤ، وعدم الالتفاف على المنصة.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- الشروط المالية والدفع -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="head-payment">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-payment" aria-expanded="false" aria-controls="sec-payment">
+                7) الشروط المالية والدفع الإلكتروني
+              </button>
+            </h2>
+            <div id="sec-payment" class="accordion-collapse collapse" aria-labelledby="head-payment" data-bs-parent="#termsAccordion">
+              <div class="accordion-body">
+                <ul>
+                  <li><strong>العملة والأسعار:</strong> حسب الاتفاق (محلي/دولار). صرف العملات بالتقابض الفوري عند الاختلاف.</li>
+                  <li><strong>آلية الدفع:</strong> قنوات دفع آمنة، وقد يُستخدم نظام الضمان (Escrow) عند توفره.</li>
+                  <li><strong>الرسوم والعمولات:</strong> قد تُفرض رسوم/عمولات معلنة ويجب سدادها في مواعيدها، والأسعار شاملة الضرائب ما لم يُنص خلاف ذلك.</li>
+                  <li><strong>الاسترداد والإلغاء:</strong> لا إلغاء بعد بدء التنفيذ إلا بموافقة المورد أو عند إخلاله. الاسترداد عبر نفس وسيلة الدفع.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- التسليم والاستلام -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="head-delivery">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-delivery" aria-expanded="false" aria-controls="sec-delivery">
+                8) التسليم والاستلام وإدارة المخاطر
+              </button>
+            </h2>
+            <div id="sec-delivery" class="accordion-collapse collapse" aria-labelledby="head-delivery" data-bs-parent="#termsAccordion">
+              <div class="accordion-body">
+                <ul>
+                  <li><strong>شروط التسليم:</strong> وفق PO/Incoterms إن ذُكرت، وتزويد رقم تتبع عند الشحن.</li>
+                  <li><strong>التخليص الجمركي:</strong> على المشتري، والمورد يزوّد الوثائق اللازمة.</li>
+                  <li><strong>استلام المشتري للبضاعة:</strong> فحص فوري وإثبات الاستلام عبر المنصة.</li>
+                  <li><strong>الإخطار بالعيوب:</strong> خلال مدة معقولة (مثال 5 أيام عمل) مع أدلة.</li>
+                  <li><strong>نقل الملكية والمخاطر:</strong> عند التسليم وفق الاتفاق.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- الاستخدام المقبول والمحظور -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="head-acceptable">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-acceptable" aria-expanded="false" aria-controls="sec-acceptable">
+                9) سياسة الاستخدام المقبول والأنشطة المحظورة
+              </button>
+            </h2>
+            <div id="sec-acceptable" class="accordion-collapse collapse" aria-labelledby="head-acceptable" data-bs-parent="#termsAccordion">
+              <div class="accordion-body">
+                <p>يُحظر الاستخدام غير القانوني، بيع السلع المحظورة أو المخالفة للشريعة، المقامرة، الغرر والضبابية، المحتوى المسيء/المضر، تعطيل المنصة/الهجمات الإلكترونية، الالتفاف على المنصة، وانتهاك الملكية الفكرية. للمنصة حق التحقيق والإيقاف والحذف والإبلاغ.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- الامتثال والشريعة -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="head-compliance">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-compliance" aria-expanded="false" aria-controls="sec-compliance">
+                10) الامتثال القانوني وأحكام الشريعة
+              </button>
+            </h2>
+            <div id="sec-compliance" class="accordion-collapse collapse" aria-labelledby="head-compliance" data-bs-parent="#termsAccordion">
+              <div class="accordion-body">
+                <ul>
+                  <li><strong>الالتزام بالقوانين المحلية:</strong> مصر، السعودية، الإمارات، سوريا، وغيرها حسب الاختصاص.</li>
+                  <li><strong>تحريم الربا والممارسات المالية المحظورة:</strong> لا فوائد ربوية أو غرامات متزايدة بمرور الوقت.</li>
+                  <li><strong>تجنب الغرر والميسر:</strong> معاملات واضحة وشفافة دون مقامرة.</li>
+                  <li><strong>السلع والخدمات المتفقة مع الشريعة:</strong> حظر السلع/الخدمات المحرّمة شرعًا.</li>
+                  <li><strong>التوفيق بين الشريعة والقانون:</strong> تطبيق يحقق المصلحة دون مخالفة الشريعة مع الامتثال القانوني.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- الملكية الفكرية -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="head-ip">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-ip" aria-expanded="false" aria-controls="sec-ip">
+                11) حقوق الملكية الفكرية
+              </button>
+            </h2>
+            <div id="sec-ip" class="accordion-collapse collapse" aria-labelledby="head-ip" data-bs-parent="#termsAccordion">
+              <div class="accordion-body">
+                <p>جميع حقوق المنصة ومحتواها محفوظة. يمنح للمستخدم ترخيص محدود غير حصري للاستخدام. لا إعادة بيع/نسخ جماعي أو استخدام للعلامات بدون إذن. يحتفظ المستخدم بحقوق محتواه ويمنح ترخيصًا غير حصري للمنصة لاستخدامه لتقديم الخدمات.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- السرية والبيانات -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="head-confidential">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-confidential" aria-expanded="false" aria-controls="sec-confidential">
+                12) السرية وحماية البيانات
+              </button>
+            </h2>
+            <div id="sec-confidential" class="accordion-collapse collapse" aria-labelledby="head-confidential" data-bs-parent="#termsAccordion">
+              <div class="accordion-body">
+                <p>يلتزم جميع المستخدمين بسرية المعلومات غير العلنية واستخدامها لأغراض الصفقة فقط، مع استثناءات الامتثال القانوني. تخضع المعلومات الشخصية لسياسة الخصوصية أدناه.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- إخلاء المسؤولية وحدودها -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="head-disclaimer">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-disclaimer" aria-expanded="false" aria-controls="sec-disclaimer">
+                13) إخلاء المسؤولية وحدودها
+              </button>
+            </h2>
+            <div id="sec-disclaimer" class="accordion-collapse collapse" aria-labelledby="head-disclaimer" data-bs-parent="#termsAccordion">
+              <div class="accordion-body">
+                <p>الخدمة مقدمة "كما هي" و"كما هي متوفرة" دون ضمانات مطلقة. لا تتحمل المنصة أضرارًا مباشرة/غير مباشرة ضمن الحد الذي يسمح به القانون. أي مسؤولية (إن وجدت) تُحد بالسقف القانوني وبحدود الرسوم المتقاضة عن المعاملة محل المطالبة.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- التعويض -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="head-indemnity">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-indemnity" aria-expanded="false" aria-controls="sec-indemnity">
+                14) التعويض (المسؤولية عن الغير)
+              </button>
+            </h2>
+            <div id="sec-indemnity" class="accordion-collapse collapse" aria-labelledby="head-indemnity" data-bs-parent="#termsAccordion">
+              <div class="accordion-body">
+                <p>يوافق المستخدم على تعويض المنصة وشركاتها وموظفيها ووكلائها عن أي مطالبات/خسائر/تكاليف تنشأ عن انتهاك الشروط أو حقوق الغير أو القوانين.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- المدة والإنهاء -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="head-term">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-term" aria-expanded="false" aria-controls="sec-term">
+                15) مدة الاتفاقية وإنهاء الاستخدام
+              </button>
+            </h2>
+            <div id="sec-term" class="accordion-collapse collapse" aria-labelledby="head-term" data-bs-parent="#termsAccordion">
+              <div class="accordion-body">
+                <p>تبقى الاتفاقية سارية ما دام الحساب نشطًا. للمستخدم إغلاق حسابه دون الإخلال بالحقوق والالتزامات الناشئة. للمنصة حق التعليق/الإنهاء دون إشعار مسبق في حالات المخالفات الجوهرية أو الاشتباه بسلوك احتيالي أو بطلب الجهات الرسمية.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- حل النزاعات -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="head-disputes">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-disputes" aria-expanded="false" aria-controls="sec-disputes">
+                16) حل النزاعات والشكاوى
+              </button>
+            </h2>
+            <div id="sec-disputes" class="accordion-collapse collapse" aria-labelledby="head-disputes" data-bs-parent="#termsAccordion">
+              <div class="accordion-body">
+                <p>يبدأ الحل وديًا عبر أدوات التواصل داخل المنصة. عند الفشل، تُرفع شكوى رسمية ويجوز اللجوء لوساطة/تحكيم داخلي غير ملزم، ثم للتحكيم القانوني أو القضاء وفق العقد والقوانين المختصة. دور المنصة تسهيلي وتوثيقي.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- القانون الواجب التطبيق -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="head-law">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-law" aria-expanded="false" aria-controls="sec-law">
+                17) القانون الواجب التطبيق والاختصاص القضائي
+              </button>
+            </h2>
+            <div id="sec-law" class="accordion-collapse collapse" aria-labelledby="head-law" data-bs-parent="#termsAccordion">
+              <div class="accordion-body">
+                <p>تُراعى أفضل الممارسات القانونية في مصر والسعودية والإمارات وسوريا. يحدد القانون والاختصاص وفق مكان الأطراف أو مكان تنفيذ الالتزامات، أو ما يُتفق عليه في العقد (تحكيم/قضاء). تُراعى أحكام الشريعة الإسلامية قدر الإمكان.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- أحكام عامة -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="head-general">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-general" aria-expanded="false" aria-controls="sec-general">
+                18) أحكام عامة
+              </button>
+            </h2>
+            <div id="sec-general" class="accordion-collapse collapse" aria-labelledby="head-general" data-bs-parent="#termsAccordion">
+              <div class="accordion-body">
+                <ul>
+                  <li><strong>كامل الاتفاق:</strong> هذه الاتفاقية وسياسة الخصوصية تشكلان كامل الاتفاق وتُلغي ما سبق.</li>
+                  <li><strong>قابلية الفصل:</strong> يُعدّل أي بند غير قانوني بالقدر اللازم دون المساس بباقي البنود.</li>
+                  <li><strong>عدم التنازل:</strong> عدم ممارسة حق لا يعني التنازل عنه لاحقًا.</li>
+                  <li><strong>القوة القاهرة:</strong> لا مسؤولية عند أحداث خارج السيطرة مع الإخطار والسعي للاستئناف.</li>
+                  <li><strong>العلاقة بين الأطراف:</strong> لا شراكة/وكالة؛ المنصة ليست ممثلًا قانونيًا للأطراف.</li>
+                  <li><strong>الإشعارات:</strong> بالعربية عبر البريد المسجل أو إشعارات النظام.</li>
+                  <li><strong>التعديلات:</strong> إشعار واضح قبل النفاذ، والاستمرار يعني القبول.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- جدول موجز -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="head-table">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-table" aria-expanded="false" aria-controls="sec-table">
+                19) جدول موجز للبنود الأساسية المُلزِمة للطرفين
+              </button>
+            </h2>
+            <div id="sec-table" class="accordion-collapse collapse" aria-labelledby="head-table" data-bs-parent="#termsAccordion">
+              <div class="accordion-body">
+                <div class="table-responsive">
+                  <table class="table table-bordered align-middle">
+                    <thead class="table-light">
+                      <tr>
+                        <th>البند الأساسي</th>
+                        <th>التزامات المشتري</th>
+                        <th>التزامات المورد</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>الطلبات والعروض</td>
+                        <td>طرح طلبات واضحة ومشروعة؛ لا سلع ممنوعة أو شروط غامضة.</td>
+                        <td>عروض مطابقة وصادقة وبأسعار ثابتة خلال مدة العرض.</td>
+                      </tr>
+                      <tr>
+                        <td>التعاقد الإلكتروني</td>
+                        <td>إصدار أوامر شراء ملزمة؛ عدم الإلغاء التعسفي.</td>
+                        <td>قبول PO خلال المهلة؛ الالتزام الكامل بالعقد.</td>
+                      </tr>
+                      <tr>
+                        <td>الأسعار والدفع</td>
+                        <td>دفع الثمن كاملًا وفي الوقت؛ دون فوائد؛ تحمل الرسوم المتفق عليها.</td>
+                        <td>عدم تغيير الثمن؛ لا فوائد/رسوم مخالفة للشرع؛ تحمل تكاليف الشحن إن اتُّفق.</td>
+                      </tr>
+                      <tr>
+                        <td>التسليم والاستلام</td>
+                        <td>الاستلام في الموعد والمكان؛ الفحص الفوري؛ تأكيد الاستلام.</td>
+                        <td>التسليم بالجودة والموعد؛ وثائق الشحن والضمان؛ تحديثات الشحن.</td>
+                      </tr>
+                      <tr>
+                        <td>الجودة والضمان</td>
+                        <td>الاستخدام السليم؛ إتاحة معالجة الخلل ضمن شروط الضمان.</td>
+                        <td>مطابقة المواصفات؛ إصلاح/استبدال عند العيب؛ استجابة سريعة.</td>
+                      </tr>
+                      <tr>
+                        <td>الامتثال والشريعة</td>
+                        <td>الالتزام بالقوانين؛ لا طلبات تخالف الشريعة.</td>
+                        <td>الالتزام بالتراخيص؛ لا منتجات محرمة أو غرر/ميسر.</td>
+                      </tr>
+                      <tr>
+                        <td>النزاهة والتواطؤ</td>
+                        <td>عدم إفشاء العروض؛ لا صفقات جانبية تُخل بالمنافسة.</td>
+                        <td>عدم التلاعب بالأسعار أو المناقصات؛ عدم استغلال معلومات المشتري.</td>
+                      </tr>
+                      <tr>
+                        <td>حل النزاعات</td>
+                        <td>إشعار فوري بالمشكلات؛ تقديم الأدلة والتعاون في الوساطة/التحكيم.</td>
+                        <td>التعاون الجاد وتقديم المستندات وحضور إجراءات الحل.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p class="small-muted">الجدول للتوضيح ولا يغني عن قراءة كافة البنود أعلاه.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- سياسة الخصوصية -->
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="head-privacy">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sec-privacy" aria-expanded="false" aria-controls="sec-privacy">
+                20) سياسة الخصوصية
+              </button>
+            </h2>
+            <div id="sec-privacy" class="accordion-collapse collapse" aria-labelledby="head-privacy" data-bs-parent="#termsAccordion">
+              <div class="accordion-body">
+                <p class="lead-note"><strong>التزامنا:</strong> حماية خصوصية مستخدمينا وبياناتهم الشخصية والتجارية وفق القوانين السارية وفي حدود الضرورة لتشغيل المنصة.</p>
+
+                <h5 class="mt-3">المعلومات التي نجمعها</h5>
+                <ul>
+                  <li><strong>معلومات التعريف الشخصية:</strong> الاسم، الشركة، العنوان، البريد، الهاتف، بيانات السجل/الضرائب (إن وجدت)، وبيانات الدفع (جزئيًا وبشكل آمن).</li>
+                  <li><strong>المعلومات التقنية:</strong> عنوان IP، نوع المتصفح/التطبيق، أوقات الوصول، الكوكيز وما شابه.</li>
+                  <li><strong>الاستخدام والمعاملات:</strong> RFQs، العروض، العقود، المراسلات، التقييمات، وسجل الأنشطة.</li>
+                  <li><strong>التحقق:</strong> مستندات/بيانات للتحقق من الهوية/الأهلية التجارية عند الحاجة.</li>
+                  <li><strong>معلومات مقدّمة طوعًا:</strong> مراسلات الدعم، الاستبيانات، المشاركات الترويجية.</li>
+                </ul>
+
+                <h5>كيفية استخدام المعلومات</h5>
+                <ul>
+                  <li><strong>تقديم الخدمات وتشغيل المنصة:</strong> إدارة الحسابات، المعاملات، المدفوعات، وإرسال الإشعارات.</li>
+                  <li><strong>تحسين الخدمة والتطوير:</strong> تحليل الاستخدام وتطوير الميزات.</li>
+                  <li><strong>الاتصال والتسويق (عند الاقتضاء):</strong> تحديثات وعروض مسموح بها قانونًا مع خيار إلغاء الاشتراك.</li>
+                  <li><strong>الأمان والامتثال:</strong> منع الأنشطة غير المشروعة والتحقق من الالتزام بالشروط.</li>
+                  <li><strong>حل النزاعات ودعم العملاء:</strong> مراجعة السجلات ذات الصلة لمعالجة الشكاوى.</li>
+                </ul>
+
+                <h5>مشاركة المعلومات مع أطراف ثالثة</h5>
+                <ul>
+                  <li><strong>الأطراف المتعاقدة:</strong> تبادل البيانات الضرورية بين المشتري والمورد لإتمام الصفقة.</li>
+                  <li><strong>مزودو خدمات موثوقون:</strong> بوابات الدفع، التحقق من الهوية، الشحن، البريد/الرسائل؛ بموجب التزام تعاقدي بالسرية.</li>
+                  <li><strong>الامتثال القانوني وإنفاذ القانون:</strong> الإفصاح المطلوب قانونًا أو لحماية الحقوق/السلامة.</li>
+                  <li><strong>الاندماج/الاستحواذ:</strong> نقل البيانات للمالك الجديد مع احترام هذه السياسة، وبإشعار المستخدم عند التغييرات الجوهرية.</li>
+                  <li><strong>بموافقتك:</strong> مشاركة إضافية لا تتم إلا بعد موافقتك الصريحة.</li>
+                </ul>
+
+                <h5>تخزين وحماية البيانات</h5>
+                <ul>
+                  <li><strong>التشفير:</strong> SSL/TLS أثناء النقل وتشفير كلمات المرور وبعض بيانات الدفع.</li>
+                  <li><strong>التحكم بالوصول:</strong> صلاحيات محدودة ومراجعة دورية ومصادقة متعددة العوامل.</li>
+                  <li><strong>اختبارات الأمان والاستجابة للحوادث:</strong> اختبارات دورية وخطة استجابة وإبلاغ عند اللزوم.</li>
+                  <li><strong>مواقع الخوادم:</strong> استضافة إقليمية أو مكافئة الحماية قانونيًا، مع مراعاة توطين البيانات حيث يُطلب.</li>
+                  <li><strong>مدة الاحتفاظ:</strong> بحسب الحاجة والأحكام القانونية، مع حذف/تقليل البيانات عند إغلاق الحساب مع الاحتفاظ الأدنى للالتزامات القانونية.</li>
+                </ul>
+
+                <h5>حقوق المستخدم</h5>
+                <ul>
+                  <li><strong>الحق في الوصول:</strong> طلب نسخة من بياناتك ومعلومات المعالجة في إطار زمني معقول.</li>
+                  <li><strong>التصحيح:</strong> تصحيح/تحديث البيانات ومن خلال إعدادات الحساب.</li>
+                  <li><strong>الاعتراض/التقييد:</strong> في ظروف معينة أو التسويق المباشر.</li>
+                  <li><strong>المحو (النسيان):</strong> حذف البيانات عندما لا يلزم الاحتفاظ بها قانونيًا.</li>
+                  <li><strong>سحب الموافقة:</strong> متى اعتمدت المعالجة عليها، مع تأثير مستقبلي.</li>
+                </ul>
+
+                <h5>الكوكيز والتتبع</h5>
+                <p>نستخدم الكوكيز الأساسية والتحليلية لتحسين التجربة. يمكنك التحكم بها من المتصفح، وقد يؤثر التعطيل على بعض الخصائص.</p>
+
+                <h5>خصوصية الأطفال والقُصَّر</h5>
+                <p>الخدمة غير موجهة لمن هم أقل من 18 سنة، ونحذف أي بيانات يتم جمعها بالخطأ فور الإبلاغ.</p>
+
+                <h5>التعديلات على سياسة الخصوصية</h5>
+                <p>قد نحدث السياسة لتعكس ممارساتنا أو متطلبات قانونية. سنخطرك بالتغييرات الجوهرية قبل السريان. استمرار الاستخدام يعني القبول.</p>
+
+                <h5>التواصل والاستفسارات</h5>
+                <ul>
+                  <li><strong>البريد الإلكتروني (مثال):</strong> <a href="mailto:privacy@almoshtriyat.com">privacy@almoshtriyat.com</a></li>
+                  <li><strong>العنوان البريدي:</strong> يُدرج لاحقًا (بلد/مدينة الشركة المشغلة).</li>
+                  <li>أو عبر نموذج الاتصال بخدمة العملاء على الموقع.</li>
+                </ul>
+
+                <h5>الملاحظات القانونية وتذييل الاستخدام</h5>
+                <ul>
+                  <li><strong>حقوق النشر والعلامات:</strong> جميع الحقوق محفوظة لمشغل المنصة ومرخِّصيها. يمنع استخدام العلامات دون إذن خطي.</li>
+                  <li><strong>إخلاء مسؤولية عام:</strong> استخدام المنصة يعني الموافقة على الشروط وسياسة الخصوصية؛ المعلومات "كما هي".</li>
+                  <li><strong>روابط خارجية:</strong> ليست المنصة مسؤولة عن محتوى/سياسات مواقع الأطراف الثالثة.</li>
+                  <li><strong>التوافق التقني:</strong> دعم المتصفحات الحديثة؛ يوصى بالتحديث المستمر وبرامج الحماية.</li>
+                  <li><strong>الدعم الفني والتواصل:</strong> <a href="mailto:support@almoshtriyat.com">support@almoshtriyat.com</a> – وروابط الأسئلة الشائعة.</li>
+                  <li><strong>الامتثال القانوني وبيان المشروعية:</strong> العمل ضمن القوانين وأحكام الشريعة، وبيان التراخيص عند الاقتضاء.</li>
+                  <li><strong>اللغة والنسخة الحاكمة:</strong> النص العربي هو المرجع القانوني عند التعارض مع ترجمات أخرى.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="alert alert-warning mt-4" role="alert">
+          <i class="fas fa-exclamation-triangle me-2"></i>
+          <strong>تنبيه مهم:</strong> هذه الشروط والأحكام وسياسة الخصوصية سارية من تاريخ 10 سبتمبر 2025.
+        </div>
+      </div>
+
+      <div class="accept-section text-center">
+        <h4 class="mb-3">هل توافق على الشروط والأحكام وسياسة الخصوصية؟</h4>
+        <p class="text-muted mb-4">للمتابعة واستخدام المنصة، يجب عليك قبول جميع البنود المذكورة أعلاه.</p>
+        <form method="POST" action="{{ url_for('accept_terms') }}">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+          <button type="submit" name="action" value="accept" class="btn btn-success btn-accept">
+            <i class="fas fa-check me-2"></i> أوافق
+          </button>
+          <button type="submit" name="action" value="decline" class="btn btn-secondary btn-decline">
+            <i class="fas fa-times me-2"></i> لا أوافق
+          </button>
+        </form>
+        <div class="mt-3 small-muted">
+          <i class="fas fa-calendar me-1"></i>
+          آخر تحديث: 10 سبتمبر 2025
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

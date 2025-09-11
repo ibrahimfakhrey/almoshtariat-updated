@@ -3,257 +3,641 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PurchaseFlowWebsite</title>
+    <title>ALMOSHTRIYAT - Smart Procurement Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        * {
             margin: 0;
-            padding: 20px;
-            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAJElEQVQoU2NkIAj/5+7D/2+6/1nL8MWXgNmwqKzA0K6Q8U1l8EOrVXrUAAAAASUVORK5CYII=') repeat;
-            display: flex;
-            justify-content: center;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .container {
-            max-width: 600px;
-            width: 100%;
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            overflow-x: hidden;
         }
+        
+        /* Header */
         .header {
+            background: #000;
+            color: #fff;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #ccc;
-            margin-bottom: 20px;
+            padding: 0 2rem;
         }
-        .nav a {
-            margin: 0 15px;
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #FFD700;
+        }
+        
+        .logo i {
+            margin-right: 0.5rem;
+            font-size: 1.8rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: #fff;
             text-decoration: none;
-            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
         }
-        .nav a:hover {
-            color: #ff4500;
+        
+        .nav-links a:hover {
+            color: #FFD700;
         }
-        .purchase-btn, .add-btn, .submit-btn {
-            padding: 10px 20px;
-            margin: 5px;
+        
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
             border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
             cursor: pointer;
-            border-radius: 5px;
         }
-        .purchase-btn {
-            background-color: #ff4500;
-            color: white;
+        
+        .btn-primary {
+            background: #FFD700;
+            color: #000;
         }
-        .purchase-btn:hover {
-            background-color: #e03a00;
+        
+        .btn-primary:hover {
+            background: #FFC107;
+            transform: translateY(-2px);
         }
-        .add-btn {
-            background-color: #ff4500;
-            color: white;
+        
+        .btn-outline {
+            background: transparent;
+            color: #FFD700;
+            border: 2px solid #FFD700;
         }
-        .add-btn:hover {
-            background-color: #e03a00;
+        
+        .btn-outline:hover {
+            background: #FFD700;
+            color: #000;
         }
-        .submit-btn {
-            background-color: #808080;
-            color: white;
-        }
-        .submit-btn:hover {
-            background-color: #666666;
-        }
-        .purchase-details {
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #000 0%, #333 100%);
+            color: #fff;
+            padding: 120px 0 80px;
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
-        .part {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            text-align: left;
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="1" fill="%23FFD700" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>') repeat;
+            opacity: 0.3;
         }
-        .part input, .part textarea, .purchase-details select {
-            width: 100%;
-            margin: 5px 0;
-            padding: 8px;
-            box-sizing: border-box;
-            border: 2px solid #ccc;
-            border-radius: 5px;
-            transition: border-bottom 0.3s;
+        
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
         }
-        .part input:focus, .part textarea:focus, .purchase-details select:focus {
-            outline: none;
-            border-bottom: 2px solid #ff4500;
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, #FFD700, #FFC107);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
-        textarea {
-            height: 80px;
-            resize: vertical;
+        
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
-        .button-group {
+        
+        .hero-buttons {
             display: flex;
+            gap: 1rem;
             justify-content: center;
-            margin-top: 20px;
-        }
-        .flash-messages {
-            margin-bottom: 20px;
-        }
-        .flash-messages div {
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 5px;
-        }
-        .flash-messages .success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .flash-messages .error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        .footer {
-            margin-top: 40px;
-            padding: 20px;
-            background-color: #f8f8f8;
-            border-top: 1px solid #ccc;
-            display: flex;
-            justify-content: space-around;
             flex-wrap: wrap;
-            text-align: left;
         }
-        .footer-section {
-            flex: 1;
-            min-width: 150px;
-            margin: 10px;
+        
+        /* Features Section */
+        .features {
+            padding: 80px 0;
+            background: #f8f9fa;
         }
-        .footer-section h3 {
-            color: #ff4500;
-            font-size: 16px;
-            margin-bottom: 10px;
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
         }
-        .footer-section p {
-            color: #666;
-            font-size: 14px;
-            margin: 5px 0;
-        }
-        .footer-section a {
-            color: #666;
-            text-decoration: none;
-            display: block;
-            margin: 5px 0;
-        }
-        .footer-section a:hover {
-            color: #ff4500;
-        }
-        .footer-bottom {
+        
+        .section-title {
             text-align: center;
-            padding-top: 20px;
-            border-top: 1px solid #ccc;
-            color: #666;
-            font-size: 12px;
-            margin-top: 20px;
+            margin-bottom: 3rem;
         }
-        .footer-bottom a {
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title p {
+            font-size: 1.1rem;
             color: #666;
-            margin: 0 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .feature-card {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #FFD700, #FFC107);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            color: #000;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #000;
+        }
+        
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* Stats Section */
+        .stats {
+            background: #000;
+            color: #fff;
+            padding: 60px 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+        
+        .stat-item h3 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #FFD700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-item p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        /* How It Works */
+        .how-it-works {
+            padding: 80px 0;
+            background: #fff;
+        }
+        
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .step-card {
+            text-align: center;
+            position: relative;
+        }
+        
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: #FFD700;
+            color: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .step-card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #000;
+        }
+        
+        .step-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* CTA Section */
+        .cta {
+            background: linear-gradient(135deg, #FFD700 0%, #FFC107 100%);
+            color: #000;
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .cta h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .cta p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+        
+        .btn-dark {
+            background: #000;
+            color: #fff;
+        }
+        
+        .btn-dark:hover {
+            background: #333;
+            transform: translateY(-2px);
+        }
+        
+        /* Footer */
+        .footer {
+            background: #000;
+            color: #fff;
+            padding: 60px 0 20px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h3 {
+            color: #FFD700;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-section p,
+        .footer-section a {
+            color: #ccc;
             text-decoration: none;
+            line-height: 1.8;
+            transition: color 0.3s;
         }
-        .footer-bottom a:hover {
-            color: #ff4500;
+        
+        .footer-section a:hover {
+            color: #FFD700;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid #333;
+            padding-top: 2rem;
+            text-align: center;
+            color: #999;
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .features-grid,
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div>PurchaseFlowWebsite 🛒</div>
-            <div class="nav">
-                <a href="{{ url_for('index') }}">Home</a>
-                <a href="#">How it Works</a>
-                <a href="#">Features</a>
-                <a href="#">Testimonials</a>
-                <a href="#">Contact</a>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <div class="logo">
+                <i class="fas fa-handshake"></i>
+                ALMOSHTRIYAT
+            </div>
+            <nav class="nav-links">
+                <a href="#home">Home</a>
+                <a href="#features">Features</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="/about">About</a>
+                <a href="/pricing">Pricing</a>
+                <a href="/contact">Contact</a>
+            </nav>
+            <div class="auth-buttons">
                 {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('logout') }}">Logout</a>
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
+                    <a href="{{ url_for('new_purchase') }}" class="btn btn-primary">Dashboard</a>
                 {% else %}
-                    <a href="{{ url_for('login') }}">Login</a>
-                    <a href="{{ url_for('register_enhanced') }}">Register</a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline">Login</a>
+                    <a href="{{ url_for('register_enhanced') }}" class="btn btn-primary">Get Started</a>
                 {% endif %}
             </div>
-            <a href="{{ url_for('new_purchase') }}"><button class="purchase-btn">Make Purchase</button></a>
         </div>
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                <div class="flash-messages">
-                    {% for category, message in messages %}
-                        <div class="{{ category }}">{{ message }}</div>
-                    {% endfor %}
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Smart Procurement Made Simple</h1>
+            <p>Connect buyers and suppliers on Egypt's leading B2B procurement platform. Streamline your purchasing process with AI-powered matching, real-time chat, and comprehensive order management.</p>
+            <div class="hero-buttons">
+                <a href="{{ url_for('register_enhanced') }}" class="btn btn-primary">Start Free Trial</a>
+                <a href="#features" class="btn btn-outline">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <h3>10K+</h3>
+                    <p>Active Companies</p>
                 </div>
-            {% endif %}
-        {% endwith %}
-        <div class="purchase-details">
-            <h2>Welcome to PurchaseFlowWebsite</h2>
-            <p>Please log in or register to make a purchase.</p>
+                <div class="stat-item">
+                    <h3>50K+</h3>
+                    <p>Orders Processed</p>
+                </div>
+                <div class="stat-item">
+                    <h3>95%</h3>
+                    <p>Customer Satisfaction</p>
+                </div>
+                <div class="stat-item">
+                    <h3>24/7</h3>
+                    <p>Support Available</p>
+                </div>
+            </div>
         </div>
-            {% if current_user.is_authenticated %}
-            <h2>Your Orders</h2>
-            <div class="orders-grid">
-                {% for order in orders %}
-                    <div class="order-card">
-                        <h3>Order #{{ order.id }}</h3>
-                        <p><strong>Date:</strong> {{ order.created_at.strftime('%Y-%m-%d') }}</p>
-                        {% if order.offers %}
-                            <p class="has-offers">✅ New Offers Available</p>
-                            <a href="{{ url_for('view_offers', order_id=order.id) }}" class="offer-btn">View Offers</a>
-                        {% else %}
-                            <p class="no-offers">❌ No Offers Yet</p>
-                        {% endif %}
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title">
+                <h2>Powerful Features for Modern Procurement</h2>
+                <p>Everything you need to manage your B2B procurement process efficiently</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>Smart Product Matching</h3>
+                    <p>AI-powered system matches your requirements with the best suppliers based on sector, location, and preferences.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>Real-time Communication</h3>
+                    <p>Built-in chat system for instant communication between buyers and suppliers with file sharing capabilities.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Advanced Analytics</h3>
+                    <p>Comprehensive dashboards and reports to track orders, spending, supplier performance, and market trends.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3>Secure Transactions</h3>
+                    <p>End-to-end encryption and secure payment processing with multiple payment options and fraud protection.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-truck"></i>
+                    </div>
+                    <h3>Delivery Management</h3>
+                    <p>Track deliveries in real-time with automated notifications and delivery confirmation systems.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>AI Assistant</h3>
+                    <p>Intelligent chatbot helps with order creation, supplier recommendations, and answers common questions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="container">
+            <div class="section-title">
+                <h2>How ALMOSHTRIYAT Works</h2>
+                <p>Simple steps to transform your procurement process</p>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Create Your Account</h3>
+                    <p>Register as a buyer or supplier with detailed company information and verification documents.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>Post Requirements</h3>
+                    <p>Create detailed purchase orders with specifications, quantities, delivery dates, and budget.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>Receive Offers</h3>
+                    <p>Get competitive quotes from verified suppliers with detailed proposals and pricing.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h3>Compare & Choose</h3>
+                    <p>Use our AI-powered comparison tools to evaluate offers and select the best supplier.</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">5</div>
+                    <h3>Track & Receive</h3>
+                    <p>Monitor order progress, communicate with suppliers, and confirm delivery completion.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Transform Your Procurement?</h2>
+            <p>Join thousands of companies already using ALMOSHTRIYAT to streamline their B2B purchasing</p>
+            <a href="{{ url_for('register_enhanced') }}" class="btn btn-dark">Get Started Today</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>ALMOSHTRIYAT</h3>
+                    <p>Egypt's leading B2B procurement platform connecting buyers and suppliers across all industries.</p>
+                    <p><strong>Get It Right</strong></p>
+                </div>
+                <div class="footer-section">
+                    <h3>Platform</h3>
+                    <a href="#features">Features</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="#how-it-works">How It Works</a>
+                    <a href="/about">About Us</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Support</h3>
+                    <a href="/contact">Contact Us</a>
+                    <a href="#">Help Center</a>
+                    <a href="#">API Documentation</a>
+                    <a href="#">System Status</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <p>Cairo, Egypt</p>
+                    <p>Phone: +20 (2) 123-4567</p>
+                    <p>Email: info@almoshtriyat.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 ALMOSHTRIYAT. All rights reserved. | <a href="/terms-and-conditions">Terms & Conditions</a> | <a href="#">Privacy Policy</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div style="position: fixed; top: 80px; right: 20px; z-index: 1001;">
+                {% for category, message in messages %}
+                    <div style="background: {% if category == 'success' %}#d4edda{% else %}#f8d7da{% endif %}; color: {% if category == 'success' %}#155724{% else %}#721c24{% endif %}; padding: 1rem; margin: 0.5rem 0; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                        {{ message }}
                     </div>
                 {% endfor %}
-                {% if orders|length == 0 %}
-                    <p>No orders found.</p>
-                {% endif %}
-                {% else %}
-            <h2>Welcome to PurchaseFlowWebsite</h2>
-            <p>Please log in or register to make a purchase.</p>
+            </div>
         {% endif %}
-            </div>
-        <footer class="footer">
-            <div class="footer-section">
-                <h3>PurchaseFlowWebsite</h3>
-                <p>Streamlining your purchasing process with ease and efficiency.</p>
-                <div>
-                    <a href="#"></a>
-                    <a href="#"></a>
-                    <a href="#"></a>
-                </div>
-            </div>
-            <div class="footer-section">
-                <h3>Quick Links</h3>
-                <a href="{{ url_for('index') }}">Home</a>
-                <a href="#">About Us</a>
-                <a href="#">How it Works</a>
-                <a href="#">Testimonial</a>
-                <a href="#">Contact</a>
-            </div>
-            <div class="footer-section">
-                <h3>Our Services</h3>
-                <a href="#">Bulk Orders</a>
-                <a href="#">Express Delivery</a>
-                <a href="#">Custom Parts</a>
-                <a href="#">Order Tracking</a>
-                <a href="#">Support</a>
-            </div>
-            <div class="footer-section">
-                <h3>Contact Us</h3>
-                <p>123 Purchase Street, Suite Ordertown, OT 78901</p>
-                <p>✆ +1 (555) 123-4567</p>
-                <p> info@purchaseflowwebsite.com</p>
-            </div>
-        </footer>
-        <div class="footer-bottom">
-            © 2023 PurchaseFlowWebsite. All rights reserved.
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-        </div>
-    </div>
-</body>
+    {% endwith %}
+
+    <script>
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('.header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(0, 0, 0, 0.95)';
+            } else {
+                header.style.background = '#000';
+            }
+        });
+    </script>
+<script type="text/javascript">window.$crisp=[];window.CRISP_WEBSITE_ID="c5b7e2f7-d849-4841-acd8-a325cdd4c121";(function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script>
 </html>

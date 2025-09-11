@@ -9,7 +9,7 @@
     <link href="favicon.ico" rel="icon"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
 </head>
-<body :class="{'dark bg-gray-900': darkMode === true}" x-data="{ 
+<body x-data="{ 
          page: 'register', 
          'loaded': true, 
          'darkMode': false, 
@@ -72,13 +72,17 @@
              });
          }
      }" x-init="
-         darkMode = JSON.parse(localStorage.getItem('darkMode'));
-         currentLanguage = localStorage.getItem('language') || 'en';
+         this.darkMode = JSON.parse(localStorage.getItem('darkMode')) || false;
+         this.currentLanguage = localStorage.getItem('language') || 'en';
          $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)));
-         $watch('currentLanguage', value => localStorage.setItem('language', value)))">
+         $watch('currentLanguage', value => localStorage.setItem('language', value));
+         document.body.className = this.darkMode ? 'dark bg-gray-900' : '';
+         $watch('darkMode', value => {
+             document.body.className = value ? 'dark bg-gray-900' : '';
+         })">
     
     <!-- ===== Preloader Start ===== -->
-    <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => loaded = false, 500)})" x-show="loaded">
+    <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => this.loaded = false, 500)})" x-show="this.loaded">
         <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent"></div>
     </div>
     <!-- ===== Preloader End ===== -->
@@ -297,15 +301,32 @@
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="business-sector">Business Sector</label>
-                                        <select name="sector" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-800 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-brand-500">
-                                            <option value="" data-translate="select-sector">Select Sector</option>
-                                            <option value="Technology" data-translate="technology">Technology</option>
-                                            <option value="Electronics" data-translate="electronics">Electronics</option>
-                                            <option value="IT" data-translate="it">IT</option>
-                                            <option value="Software" data-translate="software">Software</option>
-                                            <option value="Hardware" data-translate="hardware">Hardware</option>
-                                            <option value="General" data-translate="general">General</option>
-                                            <option value="Other" data-translate="other">Other</option>
+                                        <select name="sector" id="sector" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-800 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-brand-500">
+                                            <option value="" data-translate="select-sector">اختر القطاع</option>
+                                            <option value="التصنيع والصناعات التحويلية">التصنيع والصناعات التحويلية</option>
+                                            <option value="الإنشاءات والبنية التحتية والعقارات">الإنشاءات والبنية التحتية والعقارات</option>
+                                            <option value="النفط والغاز والبتروكيماويات">النفط والغاز والبتروكيماويات</option>
+                                            <option value="الطاقة والمرافق (Utilities)">الطاقة والمرافق (Utilities)</option>
+                                            <option value="التعدين والمعادن والمواد الأساسية">التعدين والمعادن والمواد الأساسية</option>
+                                            <option value="الزراعة والأغذية">الزراعة والأغذية</option>
+                                            <option value="النقل واللوجستيات وسلاسل الإمداد">النقل واللوجستيات وسلاسل الإمداد</option>
+                                            <option value="التجارة والتوزيع (جملة/تجزئة B2B)">التجارة والتوزيع (جملة/تجزئة B2B)</option>
+                                            <option value="تكنولوجيا المعلومات والاتصالات (ICT)">تكنولوجيا المعلومات والاتصالات (ICT)</option>
+                                            <option value="الرعاية الصحية وعلوم الحياة">الرعاية الصحية وعلوم الحياة</option>
+                                            <option value="الخدمات المالية والتأمين">الخدمات المالية والتأمين</option>
+                                            <option value="التعليم والتدريب">التعليم والتدريب</option>
+                                            <option value="الضيافة والسياحة والفعاليات (HoReCa)">الضيافة والسياحة والفعاليات (HoReCa)</option>
+                                            <option value="القطاع العام والمنظمات غير الربحية">القطاع العام والمنظمات غير الربحية</option>
+                                            <option value="خدمات الأعمال الاحترافية">خدمات الأعمال الاحترافية</option>
+                                            <option value="البيئة والاستدامة وإدارة النفايات">البيئة والاستدامة وإدارة النفايات</option>
+                                            <option value="الإعلام والطباعة والتغليف">الإعلام والطباعة والتغليف</option>
+                                            <option value="السيارات والمركبات">السيارات والمركبات</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="business-subsector">Business Subsector</label>
+                                        <select name="subsector" id="subsector" class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-800 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-brand-500" disabled>
+                                            <option value="" data-translate="select-subsector">اختر النشاط الفرعي</option>
                                         </select>
                                     </div>
                                     <div>
@@ -343,53 +364,6 @@
                                 </div>
                             </div>
 
-                            <!-- Purchase Preferences Upload Section (For Clients) -->
-                            <div class="border-b border-gray-200 pb-6 dark:border-gray-700" id="purchase-preferences-section" style="display: none;">
-                                <h3 class="text-lg font-semibold text-gray-800 dark:text-white mb-4" data-translate="purchase-preferences-title">Purchase Preferences & History</h3>
-                                <div class="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg dark:bg-blue-900/20 dark:border-blue-800">
-                                    <div class="flex items-start">
-                                        <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        <div class="text-sm text-blue-800 dark:text-blue-200">
-                                            <p class="font-medium mb-1">Help us understand your buying patterns!</p>
-                                            <p class="mb-2">Upload an Excel/CSV file with your purchase history to get personalized product suggestions and better pricing when you create new purchase requests.</p>
-                                            <div class="flex flex-wrap gap-2 mt-2">
-                                                <a href="/download_purchase_preferences_template" class="inline-flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 font-medium bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded-md transition-colors">
-                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                                    </svg>
-                                                    Excel Template
-                                                </a>
-                                                <a href="/download_purchase_preferences_template_csv" class="inline-flex items-center text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-300 font-medium bg-green-50 hover:bg-green-100 px-3 py-1 rounded-md transition-colors">
-                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                                    </svg>
-                                                    CSV Template
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Upload Purchase History (Excel/CSV)</label>
-                                    <div class="flex items-center justify-center w-full">
-                                        <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                                <svg class="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
-                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
-                                                </svg>
-                                                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-                                                <p class="text-xs text-gray-500 dark:text-gray-400">Excel (.xlsx, .xls) or CSV files (MAX. 10MB)</p>
-                                            </div>
-                                            <input type="file" name="purchase_preferences_file" class="hidden" accept=".xlsx,.xls,.csv" />
-                                        </label>
-                                    </div>
-                                    <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                                        Include columns: product_name, product_category, description, quantity, unit, frequency, last_purchased, typical_order_size, preferred_suppliers, max_price_per_unit
-                                    </p>
-                                </div>
-                            </div>
 
                             <!-- Submit Button -->
                             <div class="flex justify-end">
@@ -412,25 +386,7 @@
 
     <script src="{{ url_for('static', filename='js/script_1.js') }}"></script>
     <script>
-        // Show/hide purchase preferences section based on account type
-        document.addEventListener('DOMContentLoaded', function() {
-            const accountTypeSelect = document.querySelector('select[name="account_type"]');
-            const purchasePreferencesSection = document.getElementById('purchase-preferences-section');
-            
-            function togglePurchasePreferences() {
-                if (accountTypeSelect.value === 'client') {
-                    purchasePreferencesSection.style.display = 'block';
-                } else {
-                    purchasePreferencesSection.style.display = 'none';
-                }
-            }
-            
-            // Initial state
-            togglePurchasePreferences();
-            
-            // Listen for changes
-            accountTypeSelect.addEventListener('change', togglePurchasePreferences);
-        });
+
 
         // Language toggle function
         function toggleLanguage() {
@@ -457,7 +413,6 @@
                 'location-info-title': isArabic ? 'معلومات الموقع' : 'Location Information',
                 'business-info-title': isArabic ? 'معلومات العمل' : 'Business Information',
                 'document-upload-title': isArabic ? 'رفع المستندات (اختياري)' : 'Document Upload (Optional)',
-                'purchase-preferences-title': isArabic ? 'تفضيلات الشراء والتاريخ' : 'Purchase Preferences & History',
                 'create-account-btn': isArabic ? 'إنشاء الحساب' : 'Create Account',
                 'back-to-login': isArabic ? 'العودة إلى تسجيل الدخول' : 'Back to Login'
             };
@@ -806,7 +761,6 @@
                 'location-info-title': isArabic ? 'معلومات الموقع' : 'Location Information',
                 'business-info-title': isArabic ? 'معلومات العمل' : 'Business Information',
                 'document-upload-title': isArabic ? 'رفع المستندات (اختياري)' : 'Document Upload (Optional)',
-                'purchase-preferences-title': isArabic ? 'تفضيلات الشراء والتاريخ' : 'Purchase Preferences & History',
                 'create-account-btn': isArabic ? 'إنشاء الحساب' : 'Create Account',
                 'back-to-login': isArabic ? 'العودة إلى تسجيل الدخول' : 'Back to Login',
                 'full-name': isArabic ? 'الاسم الكامل *' : 'Full Name *'
@@ -956,7 +910,7 @@
             const emailLoading = document.getElementById('email-loading');
             let emailTimeout;
         
-        async function checkEmailAvailability(email) {
+            async function checkEmailAvailability(email) {
             if (!email || email.length < 3) {
                 hideEmailFeedback();
                 return;
@@ -1025,49 +979,71 @@
         }
         
         function hideEmailFeedback() {
-            if (emailFeedback) {
-                emailFeedback.classList.add('hidden');
-                emailInput.classList.remove('border-green-500', 'border-red-500', 'border-yellow-500');
+                if (emailFeedback) {
+                    emailFeedback.classList.add('hidden');
+                    emailInput.classList.remove('border-green-500', 'border-red-500', 'border-yellow-500');
+                }
             }
-        }
-        
-        // Add event listener for email input
-        if (emailInput) {
-            emailInput.addEventListener('input', function() {
-                const email = this.value.trim();
-                
-                // Clear previous timeout
-                if (emailTimeout) {
-                    clearTimeout(emailTimeout);
-                }
-                
-                // Set new timeout for debounced checking
-                emailTimeout = setTimeout(() => {
-                    checkEmailAvailability(email);
-                }, 500); // Wait 500ms after user stops typing
-            });
             
-            emailInput.addEventListener('blur', function() {
-                const email = this.value.trim();
-                if (email) {
-                    checkEmailAvailability(email);
-                }
-            });
-        }
-        });
+            // Add event listener for email input
+            if (emailInput) {
+                emailInput.addEventListener('input', function() {
+                    const email = this.value.trim();
+                    
+                    // Clear previous timeout
+                    if (emailTimeout) {
+                        clearTimeout(emailTimeout);
+                    }
+                    
+                    // Set new timeout for debounced checking
+                    emailTimeout = setTimeout(() => {
+                        checkEmailAvailability(email);
+                    }, 500); // Wait 500ms after user stops typing
+                });
+                
+                emailInput.addEventListener('blur', function() {
+                    const email = this.value.trim();
+                    if (email) {
+                        checkEmailAvailability(email);
+                    }
+                });
+            }
+        }); // Close DOMContentLoaded event listener
         
         // Country and City dropdown functionality
         const countrySelect = document.getElementById('country');
         const citySelect = document.getElementById('city');
         const cityOtherInput = document.getElementById('city_other');
         
-        // Egypt governorates list
+        // Egypt governorates list in Arabic
         const egyptGovernorates = [
-            'Cairo', 'Alexandria', 'Giza', 'Shubra El Kheima', 'Port Said', 'Suez',
-            'Luxor', 'Mansoura', 'El Mahalla El Kubra', 'Tanta', 'Asyut', 'Ismailia',
-            'Fayyum', 'Zagazig', 'Aswan', 'Damietta', 'Damanhur', 'Minya', 'Beni Suef',
-            'Hurghada', 'Qena', 'Sohag', 'Shibin El Kom', 'Banha', 'Kafr El Sheikh',
-            'Arish', 'Mallawi', 'Bilbays', 'Marsa Matruh'
+            "الإسكندرية",     // Alexandria
+            "البحيرة",       // Beheira
+            "الغربية",       // Gharbia
+            "كفر الشيخ",     // Kafr El Sheikh
+            "الدقهلية",      // Dakahlia
+            "دمياط",         // Damietta
+            "الشرقية",       // Sharqia
+            "القليوبية",     // Qalyubia
+            "المنوفية",      // Monufia
+            "القاهرة",       // Cairo
+            "الجيزة",        // Giza
+            "الإسماعيلية",   // Ismailia
+            "بورسعيد",       // Port Said
+            "السويس",        // Suez
+            "بني سويف",      // Beni Suef
+            "الفيوم",        // Faiyum
+            "المنيا",        // Minya
+            "أسيوط",         // Asyut
+            "سوهاج",         // Sohag
+            "قنا",           // Qena
+            "الأقصر",        // Luxor
+            "أسوان",         // Aswan
+            "البحر الأحمر",   // Red Sea
+            "الوادي الجديد", // New Valley
+            "مطروح",         // Matrouh
+            "شمال سيناء",     // North Sinai
+            "جنوب سيناء"     // South Sinai
         ];
         
         if (countrySelect && citySelect) {
@@ -1113,14 +1089,197 @@
                 }
             });
         }
+        // Sector-Subsector mapping
+        const sectorSubsectorMap = {
+            "التصنيع والصناعات التحويلية": [
+                "صناعة المواد الغذائية والمشروبات",
+                "صناعة المنسوجات والملابس",
+                "صناعة الأثاث والخشب",
+                "صناعة المعادن والآلات",
+                "صناعة الكيماويات والأدوية",
+                "صناعة البلاستيك والمطاط",
+                "صناعة الورق والطباعة"
+            ],
+            "الإنشاءات والبنية التحتية والعقارات": [
+                "المقاولات العامة",
+                "التطوير العقاري",
+                "الهندسة المعمارية والاستشارات",
+                "إدارة المشاريع",
+                "مواد البناء والتشييد",
+                "الصيانة والتشغيل"
+            ],
+            "النفط والغاز والبتروكيماويات": [
+                "الاستكشاف والإنتاج",
+                "التكرير والمعالجة",
+                "التوزيع والتسويق",
+                "البتروكيماويات",
+                "الخدمات النفطية"
+            ],
+            "الطاقة والمرافق (Utilities)": [
+                "توليد الكهرباء",
+                "الطاقة المتجددة",
+                "المياه والصرف الصحي",
+                "الغاز الطبيعي",
+                "إدارة الشبكات"
+            ],
+            "التعدين والمعادن والمواد الأساسية": [
+                "استخراج المعادن",
+                "معالجة المعادن",
+                "المواد الخام",
+                "الحديد والصلب",
+                "المعادن النفيسة"
+            ],
+            "الزراعة والأغذية": [
+                "الإنتاج الزراعي",
+                "تربية الماشية والدواجن",
+                "تصنيع الأغذية",
+                "التوزيع والتسويق الغذائي",
+                "الخدمات الزراعية"
+            ],
+            "النقل واللوجستيات وسلاسل الإمداد": [
+                "النقل البري",
+                "النقل البحري",
+                "النقل الجوي",
+                "التخزين والمستودعات",
+                "إدارة سلاسل الإمداد",
+                "الشحن والتوصيل"
+            ],
+            "التجارة والتوزيع (جملة/تجزئة B2B)": [
+                "التجارة بالجملة",
+                "التجارة بالتجزئة",
+                "التوزيع والوكالات",
+                "التجارة الإلكترونية",
+                "الاستيراد والتصدير"
+            ],
+            "تكنولوجيا المعلومات والاتصالات (ICT)": [
+                "تطوير البرمجيات",
+                "الشبكات والاتصالات",
+                "أمن المعلومات",
+                "الذكاء الاصطناعي",
+                "الحوسبة السحابية",
+                "التجارة الإلكترونية"
+            ],
+            "الرعاية الصحية وعلوم الحياة": [
+                "المستشفيات والعيادات",
+                "الأدوية والمستحضرات",
+                "الأجهزة الطبية",
+                "المختبرات والتشخيص",
+                "التأمين الصحي"
+            ],
+            "الخدمات المالية والتأمين": [
+                "البنوك والمصارف",
+                "شركات التأمين",
+                "الاستثمار وإدارة الأصول",
+                "التمويل والقروض",
+                "الخدمات المصرفية الرقمية"
+            ],
+            "التعليم والتدريب": [
+                "التعليم الأساسي والثانوي",
+                "التعليم العالي والجامعات",
+                "التدريب المهني",
+                "التعليم الإلكتروني",
+                "البحث والتطوير"
+            ],
+            "الضيافة والسياحة والفعاليات (HoReCa)": [
+                "الفنادق والمنتجعات",
+                "المطاعم والمقاهي",
+                "السياحة والسفر",
+                "تنظيم الفعاليات",
+                "الترفيه والتسلية"
+            ],
+            "القطاع العام والمنظمات غير الربحية": [
+                "الخدمات الحكومية",
+                "المنظمات غير الربحية",
+                "الجمعيات الخيرية",
+                "التنمية المجتمعية",
+                "الخدمات العامة"
+            ],
+            "خدمات الأعمال الاحترافية": [
+                "الاستشارات الإدارية",
+                "الخدمات القانونية",
+                "المحاسبة والمراجعة",
+                "التسويق والإعلان",
+                "الموارد البشرية",
+                "الخدمات اللوجستية"
+            ],
+            "البيئة والاستدامة وإدارة النفايات": [
+                "إدارة النفايات",
+                "معالجة المياه",
+                "الطاقة المتجددة",
+                "الاستشارات البيئية",
+                "إعادة التدوير"
+            ],
+            "الإعلام والطباعة والتغليف": [
+                "الصحافة والنشر",
+                "الإذاعة والتلفزيون",
+                "الطباعة والنشر",
+                "التغليف والتعبئة",
+                "الإعلان والتسويق"
+            ],
+            "السيارات والمركبات": [
+                "تصنيع السيارات",
+                "قطع الغيار",
+                "الصيانة والإصلاح",
+                "تجارة السيارات",
+                "النقل والمواصلات"
+            ]
+        };
+
+        // Handle sector-subsector dependency
+        function initializeSectorSubsectorDependency() {
+            const sectorSelect = document.getElementById('sector');
+            const subsectorSelect = document.getElementById('subsector');
+            
+            if (!sectorSelect || !subsectorSelect) {
+                setTimeout(initializeSectorSubsectorDependency, 100);
+                return;
+            }
+            
+            // Clear any existing event listeners
+            const newSectorSelect = sectorSelect.cloneNode(true);
+            sectorSelect.parentNode.replaceChild(newSectorSelect, sectorSelect);
+            
+            newSectorSelect.addEventListener('change', function(event) {
+                const selectedSector = event.target.value.trim();
+                
+                // Reset subsector dropdown
+                subsectorSelect.innerHTML = '<option value="">اختر النشاط الفرعي</option>';
+                subsectorSelect.disabled = true;
+                
+                // If no sector selected, keep subsector disabled
+                if (!selectedSector) {
+                    return;
+                }
+                
+                // Find matching subsectors
+                const subsectors = sectorSubsectorMap[selectedSector];
+                
+                if (subsectors && Array.isArray(subsectors) && subsectors.length > 0) {
+                    // Enable subsector dropdown
+                    subsectorSelect.disabled = false;
+                    
+                    // Add subsector options
+                    subsectors.forEach(function(subsector) {
+                        const option = document.createElement('option');
+                        option.value = subsector.trim();
+                        option.textContent = subsector.trim();
+                        subsectorSelect.appendChild(option);
+                    });
+                }
+            });
+        }
         
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeSectorSubsectorDependency);
+        } else {
+            initializeSectorSubsectorDependency();
+        }
+
         // Initialize language on page load
         document.addEventListener('DOMContentLoaded', function() {
-            if (currentLanguage === 'ar') {
-                document.documentElement.dir = 'rtl';
-                document.title = 'التسجيل المحسن';
-                updatePageTranslation();
-            }
+            // Language initialization is handled by Alpine.js x-init
+            console.log('Page loaded successfully');
         });
     </script>
 </body>

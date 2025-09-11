@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing - ALMOSHTRIYAT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        /* Header */
+        .header {
+            background: #000;
+            color: #fff;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #FFD700;
+            text-decoration: none;
+        }
+        
+        .logo i {
+            margin-right: 0.5rem;
+            font-size: 1.8rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: #FFD700;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-align: center;
+        }
+        
+        .btn-primary {
+            background: #FFD700;
+            color: #000;
+        }
+        
+        .btn-primary:hover {
+            background: #FFC107;
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            color: #FFD700;
+            border: 2px solid #FFD700;
+        }
+        
+        .btn-outline:hover {
+            background: #FFD700;
+            color: #000;
+        }
+        
+        .btn-dark {
+            background: #000;
+            color: #fff;
+        }
+        
+        .btn-dark:hover {
+            background: #333;
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .hero-section {
+            text-align: center;
+            padding: 80px 0;
+            background: linear-gradient(135deg, #000 0%, #333 100%);
+            color: #fff;
+        }
+        
+        .hero-section h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #FFD700, #FFC107);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-section p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+        
+        .billing-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #FFD700;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .toggle-switch::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: #000;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        
+        .toggle-switch.annual::before {
+            transform: translateX(30px);
+        }
+        
+        .pricing-section {
+            padding: 80px 0;
+            background: #f8f9fa;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .pricing-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: relative;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+        
+        .pricing-card.featured {
+            border: 3px solid #FFD700;
+            transform: scale(1.05);
+        }
+        
+        .pricing-card.featured::before {
+            content: 'Most Popular';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #FFD700;
+            color: #000;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 0.5rem;
+        }
+        
+        .plan-description {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        
+        .plan-price {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #000;
+            margin-bottom: 0.5rem;
+        }
+        
+        .plan-price .currency {
+            font-size: 1.5rem;
+            vertical-align: top;
+        }
+        
+        .plan-price .period {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #666;
+        }
+        
+        .plan-features {
+            list-style: none;
+            margin: 2rem 0;
+        }
+        
+        .plan-features li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .plan-features li i {
+            color: #28a745;
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+        
+        .plan-features li.unavailable {
+            color: #999;
+        }
+        
+        .plan-features li.unavailable i {
+            color: #dc3545;
+        }
+        
+        .enterprise-section {
+            padding: 80px 0;
+            background: #000;
+            color: #fff;
+            text-align: center;
+        }
+        
+        .enterprise-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .enterprise-section h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #FFD700;
+        }
+        
+        .enterprise-section p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+        
+        .enterprise-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+            text-align: left;
+        }
+        
+        .enterprise-feature {
+            display: flex;
+            align-items: center;
+        }
+        
+        .enterprise-feature i {
+            color: #FFD700;
+            font-size: 1.5rem;
+            margin-right: 1rem;
+        }
+        
+        .faq-section {
+            padding: 80px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 1rem;
+        }
+        
+        .section-title p {
+            font-size: 1.1rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .faq-item {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .faq-item h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 1rem;
+        }
+        
+        .faq-item p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        /* Footer */
+        .footer {
+            background: #000;
+            color: #fff;
+            padding: 60px 0 20px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-section h3 {
+            color: #FFD700;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .footer-section p,
+        .footer-section a {
+            color: #ccc;
+            text-decoration: none;
+            line-height: 1.8;
+            transition: color 0.3s;
+        }
+        
+        .footer-section a:hover {
+            color: #FFD700;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid #333;
+            padding-top: 2rem;
+            text-align: center;
+            color: #999;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero-section h1 {
+                font-size: 2rem;
+            }
+            
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .pricing-card.featured {
+                transform: none;
+            }
+            
+            .enterprise-features {
+                grid-template-columns: 1fr;
+            }
+            
+            .faq-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <i class="fas fa-handshake"></i>
+                ALMOSHTRIYAT
+            </a>
+            <nav class="nav-links">
+                <a href="/">Home</a>
+                <a href="/about">About</a>
+                <a href="/pricing">Pricing</a>
+                <a href="/contact">Contact</a>
+            </nav>
+            <div>
+                <a href="{{ url_for('register_enhanced') }}" class="btn btn-primary">Get Started</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <h1>Simple, Transparent Pricing</h1>
+            <p>Choose the perfect plan for your business. No hidden fees, no surprises. Start free and scale as you grow.</p>
+            
+            <div class="billing-toggle">
+                <span style="color: #ccc;">Monthly</span>
+                <div class="toggle-switch" id="billingToggle"></div>
+                <span style="color: #FFD700;">Annual <small>(Save 20%)</small></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing-section">
+        <div class="container">
+            <div class="pricing-grid">
+                <!-- Starter Plan -->
+                <div class="pricing-card">
+                    <div class="plan-name">Starter</div>
+                    <div class="plan-description">Perfect for small businesses getting started</div>
+                    <div class="plan-price">
+                        <span class="currency">EGP</span>
+                        <span class="monthly-price">0</span>
+                        <span class="annual-price" style="display: none;">0</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Up to 10 orders per month</li>
+                        <li><i class="fas fa-check"></i> Basic supplier matching</li>
+                        <li><i class="fas fa-check"></i> Standard chat support</li>
+                        <li><i class="fas fa-check"></i> Basic analytics</li>
+                        <li><i class="fas fa-check"></i> Mobile app access</li>
+                        <li class="unavailable"><i class="fas fa-times"></i> Priority support</li>
+                        <li class="unavailable"><i class="fas fa-times"></i> Advanced analytics</li>
+                        <li class="unavailable"><i class="fas fa-times"></i> API access</li>
+                    </ul>
+                    <a href="{{ url_for('register_enhanced') }}" class="btn btn-outline" style="width: 100%;">Start Free</a>
+                </div>
+                
+                <!-- Professional Plan -->
+                <div class="pricing-card featured">
+                    <div class="plan-name">Professional</div>
+                    <div class="plan-description">Ideal for growing businesses with regular procurement needs</div>
+                    <div class="plan-price">
+                        <span class="currency">EGP</span>
+                        <span class="monthly-price">499</span>
+                        <span class="annual-price" style="display: none;">399</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Up to 100 orders per month</li>
+                        <li><i class="fas fa-check"></i> AI-powered supplier matching</li>
+                        <li><i class="fas fa-check"></i> Priority chat & email support</li>
+                        <li><i class="fas fa-check"></i> Advanced analytics & reports</li>
+                        <li><i class="fas fa-check"></i> Mobile app access</li>
+                        <li><i class="fas fa-check"></i> Bulk order management</li>
+                        <li><i class="fas fa-check"></i> Custom workflows</li>
+                        <li><i class="fas fa-check"></i> Basic API access</li>
+                    </ul>
+                    <a href="{{ url_for('register_enhanced') }}" class="btn btn-primary" style="width: 100%;">Start Free Trial</a>
+                </div>
+                
+                <!-- Business Plan -->
+                <div class="pricing-card">
+                    <div class="plan-name">Business</div>
+                    <div class="plan-description">For established companies with complex procurement needs</div>
+                    <div class="plan-price">
+                        <span class="currency">EGP</span>
+                        <span class="monthly-price">999</span>
+                        <span class="annual-price" style="display: none;">799</span>
+                        <span class="period">/month</span>
+                    </div>
+                    <ul class="plan-features">
+                        <li><i class="fas fa-check"></i> Unlimited orders</li>
+                        <li><i class="fas fa-check"></i> Advanced AI matching & recommendations</li>
+                        <li><i class="fas fa-check"></i> 24/7 priority support</li>
+                        <li><i class="fas fa-check"></i> Comprehensive analytics suite</li>
+                        <li><i class="fas fa-check"></i> Mobile app access</li>
+                        <li><i class="fas fa-check"></i> Multi-location management</li>
+                        <li><i class="fas fa-check"></i> Advanced workflow automation</li>
+                        <li><i class="fas fa-check"></i> Full API access</li>
+                        <li><i class="fas fa-check"></i> Dedicated account manager</li>
+                    </ul>
+                    <a href="{{ url_for('register_enhanced') }}" class="btn btn-outline" style="width: 100%;">Start Free Trial</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enterprise Section -->
+    <section class="enterprise-section">
+        <div class="container">
+            <div class="enterprise-content">
+                <h2>Enterprise Solutions</h2>
+                <p>Custom solutions for large organizations with unique requirements. Get dedicated support, custom integrations, and enterprise-grade security.</p>
+                
+                <div class="enterprise-features">
+                    <div class="enterprise-feature">
+                        <i class="fas fa-cogs"></i>
+                        <span>Custom integrations & workflows</span>
+                    </div>
+                    <div class="enterprise-feature">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Enterprise-grade security</span>
+                    </div>
+                    <div class="enterprise-feature">
+                        <i class="fas fa-users-cog"></i>
+                        <span>Dedicated success team</span>
+                    </div>
+                    <div class="enterprise-feature">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Advanced reporting & analytics</span>
+                    </div>
+                    <div class="enterprise-feature">
+                        <i class="fas fa-cloud"></i>
+                        <span>Private cloud deployment</span>
+                    </div>
+                    <div class="enterprise-feature">
+                        <i class="fas fa-headset"></i>
+                        <span>24/7 premium support</span>
+                    </div>
+                </div>
+                
+                <a href="/contact" class="btn btn-primary">Contact Sales</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>Frequently Asked Questions</h2>
+                <p>Everything you need to know about our pricing</p>
+            </div>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h3>Is there a free trial?</h3>
+                    <p>Yes! All paid plans come with a 14-day free trial. No credit card required. You can explore all features and see how ALMOSHTRIYAT fits your business needs.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>What payment methods do you accept?</h3>
+                    <p>We accept all major credit cards, bank transfers, and digital wallets. For enterprise customers, we also offer invoice-based billing with flexible payment terms.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Can I change my plan anytime?</h3>
+                    <p>Absolutely! You can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll prorate any billing adjustments.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Are there any setup fees?</h3>
+                    <p>No setup fees for any of our plans. You only pay the monthly or annual subscription fee. Enterprise customers may have custom implementation costs depending on requirements.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>What happens if I exceed my order limit?</h3>
+                    <p>For Starter plan users, you'll be notified when approaching the limit and can upgrade. Professional and Business plans have generous limits with automatic scaling options.</p>
+                </div>
+                <div class="faq-item">
+                    <h3>Do you offer discounts for non-profits?</h3>
+                    <p>Yes! We offer special pricing for registered non-profit organizations and educational institutions. Contact our sales team for more information.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>ALMOSHTRIYAT</h3>
+                    <p>Egypt's leading B2B procurement platform connecting buyers and suppliers across all industries.</p>
+                    <p><strong>Get It Right</strong></p>
+                </div>
+                <div class="footer-section">
+                    <h3>Platform</h3>
+                    <a href="/">Features</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/about">About Us</a>
+                    <a href="/contact">Contact</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Support</h3>
+                    <a href="/contact">Contact Us</a>
+                    <a href="#">Help Center</a>
+                    <a href="#">API Documentation</a>
+                    <a href="#">System Status</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Info</h3>
+                    <p>Cairo, Egypt</p>
+                    <p>Phone: +20 (2) 123-4567</p>
+                    <p>Email: info@almoshtriyat.com</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 ALMOSHTRIYAT. All rights reserved. | <a href="/terms-and-conditions">Terms & Conditions</a> | <a href="#">Privacy Policy</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Billing toggle functionality
+        const billingToggle = document.getElementById('billingToggle');
+        const monthlyPrices = document.querySelectorAll('.monthly-price');
+        const annualPrices = document.querySelectorAll('.annual-price');
+        let isAnnual = false;
+
+        billingToggle.addEventListener('click', function() {
+            isAnnual = !isAnnual;
+            
+            if (isAnnual) {
+                this.classList.add('annual');
+                monthlyPrices.forEach(price => price.style.display = 'none');
+                annualPrices.forEach(price => price.style.display = 'inline');
+            } else {
+                this.classList.remove('annual');
+                monthlyPrices.forEach(price => price.style.display = 'inline');
+                annualPrices.forEach(price => price.style.display = 'none');
+            }
+        });
+    </script>
+</body>
+</html>

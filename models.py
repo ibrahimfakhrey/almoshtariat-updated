@@ -73,6 +73,7 @@ class Company(db.Model):
     # Company Type and Classification
     company_type = db.Column(db.String(50), default='supplier', nullable=False)  # 'supplier', 'client', 'system'
     sector = db.Column(db.String(100), nullable=True)  # Business sector
+    subsector = db.Column(db.String(200), nullable=True)  # Business subsector/activity
     
     # Additional Company Information
     founded_year = db.Column(db.Integer, nullable=True)  # Year company was founded
@@ -158,6 +159,10 @@ class User(db.Model, UserMixin):
     verification_code = db.Column(db.String(6), nullable=True)
     verification_sent_at = db.Column(db.DateTime, nullable=True)
     
+    # Terms and conditions acceptance
+    terms_accepted = db.Column(db.Boolean, default=False, nullable=False)
+    terms_accepted_at = db.Column(db.DateTime, nullable=True)
+    
     # New fields for enhanced user registration
     name = db.Column(db.String(100), nullable=True)  # Made nullable for existing users
     country = db.Column(db.String(100), nullable=True)  # Made nullable for existing users
@@ -165,6 +170,7 @@ class User(db.Model, UserMixin):
     phone_number = db.Column(db.String(20), nullable=True)  # Made nullable for existing users
     company_name = db.Column(db.String(200), nullable=True)  # Optional company name
     sector = db.Column(db.String(100), nullable=True)  # Business sector
+    subsector = db.Column(db.String(200), nullable=True)  # Business subsector/activity
     tax_number = db.Column(db.String(50), nullable=True)  # Tax identification number
     account_type = db.Column(db.String(20), default='client', nullable=True)  # Made nullable for existing users
     uploaded_file = db.Column(db.String(255), nullable=True)  # File path for uploaded documents
