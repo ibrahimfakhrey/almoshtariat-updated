@@ -55,8 +55,9 @@
                  'general': isArabic ? 'عام' : 'General',
                  'other': isArabic ? 'أخرى' : 'Other',
                  'select-account-type': isArabic ? 'اختر نوع الحساب' : 'Select Account Type',
-                 'client-buyer': isArabic ? 'عميل (مشتري)' : 'Client (Buyer)',
-                 'supplier-seller': isArabic ? 'مورد (بائع)' : 'Supplier (Seller)',
+                 'buyer': isArabic ? 'مشتري' : 'Buyer',
+                 'supplier': isArabic ? 'مورد' : 'Supplier',
+                 'both-buyer-supplier': isArabic ? 'كلاهما (مشتري ومورد)' : 'Both (Buyer & Supplier)',
                  'req-length': isArabic ? '8 أحرف على الأقل' : 'At least 8 characters',
                  'req-uppercase': isArabic ? 'حرف كبير واحد' : 'One uppercase letter',
                  'req-lowercase': isArabic ? 'حرف صغير واحد' : 'One lowercase letter',
@@ -337,8 +338,9 @@
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" data-translate="account-type">Account Type *</label>
                                         <select name="account_type" required class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-800 focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:border-brand-500">
                                             <option value="" data-translate="select-account-type">Select Account Type</option>
-                                            <option value="client" data-translate="client-buyer">Client (Buyer)</option>
-                                            <option value="supplier" data-translate="supplier-seller">Supplier (Seller)</option>
+                                            <option value="client" data-translate="buyer">Buyer</option>
+                                            <option value="supplier" data-translate="supplier">Supplier</option>
+                                            <option value="both" data-translate="both-buyer-supplier">Both (Buyer & Supplier)</option>
                                         </select>
                                     </div>
                                 </div>
@@ -519,7 +521,7 @@
                 suggestions.forEach(suggestion => {
                     const suggestionBtn = document.createElement('button');
                     suggestionBtn.type = 'button';
-                    suggestionBtn.className = 'px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors dark:bg-blue-900/20 dark:text-blue-300 dark:hover:bg-blue-800/30';
+                    suggestionBtn.className = 'px-3 py-1 text-sm bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-colors dark:bg-yellow-900/20 dark:text-yellow-300 dark:hover:bg-yellow-800/30';
                     suggestionBtn.textContent = suggestion;
                     suggestionBtn.onclick = function() {
                         usernameInput.value = suggestion;
@@ -861,7 +863,7 @@
                 suggestions.forEach(suggestion => {
                     const suggestionButton = document.createElement('button');
                     suggestionButton.type = 'button';
-                    suggestionButton.className = 'px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors cursor-pointer dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800';
+                    suggestionButton.className = 'px-3 py-1 text-sm bg-yellow-100 text-yellow-700 rounded-full hover:bg-yellow-200 transition-colors cursor-pointer dark:bg-yellow-900 dark:text-yellow-300 dark:hover:bg-yellow-800';
                     suggestionButton.textContent = suggestion;
                     suggestionButton.onclick = function() {
                         usernameInput.value = suggestion;

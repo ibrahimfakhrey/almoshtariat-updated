@@ -193,7 +193,7 @@
                                 </svg>
                                 Create Sample
                             </button>
-                            <button @click="markAllAsRead()" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+                            <button @click="markAllAsRead()" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                 </svg>
@@ -207,10 +207,10 @@
                 <div class="mb-6 border-b border-gray-200 dark:border-gray-700">
                     <div class="flex justify-between items-center">
                         <div class="flex space-x-8">
-                            <button @click="activeTab = 'all'" :class="activeTab === 'all' ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'" class="py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+                            <button @click="activeTab = 'all'" :class="activeTab === 'all' ? 'border-yellow-500 text-yellow-600 dark:border-yellow-400 dark:text-yellow-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'" class="py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
                                 All Notifications
                             </button>
-                            <button @click="activeTab = 'unread'" :class="activeTab === 'unread' ? 'border-blue-500 text-blue-600 dark:border-blue-400 dark:text-blue-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'" class="py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+                            <button @click="activeTab = 'unread'" :class="activeTab === 'unread' ? 'border-yellow-500 text-yellow-600 dark:border-yellow-400 dark:text-yellow-400' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'" class="py-2 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
                                 Unread
                             </button>
                         </div>
@@ -229,7 +229,7 @@
                         <!-- Type Filter -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Type</label>
-                            <select x-model="selectedType" @change="loadNotifications()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            <select x-model="selectedType" @change="loadNotifications()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 <option value="all">All Types</option>
                                 <option value="order">Order</option>
                                 <option value="offer">Offer</option>
@@ -243,7 +243,7 @@
                         <!-- Priority Filter -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Priority</label>
-                            <select x-model="selectedPriority" @change="loadNotifications()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            <select x-model="selectedPriority" @change="loadNotifications()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 <option value="all">All Priorities</option>
                                 <option value="urgent">Urgent</option>
                                 <option value="high">High</option>
@@ -255,13 +255,13 @@
                         <!-- Date From -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">From Date</label>
-                            <input type="date" x-model="dateFrom" @change="loadNotifications()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            <input type="date" x-model="dateFrom" @change="loadNotifications()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                         </div>
                         
                         <!-- Date To -->
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">To Date</label>
-                            <input type="date" x-model="dateTo" @change="loadNotifications()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            <input type="date" x-model="dateTo" @change="loadNotifications()" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                         </div>
                     </div>
                     
@@ -281,9 +281,9 @@
                     <!-- Loading State -->
                     <div x-show="loading" class="text-center py-12">
                         <div class="inline-flex items-center space-x-2">
-                            <div class="w-4 h-4 bg-blue-600 rounded-full animate-bounce"></div>
-                            <div class="w-4 h-4 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
-                            <div class="w-4 h-4 bg-blue-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                            <div class="w-4 h-4 bg-yellow-600 rounded-full animate-bounce"></div>
+                                <div class="w-4 h-4 bg-yellow-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                                <div class="w-4 h-4 bg-yellow-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
                         </div>
                         <p class="mt-4 text-gray-500 dark:text-gray-400">Loading notifications...</p>
                     </div>
@@ -298,7 +298,7 @@
                                         <div class="w-3 h-3 rounded-full" :class="{
                                             'bg-red-500': notification.priority === 'urgent',
                                             'bg-orange-500': notification.priority === 'high',
-                                            'bg-blue-500': notification.priority === 'normal',
+                                            'bg-yellow-500': notification.priority === 'normal',
                                             'bg-gray-400': notification.priority === 'low'
                                         }"></div>
                                     </div>
@@ -315,14 +315,14 @@
                                         <div class="flex items-center gap-2 mb-4">
                                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium" :class="{
                                                 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': notification.notification_type === 'order',
-                                                'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200': notification.notification_type === 'offer',
+                                                'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200': notification.notification_type === 'offer',
                                                 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200': notification.notification_type === 'chat',
                                                 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200': notification.notification_type === 'inventory',
                                                 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200': notification.notification_type === 'system'
                                             }" x-text="notification.notification_type?.charAt(0).toUpperCase() + notification.notification_type?.slice(1) || 'System'"></span>
                                             
                                             <!-- Unread Indicator -->
-                                            <span x-show="!notification.is_read" class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 text-xs font-medium dark:bg-blue-900 dark:text-blue-200">
+                                            <span x-show="!notification.is_read" class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-yellow-100 text-yellow-800 text-xs font-medium dark:bg-yellow-900 dark:text-yellow-200">
                                                 New
                                             </span>
                                         </div>
@@ -330,7 +330,7 @@
                                     
                                     <!-- Action Buttons -->
                                     <div class="flex-shrink-0 flex items-center gap-2">
-                                        <button @click="markAsRead(notification.id)" x-show="!notification.is_read" class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-900/30 transition-colors duration-200">
+                                        <button @click="markAsRead(notification.id)" x-show="!notification.is_read" class="inline-flex items-center gap-2 px-3 py-2 text-sm font-medium text-yellow-600 bg-yellow-50 rounded-lg hover:bg-yellow-100 dark:bg-yellow-900/20 dark:text-yellow-400 dark:hover:bg-yellow-900/30 transition-colors duration-200">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                             </svg>

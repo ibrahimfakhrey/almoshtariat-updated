@@ -1921,10 +1921,9 @@ def verify_code():
         success_notification = Notification(
             user_id=user.id,
             title="Email Verified Successfully!",
-            message="Your email has been verified. You can now log in to your account.",
+            description="Your email has been verified. You can now log in to your account.",
             notification_type='system',
             priority='normal',
-            timestamp=datetime.utcnow(),
             is_read=False
         )
         db.session.add(success_notification)
@@ -11560,6 +11559,65 @@ def get_chat_sessions():
     except Exception as e:
         app.logger.error(f'Get Chat Sessions Error: {str(e)}')
         return jsonify({'error': 'Failed to retrieve chat sessions'}), 500
+
+
+@app.route('/switch_role', methods=['POST'])
+@login_required
+def switch_role():
+    """Switch active role for dual-role users"""
+    try:
+        data = request.get_json()
+        new_role = data.get('role')
+        
+        if not new_role:
+            return jsonify({'success': False, 'message': 'Role is required'}), 400
+        
+        # Check if user can switch roles
+        if not current_user.can_switch_roles:
+            return jsonify({'success': False, 'message': 'User does not have dual role permissions'}), 403
+        
+        # Validate the new role
+        if new_role not in ['client', 'company']:
+            return jsonify({'success': False, 'message': 'Invalid role specified'}), 400
+        
+        # Switch the role
+        if current_user.switch_active_role(new_role):
+            db.session.commit()
+            
+            # Determine redirect URL based on new role
+            if new_role == 'company':
+                redirect_url = url_for('company_packages')
+            else:
+                redirect_url = url_for('dash')
+            
+            return jsonify({
+                'success': True, 
+                'message': f'Successfully switched to {new_role} role',
+                'new_role': new_role,
+                'redirect_url': redirect_url
+            })
+        else:
+            return jsonify({'success': False, 'message': 'Failed to switch role'}), 400
+            
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': f'Error switching role: {str(e)}'}), 500
+
+
+@app.route('/get_user_roles', methods=['GET'])
+@login_required
+def get_user_roles():
+    """Get current user's role information"""
+    try:
+        return jsonify({
+            'success': True,
+            'has_dual_roles': current_user.has_dual_roles,
+            'current_role': current_user.get_current_role(),
+            'available_roles': current_user.get_available_roles_list(),
+            'can_switch_roles': current_user.can_switch_roles
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error getting user roles: {str(e)}'}), 500
 
 
 @app.route('/terms-and-conditions')

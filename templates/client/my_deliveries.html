@@ -13,7 +13,7 @@
     
     <!-- Sidebar -->
     <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out" :class="sidebarToggle ? 'translate-x-0' : '-translate-x-full'">
-        <div class="flex items-center justify-between h-16 px-6 bg-blue-600">
+        <div class="flex items-center justify-between h-16 px-6 bg-yellow-600">
             <h1 class="text-xl font-bold text-white">Almoshtariat</h1>
             <button @click="sidebarToggle = false" class="text-white hover:text-gray-200">
                 <i class="fas fa-times"></i>
@@ -33,7 +33,7 @@
                 <i class="fas fa-shopping-cart mr-3"></i>
                 My Orders
             </a>
-            <a href="{{ url_for('my_deliveries') }}" class="flex items-center px-6 py-3 text-blue-600 bg-blue-50 border-r-4 border-blue-600">
+            <a href="{{ url_for('my_deliveries') }}" class="flex items-center px-6 py-3 text-yellow-600 bg-yellow-50 border-r-4 border-yellow-600">
                 <i class="fas fa-truck mr-3"></i>
                 My Deliveries
             </a>
@@ -90,7 +90,7 @@
                             <h1 class="text-3xl font-bold text-gray-900 mb-2">Package Deliveries</h1>
                             <p class="text-gray-600">Track and confirm packages being delivered to you</p>
                         </div>
-                        <a href="{{ url_for('dash') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center">
+                        <a href="{{ url_for('dash') }}" class="bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 flex items-center">
                             <i class="fas fa-tachometer-alt mr-2"></i>
                             Dashboard
                         </a>
@@ -119,7 +119,7 @@
                                                     <span class="px-3 py-1 text-sm font-medium rounded-full" 
                                                           :class="{
                                                               'bg-yellow-100 text-yellow-800': package.status === 'preparing',
-                                                              'bg-blue-100 text-blue-800': package.status === 'shipped',
+                                                              'bg-yellow-100 text-yellow-800': package.status === 'shipped',
                                                               'bg-purple-100 text-purple-800': package.status === 'in_transit'
                                                           }" 
                                                           x-text="package.status.replace('_', ' ').toUpperCase()"></span>
@@ -160,14 +160,14 @@
                                                 
                                                 <!-- Delivery Code Display -->
                                                 <template x-if="package.delivery_code">
-                                                    <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                                                    <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                                                         <div class="flex items-center justify-between">
                                                             <div>
-                                                                <p class="text-sm font-medium text-blue-900">Delivery Confirmation Code</p>
-                                                                <p class="text-lg font-mono font-bold text-blue-700" x-text="package.delivery_code"></p>
-                                                                <p class="text-xs text-blue-600">Give this code to the delivery company</p>
+                                                                <p class="text-sm font-medium text-yellow-900">Delivery Confirmation Code</p>
+                                                                 <p class="text-lg font-mono font-bold text-yellow-700" x-text="package.delivery_code"></p>
+                                                                 <p class="text-xs text-yellow-600">Give this code to the delivery company</p>
                                                             </div>
-                                                            <i class="fas fa-key text-2xl text-blue-400"></i>
+                                                            <i class="fas fa-key text-2xl text-yellow-400"></i>
                                                         </div>
                                                     </div>
                                                 </template>
@@ -175,7 +175,7 @@
                                             
                                             <div class="ml-6">
                                                 <button @click="confirmDelivery(package.id)" 
-                                                        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                                        class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
                                                     <i class="fas fa-key mr-2"></i>
                                                     Generate Code
                                                 </button>

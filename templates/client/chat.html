@@ -384,10 +384,10 @@
             {% if chats %}
                 {% for chat in chats %}
                 <!-- Chat List Item -->
-                <div class="chat-item flex cursor-pointer items-center gap-3 rounded-lg p-3 hover:bg-gray-100 dark:hover:bg-white/[0.03] transition-colors duration-200 {% if current_chat and current_chat.id == chat.id %}bg-blue-50 border border-blue-200 dark:bg-blue-900/20 dark:border-blue-700{% endif %}" 
+                <div class="chat-item flex cursor-pointer items-center gap-3 rounded-lg p-3 hover:bg-gray-100 dark:hover:bg-white/[0.03] transition-colors duration-200 {% if current_chat and current_chat.id == chat.id %}bg-yellow-50 border border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-700{% endif %}" 
                      data-chat-id="{{ chat.id }}" 
                      data-company-name="{{ chat.company.name_ar or chat.company.name_en or 'Company' }}">
-                 <div class="relative h-12 w-full max-w-[48px] rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                 <div class="relative h-12 w-full max-w-[48px] rounded-full bg-gradient-to-br from-yellow-500 to-orange-600 flex items-center justify-center">
                   <svg class="h-8 w-8 text-white" fill="currentColor" viewBox="0 0 20 20">
                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
                   </svg>
@@ -430,7 +430,7 @@
          <!-- ====== Chat Box Start -->
          <div class="sticky flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-800 xl:px-6">
           <div class="flex items-center gap-3">
-           <div class="relative h-12 w-full max-w-[48px] rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+           <div class="relative h-12 w-full max-w-[48px] rounded-full bg-gradient-to-br from-yellow-500 to-orange-600 flex items-center justify-center">
             <svg class="h-8 w-8 text-white" fill="currentColor" viewBox="0 0 20 20">
              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 0 1114 0H3z" clip-rule="evenodd" />
             </svg>
@@ -493,7 +493,7 @@
               {% else %}
                 <div class="max-w-[350px]">
                  <div class="flex items-start gap-4">
-                  <div class="h-10 w-full max-w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                  <div class="h-10 w-full max-w-10 rounded-full bg-gradient-to-br from-yellow-500 to-orange-600 flex items-center justify-center">
                    <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
                    </svg>
@@ -585,7 +585,7 @@
                     messagesContainer.innerHTML += `
                         <div class="max-w-[350px]">
                             <div class="flex items-start gap-4">
-                                <div class="h-10 w-full max-w-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                                <div class="h-10 w-full max-w-10 rounded-full bg-gradient-to-br from-yellow-500 to-orange-600 flex items-center justify-center">
                                     <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
                                     </svg>
@@ -614,11 +614,11 @@
     function selectChat(chatItem) {
         // Remove active class from all chat items
         chatItems.forEach(item => {
-            item.classList.remove('bg-blue-50', 'border', 'border-blue-200', 'dark:bg-blue-900/20', 'dark:border-blue-700');
+            item.classList.remove('bg-yellow-50', 'border', 'border-yellow-200', 'dark:bg-yellow-900/20', 'dark:border-yellow-700');
         });
         
         // Add active class to selected chat
-        chatItem.classList.add('bg-blue-50', 'border', 'border-blue-200', 'dark:bg-blue-900/20', 'dark:border-blue-700');
+        chatItem.classList.add('bg-yellow-50', 'border', 'border-yellow-200', 'dark:bg-yellow-900/20', 'dark:border-yellow-700');
         
         // Get chat details
         const chatId = chatItem.dataset.chatId;

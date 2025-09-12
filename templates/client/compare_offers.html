@@ -64,7 +64,7 @@
             font-size: 0.875rem;
         }
         .metric-info {
-            background: linear-gradient(45deg, #3b82f6, #2563eb);
+            background: linear-gradient(45deg, #ca8a04, #a16207);
             color: white;
             padding: 0.25rem 0.75rem;
             border-radius: 0.5rem;
@@ -165,7 +165,7 @@
                         <tr class="{% if loop.index is even %}bg-white dark:bg-gray-800{% else %}bg-gray-50 dark:bg-gray-700{% endif %}">
                             <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white border-r border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-2">
-                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                                     </svg>
                                     <div>
@@ -189,7 +189,7 @@
                                             Per {{ purchase.unit }}: {{ "%.2f"|format(product_offer.unit_price) }}
                                         </div>
                                         {% if product_offer.notes %}
-                                        <div class="text-xs text-blue-600 italic">{{ product_offer.notes[:30] }}{% if product_offer.notes|length > 30 %}...{% endif %}</div>
+                                        <div class="text-xs text-yellow-600 italic">{{ product_offer.notes[:30] }}{% if product_offer.notes|length > 30 %}...{% endif %}</div>
                                         {% endif %}
                                     </div>
                                 {% else %}
@@ -204,7 +204,7 @@
                         <tr class="bg-gray-100 dark:bg-gray-600">
                             <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white border-r border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-2">
-                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
                                     </svg>
                                     <span class="font-semibold">Subtotal (Products)</span>
@@ -213,7 +213,7 @@
                             {% for offer in offers %}
                             <td class="px-6 py-4 text-center text-sm text-gray-900 dark:text-white">
                                 {% set subtotal = offer.product_offers|sum(attribute='total_price') %}
-                                <span class="font-bold text-lg text-blue-600">EGP {{ "%.2f"|format(subtotal) }}</span>
+                                <span class="font-bold text-lg text-yellow-600">EGP {{ "%.2f"|format(subtotal) }}</span>
                             </td>
                             {% endfor %}
                         </tr>
@@ -236,7 +236,7 @@
                                         <span class="text-green-600">-{{ "%.1f"|format(offer.deduction_percentage) }}% discount</span>
                                     {% endif %}
                                     {% if offer.transportation_fees and offer.transportation_fees > 0 %}
-                                        <br><span class="text-blue-600">+{{ "%.0f"|format(offer.transportation_fees) }} shipping</span>
+                                        <br><span class="text-yellow-600">+{{ "%.0f"|format(offer.transportation_fees) }} shipping</span>
                                     {% endif %}
                                 </div>
                             </td>
@@ -268,7 +268,7 @@
                         <tr class="bg-white dark:bg-gray-800">
                             <td class="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white border-r border-gray-200 dark:border-gray-600">
                                 <div class="flex items-center space-x-2">
-                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
                                     </svg>
                                     <span>Transportation Fees</span>
@@ -332,7 +332,7 @@
                             <td class="px-6 py-4 text-center">
                                 <a href="{{ url_for('offer_details', offer_id=offer.id) }}" 
                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 border-2"
-                                   style="background-color: #2563eb !important; color: white !important; border-color: #1d4ed8 !important; opacity: 1 !important;">
+                                   style="background-color: #ca8a04 !important; color: white !important; border-color: #a16207 !important; opacity: 1 !important;">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -374,18 +374,18 @@
                     </div>
                 </div>
                 
-                <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded border border-blue-200 dark:border-blue-700">
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 p-3 rounded border border-yellow-200 dark:border-yellow-700">
                     <div class="flex items-center mb-2">
-                        <svg class="w-4 h-4 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 mr-2 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <h4 class="font-medium text-blue-800 dark:text-blue-200 text-sm">Best Price</h4>
+                        <h4 class="font-medium text-yellow-800 dark:text-yellow-200 text-sm">Best Price</h4>
                     </div>
-                    <div class="text-xs text-blue-700 dark:text-blue-300">
+                    <div class="text-xs text-yellow-700 dark:text-yellow-300">
                         <strong>{{ recommendation.best_price.company.name_ar or recommendation.best_price.company.name_en or 'Unknown Company' }}</strong><br>
                         Effective Price: EGP {{ "%.2f"|format(recommendation.best_price.total_price * (1 - (recommendation.best_price.deduction_percentage or 0) / 100)) }}
                         {% if recommendation.best_price.deduction_percentage and recommendation.best_price.deduction_percentage > 0 %}
-                            <span class="text-blue-600">(-{{ "%.1f"|format(recommendation.best_price.deduction_percentage) }}%)</span>
+                            <span class="text-yellow-600">(-{{ "%.1f"|format(recommendation.best_price.deduction_percentage) }}%)</span>
                         {% endif %}
                     </div>
                 </div>
@@ -507,7 +507,7 @@
             </a>
             <a href="{{ url_for('orders') }}" 
                class="inline-flex items-center justify-center gap-3 px-6 py-3 rounded-md text-base font-medium transition-colors duration-200"
-               style="background-color: #2563eb !important; color: white !important; border: 1px solid #1d4ed8 !important; opacity: 1 !important;">
+               style="background-color: #ca8a04 !important; color: white !important; border: 1px solid #a16207 !important; opacity: 1 !important;">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                 </svg>

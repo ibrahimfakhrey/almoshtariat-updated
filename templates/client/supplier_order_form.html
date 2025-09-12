@@ -685,7 +685,7 @@
                                         📦 <strong>Selected Products:</strong> These are the products you added to your cart from the supplier page.
                                     </p>
                                     <div class="flex gap-2 mb-4">
-                                        <button onclick="checkCartData()" class="px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600">
+                                        <button onclick="checkCartData()" class="px-3 py-1 bg-yellow-500 text-white text-xs rounded hover:bg-yellow-600">
                                             🔍 Check Cart Data
                                         </button>
                                         <span class="text-xs text-gray-500">Cart Items: <span id="cart-count">{{ cart_items|length if cart_items else 0 }}</span></span>
@@ -739,7 +739,7 @@
                                                 </svg>
                                                 <p class="text-lg font-medium">No Cart Products Found</p>
                                                 <p class="text-sm text-gray-500 mt-2">Please add products to your cart from the supplier page first.</p>
-                                                <a href="/suppliers" class="inline-block mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                                <a href="/suppliers" class="inline-block mt-4 px-6 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors">
                                                     Go to Suppliers
                                                 </a>
                                             </div>
@@ -973,9 +973,9 @@
                                     </div>
 
                                     <!-- Payment Summary -->
-                                    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mt-6">
-                                        <h4 class="text-sm font-medium text-blue-800 dark:text-blue-400 mb-2">Payment Summary</h4>
-                                        <div class="text-sm text-blue-700 dark:text-blue-300">
+                                    <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mt-6">
+                                        <h4 class="text-sm font-medium text-yellow-800 dark:text-yellow-400 mb-2">Payment Summary</h4>
+                                        <div class="text-sm text-yellow-700 dark:text-yellow-300">
                                             <div>Total Steps: <span x-text="formData.payment_steps.length"></span></div>
                                             <div>Total Percentage: <span x-text="formData.payment_steps.reduce((sum, step) => sum + (parseFloat(step.percentage) || 0), 0).toFixed(2)"></span>%</div>
                                         </div>
@@ -1045,8 +1045,8 @@
                                 <div class="space-y-6 border-t border-gray-100 p-5 sm:p-6 dark:border-gray-800">
                                     
                                     <!-- Action Buttons - PROMINENT DISPLAY -->
-                                    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-6">
-                                        <h4 class="text-lg font-semibold text-blue-800 dark:text-blue-400 mb-4 text-center">Export & Print Options</h4>
+                                    <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6 mb-6">
+                                        <h4 class="text-lg font-semibold text-yellow-800 dark:text-yellow-400 mb-4 text-center">Export & Print Options</h4>
                                         <div class="flex flex-col sm:flex-row justify-center gap-4">
                                             <button type="button" @click="printOrderPreview()" 
                                                     class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors shadow-lg">
@@ -1159,8 +1159,8 @@
                                     <!-- Final Submit Button -->
                                     <div class="flex justify-center gap-4">
                                         <button type="button" 
-                                                style="background-color: #2563eb; color: white; border: 2px solid #1d4ed8; padding: 20px 40px; border-radius: 12px; font-weight: bold; font-size: 18px; box-shadow: 0 15px 35px rgba(37, 99, 235, 0.4); cursor: pointer;"
-                                                class="flex items-center justify-center gap-3 transition-all duration-300 hover:bg-blue-700 hover:scale-105"
+                                                style="background-color: #D97706; color: white; border: 2px solid #B45309; padding: 20px 40px; border-radius: 12px; font-weight: bold; font-size: 18px; box-shadow: 0 15px 35px rgba(217, 119, 6, 0.4); cursor: pointer;"
+                                                class="flex items-center justify-center gap-3 transition-all duration-300 hover:bg-yellow-700 hover:scale-105"
                                                 onclick="submitOrderForm();">
                                             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -1272,7 +1272,7 @@
                             </svg>
                             <span>Generate PDF (Server-Side Arabic Support)</span>
                         </button>
-                        <button onclick="printOrder()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                        <button onclick="printOrder()" class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors">
                             <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4H5a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2h-2z"></path>
                             </svg>
@@ -1521,7 +1521,7 @@
         loadingMsg.innerHTML = `
             <div class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
                 <div class="bg-white p-6 rounded-lg shadow-xl text-center">
-                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-600 mx-auto mb-4"></div>
                                                     <p class="text-gray-700">Generating PDF with Perfect Arabic Text Support...</p>
                                 <p class="text-sm text-gray-500 mt-2">Using WeasyPrint for perfect Arabic text rendering</p>
                 </div>

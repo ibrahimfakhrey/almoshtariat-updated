@@ -552,7 +552,7 @@
                                                         <span class="text-xs text-green-600 font-medium">-{{ "%.1f"|format(offer.deduction_percentage) }}%</span>
                                                     {% endif %}
                                                     {% if offer.transportation_fees and offer.transportation_fees > 0 %}
-                                                        <span class="text-xs text-blue-600 font-medium">+{{ "%.0f"|format(offer.transportation_fees) }} EGP</span>
+                                                        <span class="text-xs text-yellow-600 font-medium">+{{ "%.0f"|format(offer.transportation_fees) }} EGP</span>
                                                     {% endif %}
                                                     {% if offer.guarantee %}
                                                         <span class="text-xs text-purple-600 font-medium">🛡️ {{ offer.guarantee[:20] }}{% if offer.guarantee|length > 20 %}...{% endif %}</span>
@@ -595,7 +595,7 @@
                                             </td>
                                             <td class="py-5 px-4 dark:border-strokedark">
                                                 <div class="flex items-center justify-center">
-                                                    <div class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-100 rounded-full hover:bg-blue-200 transition-colors dark:bg-blue-900/20 dark:text-blue-300 dark:hover:bg-blue-800/30">
+                                                    <div class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-yellow-600 bg-yellow-100 rounded-full hover:bg-yellow-200 transition-colors dark:bg-yellow-900/20 dark:text-yellow-300 dark:hover:bg-yellow-800/30">
                                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>

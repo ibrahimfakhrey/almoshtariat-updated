@@ -320,7 +320,7 @@
                                 <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ company.name }}</h1>
                                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                                     {% if company.sector %}
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 mr-2">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 mr-2">
                                             {{ company.sector|title }}
                                         </span>
                                     {% endif %}
@@ -554,7 +554,7 @@
             .then(data => {
                 const statusElement = document.getElementById('order-status');
                 if (data.has_order) {
-                    statusElement.innerHTML = `Order #${data.order_id} • ${data.product_count} products <a href="/order/${data.order_id}" class="ml-2 text-blue-600 hover:text-blue-800 underline">View Order</a>`;
+                    statusElement.innerHTML = `Order #${data.order_id} • ${data.product_count} products <a href="/order/${data.order_id}" class="ml-2 text-yellow-600 hover:text-yellow-800 underline">View Order</a>`;
                     statusElement.className = 'text-green-600 dark:text-green-400 font-medium';
                 } else {
                     statusElement.innerHTML = 'No active order';
@@ -786,7 +786,7 @@
         } else if (type === 'error') {
             notification.classList.add('bg-red-500');
         } else {
-            notification.classList.add('bg-blue-500');
+            notification.classList.add('bg-yellow-500');
         }
         
         notification.innerHTML = message;

@@ -60,7 +60,7 @@
     
     <!-- ===== Preloader Start ===== -->
     <div id="preloader" class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" style="background-color: white; z-index: 999999;">
-        <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent" style="border-color: #3b82f6; border-top-color: transparent;">
+        <div class="h-16 w-16 animate-spin rounded-full border-4 border-solid border-brand-500 border-t-transparent" style="border-color: #ca8a04; border-top-color: transparent;">
         </div>
     </div>
     <!-- ===== Preloader End ===== -->
@@ -353,7 +353,7 @@
                                                    name="title" 
                                                    required 
                                                    placeholder="{{ _('Brief description of the issue') }}"
-                                                   class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                                   class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500">
                                         </div>
                                         
                                         <!-- Arabic Title Label -->
@@ -365,7 +365,7 @@
                                                    id="title_ar" 
                                                    name="title_ar" 
                                                    placeholder="وصف مختصر للمشكلة"
-                                                   class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                                   class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500">
                                         </div>
                                         
                                         <!-- Description -->
@@ -378,7 +378,7 @@
                                                       rows="6" 
                                                       required 
                                                       placeholder="{{ _('Please provide a detailed description of your complaint, including any relevant details, dates, and specific issues you encountered.') }}"
-                                                      class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                                      class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"></textarea>
                                             <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
                                                 {{ _('Be as specific as possible to help us resolve your issue quickly.') }}
                                             </p>
@@ -393,7 +393,7 @@
                                                       name="description_ar" 
                                                       rows="6" 
                                                       placeholder="يرجى تقديم وصف تفصيلي لشكواك، بما في ذلك أي تفاصيل ذات صلة وتواريخ ومشاكل محددة واجهتها."
-                                                      class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                                      class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500"></textarea>
                                             <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
                                                 كن محددًا قدر الإمكان لمساعدتنا في حل مشكلتك بسرعة.
                                             </p>
@@ -408,7 +408,7 @@
                                                 </label>
                                                 <select id="complaint_type" 
                                                         name="complaint_type" 
-                                                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500">
                                                     <option value="general">{{ _('General Complaint') }}</option>
                                                     <option value="quality">{{ _('Quality Issue') }}</option>
                                                     <option value="delivery">{{ _('Delivery Problem') }}</option>
@@ -425,7 +425,7 @@
                                                 </label>
                                                 <select id="priority" 
                                                         name="priority" 
-                                                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500">
                                                     <option value="low">{{ _('Low - Minor issue, not urgent') }}</option>
                                                     <option value="normal" selected>{{ _('Normal - Standard priority') }}</option>
                                                     <option value="high">{{ _('High - Important issue') }}</option>
@@ -443,7 +443,7 @@
                                                 </label>
                                                 <select id="complaint_type_ar" 
                                                         name="complaint_type_ar" 
-                                                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500">
                                                     <option value="general">شكوى عامة</option>
                                                     <option value="quality">مشكلة في الجودة</option>
                                                     <option value="delivery">مشكلة في التوصيل</option>
@@ -460,7 +460,7 @@
                                                 </label>
                                                 <select id="priority_ar" 
                                                         name="priority_ar" 
-                                                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                                        class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-gray-900 dark:text-white bg-white dark:bg-gray-700 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500">
                                                     <option value="low">منخفض - مشكلة بسيطة، غير عاجلة</option>
                                                     <option value="normal" selected>عادي - أولوية قياسية</option>
                                                     <option value="high">عالي - مشكلة مهمة</option>
@@ -470,18 +470,18 @@
                                         </div>
                                         
                                         <!-- Additional Information -->
-                                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                                        <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
                                             <div class="flex">
                                                 <div class="flex-shrink-0">
-                                                    <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <svg class="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                                     </svg>
                                                 </div>
                                                 <div class="ml-3">
-                                                    <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200">
+                                                    <h3 class="text-sm font-medium text-yellow-800 dark:text-yellow-200">
                                                         {{ _('What happens next?') }}
                                                     </h3>
-                                                    <div class="mt-2 text-sm text-blue-700 dark:text-blue-300">
+                                                    <div class="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
                                                         <p>{{ _('Your complaint will be reviewed by our team and forwarded to the relevant company. They will respond within 24-48 hours with a resolution plan.') }}</p>
                                                     </div>
                                                 </div>
@@ -489,18 +489,18 @@
                                         </div>
                                         
                                         <!-- Arabic Additional Information -->
-                                        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mt-4" dir="rtl" lang="ar">
+                                        <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mt-4" dir="rtl" lang="ar">
                                             <div class="flex">
                                                 <div class="flex-shrink-0">
-                                                    <svg class="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <svg class="h-5 w-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                                     </svg>
                                                 </div>
                                                 <div class="mr-3">
-                                                    <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200">
+                                                    <h3 class="text-sm font-medium text-yellow-800 dark:text-yellow-200">
                                                         ماذا يحدث بعد ذلك؟
                                                     </h3>
-                                                    <div class="mt-2 text-sm text-blue-700 dark:text-blue-300">
+                                                    <div class="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
                                                         <p>سيتم مراجعة شكواك من قبل فريقنا وإرسالها إلى الشركة المعنية. سيردون عليك خلال 24-48 ساعة مع خطة حل.</p>
                                                     </div>
                                                 </div>
@@ -509,14 +509,14 @@
                                         
                                         <!-- Form Actions -->
                                         <div class="flex justify-center pt-6 border-t border-gray-200 dark:border-gray-700" style="border: 2px solid red !important; background-color: #fef2f2 !important; padding: 20px !important; margin-top: 20px !important;">
-                                            <button type="submit" class="px-16 py-4 text-lg font-medium text-white bg-blue-600 border border-transparent rounded-2xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" style="background-color: #2563eb !important; color: white !important; display: inline-block !important; visibility: visible !important; opacity: 1 !important; min-width: 200px;">
+                                            <button type="submit" class="px-16 py-4 text-lg font-medium text-white bg-yellow-600 border border-transparent rounded-2xl hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500" style="background-color: #ca8a04 !important; color: white !important; display: inline-block !important; visibility: visible !important; opacity: 1 !important; min-width: 200px;">
                                                 {{ _('Submit Complaint') }}
                                             </button>
                                         </div>
                                         
                                         <!-- Arabic Submit Button -->
                                         <div class="flex justify-center mt-4" dir="rtl" lang="ar">
-                                            <button type="submit" class="px-16 py-4 text-lg font-medium text-white bg-blue-600 border border-transparent rounded-2xl hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" style="background-color: #2563eb !important; color: white !important; display: inline-block !important; visibility: visible !important; opacity: 1 !important; min-width: 200px;">
+                                            <button type="submit" class="px-16 py-4 text-lg font-medium text-white bg-yellow-600 border border-transparent rounded-2xl hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500" style="background-color: #ca8a04 !important; color: white !important; display: inline-block !important; visibility: visible !important; opacity: 1 !important; min-width: 200px;">
                                                 تقديم الشكوى
                                             </button>
                                         </div>
@@ -541,7 +541,8 @@
                     <div class="px-4 py-3 rounded-md shadow-lg max-w-sm
                         {% if category == 'error' %}bg-red-500 text-white
                         {% elif category == 'success' %}bg-green-500 text-white
-                        {% else %}bg-blue-500 text-white{% endif %}">
+                        {% elif category == 'info' %}bg-yellow-500 text-white
+                        {% else %}bg-yellow-500 text-white{% endif %}">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
                                 {% if category == 'error' %}

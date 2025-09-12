@@ -151,7 +151,9 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
-    role = db.Column(db.String(20), default='client', nullable=False)  # 'client', 'company', 'employee', or 'admin'
+    role = db.Column(db.String(20), default='client', nullable=False)  # 'client', 'company', 'employee', 'admin', or 'both'
+    active_role = db.Column(db.String(20), default='client', nullable=False)  # Current active role for dual-role users
+    available_roles = db.Column(db.String(100), default='client', nullable=False)  # Comma-separated list of available roles
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=False)  # Now required!
     
     # Email verification fields
@@ -204,6 +206,36 @@ class User(db.Model, UserMixin):
     def is_system_user(self):
         """Check if user belongs to the system company"""
         return self.company and self.company.company_type == 'system'
+    
+    @property
+    def has_dual_roles(self):
+        """Check if user has both client and company roles"""
+        return self.role == 'both' or ('client' in self.available_roles and 'company' in self.available_roles)
+    
+    @property
+    def can_switch_roles(self):
+        """Check if user can switch between roles"""
+        return self.has_dual_roles
+    
+    def get_available_roles_list(self):
+        """Get list of available roles for this user"""
+        if self.role == 'both':
+            return ['client', 'company']
+        return [role.strip() for role in self.available_roles.split(',') if role.strip()]
+    
+    def switch_active_role(self, new_role):
+        """Switch the active role for dual-role users"""
+        available = self.get_available_roles_list()
+        if new_role in available:
+            self.active_role = new_role
+            return True
+        return False
+    
+    def get_current_role(self):
+        """Get the current active role"""
+        if self.has_dual_roles:
+            return self.active_role
+        return self.role
 
 class UserPreference(db.Model):
     """Model to store user purchase preferences and patterns extracted from Excel files"""

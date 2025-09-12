@@ -199,7 +199,7 @@
                                     {% if package.status == 'preparing' %}
                                         bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200
                                     {% elif package.status == 'shipped' %}
-                                        bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200
+                                        bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200
                                     {% elif package.status == 'delivered' %}
                                         bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200
                                     {% else %}
@@ -229,7 +229,7 @@
                                 {% if request.cookies.get('language') == 'ar' %}رقم الطلب{% else %}Order ID{% endif %}
                             </dt>
                             <dd class="mt-1 text-sm text-gray-900 dark:text-white">
-                                <a href="{{ url_for('order_details', order_id=package.order_id) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                                <a href="{{ url_for('order_details', order_id=package.order_id) }}" class="text-yellow-600 hover:text-yellow-800 dark:text-yellow-400 dark:hover:text-yellow-300">
                                     #{{ package.order_id }}
                                 </a>
                             </dd>
@@ -414,15 +414,15 @@
                     </h2>
                 </div>
                 <div class="px-6 py-4">
-                    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
+                    <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-4">
                         <div class="flex">
                             <div class="flex-shrink-0">
-                                <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                                <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
                                 </svg>
                             </div>
                             <div class="ml-3">
-                                <p class="text-sm text-blue-700 dark:text-blue-300">
+                                <p class="text-sm text-yellow-700 dark:text-yellow-300">
                                     {% if request.cookies.get('language') == 'ar' %}
                                         للتأكيد على تسليم الطرد، يرجى الحصول على رمز التأكيد من العميل وإدخاله أدناه.
                                     {% else %}
@@ -443,7 +443,7 @@
                                 id="delivery_code"
                                 x-model="deliveryCode" 
                                 maxlength="10"
-                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                 placeholder="{% if request.cookies.get('language') == 'ar' %}أدخل رمز التأكيد{% else %}Enter confirmation code{% endif %}"
                                 required
                             >
@@ -636,7 +636,7 @@
                     <h2 class="text-lg font-medium text-gray-900 dark:text-white">
                         {% if request.cookies.get('language') == 'ar' %}معلومات المستلم{% else %}Receiver Information{% endif %}
                     </h2>
-                    <button @click="editing = !editing" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-bold rounded text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-600 dark:text-white dark:hover:bg-blue-700 shadow-md transition-all duration-200" style="background-color: #2563eb !important; color: white !important;">
+                    <button @click="editing = !editing" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-bold rounded text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 dark:bg-yellow-600 dark:text-white dark:hover:bg-yellow-700 shadow-md transition-all duration-200" style="background-color: #D97706 !important; color: white !important;">
                         <span x-show="!editing">
                             {% if request.cookies.get('language') == 'ar' %}تعديل{% else %}Edit{% endif %}
                         </span>
@@ -684,26 +684,26 @@
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                         {% if request.cookies.get('language') == 'ar' %}اسم المستلم{% else %}Receiver Name{% endif %}
                                     </label>
-                                    <input type="text" x-model="receiverName" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <input type="text" x-model="receiverName" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                         {% if request.cookies.get('language') == 'ar' %}رقم هاتف المستلم{% else %}Receiver Phone{% endif %}
                                     </label>
-                                    <input type="tel" x-model="receiverPhone" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                                    <input type="tel" x-model="receiverPhone" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     {% if request.cookies.get('language') == 'ar' %}عنوان التسليم{% else %}Delivery Address{% endif %}
                                 </label>
-                                <textarea x-model="deliveryAddress" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
+                                <textarea x-model="deliveryAddress" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"></textarea>
                             </div>
                             <div class="flex justify-end space-x-3">
-                                <button type="button" @click="editing = false" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-md text-sm font-bold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-gray-600 dark:text-white dark:border-gray-500 dark:hover:bg-gray-700 transition-all duration-200" style="background-color: white !important; color: #374151 !important; border: 1px solid #d1d5db !important;">
+                                <button type="button" @click="editing = false" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-md text-sm font-bold rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 dark:bg-gray-600 dark:text-white dark:border-gray-500 dark:hover:bg-gray-700 transition-all duration-200" style="background-color: white !important; color: #374151 !important; border: 1px solid #d1d5db !important;">
                                     {% if request.cookies.get('language') == 'ar' %}إلغاء{% else %}Cancel{% endif %}
                                 </button>
-                                <button type="submit" :disabled="saving" class="inline-flex items-center px-4 py-2 border border-transparent shadow-lg text-sm font-bold rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-all duration-200" style="background-color: #2563eb !important; color: white !important;">
+                                <button type="submit" :disabled="saving" class="inline-flex items-center px-4 py-2 border border-transparent shadow-lg text-sm font-bold rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50 transition-all duration-200" style="background-color: #D97706 !important; color: white !important;">
                                     <span x-show="!saving">{% if request.cookies.get('language') == 'ar' %}حفظ{% else %}Save{% endif %}</span>
                                     <span x-show="saving">{% if request.cookies.get('language') == 'ar' %}جاري الحفظ...{% else %}Saving...{% endif %}</span>
                                 </button>
@@ -753,7 +753,7 @@
                                 <div class="relative pb-8">
                                     <div class="relative flex space-x-3">
                                         <div>
-                                            <span class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center ring-8 ring-white dark:ring-gray-800">
+                                            <span class="h-8 w-8 rounded-full bg-yellow-500 flex items-center justify-center ring-8 ring-white dark:ring-gray-800">
                                                 <svg class="h-5 w-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                                                     <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"></path>
                                                     <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1V8a1 1 0 00-1-1h-3z"></path>

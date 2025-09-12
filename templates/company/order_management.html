@@ -288,7 +288,7 @@
                                     <div class="relative">
                                         <div class="w-12 h-12 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 shadow-lg
                                             {% if step.status == order_status %}
-                                                bg-gradient-to-br from-blue-500 to-blue-700 text-white border-4 border-blue-300 shadow-blue-500/50
+                                                bg-gradient-to-br from-yellow-500 to-yellow-700 text-white border-4 border-yellow-300 shadow-yellow-500/50
                                             {% elif step.id < current_step_id %}
                                                 bg-gradient-to-br from-green-500 to-green-600 text-white border-4 border-green-300 shadow-green-500/50
                                             {% else %}
@@ -305,7 +305,7 @@
                                     </div>
                                     <span class="mt-3 text-sm font-medium text-center 
                                         {% if step.status == order_status %}
-                                            text-blue-700 dark:text-blue-300
+                                            text-yellow-700 dark:text-yellow-300
                                         {% elif step.id < current_step_id %}
                                             text-green-700 dark:text-green-300
                                         {% else %}
@@ -325,13 +325,13 @@
                         </div>
                         
                         <!-- Current Status -->
-                        <div class="mt-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl">
+                        <div class="mt-4 p-4 bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 border-2 border-yellow-200 dark:border-yellow-800 rounded-xl">
                             <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
                                     <span class="text-white text-sm font-bold">📊</span>
                                 </div>
                                 <div>
-                                    <p class="text-sm font-semibold text-blue-800 dark:text-blue-200">
+                                    <p class="text-sm font-semibold text-yellow-800 dark:text-yellow-200">
                                         <strong>Current Status:</strong> 
                                         {% for step in steps %}
                                             {% if step.status == order_status %}
@@ -339,7 +339,7 @@
                                             {% endif %}
                                         {% endfor %}
                                     </p>
-                                    <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                                    <p class="text-xs text-yellow-600 dark:text-yellow-400 mt-1">
                                         Step {{ current_step_id }} of {{ steps|length }} • Progress: {{ current_progress }}%
                                     </p>
                                 </div>

@@ -219,37 +219,37 @@
                             text: 'عرض جميع العروض',
                             icon: '🎯',
                             route: '/company_offers',
-                            color: 'bg-blue-500 hover:bg-blue-600'
+                            color: 'bg-yellow-500 hover:bg-yellow-600'
                         },
                         'orders': {
                             text: 'طلباتي',
                             icon: '📋',
                             route: '/company_orders',
-                            color: 'bg-blue-500 hover:bg-blue-600'
+                            color: 'bg-yellow-500 hover:bg-yellow-600'
                         },
                         'inventory': {
                             text: 'إدارة المخزون',
                             icon: '📦',
                             route: '/company_inventory',
-                            color: 'bg-blue-500 hover:bg-blue-600'
+                            color: 'bg-yellow-500 hover:bg-yellow-600'
                         },
                         'employees': {
                             text: 'إدارة الموظفين',
                             icon: '👥',
                             route: '/company_employees',
-                            color: 'bg-blue-500 hover:bg-blue-600'
+                            color: 'bg-yellow-500 hover:bg-yellow-600'
                         },
                         'balance': {
                             text: 'عرض الرصيد',
                             icon: '💰',
                             route: '/company_balance',
-                            color: 'bg-blue-500 hover:bg-blue-600'
+                            color: 'bg-yellow-500 hover:bg-yellow-600'
                         },
                         'analytics': {
                             text: 'التحليلات المتقدمة',
                             icon: '📊',
                             route: '/company_analytics',
-                            color: 'bg-blue-500 hover:bg-blue-600'
+                            color: 'bg-yellow-500 hover:bg-yellow-600'
                         }
                     };
                     
@@ -282,7 +282,7 @@
                         
                         billActions = `
                              <div class="mt-3 flex flex-wrap gap-2">
-                                 <button onclick="window.open('/company_bills/${billId}', '_blank')" class="bill-action-btn bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs">
+                                 <button onclick="window.open('/company_bills/${billId}', '_blank')" class="bill-action-btn bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs">
                                      📄 عرض التفاصيل
                                  </button>
                                  <button onclick="window.open('/company_bills/${billId}/pdf', '_blank')" class="bill-action-btn bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs">
@@ -298,7 +298,7 @@
                     return `
                         <div class="structured-list-item bg-white dark:bg-gray-700 rounded-lg p-4 mb-3 border border-gray-200 dark:border-gray-600 hover:shadow-md transition-all duration-200 slideIn">
                             <div class="flex items-start gap-3">
-                                <div class="flex-shrink-0 w-2 h-2 ${isBillItem ? 'bg-green-500' : 'bg-blue-500'} rounded-full mt-2 pulse"></div>
+                                <div class="flex-shrink-0 w-2 h-2 ${isBillItem ? 'bg-green-500' : 'bg-yellow-500'} rounded-full mt-2 pulse"></div>
                                 <div class="flex-1 min-w-0">
                                     ${title ? `<h4 class="font-semibold text-gray-900 dark:text-white text-sm mb-1">${title}</h4>` : ''}
                                     ${description ? `<p class="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">${description}</p>` : ''}
@@ -888,14 +888,14 @@
                             <template x-for="message in messages" :key="message.id">
                                 <div class="mb-4">
                                     <div class="flex items-start gap-3" :class="message.type === 'user' ? 'flex-row-reverse' : ''">
-                                        <div class="flex h-8 w-8 items-center justify-center rounded-full" :class="message.type === 'user' ? 'bg-blue-500' : 'bg-primary'">
+                                        <div class="flex h-8 w-8 items-center justify-center rounded-full" :class="message.type === 'user' ? 'bg-yellow-500' : 'bg-primary'">
                                             <svg class="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path x-show="message.type === 'user'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                                 <path x-show="message.type === 'ai'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                                             </svg>
                                         </div>
                                         <div class="flex-1">
-                                            <div class="rounded-lg p-3" :class="message.type === 'user' ? 'bg-blue-500 text-white' : 'bg-gray-100 dark:bg-gray-800'" :style="message.type === 'user' ? 'background-color: #3b82f6 !important; color: white !important; opacity: 1 !important;' : ''">
+                                            <div class="rounded-lg p-3" :class="message.type === 'user' ? 'bg-yellow-500 text-white' : 'bg-gray-100 dark:bg-gray-800'" :style="message.type === 'user' ? 'background-color: #eab308 !important; color: white !important; opacity: 1 !important;' : ''">
                                                 <!-- Enhanced structured message rendering -->
                                                 <div x-show="message.type === 'ai' && hasStructuredData(message.content)" x-html="renderStructuredMessage(message)"></div>
                                                 <!-- Regular message content -->
@@ -918,7 +918,7 @@
                                                                 </div>
                                                                 <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 leading-relaxed" x-text="item.description || 'لا يوجد وصف متاح'"></p>
                                                                 <div class="flex justify-between items-center text-sm">
-                                                                    <span class="font-semibold text-blue-600 dark:text-blue-400" x-text="'💰 ' + (item.total_amount || 0) + ' ريال'"></span>
+                                                                    <span class="font-semibold text-yellow-600 dark:text-yellow-400" x-text="'💰 ' + (item.total_amount || 0) + ' ريال'"></span>
                                                                     <span class="text-gray-500 dark:text-gray-400" x-text="'📅 ' + (item.created_at ? new Date(item.created_at).toLocaleDateString('ar-SA') : 'غير محدد')"></span>
                                                                 </div>
                                                             </div>
@@ -941,7 +941,7 @@
                                                                 </div>
                                                                 <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 leading-relaxed" x-text="item.description || 'لا يوجد وصف متاح'"></p>
                                                                 <div class="flex justify-between items-center text-sm">
-                                                                    <span class="font-semibold text-blue-600 dark:text-blue-400" x-text="'💰 ' + (item.total_price || 0) + ' ريال'"></span>
+                                                                    <span class="font-semibold text-yellow-600 dark:text-yellow-400" x-text="'💰 ' + (item.total_price || 0) + ' ريال'"></span>
                                                                     <span class="text-gray-500 dark:text-gray-400" x-text="'⏱️ ' + (item.delivery_time || 'غير محدد') + ' يوم'"></span>
                                                                 </div>
                                                             </div>
@@ -963,7 +963,7 @@
                                                                 </div>
                                                                 <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 leading-relaxed" x-text="item.description || item.specifications || 'لا يوجد وصف متاح'"></p>
                                                                 <div class="flex justify-between items-center text-sm">
-                                                                    <span class="font-semibold text-blue-600 dark:text-blue-400" x-text="'💰 ' + (item.unit_price || item.price || 0) + ' ريال'"></span>
+                                                                    <span class="font-semibold text-yellow-600 dark:text-yellow-400" x-text="'💰 ' + (item.unit_price || item.price || 0) + ' ريال'"></span>
                                                                     <span class="text-gray-500 dark:text-gray-400" x-text="'📍 ' + (item.location || 'غير محدد')"></span>
                                                                 </div>
                                                             </div>
