@@ -50,7 +50,7 @@
        </h3>
        <ul class="mb-6 flex flex-col gap-1">
         <!-- Menu Item Dashboard -->
-        {% if current_user.role == 'client' %}
+        {% if user_has_role('client') %}
           <li>
          <a :class=" (selected === 'Dashboard') &amp;&amp; (page === 'dashboard') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Dashboard' ? '':'Dashboard')" class="menu-item group" href="/dash">
           <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">
@@ -58,7 +58,7 @@
           </span>
          </a>
         </li>
-        {% elif current_user.role == 'company' %}
+        {% elif user_has_role('company') %}
           <li>
          <a :class=" (selected === 'Dashboard') &amp;&amp; (page === 'dashboard') ? 'menu-item-active' : 'menu-item-inactive'" @click="selected = (selected === 'Dashboard' ? '':'Dashboard')" class="menu-item group" href="/company_dashboard">
           <span :class="sidebarToggle ? 'xl:hidden' : ''" class="menu-item-text">

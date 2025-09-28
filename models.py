@@ -66,6 +66,10 @@ class Company(db.Model):
     product_catalog_doc = db.Column(db.String(255), nullable=True)  # نماذج/كتالوج منتجات
     quality_certificates_doc = db.Column(db.String(255), nullable=True)  # شهادات جودة / تراخيص
     
+    # Additional Document Fields
+    electronic_bill_doc = db.Column(db.String(255), nullable=True)  # Electronic Bill (PDF)
+    owner_id_photo_doc = db.Column(db.String(255), nullable=True)  # Owner ID Photo (JPG/PNG)
+    
     # Status and Approval
     is_active = db.Column(db.Boolean, default=False, nullable=False)  # Status active or not, default is not
     is_approved = db.Column(db.Boolean, default=False, nullable=False)
@@ -134,14 +138,13 @@ class Company(db.Model):
         """Get or create the default system company for users without specific company"""
         default_company = cls.query.filter_by(company_type='system', name_ar='النظام الافتراضي').first()
         if not default_company:
-            default_company = cls(
-                name_ar='النظام الافتراضي',
-                name_en='System Default',
-                email='system@almoshtariat.com',
-                company_type='system',
-                is_approved=True,
-                is_active=True
-            )
+            default_company = cls()
+            default_company.name_ar = 'النظام الافتراضي'
+            default_company.name_en = 'System Default'
+            default_company.email = 'system@almoshtariat.com'
+            default_company.company_type = 'system'
+            default_company.is_approved = True
+            default_company.is_active = True
             db.session.add(default_company)
             db.session.commit()
         return default_company
@@ -154,6 +157,7 @@ class User(db.Model, UserMixin):
     role = db.Column(db.String(20), default='client', nullable=False)  # 'client', 'company', 'employee', 'admin', or 'both'
     active_role = db.Column(db.String(20), default='client', nullable=False)  # Current active role for dual-role users
     available_roles = db.Column(db.String(100), default='client', nullable=False)  # Comma-separated list of available roles
+    dual = db.Column(db.Boolean, default=False, nullable=False)  # Boolean flag to indicate if user has dual roles
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=False)  # Now required!
     
     # Email verification fields
@@ -215,7 +219,7 @@ class User(db.Model, UserMixin):
     @property
     def can_switch_roles(self):
         """Check if user can switch between roles"""
-        return self.has_dual_roles
+        return self.dual
     
     def get_available_roles_list(self):
         """Get list of available roles for this user"""
@@ -710,12 +714,10 @@ class UserAdmin(CustomAdminView):
     form_excluded_columns = ['password_hash', 'orders']  # Exclude sensitive or complex fields
     form_args = {
         'role': {
-            'choices': [('client', 'Client'), ('company', 'Company'), ('employee', 'Employee'), ('admin', 'Admin')],
-            'widget': SelectField()
+            'choices': [('client', 'Client'), ('company', 'Company'), ('employee', 'Employee'), ('admin', 'Admin')]
         },
         'account_type': {
-            'choices': [('client', 'Client'), ('supplier', 'Supplier')],
-            'widget': SelectField()
+            'choices': [('client', 'Client'), ('supplier', 'Supplier')]
         },
         'sector': {
             'choices': [
@@ -734,8 +736,7 @@ class UserAdmin(CustomAdminView):
                 ('Real Estate', 'Real Estate'),
                 ('Entertainment', 'Entertainment'),
                 ('Other', 'Other')
-            ],
-            'widget': SelectField()
+            ]
         }
     }
 
@@ -798,8 +799,7 @@ class ChatHistoryAdmin(CustomAdminView):
             'choices': [
                 ('user', 'User Message'),
                 ('ai', 'AI Response')
-            ],
-            'widget': SelectField()
+            ]
         }
     }
 
@@ -815,8 +815,7 @@ class UserPreferenceAdmin(CustomAdminView):
                 ('quarterly', 'Quarterly'),
                 ('yearly', 'Yearly'),
                 ('as_needed', 'As Needed')
-            ],
-            'widget': SelectField()
+            ]
         },
         'unit': {
             'choices': [
@@ -826,16 +825,14 @@ class UserPreferenceAdmin(CustomAdminView):
                 ('liter', 'Liters'),
                 ('box', 'Boxes'),
                 ('set', 'Sets')
-            ],
-            'widget': SelectField()
+            ]
         },
         'quality_preference': {
             'choices': [
                 ('premium', 'Premium'),
                 ('standard', 'Standard'),
                 ('budget', 'Budget')
-            ],
-            'widget': SelectField()
+            ]
         },
         'payment_preference': {
             'choices': [
@@ -843,8 +840,7 @@ class UserPreferenceAdmin(CustomAdminView):
                 ('credit', 'Credit'),
                 ('net30', 'Net 30'),
                 ('net60', 'Net 60')
-            ],
-            'widget': SelectField()
+            ]
         }
     }
 
@@ -859,8 +855,7 @@ class CompanyAdmin(CustomAdminView):
                 ('Automotive', 'Automotive'),
                 ('Manufacturing', 'Manufacturing'),
                 ('Other', 'Other')
-            ],
-            'widget': SelectField()
+            ]
         }
     }
 
@@ -881,16 +876,14 @@ class OrderAdmin(CustomAdminView):
                 ('direct', 'Direct'),
                 ('مناقصة', 'مناقصة'),
                 ('طلب تسعير', 'طلب تسعير')
-            ],
-            'widget': SelectField()
+            ]
         },
         'payment_way': {
             'choices': [
                 ('cash', 'Cash'),
                 ('bank_transfer', 'Bank Transfer'),
                 ('waiting', 'Waiting')
-            ],
-            'widget': SelectField()
+            ]
         },
         'sector': {
             'choices': [
@@ -903,8 +896,7 @@ class OrderAdmin(CustomAdminView):
                 ('Textiles', 'Textiles'),
                 ('Chemicals', 'Chemicals'),
                 ('Other', 'Other')
-            ],
-            'widget': SelectField()
+            ]
         }
     }
 
@@ -927,8 +919,7 @@ class PurchaseAdmin(CustomAdminView):
                 ('Textiles', 'Textiles'),
                 ('Chemicals', 'Chemicals'),
                 ('Other', 'Other')
-            ],
-            'widget': SelectField()
+            ]
         },
         'unit': {
             'choices': [
@@ -938,8 +929,7 @@ class PurchaseAdmin(CustomAdminView):
                 ('liter', 'Liters'),
                 ('box', 'Boxes'),
                 ('set', 'Sets')
-            ],
-            'widget': SelectField()
+            ]
         }
     }
 
@@ -947,8 +937,7 @@ class OfferAdmin(CustomAdminView):
     column_list = ['id', 'order_id', 'company_id', 'total_price', 'status', 'created_at']
     form_args = {
         'status': {
-            'choices': [('pending', 'Pending'), ('accepted', 'Accepted'), ('rejected', 'Rejected')],
-            'widget': SelectField()
+            'choices': [('pending', 'Pending'), ('accepted', 'Accepted'), ('rejected', 'Rejected')]
         }
     }
 
@@ -960,8 +949,7 @@ class MessageAdmin(CustomAdminView):
     column_list = ['id', 'chat_id', 'sender_id', 'sender_type', 'content', 'created_at', 'is_read']
     form_args = {
         'sender_type': {
-            'choices': [('client', 'Client'), ('company', 'Company')],
-            'widget': SelectField()
+            'choices': [('client', 'Client'), ('company', 'Company')]
         }
     }
 
@@ -977,8 +965,7 @@ class ProductAdmin(CustomAdminView):
                 ('Raw Materials', 'Raw Materials'),
                 ('Tools', 'Tools'),
                 ('Other', 'Other')
-            ],
-            'widget': SelectField()
+            ]
         },
         'unit': {
             'choices': [
@@ -988,8 +975,7 @@ class ProductAdmin(CustomAdminView):
                 ('m', 'Meters'),
                 ('box', 'Boxes'),
                 ('set', 'Sets')
-            ],
-            'widget': SelectField()
+            ]
         }
     }
 
@@ -1086,8 +1072,7 @@ class NotificationAdmin(CustomAdminView):
                 ('inventory', 'Inventory'),
                 ('system', 'System'),
                 ('financial', 'Financial')
-            ],
-            'widget': SelectField()
+            ]
         },
         'priority': {
             'choices': [
@@ -1095,8 +1080,7 @@ class NotificationAdmin(CustomAdminView):
                 ('normal', 'Normal'),
                 ('high', 'High'),
                 ('urgent', 'Urgent')
-            ],
-            'widget': SelectField()
+            ]
         }
     }
 
@@ -1142,8 +1126,7 @@ class ComplaintAdmin(CustomAdminView):
                 ('delivery', 'Delivery Problem'),
                 ('service', 'Service Issue'),
                 ('general', 'General Complaint')
-            ],
-            'widget': SelectField()
+            ]
         },
         'priority': {
             'choices': [
@@ -1151,8 +1134,7 @@ class ComplaintAdmin(CustomAdminView):
                 ('normal', 'Normal'),
                 ('high', 'High'),
                 ('urgent', 'Urgent')
-            ],
-            'widget': SelectField()
+            ]
         },
         'status': {
             'choices': [
@@ -1160,8 +1142,7 @@ class ComplaintAdmin(CustomAdminView):
                 ('in_progress', 'In Progress'),
                 ('resolved', 'Resolved'),
                 ('closed', 'Closed')
-            ],
-            'widget': SelectField()
+            ]
         }
     }
 
@@ -1342,8 +1323,7 @@ class TransactionAdmin(CustomAdminView):
                 ('payment', 'Payment'),
                 ('refund', 'Refund'),
                 ('adjustment', 'Adjustment')
-            ],
-            'widget': SelectField()
+            ]
         },
         'status': {
             'choices': [
@@ -1351,16 +1331,14 @@ class TransactionAdmin(CustomAdminView):
                 ('completed', 'Completed'),
                 ('failed', 'Failed'),
                 ('cancelled', 'Cancelled')
-            ],
-            'widget': SelectField()
+            ]
         },
         'currency': {
             'choices': [
                 ('EGP', 'Egyptian Pound'),
                 ('USD', 'US Dollar'),
                 ('EUR', 'Euro')
-            ],
-            'widget': SelectField()
+            ]
         }
     }
 
@@ -1699,8 +1677,7 @@ class CompanyTransactionAdmin(CustomAdminView):
                 ('payment', 'Payment'),
                 ('refund', 'Refund'),
                 ('adjustment', 'Adjustment')
-            ],
-            'widget': SelectField()
+            ]
         },
         'status': {
             'choices': [
@@ -1708,15 +1685,13 @@ class CompanyTransactionAdmin(CustomAdminView):
                 ('completed', 'Completed'),
                 ('failed', 'Failed'),
                 ('cancelled', 'Cancelled')
-            ],
-            'widget': SelectField()
+            ]
         },
         'currency': {
             'choices': [
                 ('EGP', 'Egyptian Pound'),
                 ('USD', 'US Dollar'),
                 ('EUR', 'Euro')
-            ],
-            'widget': SelectField()
+            ]
         }
     }

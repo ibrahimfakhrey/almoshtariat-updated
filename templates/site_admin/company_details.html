@@ -1654,6 +1654,90 @@
             {% endif %}
            </div>
           </div>
+          
+          <!-- Electronic Bill Document -->
+          <div class="rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+           <div class="mb-4">
+            <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+             {% if request.cookies.get('language') == 'ar' %}وثيقة الفاتورة الإلكترونية{% else %}Electronic Bill Document{% endif %}
+            </label>
+            {% if company.electronic_bill_doc %}
+             <div class="mb-3">
+              <a href="{{ url_for('admin_download_document', company_id=company.id, field_name='electronic_bill_doc') }}" 
+                 class="inline-flex items-center px-3 py-2 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">
+               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+               </svg>
+               {% if request.cookies.get('language') == 'ar' %}تحميل{% else %}Download{% endif %}
+              </a>
+             </div>
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="electronic_bill_doc">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="electronic_bill_doc">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% else %}
+             <p class="text-gray-500 dark:text-gray-400 mb-3">
+              {% if request.cookies.get('language') == 'ar' %}لم يتم رفع المستند{% else %}No document uploaded{% endif %}
+             </p>
+            {% endif %}
+           </div>
+          </div>
+          
+          <!-- Owner ID Photo Document -->
+          <div class="rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
+           <div class="mb-4">
+            <label class="mb-3 block text-sm font-medium text-black dark:text-white">
+             {% if request.cookies.get('language') == 'ar' %}صورة هوية المالك{% else %}Owner ID Photo Document{% endif %}
+            </label>
+            {% if company.owner_id_photo_doc %}
+             <div class="mb-3">
+              <a href="{{ url_for('admin_download_document', company_id=company.id, field_name='owner_id_photo_doc') }}" 
+                 class="inline-flex items-center px-3 py-2 bg-blue-500 text-white rounded text-sm hover:bg-blue-600">
+               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+               </svg>
+               {% if request.cookies.get('language') == 'ar' %}تحميل{% else %}Download{% endif %}
+              </a>
+             </div>
+             <div class="flex gap-2">
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="accept">
+               <input type="hidden" name="field_name" value="owner_id_photo_doc">
+               <button type="submit" class="action-btn accept-btn">
+                {% if request.cookies.get('language') == 'ar' %}قبول{% else %}Accept{% endif %}
+               </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin_company_action', company_id=company.id) }}" class="inline">
+               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+               <input type="hidden" name="action" value="refuse">
+               <input type="hidden" name="field_name" value="owner_id_photo_doc">
+               <button type="submit" class="action-btn refuse-btn">
+                {% if request.cookies.get('language') == 'ar' %}رفض{% else %}Refuse{% endif %}
+               </button>
+              </form>
+             </div>
+            {% else %}
+             <p class="text-gray-500 dark:text-gray-400 mb-3">
+              {% if request.cookies.get('language') == 'ar' %}لم يتم رفع المستند{% else %}No document uploaded{% endif %}
+             </p>
+            {% endif %}
+           </div>
+          </div>
          </div>
          
          <!-- Recent Orders -->

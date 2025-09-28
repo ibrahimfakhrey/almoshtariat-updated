@@ -959,6 +959,80 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="document-status-card clickable-document" data-field="electronic_bill_doc" data-current-file="{{ company.electronic_bill_doc or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Electronic Bill Document') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.electronic_bill_doc %}
+                                                <span class="uploaded-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    {{ _('Uploaded') }}
+                                                </span>
+                                            {% else %}
+                                                <span class="missing-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                    {{ _('Not uploaded') }}
+                                                </span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="document-controls hidden">
+                                            {% if company.electronic_bill_doc %}
+                                                <div class="current-file mb-3">
+                                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ _('Current file:') }}</p>
+                                                    <a href="{{ url_for('download_document', filename=company.electronic_bill_doc) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm">
+                                                        📄 {{ company.electronic_bill_doc }}
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+                                            <form class="document-upload-form" enctype="multipart/form-data">
+                                                <input type="file" class="document-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" data-field="electronic_bill_doc">
+                                                <div class="upload-buttons">
+                                                    <button type="submit" class="upload-btn">{{ _('Upload') }}</button>
+                                                    <button type="button" class="cancel-upload-btn">{{ _('Cancel') }}</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="document-status-card clickable-document" data-field="owner_id_photo_doc" data-current-file="{{ company.owner_id_photo_doc or '' }}">
+                                        <label class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ _('Owner ID Photo Document') }}</label>
+                                        <p class="text-gray-800 dark:text-white mt-1">
+                                            {% if company.owner_id_photo_doc %}
+                                                <span class="uploaded-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                                    </svg>
+                                                    {{ _('Uploaded') }}
+                                                </span>
+                                            {% else %}
+                                                <span class="missing-badge clickable-badge">
+                                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                    {{ _('Not uploaded') }}
+                                                </span>
+                                            {% endif %}
+                                        </p>
+                                        <div class="document-controls hidden">
+                                            {% if company.owner_id_photo_doc %}
+                                                <div class="current-file mb-3">
+                                                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">{{ _('Current file:') }}</p>
+                                                    <a href="{{ url_for('download_document', filename=company.owner_id_photo_doc) }}" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm">
+                                                        📄 {{ company.owner_id_photo_doc }}
+                                                    </a>
+                                                </div>
+                                            {% endif %}
+                                            <form class="document-upload-form" enctype="multipart/form-data">
+                                                <input type="file" class="document-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" data-field="owner_id_photo_doc">
+                                                <div class="upload-buttons">
+                                                    <button type="submit" class="upload-btn">{{ _('Upload') }}</button>
+                                                    <button type="button" class="cancel-upload-btn">{{ _('Cancel') }}</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             

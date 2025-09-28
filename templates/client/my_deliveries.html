@@ -12,10 +12,10 @@
 <body class="bg-gray-50" x-data="deliveryData()">
     
     <!-- Sidebar -->
-    <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out" :class="sidebarToggle ? 'translate-x-0' : '-translate-x-full'">
+    <div class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0" :class="sidebarToggle ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
         <div class="flex items-center justify-between h-16 px-6 bg-yellow-600">
             <h1 class="text-xl font-bold text-white">Almoshtariat</h1>
-            <button @click="sidebarToggle = false" class="text-white hover:text-gray-200">
+            <button @click="sidebarToggle = false" class="lg:hidden text-white hover:text-gray-200">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -61,7 +61,7 @@
     </div>
     
     <!-- Main Content -->
-    <div class="lg:ml-0">
+    <div class="lg:ml-64">
         <!-- Header -->
         <header class="bg-white shadow-sm border-b border-gray-200">
             <div class="flex items-center justify-between h-16 px-6">

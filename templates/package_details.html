@@ -45,7 +45,7 @@
                             </span>
                         </h3>
                         <ul class="mb-6 flex flex-col gap-1">
-                            {% if current_user.role == 'company' %}
+                            {% if user_has_role('company') %}
                             <!-- Company Menu Items -->
                             <li>
                                 <a class="menu-item group menu-item-inactive" href="/company_dashboard">
@@ -160,7 +160,7 @@
                         </p>
                     </div>
                     <div class="flex space-x-3">
-                        {% if current_user.role == 'company' %}
+                        {% if user_has_role('company') %}
                         <a href="{{ url_for('company_packages') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-700">
                             {% if request.cookies.get('language') == 'ar' %}العودة للطرود{% else %}Back to Packages{% endif %}
                         </a>
@@ -348,7 +348,7 @@
             {% endif %}
 
             <!-- Delivery Confirmation (Company Only) -->
-            {% if current_user.role == 'company' and package.status in ['shipped', 'preparing'] %}
+            {% if user_has_role('company') and package.status in ['shipped', 'preparing'] %}
             <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden mb-6">
                 <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <h2 class="text-lg font-medium text-gray-900 dark:text-white">
@@ -470,7 +470,7 @@
             {% endif %}
 
             <!-- Unconfirm Delivery (Company Only) -->
-            {% if current_user.role == 'company' and package.status == 'delivered' %}
+            {% if user_has_role('company') and package.status == 'delivered' %}
             <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden mb-6">
                 <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <h2 class="text-lg font-medium text-gray-900 dark:text-white">

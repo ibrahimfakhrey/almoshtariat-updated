@@ -98,7 +98,9 @@
             bank_letter_doc: null,
             owner_id_doc: null,
             product_catalog_doc: null,
-            quality_certificates_doc: null
+            quality_certificates_doc: null,
+            electronic_bill_doc: null,
+            owner_id_photo_doc: null
         },
         
         // File handling
@@ -726,6 +728,24 @@
                                     <input type="file" @change="handleFileUpload($event, 'quality_certificates_doc')" 
                                            name="quality_certificates_doc" accept=".pdf,.jpg,.jpeg"
                                            class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"/>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <!-- Electronic Bill -->
+                                    <div class="w-full">
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Electronic Bill (PDF)') }}</label>
+                                        <input type="file" @change="handleFileUpload($event, 'electronic_bill_doc')" 
+                                               name="electronic_bill_doc" accept=".pdf"
+                                               class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"/>
+                                    </div>
+                                    
+                                    <!-- Owner ID Photo -->
+                                    <div class="w-full">
+                                        <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">{{ _('Owner ID Photo (JPG/PNG)') }}</label>
+                                        <input type="file" @change="handleFileUpload($event, 'owner_id_photo_doc')" 
+                                               name="owner_id_photo_doc" accept=".jpg,.jpeg,.png"
+                                               class="dark:bg-dark-900 shadow-theme-xs focus:border-brand-300 focus:ring-brand-500/10 dark:focus:border-brand-800 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 focus:ring-3 focus:outline-hidden dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>

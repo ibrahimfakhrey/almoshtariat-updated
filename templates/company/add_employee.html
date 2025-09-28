@@ -27,10 +27,14 @@
     <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
      <a href="/">
       <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
-       <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
-       <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+       <img alt="Logo" class="dark:hidden" src="../static/image.png"/>
+       <img alt="Logo" class="hidden dark:block" src="../static/image.png"/>
       </span>
-      <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+<img :class="sidebarToggle ? 'xl:block' : 'hidden'" 
+     alt="Logo" 
+     class="logo-icon" 
+     src="../static/image.png"
+     style="border-radius: 50%; width: 60px; height: 60px; object-fit: cover;"/>
      </a>
     </div>
     <!-- SIDEBAR HEADER -->
@@ -240,7 +244,7 @@
        </button>
        <!-- Hamburger Toggle BTN -->
        <a class="block flex-shrink-0 lg:hidden" href="/">
-        <img alt="Brand" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+        <img alt="Brand" src="../static/image.png"/>
        </a>
       </div>
       <div class="flex items-center gap-3 2xsm:gap-7">
@@ -270,7 +274,7 @@
           <span class="block text-xs">{{ current_user.role.title() }}</span>
          </span>
          <span class="h-12 w-12 rounded-full">
-          <img alt="User" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+          <img alt="User" src="../static/image.png"/>
          </span>
          <svg class="hidden fill-current sm:block" fill="none" height="12" viewbox="0 0 12 12" width="12" xmlns="http://www.w3.org/2000/svg">
           <path d="M10.293 4.293L6 8.586 1.707 4.293A1 1 0 00.293 5.707l5 5a1 1 0 001.414 0l5-5a1 1 0 00-1.414-1.414z" fill=""></path>

@@ -9,78 +9,7 @@
     <link href="favicon.ico" rel="icon"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style_0.css') }}">
 </head>
-<body x-data="{ 
-         page: 'register', 
-         'loaded': true, 
-         'darkMode': false, 
-         'currentLanguage': 'en',
-         toggleLanguage() {
-             this.currentLanguage = this.currentLanguage === 'en' ? 'ar' : 'en';
-             document.documentElement.dir = this.currentLanguage === 'ar' ? 'rtl' : 'ltr';
-             document.title = this.currentLanguage === 'ar' ? 'التسجيل المحسن' : 'Enhanced Registration';
-             this.updatePageTranslation();
-         },
-         updatePageTranslation() {
-             const isArabic = this.currentLanguage === 'ar';
-             const translations = {
-                 'personal-info-title': isArabic ? 'المعلومات الشخصية' : 'Personal Information',
-                 'location-info-title': isArabic ? 'معلومات الموقع' : 'Location Information',
-                 'business-info-title': isArabic ? 'معلومات العمل' : 'Business Information',
-                 'document-upload-title': isArabic ? 'رفع المستندات (اختياري)' : 'Document Upload (Optional)',
-                 'purchase-preferences-title': isArabic ? 'تفضيلات الشراء والتاريخ' : 'Purchase Preferences & History',
-                 'create-account-btn': isArabic ? 'إنشاء الحساب' : 'Create Account',
-                 'back-to-login': isArabic ? 'العودة إلى تسجيل الدخول' : 'Back to Login',
-                 'full-name': isArabic ? 'الاسم الكامل *' : 'Full Name *',
-                 'email-address': isArabic ? 'عنوان البريد الإلكتروني *' : 'Email Address *',
-                 'username': isArabic ? 'اسم المستخدم *' : 'Username *',
-                 'password': isArabic ? 'كلمة المرور *' : 'Password *',
-                 'generate': isArabic ? 'إنشاء' : 'Generate',
-                 'country': isArabic ? 'البلد *' : 'Country *',
-                 'city': isArabic ? 'المدينة *' : 'City *',
-                 'phone-number': isArabic ? 'رقم الهاتف *' : 'Phone Number *',
-                 'company-name': isArabic ? 'اسم الشركة (اختياري)' : 'Company Name (Optional)',
-                 'business-sector': isArabic ? 'قطاع العمل' : 'Business Sector',
-                 'tax-number': isArabic ? 'الرقم الضريبي (اختياري)' : 'Tax Number (Optional)',
-                 'account-type': isArabic ? 'نوع الحساب *' : 'Account Type *',
-                 'upload-document': isArabic ? 'رفع المستند' : 'Upload Document',
-                 'click-to-upload': isArabic ? 'انقر للرفع' : 'Click to upload',
-                 'or-drag-drop': isArabic ? 'أو اسحب وأفلت' : 'or drag and drop',
-                 'file-types': isArabic ? 'PDF, DOC, DOCX, JPG, PNG, Excel (.xlsx, .xls), CSV (الحد الأقصى 10 ميجابايت)' : 'PDF, DOC, DOCX, JPG, PNG, Excel (.xlsx, .xls), CSV (MAX. 10MB)',
-                 'select-sector': isArabic ? 'اختر القطاع' : 'Select Sector',
-                 'technology': isArabic ? 'التكنولوجيا' : 'Technology',
-                 'electronics': isArabic ? 'الإلكترونيات' : 'Electronics',
-                 'it': isArabic ? 'تقنية المعلومات' : 'IT',
-                 'software': isArabic ? 'البرمجيات' : 'Software',
-                 'hardware': isArabic ? 'الأجهزة' : 'Hardware',
-                 'general': isArabic ? 'عام' : 'General',
-                 'other': isArabic ? 'أخرى' : 'Other',
-                 'select-account-type': isArabic ? 'اختر نوع الحساب' : 'Select Account Type',
-                 'buyer': isArabic ? 'مشتري' : 'Buyer',
-                 'supplier': isArabic ? 'مورد' : 'Supplier',
-                 'both-buyer-supplier': isArabic ? 'كلاهما (مشتري ومورد)' : 'Both (Buyer & Supplier)',
-                 'req-length': isArabic ? '8 أحرف على الأقل' : 'At least 8 characters',
-                 'req-uppercase': isArabic ? 'حرف كبير واحد' : 'One uppercase letter',
-                 'req-lowercase': isArabic ? 'حرف صغير واحد' : 'One lowercase letter',
-                 'req-number': isArabic ? 'رقم واحد' : 'One number',
-                 'req-special': isArabic ? 'حرف خاص واحد' : 'One special character'
-             };
-             
-             Object.keys(translations).forEach(key => {
-                 const element = document.querySelector(`[data-translate=\"${key}\"]`);
-                 if (element) {
-                     element.textContent = translations[key];
-                 }
-             });
-         }
-     }" x-init="
-         this.darkMode = JSON.parse(localStorage.getItem('darkMode')) || false;
-         this.currentLanguage = localStorage.getItem('language') || 'en';
-         $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)));
-         $watch('currentLanguage', value => localStorage.setItem('language', value));
-         document.body.className = this.darkMode ? 'dark bg-gray-900' : '';
-         $watch('darkMode', value => {
-             document.body.className = value ? 'dark bg-gray-900' : '';
-         })">
+<body x-data="registerData()" x-init="initRegister()">
     
     <!-- ===== Preloader Start ===== -->
     <div class="fixed left-0 top-0 z-999999 flex h-screen w-screen items-center justify-center bg-white dark:bg-black" x-init="window.addEventListener('DOMContentLoaded', () => {setTimeout(() => this.loaded = false, 500)})" x-show="this.loaded">
@@ -392,17 +321,20 @@
 
         // Language toggle function
         function toggleLanguage() {
-            const currentLang = this.currentLanguage;
-            this.currentLanguage = currentLang === 'en' ? 'ar' : 'en';
+            // Get the Alpine.js component instance
+            const alpineComponent = Alpine.store('app') || document.querySelector('[x-data]').__x.$data;
+            
+            const currentLang = alpineComponent.currentLanguage;
+            alpineComponent.currentLanguage = currentLang === 'en' ? 'ar' : 'en';
             
             // Update page direction
-            document.documentElement.dir = this.currentLanguage === 'ar' ? 'rtl' : 'ltr';
+            document.documentElement.dir = alpineComponent.currentLanguage === 'ar' ? 'rtl' : 'ltr';
             
             // Update page title
-            document.title = this.currentLanguage === 'ar' ? 'التسجيل المحسن' : 'Enhanced Registration';
+            document.title = alpineComponent.currentLanguage === 'ar' ? 'التسجيل المحسن' : 'Enhanced Registration';
             
             // Trigger translation update
-            updatePageTranslation();
+            alpineComponent.updatePageTranslation();
         }
         
         // Update page translation
@@ -415,17 +347,61 @@
                 'location-info-title': isArabic ? 'معلومات الموقع' : 'Location Information',
                 'business-info-title': isArabic ? 'معلومات العمل' : 'Business Information',
                 'document-upload-title': isArabic ? 'رفع المستندات (اختياري)' : 'Document Upload (Optional)',
+                'purchase-preferences-title': isArabic ? 'تفضيلات الشراء والتاريخ' : 'Purchase Preferences & History',
                 'create-account-btn': isArabic ? 'إنشاء الحساب' : 'Create Account',
-                'back-to-login': isArabic ? 'العودة إلى تسجيل الدخول' : 'Back to Login'
+                'back-to-login': isArabic ? 'العودة إلى تسجيل الدخول' : 'Back to Login',
+                'full-name': isArabic ? 'الاسم الكامل *' : 'Full Name *',
+                'email-address': isArabic ? 'عنوان البريد الإلكتروني *' : 'Email Address *',
+                'username': isArabic ? 'اسم المستخدم *' : 'Username *',
+                'password': isArabic ? 'كلمة المرور *' : 'Password *',
+                'generate': isArabic ? 'إنشاء' : 'Generate',
+                'country': isArabic ? 'البلد *' : 'Country *',
+                'city': isArabic ? 'المدينة *' : 'City *',
+                'phone-number': isArabic ? 'رقم الهاتف *' : 'Phone Number *',
+                'company-name': isArabic ? 'اسم الشركة (اختياري)' : 'Company Name (Optional)',
+                'business-sector': isArabic ? 'قطاع العمل' : 'Business Sector',
+                'business-subsector': isArabic ? 'النشاط الفرعي' : 'Business Subsector',
+                'tax-number': isArabic ? 'الرقم الضريبي (اختياري)' : 'Tax Number (Optional)',
+                'account-type': isArabic ? 'نوع الحساب *' : 'Account Type *',
+                'upload-document': isArabic ? 'رفع المستند' : 'Upload Document',
+                'click-to-upload': isArabic ? 'انقر للرفع' : 'Click to upload',
+                'or-drag-drop': isArabic ? 'أو اسحب وأفلت' : 'or drag and drop',
+                'file-types': isArabic ? 'PDF, DOC, DOCX, JPG, PNG, Excel (.xlsx, .xls), CSV (الحد الأقصى 10 ميجابايت)' : 'PDF, DOC, DOCX, JPG, PNG, Excel (.xlsx, .xls), CSV (MAX. 10MB)',
+                'select-sector': isArabic ? 'اختر القطاع' : 'Select Sector',
+                'select-subsector': isArabic ? 'اختر النشاط الفرعي' : 'Select Subsector',
+                'select-account-type': isArabic ? 'اختر نوع الحساب' : 'Select Account Type',
+                'buyer': isArabic ? 'مشتري' : 'Buyer',
+                'supplier': isArabic ? 'مورد' : 'Supplier',
+                'both-buyer-supplier': isArabic ? 'كلاهما (مشتري ومورد)' : 'Both (Buyer & Supplier)',
+                'req-length': isArabic ? '8 أحرف على الأقل' : 'At least 8 characters',
+                'req-uppercase': isArabic ? 'حرف كبير واحد' : 'One uppercase letter',
+                'req-lowercase': isArabic ? 'حرف صغير واحد' : 'One lowercase letter',
+                'req-number': isArabic ? 'رقم واحد' : 'One number',
+                'req-special': isArabic ? 'حرف خاص واحد' : 'One special character'
             };
             
             // Apply translations
             Object.keys(translations).forEach(key => {
-                const element = document.querySelector(`[data-translate="${key}"]`);
-                if (element) {
-                    element.textContent = translations[key];
-                }
-            });
+                 const element = document.querySelector(`[data-translate="${key}"]`);
+                 if (element) {
+                     element.textContent = translations[key];
+                 }
+             });
+             
+             // Update placeholder text for input fields
+             const placeholders = {
+                 'email': isArabic ? 'أدخل عنوان بريدك الإلكتروني' : 'Enter your email address',
+                 'username': isArabic ? 'أدخل اسم المستخدم المطلوب' : 'Enter your desired username',
+                 'password': isArabic ? 'أدخل كلمة المرور' : 'Enter your password',
+                 'city_other': isArabic ? 'أدخل اسم المدينة' : 'Enter city name'
+             };
+             
+             Object.keys(placeholders).forEach(key => {
+                 const element = document.getElementById(key);
+                 if (element) {
+                     element.placeholder = placeholders[key];
+                 }
+             });
         }
         
         // Username availability checking
@@ -763,15 +739,59 @@
                 'location-info-title': isArabic ? 'معلومات الموقع' : 'Location Information',
                 'business-info-title': isArabic ? 'معلومات العمل' : 'Business Information',
                 'document-upload-title': isArabic ? 'رفع المستندات (اختياري)' : 'Document Upload (Optional)',
+                'purchase-preferences-title': isArabic ? 'تفضيلات الشراء والتاريخ' : 'Purchase Preferences & History',
                 'create-account-btn': isArabic ? 'إنشاء الحساب' : 'Create Account',
                 'back-to-login': isArabic ? 'العودة إلى تسجيل الدخول' : 'Back to Login',
-                'full-name': isArabic ? 'الاسم الكامل *' : 'Full Name *'
+                'full-name': isArabic ? 'الاسم الكامل *' : 'Full Name *',
+                'email-address': isArabic ? 'عنوان البريد الإلكتروني *' : 'Email Address *',
+                'username': isArabic ? 'اسم المستخدم *' : 'Username *',
+                'password': isArabic ? 'كلمة المرور *' : 'Password *',
+                'generate': isArabic ? 'إنشاء' : 'Generate',
+                'country': isArabic ? 'البلد *' : 'Country *',
+                'city': isArabic ? 'المدينة *' : 'City *',
+                'phone-number': isArabic ? 'رقم الهاتف *' : 'Phone Number *',
+                'company-name': isArabic ? 'اسم الشركة (اختياري)' : 'Company Name (Optional)',
+                'business-sector': isArabic ? 'قطاع العمل' : 'Business Sector',
+                'business-subsector': isArabic ? 'النشاط الفرعي' : 'Business Subsector',
+                'tax-number': isArabic ? 'الرقم الضريبي (اختياري)' : 'Tax Number (Optional)',
+                'account-type': isArabic ? 'نوع الحساب *' : 'Account Type *',
+                'upload-document': isArabic ? 'رفع المستند' : 'Upload Document',
+                'click-to-upload': isArabic ? 'انقر للرفع' : 'Click to upload',
+                'or-drag-drop': isArabic ? 'أو اسحب وأفلت' : 'or drag and drop',
+                'file-types': isArabic ? 'PDF, DOC, DOCX, JPG, PNG, Excel (.xlsx, .xls), CSV (الحد الأقصى 10 ميجابايت)' : 'PDF, DOC, DOCX, JPG, PNG, Excel (.xlsx, .xls), CSV (MAX. 10MB)',
+                'select-sector': isArabic ? 'اختر القطاع' : 'Select Sector',
+                'select-subsector': isArabic ? 'اختر النشاط الفرعي' : 'Select Subsector',
+                'select-account-type': isArabic ? 'اختر نوع الحساب' : 'Select Account Type',
+                'buyer': isArabic ? 'مشتري' : 'Buyer',
+                'supplier': isArabic ? 'مورد' : 'Supplier',
+                'both-buyer-supplier': isArabic ? 'كلاهما (مشتري ومورد)' : 'Both (Buyer & Supplier)',
+                'req-length': isArabic ? '8 أحرف على الأقل' : 'At least 8 characters',
+                'req-uppercase': isArabic ? 'حرف كبير واحد' : 'One uppercase letter',
+                'req-lowercase': isArabic ? 'حرف صغير واحد' : 'One lowercase letter',
+                'req-number': isArabic ? 'رقم واحد' : 'One number',
+                'req-special': isArabic ? 'حرف خاص واحد' : 'One special character'
+            };
+            
+            // Placeholder translations
+            const placeholders = {
+                'email': isArabic ? 'أدخل عنوان بريدك الإلكتروني' : 'Enter your email address',
+                'username': isArabic ? 'أدخل اسم المستخدم المطلوب' : 'Enter your desired username',
+                'password': isArabic ? 'أدخل كلمة المرور' : 'Enter your password',
+                'city_other': isArabic ? 'أدخل اسم المدينة' : 'Enter city name'
             };
             
             Object.keys(translations).forEach(key => {
                 const element = document.querySelector(`[data-translate="${key}"]`);
                 if (element) {
                     element.textContent = translations[key];
+                }
+            });
+            
+            // Update placeholder text for input fields
+            Object.keys(placeholders).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.placeholder = placeholders[key];
                 }
             });
         }
@@ -1280,9 +1300,120 @@
 
         // Initialize language on page load
         document.addEventListener('DOMContentLoaded', function() {
-            // Language initialization is handled by Alpine.js x-init
-            console.log('Page loaded successfully');
+            // Set initial page direction based on stored language
+            document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
+            
+            // Apply initial translations
+            updatePageTranslation();
+            
+            console.log('Page loaded successfully with language:', currentLanguage);
         });
     </script>
+    
+    <script>
+        function registerData() {
+            return {
+                page: 'register',
+                loaded: true,
+                darkMode: false,
+                currentLanguage: 'en',
+                toggleLanguage() {
+                    this.currentLanguage = this.currentLanguage === 'en' ? 'ar' : 'en';
+                    document.documentElement.dir = this.currentLanguage === 'ar' ? 'rtl' : 'ltr';
+                    document.title = this.currentLanguage === 'ar' ? 'التسجيل المحسن' : 'Enhanced Registration';
+                    this.updatePageTranslation();
+                },
+                updatePageTranslation() {
+                    const isArabic = this.currentLanguage === 'ar';
+                    const translations = {
+                        'personal-info-title': isArabic ? 'المعلومات الشخصية' : 'Personal Information',
+                        'location-info-title': isArabic ? 'معلومات الموقع' : 'Location Information',
+                        'business-info-title': isArabic ? 'معلومات العمل' : 'Business Information',
+                        'document-upload-title': isArabic ? 'رفع المستندات (اختياري)' : 'Document Upload (Optional)',
+                        'purchase-preferences-title': isArabic ? 'تفضيلات الشراء والتاريخ' : 'Purchase Preferences & History',
+                        'create-account-btn': isArabic ? 'إنشاء الحساب' : 'Create Account',
+                        'back-to-login': isArabic ? 'العودة إلى تسجيل الدخول' : 'Back to Login',
+                        'full-name': isArabic ? 'الاسم الكامل *' : 'Full Name *',
+                        'email-address': isArabic ? 'عنوان البريد الإلكتروني *' : 'Email Address *',
+                        'username': isArabic ? 'اسم المستخدم *' : 'Username *',
+                        'password': isArabic ? 'كلمة المرور *' : 'Password *',
+                        'generate': isArabic ? 'إنشاء' : 'Generate',
+                        'country': isArabic ? 'البلد *' : 'Country *',
+                        'city': isArabic ? 'المدينة *' : 'City *',
+                        'phone-number': isArabic ? 'رقم الهاتف *' : 'Phone Number *',
+                        'company-name': isArabic ? 'اسم الشركة (اختياري)' : 'Company Name (Optional)',
+                        'business-sector': isArabic ? 'قطاع العمل' : 'Business Sector',
+                        'tax-number': isArabic ? 'الرقم الضريبي (اختياري)' : 'Tax Number (Optional)',
+                        'account-type': isArabic ? 'نوع الحساب *' : 'Account Type *',
+                        'upload-document': isArabic ? 'رفع المستند' : 'Upload Document',
+                        'click-to-upload': isArabic ? 'انقر للرفع' : 'Click to upload',
+                        'or-drag-drop': isArabic ? 'أو اسحب وأفلت' : 'or drag and drop',
+                        'file-types': isArabic ? 'PDF, DOC, DOCX, JPG, PNG, Excel (.xlsx, .xls), CSV (الحد الأقصى 10 ميجابايت)' : 'PDF, DOC, DOCX, JPG, PNG, Excel (.xlsx, .xls), CSV (MAX. 10MB)',
+                        'select-sector': isArabic ? 'اختر القطاع' : 'Select Sector',
+                        'technology': isArabic ? 'التكنولوجيا' : 'Technology',
+                        'electronics': isArabic ? 'الإلكترونيات' : 'Electronics',
+                        'it': isArabic ? 'تقنية المعلومات' : 'IT',
+                        'software': isArabic ? 'البرمجيات' : 'Software',
+                        'hardware': isArabic ? 'الأجهزة' : 'Hardware',
+                        'general': isArabic ? 'عام' : 'General',
+                        'other': isArabic ? 'أخرى' : 'Other',
+                        'select-account-type': isArabic ? 'اختر نوع الحساب' : 'Select Account Type',
+                        'buyer': isArabic ? 'مشتري' : 'Buyer',
+                        'supplier': isArabic ? 'مورد' : 'Supplier',
+                        'both-buyer-supplier': isArabic ? 'كلاهما (مشتري ومورد)' : 'Both (Buyer & Supplier)',
+                        'req-length': isArabic ? '8 أحرف على الأقل' : 'At least 8 characters',
+                        'req-uppercase': isArabic ? 'حرف كبير واحد' : 'One uppercase letter',
+                        'req-lowercase': isArabic ? 'حرف صغير واحد' : 'One lowercase letter',
+                        'req-number': isArabic ? 'رقم واحد' : 'One number',
+                        'req-special': isArabic ? 'حرف خاص واحد' : 'One special character'
+                    };
+                    
+                    Object.keys(translations).forEach(key => {
+                        const element = document.querySelector(`[data-translate="${key}"]`);
+                        if (element) {
+                            element.textContent = translations[key];
+                        }
+                    });
+                    
+                    // Update placeholder text for input fields
+                    const placeholders = {
+                        'email': isArabic ? 'أدخل عنوان بريدك الإلكتروني' : 'Enter your email address',
+                        'username': isArabic ? 'أدخل اسم المستخدم المطلوب' : 'Enter your desired username',
+                        'password': isArabic ? 'أدخل كلمة المرور' : 'Enter your password',
+                        'city_other': isArabic ? 'أدخل اسم المدينة' : 'Enter city name'
+                    };
+                    
+                    Object.keys(placeholders).forEach(key => {
+                        const element = document.getElementById(key);
+                        if (element) {
+                            element.placeholder = placeholders[key];
+                        }
+                    });
+                }
+            };
+        }
+        
+        function initRegister() {
+            // Initialize Alpine.js data
+            this.darkMode = JSON.parse(localStorage.getItem('darkMode')) || false;
+            this.currentLanguage = localStorage.getItem('language') || 'en';
+            
+            // Watch for changes
+            this.$watch('darkMode', value => {
+                localStorage.setItem('darkMode', JSON.stringify(value));
+                document.body.className = value ? 'dark bg-gray-900' : '';
+            });
+            
+            this.$watch('currentLanguage', value => {
+                localStorage.setItem('language', value);
+            });
+            
+            // Set initial body class
+            document.body.className = this.darkMode ? 'dark bg-gray-900' : '';
+        }
+    </script>
+    
+    <!-- Alpine.js from CDN -->
+     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 </html>

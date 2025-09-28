@@ -47,7 +47,7 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('dash') }}">{{ _('Dashboard') }}</a>
                         </li>
-                        {% if current_user.role == 'client' %}
+                        {% if user_has_role('client') %}
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ url_for('orders') }}">{{ _('Orders') }}</a>
                             </li>
@@ -115,4 +115,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     {% block scripts %}{% endblock %}
 </body>
-</html> 
+</html>

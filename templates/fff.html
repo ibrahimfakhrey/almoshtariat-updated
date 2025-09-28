@@ -9,11 +9,11 @@
     body {
       font-family: 'Inter', sans-serif;
       margin: 0;
-      background: #f5f9fc;
+      background: #f5f5f5;
       color: #333;
     }
     header {
-      background: #1e90ff;
+      background: #374151;
       color: #fff;
       padding: 1rem 2rem;
       display: flex;
@@ -32,12 +32,13 @@
     }
     nav a {
       display: block;
-      color: #333;
+      color: #374151;
       padding: 0.5rem 0;
       text-decoration: none;
     }
     nav a:hover {
       font-weight: bold;
+      color: #FFD700;
     }
     .main {
       margin-left: 240px;
@@ -49,17 +50,35 @@
       gap: 1.5rem;
     }
     .card {
-      background: #fff;
       border-radius: 8px;
       padding: 1.25rem;
       box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
+    .card:nth-child(1), .card:nth-child(7) {
+      background: #FFD700;
+      color: #000;
+    }
+    .card:nth-child(2), .card:nth-child(5), .card:nth-child(8) {
+      background: #fff;
+      color: #000;
+    }
+    .card:nth-child(3), .card:nth-child(4), .card:nth-child(6), .card:nth-child(9) {
+      background: #e5e7eb;
+      color: #374151;
+    }
     .card h3 {
       margin-top: 0;
+      font-weight: 700;
     }
     .label {
       font-size: 0.85rem;
-      color: #777;
+      color: #666;
+    }
+    .card:nth-child(1) .label, .card:nth-child(7) .label {
+      color: #333;
+    }
+    .card:nth-child(3) .label, .card:nth-child(4) .label, .card:nth-child(6) .label, .card:nth-child(9) .label {
+      color: #6b7280;
     }
     .metrics {
       display: flex;
@@ -72,16 +91,26 @@
     .deadline {
       margin-top: 1rem;
       padding: 0.75rem;
-      background: #fff8f0;
-      border-left: 4px solid #f97316;
       margin-bottom: 0.5rem;
     }
+    .card:nth-child(1) .deadline, .card:nth-child(7) .deadline {
+      background: rgba(0,0,0,0.1);
+      border-left: 4px solid #000;
+    }
+    .card:nth-child(2) .deadline, .card:nth-child(5) .deadline, .card:nth-child(8) .deadline {
+      background: rgba(255,215,0,0.1);
+      border-left: 4px solid #FFD700;
+    }
+    .card:nth-child(3) .deadline, .card:nth-child(4) .deadline, .card:nth-child(6) .deadline, .card:nth-child(9) .deadline {
+      background: rgba(107,114,128,0.1);
+      border-left: 4px solid #6b7280;
+    }
     .status-clear {
-      color: green;
+      color: #059669;
       font-weight: 600;
     }
     .check {
-      color: green;
+      color: #059669;
       font-weight: bold;
     }
     .quick-actions button {
@@ -89,16 +118,43 @@
       width: 100%;
       margin-bottom: 0.5rem;
       padding: 0.5rem;
-      background: #e0f0ff;
-      border: none;
       border-radius: 4px;
       cursor: pointer;
     }
+    .card:nth-child(1) .quick-actions button, .card:nth-child(7) .quick-actions button {
+      background: rgba(0,0,0,0.1);
+      border: 1px solid #000;
+      color: #000;
+    }
+    .card:nth-child(2) .quick-actions button, .card:nth-child(5) .quick-actions button, .card:nth-child(8) .quick-actions button {
+      background: rgba(255,215,0,0.2);
+      border: 1px solid #FFD700;
+      color: #000;
+    }
+    .card:nth-child(3) .quick-actions button, .card:nth-child(4) .quick-actions button, .card:nth-child(6) .quick-actions button, .card:nth-child(9) .quick-actions button {
+      background: rgba(107,114,128,0.2);
+      border: 1px solid #6b7280;
+      color: #374151;
+    }
+    .quick-actions button:hover {
+      background: #374151;
+      color: #fff;
+    }
     .notif {
-      background: #eef2f8;
       padding: 0.75rem;
-      border-left: 4px solid #3b82f6;
       margin-bottom: 0.5rem;
+    }
+    .card:nth-child(1) .notif, .card:nth-child(7) .notif {
+      background: rgba(0,0,0,0.1);
+      border-left: 4px solid #000;
+    }
+    .card:nth-child(2) .notif, .card:nth-child(5) .notif, .card:nth-child(8) .notif {
+      background: rgba(255,215,0,0.1);
+      border-left: 4px solid #FFD700;
+    }
+    .card:nth-child(3) .notif, .card:nth-child(4) .notif, .card:nth-child(6) .notif, .card:nth-child(9) .notif {
+      background: rgba(107,114,128,0.1);
+      border-left: 4px solid #6b7280;
     }
   </style>
 </head>

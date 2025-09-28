@@ -1,165 +1,301 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-01 12:00\n"
-"PO-Revision-Date: 2024-01-01 12:00\n"
+"POT-Creation-Date: 2025-09-15 10:37+0300\n"
+"PO-Revision-Date: 2024-01-01 12:00+0000\n"
 "Last-Translator: \n"
-"Language-Team: \n"
 "Language: ar\n"
+"Language-Team: \n"
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : "
+"n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5);\n"
+"Generated-By: Babel 2.17.0\n"
 
-#: flask_app.py:441
+#: flask_app.py:905
 msgid "Login successful!"
 msgstr ""
 
-#: flask_app.py:443
+#: flask_app.py:914
 msgid "Invalid username or password"
 msgstr ""
 
-#: flask_app.py:513 flask_app.py:1811
+#: flask_app.py:940 flask_app.py:4700
 msgid "Passwords do not match"
 msgstr ""
 
-#: flask_app.py:517 flask_app.py:1819 flask_app.py:1893
+#: flask_app.py:944 flask_app.py:4708 flask_app.py:4784
 msgid "Username already exists"
 msgstr ""
 
-#: flask_app.py:521 flask_app.py:1815 flask_app.py:1887
+#: flask_app.py:948 flask_app.py:4704 flask_app.py:4778
 msgid "Email already registered"
 msgstr ""
 
-#: flask_app.py:533
+#: flask_app.py:985
 msgid "Registration successful! Please log in."
 msgstr ""
 
-#: flask_app.py:537
+#: flask_app.py:989
 msgid "Error during registration: "
 msgstr ""
 
-#: flask_app.py:1537 flask_app.py:1592 flask_app.py:1607 flask_app.py:1622
-#: flask_app.py:1632 flask_app.py:1688 flask_app.py:1700 flask_app.py:1749
-#: flask_app.py:1786 flask_app.py:1799 flask_app.py:1846 flask_app.py:1869
-#: flask_app.py:1918 flask_app.py:1986 flask_app.py:2056 flask_app.py:2080
-#: flask_app.py:2190 flask_app.py:2715 flask_app.py:2763 flask_app.py:2806
-#: flask_app.py:2825
+#: flask_app.py:1408
+#, fuzzy
+msgid "Please log in to download documents."
+msgstr "فشل في رفع المستند"
+
+#: flask_app.py:1418 flask_app.py:1478
+msgid "No company associated with user."
+msgstr ""
+
+#: flask_app.py:1424 flask_app.py:1483 flask_app.py:3545 flask_app.py:3786
+#: flask_app.py:3858 flask_app.py:3880 flask_app.py:3953 flask_app.py:4118
+#: flask_app.py:4154 flask_app.py:5808 flask_app.py:5851 flask_app.py:5870
+#: flask_app.py:9937 flask_app.py:10009
+msgid "Company not found."
+msgstr ""
+
+#: flask_app.py:1445 flask_app.py:1500
+msgid "Access denied. Document not found in your company."
+msgstr ""
+
+#: flask_app.py:1459 flask_app.py:1533
+#, fuzzy
+msgid "Document not found."
+msgstr "رمز المنتج"
+
+#: flask_app.py:1464
+#, fuzzy
+msgid "Error downloading document."
+msgstr "خطأ في رفع المستند"
+
+#: flask_app.py:1471
+#, fuzzy
+msgid "Please log in to view documents."
+msgstr "رفع مستند جديد"
+
+#: flask_app.py:1537
+#, fuzzy
+msgid "Error viewing document."
+msgstr "خطأ في رفع المستند"
+
+#: flask_app.py:1936
+msgid ""
+"Registration successful! You now have dual access as both client and "
+"supplier. Please check your email for verification code."
+msgstr ""
+
+#: flask_app.py:1938
+msgid "Registration successful! Please check your email for verification code."
+msgstr ""
+
+#: flask_app.py:1942
+msgid ""
+"Registration successful but failed to send verification email. Please "
+"contact support."
+msgstr ""
+
+#: flask_app.py:3304 flask_app.py:3483 flask_app.py:3499 flask_app.py:3515
+#: flask_app.py:3528 flask_app.py:3540 flask_app.py:3724 flask_app.py:3781
+#: flask_app.py:3853 flask_app.py:3875 flask_app.py:3948 flask_app.py:4100
+#: flask_app.py:4113 flask_app.py:4149 flask_app.py:4470 flask_app.py:4530
+#: flask_app.py:4674 flask_app.py:4688 flask_app.py:4736 flask_app.py:4760
+#: flask_app.py:4810 flask_app.py:4878 flask_app.py:4949 flask_app.py:4974
+#: flask_app.py:5086 flask_app.py:5752 flask_app.py:5803 flask_app.py:5846
+#: flask_app.py:5865 flask_app.py:9931 flask_app.py:10003
 msgid "Access denied. Company role required."
 msgstr ""
 
-#: flask_app.py:1584 flask_app.py:1585 templates/client/new_order_form.html:7
-#: templates/client/new_order_form.html:521
+#: flask_app.py:3460 flask_app.py:3463 templates/client/new_order_form.html:7
+#: templates/client/new_order_form.html:536
 msgid "Create New Order"
 msgstr "إنشاء طلب جديد"
 
-#: flask_app.py:1761 flask_app.py:1940
-msgid "Please fill in all required fields."
+#: flask_app.py:3864 flask_app.py:3886
+#, fuzzy
+msgid "Bill not found."
+msgstr "رمز المنتج"
+
+#: flask_app.py:4087
+msgid "No new bills to generate. All orders already have bills."
 msgstr ""
 
-#: flask_app.py:1776
-msgid "Offer submitted successfully!"
+#: flask_app.py:4124
+#, fuzzy
+msgid "Client not found."
+msgstr "رمز المنتج"
+
+#: flask_app.py:4159
+#, fuzzy
+msgid "Chat not found."
+msgstr "رمز المنتج"
+
+#: flask_app.py:4544
+msgid ""
+"You have already made an offer on this order. View your offer details "
+"below."
 msgstr ""
 
-#: flask_app.py:1834
+#: flask_app.py:4566
+msgid "Please fill in prices for all products."
+msgstr ""
+
+#: flask_app.py:4580
+#, fuzzy
+msgid "Please select delivery time."
+msgstr "وقت التوصيل"
+
+#: flask_app.py:4604
+msgid "Payment percentage must be between 0 and 100."
+msgstr ""
+
+#: flask_app.py:4614
+msgid "Invalid payment percentage value."
+msgstr ""
+
+#: flask_app.py:4663
+#, python-brace-format
+msgid "Offer submitted successfully! Total: EGP {:.2f}"
+msgstr ""
+
+#: flask_app.py:4723
 msgid "Employee added successfully!"
 msgstr ""
 
-#: flask_app.py:1856
+#: flask_app.py:4746
 msgid "Employee deleted successfully!"
 msgstr ""
 
-#: flask_app.py:1861 flask_app.py:1876
+#: flask_app.py:4751 flask_app.py:4767
 msgid "Employee not found"
 msgstr ""
 
-#: flask_app.py:1905
+#: flask_app.py:4796
 msgid "Employee updated successfully!"
 msgstr ""
 
-#: flask_app.py:1945 flask_app.py:2019
+#: flask_app.py:4832
+msgid "Please fill in all required fields."
+msgstr ""
+
+#: flask_app.py:4837 flask_app.py:4911
 msgid "SKU already exists. Please choose a different SKU."
 msgstr ""
 
-#: flask_app.py:1969
+#: flask_app.py:4860
 msgid "Product added successfully!"
 msgstr ""
 
-#: flask_app.py:1973 flask_app.py:2043
+#: flask_app.py:4864 flask_app.py:4935
 msgid "Please enter valid numbers for price, cost, and quantity."
 msgstr ""
 
-#: flask_app.py:1993 flask_app.py:2063
+#: flask_app.py:4885 flask_app.py:4956
 #, fuzzy
 msgid "Product not found."
 msgstr "رمز المنتج"
 
-#: flask_app.py:2013
+#: flask_app.py:4905
 msgid "Error updating product: Please fill in all required fields."
 msgstr ""
 
-#: flask_app.py:2039
+#: flask_app.py:4931
 msgid "Product updated successfully!"
 msgstr ""
 
-#: flask_app.py:2069
+#: flask_app.py:4962
 msgid "Product deleted successfully!"
 msgstr ""
 
-#: flask_app.py:2087 flask_app.py:2092
+#: flask_app.py:4981 flask_app.py:4986
 #, fuzzy
 msgid "No file selected."
 msgstr "لم يتم اختيار ملف"
 
-#: flask_app.py:2096
+#: flask_app.py:4990
 #, fuzzy
 msgid "Please upload a CSV file."
 msgstr "رفع ملف"
 
-#: flask_app.py:2768 flask_app.py:2811 flask_app.py:2830
-msgid "Company not found."
-msgstr ""
-
-#: flask_app.py:2774 flask_app.py:2836
+#: flask_app.py:5814 flask_app.py:5876
 msgid "Order not found."
 msgstr ""
 
-#: flask_app.py:2780
+#: flask_app.py:5820
 msgid "Order is already hidden from your view."
 msgstr ""
 
-#: flask_app.py:2792
-msgid "Order has been removed from your view. It will no longer appear in your orders list."
+#: flask_app.py:5832
+msgid ""
+"Order has been removed from your view. It will no longer appear in your "
+"orders list."
 msgstr ""
 
-#: flask_app.py:2842
+#: flask_app.py:5882
 msgid "Order is not hidden from your view."
 msgstr ""
 
-#: flask_app.py:2850
-msgid "Order has been restored to your view. It will now appear in your orders list again."
+#: flask_app.py:5890
+msgid ""
+"Order has been restored to your view. It will now appear in your orders "
+"list again."
 msgstr ""
 
-#: templates/base.html:48 templates/client/form_layout.html:102
-#: templates/client/orders.html:94 templates/client/orders.html:124
-#: templates/client/profile.html:99 templates/client/stocks.html:103
+#: flask_app.py:7060
+msgid "Access denied. You can only compare offers for your own orders."
+msgstr ""
+
+#: flask_app.py:7092
+msgid "No offers found for this order."
+msgstr ""
+
+#: flask_app.py:7098
+msgid "You need at least 2 offers to compare them."
+msgstr ""
+
+#: flask_app.py:7210
+msgid ""
+"No valid offers found to compare. Please check if all offers have valid "
+"company information."
+msgstr ""
+
+#: flask_app.py:10015
+msgid "No balance record found."
+msgstr ""
+
+#: templates/base.html:48 templates/client/ai_chat.html:681
+#: templates/client/balance.html:149 templates/client/balance.html:292
+#: templates/client/chat.html:60 templates/client/deliveries.html:141
+#: templates/client/deliveries.html:288 templates/client/form_layout.html:102
+#: templates/client/notifications.html:49 templates/client/order_detail.html:68
+#: templates/client/orders.html:95 templates/client/orders.html:125
+#: templates/client/profile.html:99 templates/client/simple_test_form.html:55
+#: templates/client/stocks.html:107 templates/client/submit_complaint.html:95
+#: templates/client/supplier_orders.html:99 templates/client/suppliers.html:80
+#: templates/company/balance.html:316
+#: templates/company_register_comprehensive.html:145
+#: templates/company_registration_confirmation.html:44
 msgid "Dashboard"
 msgstr "لوحة التحكم"
 
-#: templates/base.html:52 templates/client/orders.html:299
+#: templates/base.html:52 templates/client/order_detail.html:233
+#: templates/client/orders.html:331 templates/company/notifications.html:215
 msgid "Orders"
 msgstr "الطلبات"
 
-#: templates/base.html:55 templates/client/form_layout.html:313
-#: templates/client/profile.html:135 templates/client/profile.html:277
-#: templates/client/stocks.html:326
+#: templates/base.html:55 templates/client/form_layout.html:323
+#: templates/client/profile.html:308 templates/client/stocks.html:392
+#: templates/client/submit_complaint.html:224
+#: templates/client/suppliers.html:526 templates/company/notifications.html:252
 #, fuzzy
 msgid "Chat"
 msgstr "المحادثات"
 
 #: templates/base.html:59 templates/client/profile.html:8
-#: templates/client/profile.html:312 templates/client/profile.html:334
+#: templates/client/profile.html:343 templates/client/profile.html:365
 #, fuzzy
 msgid "Profile"
 msgstr "الملف الشخصي"
@@ -176,7 +312,8 @@ msgstr "التسجيل"
 msgid "Language"
 msgstr "اللغة"
 
-#: templates/base.html:78
+#: templates/base.html:78 templates/client/stocks.html:301
+#: templates/client/suppliers.html:225
 msgid "English"
 msgstr "English"
 
@@ -184,728 +321,2988 @@ msgstr "English"
 msgid "Arabic"
 msgstr "العربية"
 
-#: templates/base.html:87 templates/client/new_order_form.html:504
-#: templates/client/orders.html:273
+#: templates/base.html:87 templates/client/balance.html:272
+#: templates/client/new_order_form.html:519 templates/client/orders.html:305
 msgid "Logout"
 msgstr "تسجيل الخروج"
 
-#: templates/client/form_layout.html:86 templates/client/orders.html:119
-#: templates/client/profile.html:87 templates/client/stocks.html:87
-msgid "MENU"
-msgstr "القائمة"
-
-#: templates/client/form_layout.html:121 templates/client/orders.html:129
-#: templates/client/profile.html:107 templates/client/stocks.html:122
-msgid "User Profile"
-msgstr "الملف الشخصي"
-
-#: templates/client/form_layout.html:132 templates/client/form_layout.html:322
-#: templates/client/orders.html:95 templates/client/orders.html:134
-#: templates/client/orders.html:288 templates/client/profile.html:114
-#: templates/client/profile.html:286 templates/client/stocks.html:133
-#: templates/client/stocks.html:335
-msgid "My Orders"
-msgstr "طلباتي"
-
-#: templates/client/form_layout.html:143 templates/client/orders.html:96
-#: templates/client/orders.html:139 templates/client/orders.html:334
-#: templates/client/profile.html:121
-msgid "Create Order"
-msgstr "إنشاء طلب"
-
-#: templates/client/form_layout.html:154
-#: templates/client/new_order_form.html:379
-msgid "chats"
-msgstr "المحادثات"
-
-#: templates/client/form_layout.html:304
-#: templates/client/new_order_form.html:496 templates/client/orders.html:265
-#: templates/client/profile.html:268 templates/client/stocks.html:317
-msgid "Edit profile"
-msgstr "تعديل الملف الشخصي"
-
-#: templates/client/form_layout.html:331 templates/client/profile.html:295
-#: templates/client/stocks.html:344
-msgid "Sign out"
-msgstr "تسجيل الخروج"
-
-#: templates/client/form_layout.html:353 templates/client/orders.html:293
-#: templates/client/profile.html:318
-msgid "Home"
-msgstr "الرئيسية"
-
-#: templates/client/form_layout.html:373
-#, fuzzy
-msgid "Example Form"
-msgstr "نموذج من 5 خطوات"
-
-#: templates/client/form_layout.html:380
-#, fuzzy
-msgid "Purchase Details"
-msgstr "تفاصيل الطلب"
+#: templates/client/ai_chat.html:762 templates/client/balance.html:216
+#: templates/client/chat.html:143 templates/client/company_products.html:160
+#: templates/client/deliveries.html:194 templates/client/notifications.html:116
+#: templates/client/orders.html:173 templates/client/profile.html:166
+#: templates/client/simple_test_form.html:100 templates/client/stocks.html:211
+#: templates/client/submit_complaint.html:138
+#: templates/client/supplier_orders.html:164
+#: templates/client/suppliers.html:130 templates/company/add_employee.html:96
+#: templates/company/add_product.html:98 templates/company/analytics.html:90
+#: templates/company/balance.html:147 templates/company/bills.html:152
+#: templates/company/chat.html:96 templates/company/chat_view.html:143
+#: templates/company/edit_employee.html:94
+#: templates/company/edit_product.html:96 templates/company/employees.html:87
+#: templates/company/form_layout.html:95
+#: templates/company/hidden_orders.html:96
+#: templates/company/import_products.html:98
+#: templates/company/import_products_preview.html:96
+#: templates/company/inventory.html:98 templates/company/make_offer.html:205
+#: templates/company/new_orders_by_sector.html:96
+#: templates/company/offers.html:97 templates/company/order_detail.html:96
+#: templates/company/order_details.html:96
+#: templates/company/order_management.html:95 templates/company/orders.html:194
+#: templates/company/packages.html:76 templates/company/stocks.html:210
+#: templates/company_register_comprehensive.html:7
+#: templates/company_register_comprehensive.html:187
+#: templates/company_register_comprehensive.html:331
+msgid "Company Registration"
+msgstr "تسجيل الشركة"
 
 #: templates/client/new_order_form.html:7
+#: templates/company_register_comprehensive.html:7
 msgid "5-Step Form"
 msgstr "نموذج من 5 خطوات"
 
-#: templates/client/new_order_form.html:522
-msgid "Fill out the form below to create a new order with multiple products"
-msgstr "املأ النموذج أدناه لإنشاء طلب جديد مع منتجات متعددة"
-
-#: templates/client/new_order_form.html:528
-msgid "Step"
-msgstr "الخطوة"
-
-#: templates/client/new_order_form.html:528
-msgid "of"
-msgstr "من"
-
-#: templates/client/new_order_form.html:530
-msgid "Complete"
-msgstr "مكتمل"
-
-#: templates/client/new_order_form.html:546
-#: templates/client/new_order_form.html:562
-msgid "Order Details"
-msgstr "تفاصيل الطلب"
-
-#: templates/client/new_order_form.html:546
-#: templates/client/new_order_form.html:618 templates/client/orders.html:429
-msgid "Products"
-msgstr "المنتجات"
-
-#: templates/client/new_order_form.html:546 templates/client/orders.html:430
-msgid "Delivery"
-msgstr "التوصيل"
-
-#: templates/client/new_order_form.html:546
-msgid "Payment"
-msgstr "الدفع"
-
-#: templates/client/new_order_form.html:546
-msgid "Settings"
-msgstr "الإعدادات"
-
-#: templates/client/new_order_form.html:568 templates/client/orders.html:420
-msgid "Order Name"
-msgstr "اسم الطلب"
-
-#: templates/client/new_order_form.html:570
-msgid "Enter order name"
-msgstr "أدخل اسم الطلب"
-
-#: templates/client/new_order_form.html:576
-msgid "Description"
-msgstr "الوصف"
-
-#: templates/client/new_order_form.html:578
-msgid "Enter order description"
-msgstr "أدخل وصف الطلب"
-
-#: templates/client/new_order_form.html:584 templates/client/orders.html:427
-msgid "Sector"
-msgstr "القطاع"
-
-#: templates/client/new_order_form.html:587
-msgid "Select Sector"
-msgstr "اختر القطاع"
-
-#: templates/client/new_order_form.html:588
-msgid "Electronics"
-msgstr "الإلكترونيات"
-
-#: templates/client/new_order_form.html:589
-msgid "Automotive"
-msgstr "السيارات"
-
-#: templates/client/new_order_form.html:590
-msgid "Construction"
-msgstr "البناء"
-
-#: templates/client/new_order_form.html:591
-msgid "Medical"
-msgstr "الطبي"
-
-#: templates/client/new_order_form.html:592
-msgid "Other"
-msgstr "أخرى"
-
-#: templates/client/new_order_form.html:598 templates/client/orders.html:428
-msgid "Order Type"
-msgstr "نوع الطلب"
-
-#: templates/client/new_order_form.html:601
-msgid "Select Order Type"
-msgstr "اختر نوع الطلب"
-
-#: templates/client/new_order_form.html:602
-msgid "Purchase"
-msgstr "شراء"
-
-#: templates/client/new_order_form.html:603
-msgid "Service"
-msgstr "خدمة"
-
-#: templates/client/new_order_form.html:604
-msgid "Rental"
-msgstr "إيجار"
-
-#: templates/client/new_order_form.html:605
-msgid "Installation"
-msgstr "تركيب"
-
-#: templates/client/new_order_form.html:606
-msgid "Maintenance"
-msgstr "صيانة"
-
-#: templates/client/new_order_form.html:626
-msgid "Grab from Preferences"
-msgstr "جلب من التفضيلات"
-
-#: templates/client/new_order_form.html:635
-msgid "Add Product"
-msgstr "إضافة منتج"
-
-#: templates/client/new_order_form.html:641
-msgid "Smart Feature"
-msgstr "ميزة ذكية"
-
-#: templates/client/new_order_form.html:641
-msgid "All products you add to orders are automatically saved to your preferences for future use"
-msgstr "جميع المنتجات التي تضيفها إلى الطلبات يتم حفظها تلقائياً في تفضيلاتك للاستخدام المستقبلي"
-
-#: templates/client/new_order_form.html:649
-msgid "Product"
-msgstr "المنتج"
-
-#: templates/client/new_order_form.html:662
-msgid "Product Name"
-msgstr "اسم المنتج"
-
-#: templates/client/new_order_form.html:665
-msgid "Enter product name"
-msgstr "أدخل اسم المنتج"
-
-#: templates/client/new_order_form.html:671
-msgid "Technical Specifications"
-msgstr "المواصفات التقنية"
-
-#: templates/client/new_order_form.html:674
-msgid "Enter technical specifications"
-msgstr "أدخل المواصفات التقنية"
-
-#: templates/client/new_order_form.html:680
-#: templates/client/new_order_form.html:683
-msgid "Quantity"
-msgstr "الكمية"
-
-#: templates/client/new_order_form.html:689
-msgid "Unit"
-msgstr "الوحدة"
-
-#: templates/client/new_order_form.html:692
-msgid "Piece"
-msgstr ""
-
-#: templates/client/new_order_form.html:693
-msgid "Kilo"
-msgstr ""
-
-#: templates/client/new_order_form.html:694
-#, fuzzy
-msgid "Meter"
-msgstr "مكتمل"
-
-#: templates/client/new_order_form.html:695
-#, fuzzy
-msgid "Liter"
-msgstr "التوصيل"
-
-#: templates/client/new_order_form.html:701
-#, fuzzy
-msgid "Max Price Per Unit (Optional)"
-msgstr "السعر الأقصى للوحدة"
-
-#: templates/client/new_order_form.html:704
-#, fuzzy
-msgid "Enter maximum price"
-msgstr "أدخل السعر الأقصى للوحدة"
-
-#: templates/client/new_order_form.html:710
-#, fuzzy
-msgid "Product Code (Optional)"
-msgstr "رمز المنتج"
-
-#: templates/client/new_order_form.html:713
-msgid "Enter product code"
-msgstr "أدخل رمز المنتج"
-
-#: templates/client/new_order_form.html:719
-#, fuzzy
-msgid "Best Supplier (Optional)"
-msgstr "أفضل مورد"
-
-#: templates/client/new_order_form.html:722
-msgid "Enter best supplier"
-msgstr "أدخل أفضل مورد"
-
-#: templates/client/new_order_form.html:728
-#, fuzzy
-msgid "Upload File (Optional)"
-msgstr "رفع ملف"
-
-#: templates/client/new_order_form.html:744
-msgid "Delivery Information"
-msgstr "معلومات التوصيل"
-
-#: templates/client/new_order_form.html:752
-#: templates/client/new_order_form.html:1004
-#: templates/client/new_order_form.html:1290
-msgid "Delivery Date"
-msgstr "تاريخ التوصيل"
-
-#: templates/client/new_order_form.html:760
-msgid "Delivery Time"
-msgstr "وقت التوصيل"
-
-#: templates/client/new_order_form.html:768
-msgid "Delivery Address"
-msgstr "عنوان التوصيل"
-
-#: templates/client/new_order_form.html:770
-msgid "Enter delivery address"
-msgstr "أدخل عنوان التوصيل"
-
-#: templates/client/new_order_form.html:776
-msgid "Delivery Notes"
-msgstr "ملاحظات التوصيل"
-
-#: templates/client/new_order_form.html:778
-msgid "Enter delivery notes"
-msgstr "أدخل ملاحظات التوصيل"
-
-#: templates/client/new_order_form.html:784
-#, fuzzy
-msgid "Receiver Information"
-msgstr "معلومات التوصيل"
-
-#: templates/client/new_order_form.html:788
-#, fuzzy
-msgid "Receiver Name"
-msgstr "اسم الطلب"
-
-#: templates/client/new_order_form.html:790
-#, fuzzy
-msgid "Enter receiver full name"
-msgstr "أدخل اسم الطلب"
-
-#: templates/client/new_order_form.html:796
-msgid "Receiver Phone"
-msgstr ""
-
-#: templates/client/new_order_form.html:798
-#, fuzzy
-msgid "Enter receiver phone number"
-msgstr "أدخل اسم الطلب"
-
-#: templates/client/new_order_form.html:811
-#, fuzzy
-msgid "Payment System"
-msgstr "شروط الدفع"
-
-#: templates/client/new_order_form.html:819
-#, fuzzy
-msgid "Payment Step"
-msgstr "إضافة خطوة دفع"
-
-#: templates/client/new_order_form.html:824
-#, fuzzy
-msgid "Remove"
-msgstr "إزالة المنتج"
-
-#: templates/client/new_order_form.html:831
-msgid "Payment Method"
-msgstr "طريقة الدفع"
-
-#: templates/client/new_order_form.html:834
-#, fuzzy
-msgid "Select Method"
-msgstr "اختر القطاع"
-
-#: templates/client/new_order_form.html:835
-msgid "Cash"
-msgstr "نقداً"
-
-#: templates/client/new_order_form.html:836
-msgid "Bank Transfer"
-msgstr "تحويل بنكي"
-
-#: templates/client/new_order_form.html:837
-#, fuzzy
-msgid "Deferred Payment"
-msgstr "إضافة خطوة دفع"
-
-#: templates/client/new_order_form.html:838
-#, fuzzy
-msgid "Installments"
-msgstr "تركيب"
-
-#: templates/client/new_order_form.html:844
-#, fuzzy
-msgid "Payment Timing"
-msgstr "شروط الدفع"
-
-#: templates/client/new_order_form.html:846
-#, fuzzy
-msgid "Enter payment timing"
-msgstr "شروط الدفع"
-
-#: templates/client/new_order_form.html:852
-#, fuzzy
-msgid "Percentage"
-msgstr "إيجار"
-
-#: templates/client/new_order_form.html:854
-#, fuzzy
-msgid "Enter percentage"
-msgstr "أدخل اسم المنتج"
-
-#: templates/client/new_order_form.html:870
-#, fuzzy
-msgid "Add Another Payment"
-msgstr "إضافة خطوة دفع"
-
-#: templates/client/new_order_form.html:876
-#, fuzzy
-msgid "Payment Summary"
-msgstr "شروط الدفع"
-
-#: templates/client/new_order_form.html:878
-msgid "Total Steps"
-msgstr ""
-
-#: templates/client/new_order_form.html:879
-msgid "Total Percentage"
-msgstr ""
-
-#: templates/client/new_order_form.html:894
-#, fuzzy
-msgid "Order Settings"
-msgstr "حالة الطلب"
-
-#: templates/client/new_order_form.html:900
-msgid "Activate Direct Negotiation"
-msgstr ""
-
-#: templates/client/new_order_form.html:903
-#: templates/client/new_order_form.html:913
-#: venv/lib/python3.13/site-packages/flask_admin/model/widgets.py:116
-msgid "No"
-msgstr ""
-
-#: templates/client/new_order_form.html:904
-#: templates/client/new_order_form.html:914
-#: venv/lib/python3.13/site-packages/flask_admin/model/widgets.py:117
-msgid "Yes"
-msgstr ""
-
-#: templates/client/new_order_form.html:910
-#, fuzzy
-msgid "Accept Unregistered Suppliers"
-msgstr "أدخل أفضل مورد"
-
-#: templates/client/new_order_form.html:920
-msgid "Maximum Number of Suppliers"
-msgstr ""
-
-#: templates/client/new_order_form.html:923
-#, fuzzy
-msgid "Enter maximum suppliers"
-msgstr "أدخل أفضل مورد"
-
-#: templates/client/new_order_form.html:934
-msgid "Order Preview & Summary"
-msgstr "معاينة الطلب والملخص"
-
-#: templates/client/new_order_form.html:935
-msgid "Review your order details before submission"
-msgstr "راجع تفاصيل طلبك قبل الإرسال"
-
-#: templates/client/new_order_form.html:1005
-#: templates/client/new_order_form.html:1222
-#: templates/client/new_order_form.html:1437
-msgid "Not specified"
-msgstr "غير محدد"
-
-#: templates/client/new_order_form.html:1082
-msgid "Previous"
-msgstr "السابق"
-
-#: templates/client/new_order_form.html:1089
-msgid "Next"
-msgstr "التالي"
-
-#: templates/client/new_order_form.html:1159
-msgid "Order Print Preview"
-msgstr "معاينة طباعة الطلب"
-
-#: templates/client/new_order_form.html:1165
-msgid "Generate PDF (Server-Side Arabic Support)"
-msgstr "إنشاء PDF (دعم عربي من جانب الخادم)"
-
-#: templates/client/new_order_form.html:1171
-msgid "Print"
-msgstr "طباعة"
-
-#: templates/client/new_order_form.html:1174
-msgid "Close"
-msgstr "إغلاق"
-
-#: templates/client/new_order_form.html:1280
-msgid "Order Preview"
-msgstr "معاينة الطلب"
-
-#: templates/client/new_order_form.html:1587
-msgid "Please fill in all required fields: Order Name, Sector, Order Type, and Delivery Date"
-msgstr "يرجى ملء جميع الحقول المطلوبة: اسم الطلب، القطاع، نوع الطلب، وتاريخ التوصيل"
-
-#: templates/client/new_order_form.html:1601
-msgid "Please add at least one product with a product name"
-msgstr "يرجى إضافة منتج واحد على الأقل مع اسم المنتج"
-
-#: templates/client/orders.html:144 templates/client/profile.html:128
+#: templates/client/ai_chat.html:669 templates/client/balance.html:141
+#: templates/client/deliveries.html:136 templates/client/form_layout.html:86
+#: templates/client/order_detail.html:63 templates/client/orders.html:120
+#: templates/client/profile.html:87 templates/client/simple_test_form.html:47
+#: templates/client/stocks.html:91 templates/client/submit_complaint.html:88
+#: templates/client/supplier_orders.html:87 templates/client/suppliers.html:75
+#: templates/company/add_employee.html:44 templates/company/add_product.html:46
+#: templates/company/analytics.html:47 templates/company/balance.html:123
+#: templates/company/chat.html:44 templates/company/chat_view.html:91
+#: templates/company/edit_employee.html:42
+#: templates/company/edit_product.html:44 templates/company/employees.html:44
+#: templates/company/form_layout.html:43
+#: templates/company/hidden_orders.html:44
+#: templates/company/import_products.html:46
+#: templates/company/import_products_preview.html:44
+#: templates/company/inventory.html:46 templates/company/make_offer.html:153
+#: templates/company/new_orders_by_sector.html:44
+#: templates/company/offers.html:45 templates/company/order_detail.html:44
+#: templates/company/order_details.html:44
+#: templates/company/order_management.html:43 templates/company/orders.html:142
+#: templates/company/packages.html:33 templates/company/stocks.html:146
+#: templates/company_register_comprehensive.html:135
+#: templates/company_registration_confirmation.html:38
+#: templates/company_status.html:468
+msgid "MENU"
+msgstr "القائمة"
+
+#: templates/client/ai_chat.html:690 templates/client/balance.html:157
+#: templates/client/chat.html:79 templates/client/deliveries.html:146
+#: templates/client/form_layout.html:121 templates/client/notifications.html:57
+#: templates/client/order_detail.html:73 templates/client/orders.html:130
+#: templates/client/profile.html:107 templates/client/simple_test_form.html:63
+#: templates/client/stocks.html:126 templates/client/submit_complaint.html:102
+#: templates/client/supplier_orders.html:107 templates/client/suppliers.html:85
+#: templates/company_register_comprehensive.html:151
+#: templates/company_registration_confirmation.html:49
+msgid "User Profile"
+msgstr "الملف الشخصي"
+
+#: templates/client/ai_chat.html:699 templates/client/balance.html:164
+#: templates/client/chat.html:90 templates/client/company_products.html:124
+#: templates/client/deliveries.html:151 templates/client/form_layout.html:132
+#: templates/client/form_layout.html:332 templates/client/notifications.html:64
+#: templates/client/order_detail.html:78 templates/client/orders.html:96
+#: templates/client/orders.html:135 templates/client/orders.html:320
+#: templates/client/profile.html:114 templates/client/profile.html:317
+#: templates/client/simple_test_form.html:70 templates/client/stocks.html:137
+#: templates/client/stocks.html:401 templates/client/submit_complaint.html:109
+#: templates/client/submit_complaint.html:229
+#: templates/client/supplier_orders.html:114 templates/client/suppliers.html:90
+#: templates/company_register_comprehensive.html:156
+#: templates/company_registration_confirmation.html:54
+msgid "My Orders"
+msgstr "طلباتي"
+
+#: templates/client/ai_chat.html:717 templates/client/chat.html:102
+#: templates/client/deliveries.html:163 templates/client/form_layout.html:143
+#: templates/client/order_detail.html:88 templates/client/orders.html:97
+#: templates/client/orders.html:147 templates/client/orders.html:366
+#: templates/client/profile.html:128 templates/client/stocks.html:157
+#: templates/client/suppliers.html:102
+#: templates/company_register_comprehensive.html:161
+#: templates/company_registration_confirmation.html:59
+msgid "Create Order"
+msgstr "إنشاء طلب"
+
+#: templates/client/ai_chat.html:726 templates/client/balance.html:185
+#: templates/client/chat.html:109 templates/client/deliveries.html:168
+#: templates/client/notifications.html:87 templates/client/order_detail.html:93
+#: templates/client/orders.html:152 templates/client/profile.html:135
+#: templates/client/simple_test_form.html:85 templates/client/stocks.html:164
+#: templates/client/submit_complaint.html:124
+#: templates/client/supplier_orders.html:142 templates/client/suppliers.html:10
+#: templates/client/suppliers.html:107 templates/client/suppliers.html:339
+#: templates/company_register_comprehensive.html:166
+#: templates/company_registration_confirmation.html:64
 msgid "Suppliers"
 msgstr "الموردون"
 
-#: templates/client/orders.html:149
-msgid "Chats"
+#: templates/client/ai_chat.html:735 templates/client/balance.html:208
+#: templates/client/chat.html:116 templates/client/company_products.html:146
+#: templates/client/deliveries.html:173 templates/client/form_layout.html:154
+#: templates/client/new_order_form.html:384
+#: templates/client/notifications.html:94 templates/client/orders.html:157
+#: templates/client/profile.html:142 templates/client/simple_test_form.html:92
+#: templates/client/stocks.html:175 templates/client/submit_complaint.html:131
+#: templates/client/supplier_orders.html:149
+#: templates/client/suppliers.html:112
+#: templates/company_register_comprehensive.html:171
+#: templates/company_registration_confirmation.html:69
+msgid "chats"
 msgstr "المحادثات"
 
-msgid "My Deliveries"
-msgstr "توصيلاتي"
+# Company Status page translations
+#: templates/company_register_comprehensive.html:179
+#: templates/company_status.html:10 templates/company_status.html:527
+#: templates/company_status.html:558
+msgid "Company Status"
+msgstr "حالة الشركة"
 
-msgid "Balance"
-msgstr "الرصيد"
-
-#: templates/client/orders.html:197 templates/client/orders.html:345
-msgid "Search orders..."
-msgstr "البحث في الطلبات..."
-
-#: templates/client/orders.html:309
-msgid "Orders Management"
-msgstr "إدارة الطلبات"
-
-#: templates/client/orders.html:310
-msgid "Track and manage all your purchase orders"
-msgstr "تتبع وإدارة جميع طلبات الشراء الخاصة بك"
-
-#: templates/client/orders.html:318
-msgid "Hide Filters"
-msgstr "إخفاء الفلاتر"
-
-#: templates/client/orders.html:318
-msgid "Show Filters"
-msgstr "إظهار الفلاتر"
-
-#: templates/client/orders.html:323
-#, fuzzy
-msgid "Export"
-msgstr "التالي"
-
-#: templates/client/orders.html:344
-#, fuzzy
-msgid "Search"
-msgstr "خدمة"
-
-#: templates/client/orders.html:399
-msgid "Clear Filters"
-msgstr "مسح الفلاتر"
-
-#: templates/client/orders.html:415
-#, fuzzy
-msgid "Order #"
-msgstr "رقم الطلب"
-
-#: templates/client/orders.html:422
-#, fuzzy
-msgid "Created Date"
-msgstr "إنشاء طلب"
-
-#: templates/client/profile.html:387
-#, fuzzy
-msgid "Edit"
-msgstr "فوري"
-
-#: templates/client/stocks.html:8
-#, fuzzy
-msgid "Client Dashboard"
-msgstr "لوحة تحكم العميل"
-
-#: templates/client/stocks.html:140
-#, fuzzy
-msgid "Supplier Orders"
-msgstr "طلبات الموردين"
-
-#: templates/client/stocks.html:243
+#: templates/client/chat.html:213 templates/client/stocks.html:277
+#: templates/client/submit_complaint.html:171
+#: templates/client/supplier_orders.html:230
+#: templates/company_register_comprehensive.html:242
 #, fuzzy
 msgid "Search or type command..."
 msgstr "البحث في الطلبات..."
 
-#: templates/client/stocks.html:371
-msgid "Total Orders"
-msgstr "إجمالي الطلبات"
+#: templates/client/form_layout.html:314
+#: templates/client/new_order_form.html:511
+#: templates/client/order_detail.html:199 templates/client/orders.html:297
+#: templates/client/profile.html:299 templates/client/stocks.html:383
+#: templates/client/submit_complaint.html:219
+#: templates/client/suppliers.html:253
+#: templates/company_register_comprehensive.html:306
+msgid "Edit profile"
+msgstr "تعديل الملف الشخصي"
 
-#: templates/client/stocks.html:374
+#: templates/client/form_layout.html:341 templates/client/order_detail.html:202
+#: templates/client/profile.html:326 templates/client/stocks.html:410
+#: templates/client/submit_complaint.html:234
+#: templates/client/suppliers.html:261
+#: templates/company_register_comprehensive.html:314
+msgid "Sign out"
+msgstr "تسجيل الخروج"
+
+#: templates/company_register_comprehensive.html:332
 #, fuzzy
-msgid "All time orders"
-msgstr "جميع الطلبات"
+msgid "Complete company registration form"
+msgstr "تسجيل الشركة"
 
-#: templates/client/stocks.html:383
+#: templates/company_register_comprehensive.html:343
 #, fuzzy
-msgid "Orders created"
-msgstr "الطلبات المنشأة"
+msgid "Basic Company Information"
+msgstr "معلومات الشركة"
 
-#: templates/client/stocks.html:390
+#: templates/company_register_comprehensive.html:356
+msgid "Database Error"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:370
 #, fuzzy
-msgid "New Order"
-msgstr "طلب جديد"
+msgid "Company Name (Arabic)"
+msgstr "اسم الشركة"
 
-#: templates/client/stocks.html:406
-msgid "Pending Orders"
-msgstr "الطلبات المعلقة"
+#: templates/company_register_comprehensive.html:372
+msgid "أدخل اسم الشركة باللغة العربية"
+msgstr ""
 
-#: templates/client/stocks.html:409 templates/client/stocks.html:632
-msgid "Awaiting offers"
-msgstr "في انتظار العروض"
-
-#: templates/client/stocks.html:418
+#: templates/company_register_comprehensive.html:381
 #, fuzzy
-msgid "Orders pending"
-msgstr "الطلبات المعلقة"
+msgid "Company Name (English)"
+msgstr "اسم الشركة"
 
-#: templates/client/stocks.html:422
+#: templates/company_register_comprehensive.html:383
 #, fuzzy
-msgid "View All"
-msgstr "عرض الكل"
+msgid "Enter company name in English"
+msgstr "شروط الدفع"
 
-#: templates/client/stocks.html:438
-msgid "Total Offers"
-msgstr "إجمالي العروض"
+#: templates/company_register_comprehensive.html:391
+#: templates/company_status.html:691
+msgid "Legal Type"
+msgstr "النوع القانوني"
 
-#: templates/client/stocks.html:441
-msgid "Received offers"
-msgstr "العروض المستلمة"
-
-#: templates/client/stocks.html:450
-msgid "Offers received"
-msgstr "العروض المستلمة"
-
-#: templates/client/stocks.html:454
+#: templates/company_register_comprehensive.html:394
 #, fuzzy
-msgid "View Offers"
-msgstr "عرض العروض"
+msgid "Select Legal Type"
+msgstr "أدخل النوع القانوني"
 
-#: templates/client/stocks.html:470
-msgid "Cart Items"
-msgstr "عناصر السلة"
+#: templates/company_register_comprehensive.html:395
+msgid "شركة مساهمة"
+msgstr ""
 
-#: templates/client/stocks.html:473
+#: templates/company_register_comprehensive.html:396
+msgid "شركة ذات مسؤولية محدودة"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:397
+msgid "مؤسسة فردية"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:398
+msgid "شركة تضامن"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:399
+#: templates/company_register_comprehensive.html:419
+msgid "أخرى"
+msgstr ""
+
+#: templates/client/new_order_form.html:600
+#: templates/client/order_detail.html:449 templates/client/orders.html:448
+#: templates/client/orders.html:688 templates/client/simple_test_form.html:148
+#: templates/client/suppliers.html:372
+#: templates/company_register_comprehensive.html:408
+msgid "Sector"
+msgstr "القطاع"
+
+#: templates/company_register_comprehensive.html:411
+msgid "Select Sector"
+msgstr "اختر القطاع"
+
+#: templates/company_register_comprehensive.html:412
+msgid "الإلكترونيات"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:413
+msgid "السيارات"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:414
+msgid "البناء"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:415
+msgid "الطبي"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:416
+msgid "الأغذية"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:417
+msgid "النسيج"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:418
+msgid "الكيماويات"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:431
+#: templates/company_register_comprehensive.html:495
+#: templates/company_status.html:878
+msgid "Founded Year"
+msgstr "سنة التأسيس"
+
+#: templates/company_register_comprehensive.html:433
+#: templates/company_register_comprehensive.html:497
+msgid "مثال: 2020"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:439
 #, fuzzy
-msgid "Products in cart"
-msgstr "المنتجات في السلة"
+msgid "Number of Employees"
+msgstr "أدخل عدد الموظفين"
 
-#: templates/client/stocks.html:482
+#: templates/company_register_comprehensive.html:442
 #, fuzzy
-msgid "Items ready"
-msgstr "العناصر جاهزة"
+msgid "Select Employee Count"
+msgstr "أدخل عدد الموظفين"
 
-#: templates/client/stocks.html:486
+#: templates/company_register_comprehensive.html:443
+msgid "1-10"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:444
+msgid "11-50"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:445
+msgid "51-200"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:446
+msgid "201-500"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:447
+msgid "500+"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:457
 #, fuzzy
-msgid "Checkout"
-msgstr "شيك"
+msgid "Legal Information"
+msgstr "معلومات التوصيل"
 
-#: templates/client/stocks.html:593
-msgid "Recent Orders Summary"
-msgstr "ملخص الطلبات الحديثة"
-
-#: templates/client/stocks.html:596
-msgid "Overview of your latest orders and their status"
-msgstr "نظرة عامة على أحدث طلباتك وحالتها"
-
-#: templates/client/stocks.html:601
+#: templates/company_register_comprehensive.html:465
 #, fuzzy
-msgid "All Orders"
-msgstr "جميع الطلبات"
+msgid "Tax ID / VAT"
+msgstr "الرقم الضريبي"
 
-#: templates/client/stocks.html:604
-msgid "Pending"
-msgstr "قيد الانتظار"
+#: templates/company_register_comprehensive.html:467
+msgid "أدخل الرقم الضريبي"
+msgstr ""
 
-#: templates/client/stocks.html:607
-msgid "With Offers"
-msgstr "مع العروض"
-
-#: templates/client/stocks.html:617
-msgid "All time"
-msgstr "طوال الوقت"
-
-#: templates/client/stocks.html:647
+#: templates/company_register_comprehensive.html:473
 #, fuzzy
-msgid "Received"
-msgstr "مستلم"
+msgid "Commercial Registration Number"
+msgstr "أدخل رقم السجل التجاري"
 
-#: templates/client/stocks.html:662
-msgid "Trending Companies"
-msgstr "الشركات الرائجة"
+#: templates/company_register_comprehensive.html:475
+msgid "أدخل رقم السجل التجاري"
+msgstr ""
 
-#: templates/client/stocks.html:715 templates/client/stocks.html:755
-#: templates/client/stocks.html:795 templates/client/stocks.html:835
-#: templates/client/stocks.html:875
+#: templates/company_register_comprehensive.html:487
+#: templates/company_status.html:861
+msgid "VAT Number"
+msgstr "رقم ضريبة القيمة المضافة"
+
+#: templates/company_register_comprehensive.html:489
 #, fuzzy
-msgid "More details"
-msgstr "تفاصيل الطلب"
+msgid "Enter VAT Number"
+msgstr "أدخل رقم ضريبة القيمة المضافة"
 
-#: templates/client/stocks.html:717 templates/client/stocks.html:757
-#: templates/client/stocks.html:797 templates/client/stocks.html:837
-#: templates/client/stocks.html:877
-msgid "Contact company"
-msgstr "تواصل مع الشركة"
-
-#: templates/client/stocks.html:891
-msgid "Dividend"
-msgstr "الأرباح"
-
-#: templates/client/stocks.html:920
+#: templates/company_register_comprehensive.html:507
 #, fuzzy
-msgid "My order list"
-msgstr "قائمة طلباتي"
+msgid "Contact Information"
+msgstr "معلومات الشركة"
 
-#: templates/client/stocks.html:1006
-msgid "Latest Transactions"
+#: templates/company_register_comprehensive.html:515
+#: templates/company_status.html:742
+msgid "Email"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:517
+msgid "أدخل البريد الإلكتروني"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:523
+#: templates/company_status.html:793
+msgid "Website"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:525
+msgid "https://www.example.com"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:534
+#: templates/company_status.html:810
+msgid "Office Phone"
+msgstr "هاتف المكتب"
+
+#: templates/company_register_comprehensive.html:536
+#: templates/company_register_comprehensive.html:544
+msgid "+966 50 123 4567"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:542
+#: templates/company_status.html:827
+msgid "Mobile Contact"
+msgstr "جهة الاتصال المحمول"
+
+#: templates/company_register_comprehensive.html:551
+#: templates/company_status.html:912
+msgid "Registered Address"
+msgstr "العنوان المسجل"
+
+#: templates/company_register_comprehensive.html:553
+msgid "أدخل العنوان المسجل للشركة"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:565
+#, fuzzy
+msgid "Contact Person & Banking Information"
+msgstr "المعلومات المصرفية"
+
+#: templates/company_register_comprehensive.html:571
+#, fuzzy
+msgid "Contact Person Information"
+msgstr "منصب الاتصال"
+
+#: templates/company_register_comprehensive.html:575
+#: templates/company_status.html:725
+msgid "Contact Person"
+msgstr "شخص الاتصال"
+
+#: templates/company_register_comprehensive.html:577
+msgid "أدخل اسم الشخص المسؤول"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:586
+#, fuzzy
+msgid "Position"
+msgstr "الإجراءات"
+
+#: templates/company_register_comprehensive.html:588
+msgid "مثال: مدير عام"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:595
+#: templates/company_status.html:776
+msgid "Owner Name"
+msgstr "اسم المالك"
+
+#: templates/company_register_comprehensive.html:597
+msgid "أدخل اسم صاحب المنشأة"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:604
+#: templates/company_status.html:1047
+msgid "Banking Information"
+msgstr "المعلومات المصرفية"
+
+#: templates/company_register_comprehensive.html:608
+#: templates/company_status.html:1051
+msgid "Bank Name"
+msgstr "اسم البنك"
+
+#: templates/company_register_comprehensive.html:610
+msgid "أدخل اسم البنك"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:616
+#: templates/company_status.html:1068
+msgid "Account Name"
+msgstr "اسم الحساب"
+
+#: templates/company_register_comprehensive.html:618
+msgid "أدخل اسم الحساب"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:626
+#, fuzzy
+msgid "Account Number / IBAN"
+msgstr "رقم الحساب"
+
+#: templates/company_register_comprehensive.html:628
+msgid "أدخل رقم الحساب أو IBAN"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:634
+#: templates/company_status.html:1102
+msgid "Bank Branch"
+msgstr "فرع البنك"
+
+#: templates/company_register_comprehensive.html:636
+msgid "أدخل فرع البنك"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:647
+#, fuzzy
+msgid "Document Attachments"
+msgstr "رفع المستندات"
+
+#: templates/company_register_comprehensive.html:648
+msgid "Upload required documents for company registration"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:656
+#, fuzzy
+msgid "Commercial Registration (PDF)"
+msgstr "السجل التجاري"
+
+#: templates/company_register_comprehensive.html:664
+#, fuzzy
+msgid "Tax Card (PDF)"
+msgstr "وثيقة البطاقة الضريبية"
+
+#: templates/company_register_comprehensive.html:674
+#, fuzzy
+msgid "E-Invoice Proof (PDF)"
+msgstr "وثيقة إثبات الفاتورة الإلكترونية"
+
+#: templates/company_register_comprehensive.html:682
+msgid "Logo (PNG/SVG)"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:692
+#, fuzzy
+msgid "Letterhead (PDF/DOCX)"
+msgstr "وثيقة الورقة الرسمية"
+
+#: templates/company_register_comprehensive.html:700
+#, fuzzy
+msgid "Bank Letter (PDF)"
+msgstr "وثيقة الخطاب البنكي"
+
+#: templates/company_register_comprehensive.html:710
+#, fuzzy
+msgid "Owner ID (JPG/PDF)"
+msgstr "صورة هوية المالك (JPG/PNG)"
+
+#: templates/company_register_comprehensive.html:718
+#, fuzzy
+msgid "Product Catalog"
+msgstr "وثيقة كتالوج المنتجات"
+
+#: templates/company_register_comprehensive.html:727
+#, fuzzy
+msgid "Quality Certificates / Licenses"
+msgstr "وثيقة شهادات الجودة"
+
+#: templates/company_register_comprehensive.html:736
+#, fuzzy
+msgid "Electronic Bill (PDF)"
+msgstr "وثيقة الفاتورة الإلكترونية"
+
+#: templates/company_register_comprehensive.html:744
+msgid "Owner ID Photo (JPG/PNG)"
+msgstr "صورة هوية المالك (JPG/PNG)"
+
+#: templates/company_register_comprehensive.html:759
+#, fuzzy
+msgid "Submit Company Registration"
+msgstr "تسجيل الشركة"
+
+#: templates/company_register_comprehensive.html:800
+msgid "Please fill in all required fields"
+msgstr ""
+
+#: templates/company_register_comprehensive.html:810
+msgid "File size must be less than 10MB"
+msgstr ""
+
+#: templates/company_registration_confirmation.html:7
+#, fuzzy
+msgid "Company Registration Submitted"
+msgstr "تسجيل الشركة"
+
+#: templates/company_registration_confirmation.html:110
+#, fuzzy
+msgid "Company Registration Submitted Successfully!"
+msgstr "تسجيل الشركة"
+
+#: templates/company_registration_confirmation.html:114
+msgid ""
+"Thank you for submitting your company registration. We have received your"
+" request and our team will review it carefully."
+msgstr ""
+
+#: templates/company_registration_confirmation.html:127
+msgid "Processing Time"
+msgstr ""
+
+#: templates/company_registration_confirmation.html:130
+msgid ""
+"Please allow 24-48 hours for our team to review your submission. We will "
+"notify you via email once the review is complete."
+msgstr ""
+
+#: templates/company_registration_confirmation.html:139
+msgid "What Happens Next?"
+msgstr ""
+
+#: templates/company_registration_confirmation.html:144
+msgid "Our team will review your company information and documents"
+msgstr ""
+
+#: templates/company_registration_confirmation.html:148
+msgid "We may contact you if additional information is needed"
+msgstr ""
+
+#: templates/company_registration_confirmation.html:152
+msgid "You will receive an email notification with the final decision"
+msgstr ""
+
+#: templates/company_registration_confirmation.html:156
+msgid "Once approved, your company will be activated in our system"
+msgstr ""
+
+#: templates/company_registration_confirmation.html:164
+#: templates/company_status.html:1534
+#, fuzzy
+msgid "Go to Dashboard"
+msgstr "لوحة التحكم"
+
+# Company Status page translations
+#: templates/company_registration_confirmation.html:167
+#, fuzzy
+msgid "View Company Status"
+msgstr "حالة الشركة"
+
+#: templates/company/add_employee.html:59 templates/company/add_product.html:61
+#: templates/company/analytics.html:62 templates/company/balance.html:131
+#: templates/company/bills.html:119 templates/company/chat.html:59
+#: templates/company/chat_view.html:106 templates/company/edit_employee.html:57
+#: templates/company/edit_product.html:59 templates/company/employees.html:59
+#: templates/company/form_layout.html:58
+#: templates/company/hidden_orders.html:59
+#: templates/company/import_products.html:61
+#: templates/company/import_products_preview.html:59
+#: templates/company/inventory.html:61 templates/company/make_offer.html:168
+#: templates/company/new_orders_by_sector.html:59
+#: templates/company/notifications.html:92 templates/company/offers.html:60
+#: templates/company/order_detail.html:59
+#: templates/company/order_details.html:59
+#: templates/company/order_management.html:58 templates/company/orders.html:157
+#: templates/company/packages.html:48 templates/company/stocks.html:9
+#: templates/company/stocks.html:161 templates/company_status.html:478
+msgid "Company Dashboard"
+msgstr "لوحة تحكم الشركة"
+
+#: templates/company_status.html:530
+msgid "View the current status of your registered company"
+msgstr "عرض الحالة الحالية لشركتك المسجلة"
+
+#: templates/company_status.html:541
+msgid "Company Name"
+msgstr "اسم الشركة"
+
+#: templates/company_status.html:544
+msgid "Sector not specified"
+msgstr "القطاع غير محدد"
+
+#: templates/company_status.html:548
+msgid "Company ID"
+msgstr "معرف الشركة"
+
+#: templates/company_status.html:559
+msgid "Check your registration progress"
+msgstr "تحقق من تقدم تسجيلك"
+
+#: templates/company_status.html:576
+msgid "Approval Status"
+msgstr "حالة الموافقة"
+
+#: templates/client/suppliers.html:457 templates/company_status.html:582
+msgid "Approved"
+msgstr "معتمد"
+
+#: templates/company_status.html:585
+msgid "Your company has been approved and is now active!"
+msgstr "تمت الموافقة على شركتك وهي نشطة الآن!"
+
+#: templates/company_status.html:589
+msgid "Pending Review"
+msgstr "في انتظار المراجعة"
+
+#: templates/company_status.html:592
+msgid "Your registration is under review (24-48 hours)."
+msgstr "تسجيلك قيد المراجعة (24-48 ساعة)."
+
+#: templates/company_status.html:610
+msgid "Active Status"
+msgstr "حالة النشاط"
+
+#: templates/company_status.html:616
+#, fuzzy
+msgid "Active"
+msgstr "غير نشطة"
+
+#: templates/company_status.html:619
+msgid "Your company is currently active!"
+msgstr "شركتك نشطة حالياً!"
+
+#: templates/company_status.html:623
+msgid "Inactive"
+msgstr "غير نشطة"
+
+#: templates/company_status.html:626
+msgid "Your company is currently inactive."
+msgstr "شركتك غير نشطة حالياً."
+
+#: templates/company_status.html:687
+msgid "Company Information"
+msgstr "معلومات الشركة"
+
+#: templates/client/suppliers.html:433 templates/company_status.html:696
+#: templates/company_status.html:713 templates/company_status.html:730
+#: templates/company_status.html:747 templates/company_status.html:764
+#: templates/company_status.html:781 templates/company_status.html:798
+#: templates/company_status.html:815 templates/company_status.html:832
+#: templates/company_status.html:849 templates/company_status.html:866
+#: templates/company_status.html:883 templates/company_status.html:900
+#: templates/company_status.html:917 templates/company_status.html:934
+#: templates/company_status.html:951 templates/company_status.html:1056
+#: templates/company_status.html:1073 templates/company_status.html:1090
+#: templates/company_status.html:1107 templates/company_status.html:1654
+msgid "Not provided"
+msgstr "غير متوفر"
+
+#: templates/company_status.html:700
+msgid "Enter legal type"
+msgstr "أدخل النوع القانوني"
+
+#: templates/company_status.html:702 templates/company_status.html:719
+#: templates/company_status.html:736 templates/company_status.html:753
+#: templates/company_status.html:770 templates/company_status.html:787
+#: templates/company_status.html:804 templates/company_status.html:821
+#: templates/company_status.html:838 templates/company_status.html:855
+#: templates/company_status.html:872 templates/company_status.html:889
+#: templates/company_status.html:906 templates/company_status.html:923
+#: templates/company_status.html:940 templates/company_status.html:957
+#: templates/company_status.html:1062 templates/company_status.html:1079
+#: templates/company_status.html:1096 templates/company_status.html:1113
+msgid "Save"
+msgstr ""
+
+#: templates/client/profile.html:782 templates/company_status.html:703
+#: templates/company_status.html:720 templates/company_status.html:737
+#: templates/company_status.html:754 templates/company_status.html:771
+#: templates/company_status.html:788 templates/company_status.html:805
+#: templates/company_status.html:822 templates/company_status.html:839
+#: templates/company_status.html:856 templates/company_status.html:873
+#: templates/company_status.html:890 templates/company_status.html:907
+#: templates/company_status.html:924 templates/company_status.html:941
+#: templates/company_status.html:958 templates/company_status.html:994
+#: templates/company_status.html:1031 templates/company_status.html:1063
+#: templates/company_status.html:1080 templates/company_status.html:1097
+#: templates/company_status.html:1114 templates/company_status.html:1164
+#: templates/company_status.html:1201 templates/company_status.html:1238
+#: templates/company_status.html:1275 templates/company_status.html:1312
+#: templates/company_status.html:1349 templates/company_status.html:1386
+#: templates/company_status.html:1423 templates/company_status.html:1460
+#, fuzzy
+msgid "Cancel"
+msgstr "إلغاء الرفع"
+
+#: templates/company_status.html:708
+msgid "Commercial Registration"
+msgstr "السجل التجاري"
+
+#: templates/company_status.html:717
+msgid "Enter commercial registration number"
+msgstr "أدخل رقم السجل التجاري"
+
+#: templates/company_status.html:734
+msgid "Enter contact person name"
+msgstr "أدخل اسم شخص الاتصال"
+
+#: templates/company_status.html:751
+#, fuzzy
+msgid "Enter email address"
+msgstr "أدخل عنوان التوصيل"
+
+#: templates/company_status.html:759
+msgid "Contact Position"
+msgstr "منصب الاتصال"
+
+#: templates/company_status.html:768
+msgid "Enter contact position"
+msgstr "أدخل منصب الاتصال"
+
+#: templates/company_status.html:785
+msgid "Enter owner name"
+msgstr "أدخل اسم المالك"
+
+#: templates/company_status.html:802
+msgid "Enter website URL"
+msgstr "أدخل رابط الموقع الإلكتروني"
+
+#: templates/company_status.html:819
+msgid "Enter office phone"
+msgstr "أدخل هاتف المكتب"
+
+#: templates/company_status.html:836
+msgid "Enter mobile contact"
+msgstr "أدخل جهة الاتصال المحمول"
+
+#: templates/company_status.html:844
+msgid "Tax ID"
+msgstr "الرقم الضريبي"
+
+#: templates/company_status.html:853
+msgid "Enter tax ID"
+msgstr "أدخل الرقم الضريبي"
+
+#: templates/company_status.html:870
+msgid "Enter VAT number"
+msgstr "أدخل رقم ضريبة القيمة المضافة"
+
+#: templates/company_status.html:887
+msgid "Enter founded year"
+msgstr "أدخل سنة التأسيس"
+
+#: templates/company_status.html:895
+msgid "Employees Count"
+msgstr "عدد الموظفين"
+
+#: templates/company_status.html:904
+msgid "Enter employees count"
+msgstr "أدخل عدد الموظفين"
+
+#: templates/company_status.html:921
+msgid "Enter registered address"
+msgstr "أدخل العنوان المسجل"
+
+#: templates/company_status.html:929
+msgid "Certifications"
+msgstr "الشهادات"
+
+#: templates/company_status.html:938
+msgid "Enter certifications"
+msgstr "أدخل الشهادات"
+
+#: templates/company_status.html:946
+msgid "Operating Countries"
+msgstr "البلدان العاملة"
+
+#: templates/company_status.html:955
+msgid "Enter operating countries"
+msgstr "أدخل البلدان العاملة"
+
+#: templates/company_status.html:963
+msgid "Electronic Bill Document"
+msgstr "وثيقة الفاتورة الإلكترونية"
+
+#: templates/company_status.html:970 templates/company_status.html:1007
+#: templates/company_status.html:1140 templates/company_status.html:1177
+#: templates/company_status.html:1214 templates/company_status.html:1251
+#: templates/company_status.html:1288 templates/company_status.html:1325
+#: templates/company_status.html:1362 templates/company_status.html:1399
+#: templates/company_status.html:1436 templates/company_status.html:1702
+msgid "Uploaded"
+msgstr "تم الرفع"
+
+#: templates/company_status.html:977 templates/company_status.html:1014
+#: templates/company_status.html:1147 templates/company_status.html:1184
+#: templates/company_status.html:1221 templates/company_status.html:1258
+#: templates/company_status.html:1295 templates/company_status.html:1332
+#: templates/company_status.html:1369 templates/company_status.html:1406
+#: templates/company_status.html:1443
+msgid "Not uploaded"
+msgstr "لم يتم الرفع"
+
+#: templates/company_status.html:984 templates/company_status.html:1021
+#: templates/company_status.html:1154 templates/company_status.html:1191
+#: templates/company_status.html:1228 templates/company_status.html:1265
+#: templates/company_status.html:1302 templates/company_status.html:1339
+#: templates/company_status.html:1376 templates/company_status.html:1413
+#: templates/company_status.html:1450
+#, fuzzy
+msgid "Current file:"
+msgstr "الملف الحالي"
+
+#: templates/company_status.html:993 templates/company_status.html:1030
+#: templates/company_status.html:1163 templates/company_status.html:1200
+#: templates/company_status.html:1237 templates/company_status.html:1274
+#: templates/company_status.html:1311 templates/company_status.html:1348
+#: templates/company_status.html:1385 templates/company_status.html:1422
+#: templates/company_status.html:1459
+msgid "Upload"
+msgstr "رفع"
+
+# Document field translations
+#: templates/company_status.html:1000
+msgid "Owner ID Photo Document"
+msgstr "وثيقة صورة هوية المالك"
+
+#: templates/company_status.html:1060
+msgid "Enter bank name"
+msgstr "أدخل اسم البنك"
+
+#: templates/company_status.html:1077
+msgid "Enter account name"
+msgstr "أدخل اسم الحساب"
+
+#: templates/company_status.html:1085
+msgid "Account Number"
+msgstr "رقم الحساب"
+
+#: templates/company_status.html:1094
+msgid "Enter account number"
+msgstr "أدخل رقم الحساب"
+
+#: templates/company_status.html:1111
+msgid "Enter bank branch"
+msgstr "أدخل فرع البنك"
+
+#: templates/company_status.html:1129
+msgid "Document Uploads"
+msgstr "رفع المستندات"
+
+#: templates/company_status.html:1133
+msgid "Commercial Registration Document"
+msgstr "مستند السجل التجاري"
+
+#: templates/company_status.html:1170
+msgid "Tax Card Document"
+msgstr "وثيقة البطاقة الضريبية"
+
+#: templates/company_status.html:1207
+msgid "E-Invoice Proof Document"
+msgstr "وثيقة إثبات الفاتورة الإلكترونية"
+
+#: templates/company_status.html:1244
+msgid "Logo Document"
+msgstr "وثيقة الشعار"
+
+#: templates/company_status.html:1281
+msgid "Letterhead Document"
+msgstr "وثيقة الورقة الرسمية"
+
+#: templates/company_status.html:1318
+msgid "Bank Letter Document"
+msgstr "وثيقة الخطاب البنكي"
+
+#: templates/company_status.html:1355
+msgid "Owner ID Document"
+msgstr "وثيقة هوية المالك"
+
+#: templates/company_status.html:1392
+msgid "Product Catalog Document"
+msgstr "وثيقة كتالوج المنتجات"
+
+#: templates/company_status.html:1429
+msgid "Quality Certificates Document"
+msgstr "وثيقة شهادات الجودة"
+
+# Registration status translations
+#: templates/company_status.html:1476
+msgid "Registration Timeline"
+msgstr "الجدول الزمني للتسجيل"
+
+#: templates/company_status.html:1488
+msgid "Company Registered"
+msgstr "تم تسجيل الشركة"
+
+#: templates/company_status.html:1505
+msgid "Company Approved"
+msgstr "تم اعتماد الشركة"
+
+#: templates/company_status.html:1521
+#, fuzzy
+msgid "Under Review"
+msgstr "معاينة الطلب"
+
+#: templates/company_status.html:1522
+msgid "Currently being reviewed by our team"
+msgstr ""
+
+#: templates/company_status.html:1538
+#, fuzzy
+msgid "Update Company Information"
+msgstr "معلومات الشركة"
+
+#: templates/company_status.html:1665
+msgid "Field updated successfully!"
+msgstr "تم تحديث الحقل بنجاح!"
+
+#: templates/company_status.html:1667 templates/company_status.html:1670
+msgid "Failed to update field"
+msgstr "فشل في تحديث الحقل"
+
+#: templates/company_status.html:1674
+msgid "Error updating field"
+msgstr "خطأ في تحديث الحقل"
+
+#: templates/company_status.html:1713
+msgid "Document uploaded successfully!"
+msgstr "تم رفع المستند بنجاح!"
+
+#: templates/company_status.html:1720 templates/company_status.html:1723
+msgid "Failed to upload document"
+msgstr "فشل في رفع المستند"
+
+#: templates/company_status.html:1727
+msgid "Error uploading document"
+msgstr "خطأ في رفع المستند"
+
+#: templates/client/ai_chat.html:11 templates/client/ai_chat.html:753
+#: templates/client/ai_chat.html:798 templates/client/ai_chat.html:861
+#: templates/client/ai_chat.html:880 templates/client/balance.html:201
+#: templates/client/chat.html:134 templates/client/deliveries.html:187
+#: templates/client/new_order_form.html:394
+#: templates/client/notifications.html:108
+#: templates/client/order_detail.html:108 templates/client/orders.html:167
+#: templates/client/profile.html:158 templates/client/stocks.html:193
+#: templates/client/supplier_order_form.html:440
+#: templates/client/supplier_orders.html:156
+#: templates/client/suppliers.html:124 templates/company/add_employee.html:71
+#: templates/company/add_product.html:73 templates/company/analytics.html:166
+#: templates/company/bills.html:130 templates/company/chat.html:71
+#: templates/company/chat_view.html:118 templates/company/edit_employee.html:69
+#: templates/company/edit_product.html:71 templates/company/employees.html:161
+#: templates/company/form_layout.html:70
+#: templates/company/hidden_orders.html:71
+#: templates/company/import_products.html:73
+#: templates/company/import_products_preview.html:71
+#: templates/company/inventory.html:73 templates/company/inventory.html:169
+#: templates/company/make_offer.html:180
+#: templates/company/new_orders_by_sector.html:71
+#: templates/company/offers.html:72 templates/company/order_detail.html:71
+#: templates/company/order_details.html:71
+#: templates/company/order_management.html:70 templates/company/orders.html:270
+#: templates/company/packages.html:150 templates/company/stocks.html:173
+msgid "AI Assistant"
+msgstr "المساعد الذكي"
+
+#: templates/client/ai_chat.html:708 templates/client/balance.html:171
+#: templates/client/company_products.html:130
+#: templates/client/deliveries.html:157 templates/client/deliveries.html:283
+#: templates/client/deliveries.html:290 templates/client/notifications.html:72
+#: templates/client/order_detail.html:83 templates/client/orders.html:141
+#: templates/client/stocks.html:145 templates/client/supplier_orders.html:121
+#: templates/client/suppliers.html:96
+msgid "My Deliveries"
+msgstr "توصيلاتي"
+
+#: templates/client/ai_chat.html:744 templates/client/balance.html:193
+#: templates/client/balance.html:294 templates/client/chat.html:125
+#: templates/client/company_products.html:153
+#: templates/client/deliveries.html:180 templates/client/form_layout.html:163
+#: templates/client/new_order_form.html:389
+#: templates/client/notifications.html:101
+#: templates/client/order_detail.html:103 templates/client/orders.html:162
+#: templates/client/profile.html:150 templates/client/stocks.html:184
+#: templates/client/suppliers.html:118 templates/company/add_employee.html:159
+#: templates/company/add_product.html:161 templates/company/analytics.html:155
+#: templates/company/balance.html:195 templates/company/balance.html:318
+#: templates/company/bills.html:229 templates/company/chat.html:161
+#: templates/company/chat_view.html:206
+#: templates/company/edit_employee.html:159
+#: templates/company/edit_product.html:159 templates/company/employees.html:150
+#: templates/company/form_layout.html:160
+#: templates/company/hidden_orders.html:159
+#: templates/company/import_products.html:161
+#: templates/company/import_products_preview.html:161
+#: templates/company/inventory.html:161 templates/company/make_offer.html:270
+#: templates/company/new_orders_by_sector.html:161
+#: templates/company/notifications.html:110 templates/company/offers.html:162
+#: templates/company/order_detail.html:159
+#: templates/company/order_details.html:159
+#: templates/company/order_management.html:158
+#: templates/company/orders.html:259 templates/company/packages.html:139
+#: templates/company/stocks.html:273
+msgid "Balance"
+msgstr "الرصيد"
+
+#: templates/client/ai_chat.html:799
+msgid "Get intelligent insights about your orders and business"
+msgstr ""
+
+#: templates/client/ai_chat.html:836
+#, fuzzy
+msgid "AI Business Assistant"
+msgstr "المساعد الذكي"
+
+#: templates/client/ai_chat.html:837
+msgid ""
+"Ask me anything - general questions, your orders, offers, and business "
+"insights"
+msgstr ""
+
+#: templates/client/ai_chat.html:880
+msgid "You"
+msgstr "أنت"
+
+#: templates/client/balance.html:10 templates/client/balance.html:287
+#, fuzzy
+msgid "Balance & Transactions"
 msgstr "أحدث المعاملات"
 
-#: templates/client/stocks.html:1029
-msgid "Name"
-msgstr "الاسم"
+# Missing translations for client dashboard
+#: templates/client/balance.html:178 templates/client/notifications.html:80
+#: templates/client/simple_test_form.html:78
+#: templates/client/submit_complaint.html:117
+#: templates/client/supplier_orders.html:135
+msgid "create order"
+msgstr "إنشاء طلب"
 
-#: templates/client/stocks.html:1036
+#: templates/client/balance.html:267 templates/company/balance.html:284
+#, fuzzy
+msgid "My Profile"
+msgstr "الملف الشخصي"
+
+#: templates/client/balance.html:306
+msgid "Download Report"
+msgstr ""
+
+#: templates/client/balance.html:322 templates/company/balance.html:335
+#, fuzzy
+msgid "Current Balance"
+msgstr "الملف الحالي"
+
+#: templates/client/balance.html:337
+#, fuzzy
+msgid "Total Spent"
+msgstr "إجمالي المنتجات:"
+
+#: templates/client/balance.html:352
+#, fuzzy
+msgid "Total Received"
+msgstr "مستلم"
+
+#: templates/client/balance.html:367 templates/company/balance.html:380
+#, fuzzy
+msgid "Total Transactions"
+msgstr "أحدث المعاملات"
+
+#: templates/client/balance.html:377 templates/company/balance.html:390
+#, fuzzy
+msgid "Recent Transactions"
+msgstr "أحدث المعاملات"
+
+#: templates/client/balance.html:383 templates/client/stocks.html:1102
+#: templates/company/balance.html:396
 #, fuzzy
 msgid "Date"
 msgstr "التاريخ"
 
-#: templates/client/stocks.html:1043
+#: templates/client/balance.html:386 templates/company/balance.html:399
+#: templates/company/notifications.html:247
+msgid "Type"
+msgstr ""
+
+#: templates/client/balance.html:389 templates/company/balance.html:402
+#, fuzzy
+msgid "Amount"
+msgstr "الدفع"
+
+#: templates/client/balance.html:392 templates/client/new_order_form.html:592
+#: templates/client/order_detail.html:475 templates/company/balance.html:405
+msgid "Description"
+msgstr "الوصف"
+
+#: templates/client/balance.html:395 templates/client/orders.html:691
+#: templates/client/stocks.html:1123 templates/client/submit_complaint.html:305
+#: templates/client/suppliers.html:313 templates/client/suppliers.html:373
+#: templates/company/balance.html:408
+msgid "Status"
+msgstr "الحالة"
+
+#: templates/client/balance.html:412 templates/company/balance.html:425
+#, fuzzy
+msgid "Credit"
+msgstr "فوري"
+
+#: templates/client/balance.html:416 templates/company/balance.html:427
+#, fuzzy
+msgid "Debit"
+msgstr "فوري"
+
+#: templates/client/balance.html:433 templates/company/balance.html:444
+#, fuzzy
+msgid "No description"
+msgstr "الوصف"
+
+#: templates/client/balance.html:439 templates/client/orders.html:763
+#: templates/company/balance.html:450 templates/company/stocks.html:590
+msgid "Completed"
+msgstr "مكتمل"
+
+#: templates/client/balance.html:448 templates/company/balance.html:464
+#, fuzzy
+msgid "No transactions found"
+msgstr "أحدث المعاملات"
+
+#: templates/client/balance.html:473
+#, fuzzy
+msgid "Generating..."
+msgstr "التقييم"
+
+#: templates/client/chat.html:341
+msgid "+ New Chat"
+msgstr ""
+
+#: templates/client/chat.html:346
+#, fuzzy
+msgid "Search chats..."
+msgstr "البحث في الطلبات..."
+
+#: templates/client/compare_offers.html:101 templates/client/stocks.html:667
+#, fuzzy
+msgid "All Orders"
+msgstr "جميع الطلبات"
+
+#: templates/client/compare_offers.html:514 templates/company/stocks.html:707
+#, fuzzy
+msgid "View All Orders"
+msgstr "عرض الطلبات"
+
+#: templates/client/deliveries.html:242
+#, fuzzy
+msgid "Search deliveries..."
+msgstr "البحث في الطلبات..."
+
+#: templates/client/deliveries.html:323
+#, fuzzy
+msgid "Order ID"
+msgstr "رقم الطلب"
+
+#: templates/client/deliveries.html:327
+#, fuzzy
+msgid "Total Value"
+msgstr "إجمالي الطلبات"
+
+#: templates/client/deliveries.html:331 templates/client/my_deliveries.html:152
+#: templates/client/order_detail.html:457
+#, fuzzy
+msgid "Created"
+msgstr "إنشاء طلب"
+
+#: templates/client/deliveries.html:339
+#, fuzzy
+msgid "Delivery Confirmation Code"
+msgstr "معلومات التوصيل"
+
+#: templates/client/deliveries.html:340
+#, fuzzy
+msgid "PENDING"
+msgstr "قيد الانتظار"
+
+#: templates/client/deliveries.html:342
+msgid "Provide this code to the delivery company to confirm receipt"
+msgstr ""
+
+#: templates/client/deliveries.html:351 templates/client/order_detail.html:978
+#: templates/client/orders.html:782
+#, fuzzy
+msgid "View Details"
+msgstr "تفاصيل الطلب"
+
+#: templates/client/deliveries.html:370
+#, fuzzy
+msgid "No deliveries found"
+msgstr "لم يتم العثور على موردين"
+
+#: templates/client/deliveries.html:371
+msgid "You have no packages ready for delivery at the moment."
+msgstr ""
+
+#: templates/client/form_layout.html:363 templates/client/order_detail.html:225
+#: templates/client/orders.html:325 templates/client/profile.html:349
+msgid "Home"
+msgstr "الرئيسية"
+
+#: templates/client/form_layout.html:383
+#, fuzzy
+msgid "Example Form"
+msgstr "نموذج من 5 خطوات"
+
+#: templates/client/form_layout.html:391
+#, fuzzy
+msgid "Purchase Details"
+msgstr "تفاصيل الطلب"
+
+#: templates/client/my_deliveries.html:130
+#: templates/client/new_order_form.html:805
+#, fuzzy
+msgid "Receiver Name"
+msgstr "اسم الطلب"
+
+#: templates/client/my_deliveries.html:134
+#: templates/client/new_order_form.html:813
+msgid "Receiver Phone"
+msgstr ""
+
+#: templates/client/my_deliveries.html:156
+msgid "Shipped"
+msgstr ""
+
+#: templates/client/new_order_form.html:537
+msgid "Fill out the form below to create a new order with multiple products"
+msgstr "املأ النموذج أدناه لإنشاء طلب جديد مع منتجات متعددة"
+
+#: templates/client/new_order_form.html:543
+msgid "Step"
+msgstr "الخطوة"
+
+#: templates/client/new_order_form.html:543 templates/client/suppliers.html:561
+msgid "of"
+msgstr "من"
+
+#: templates/client/new_order_form.html:545
+msgid "Complete"
+msgstr "مكتمل"
+
+#: templates/client/new_order_form.html:561
+#: templates/client/new_order_form.html:578
+#: templates/client/order_detail.html:150
+msgid "Order Details"
+msgstr "تفاصيل الطلب"
+
+#: templates/client/new_order_form.html:561
+#: templates/client/new_order_form.html:635
+#: templates/client/order_detail.html:411
+#: templates/client/order_detail.html:536 templates/client/orders.html:450
+#: templates/client/orders.html:690 templates/client/suppliers.html:375
+msgid "Products"
+msgstr "المنتجات"
+
+#: templates/client/new_order_form.html:561 templates/client/orders.html:451
+msgid "Delivery"
+msgstr "التوصيل"
+
+#: templates/client/new_order_form.html:561
+msgid "Payment"
+msgstr "الدفع"
+
+#: templates/client/new_order_form.html:561
+#: templates/company/add_employee.html:191
+#: templates/company/add_product.html:193 templates/company/analytics.html:197
+#: templates/company/balance.html:227 templates/company/bills.html:263
+#: templates/company/chat.html:192 templates/company/chat_view.html:238
+#: templates/company/edit_employee.html:190
+#: templates/company/edit_product.html:191 templates/company/employees.html:193
+#: templates/company/form_layout.html:191
+#: templates/company/hidden_orders.html:191
+#: templates/company/import_products.html:193
+#: templates/company/import_products_preview.html:192
+#: templates/company/inventory.html:213 templates/company/make_offer.html:301
+#: templates/company/new_orders_by_sector.html:192
+#: templates/company/notifications.html:128 templates/company/offers.html:193
+#: templates/company/order_detail.html:191
+#: templates/company/order_details.html:191
+#: templates/company/order_management.html:190
+#: templates/company/orders.html:301 templates/company/packages.html:182
+#: templates/company/stocks.html:305
+msgid "Settings"
+msgstr "الإعدادات"
+
+#: templates/client/new_order_form.html:584
+#: templates/client/order_detail.html:445 templates/client/orders.html:441
+#: templates/client/orders.html:686 templates/client/simple_test_form.html:140
+msgid "Order Name"
+msgstr "اسم الطلب"
+
+#: templates/client/new_order_form.html:586
+#: templates/client/simple_test_form.html:142
+msgid "Enter order name"
+msgstr "أدخل اسم الطلب"
+
+#: templates/client/new_order_form.html:594
+msgid "Enter order description"
+msgstr "أدخل وصف الطلب"
+
+#: templates/client/new_order_form.html:615
+#: templates/client/order_detail.html:453 templates/client/orders.html:449
+#: templates/client/orders.html:689
+msgid "Order Type"
+msgstr "نوع الطلب"
+
+#: templates/client/new_order_form.html:618
+msgid "Select Order Type"
+msgstr "اختر نوع الطلب"
+
+#: templates/client/new_order_form.html:619
+msgid "Purchase"
+msgstr "شراء"
+
+#: templates/client/new_order_form.html:620
+msgid "Service"
+msgstr "خدمة"
+
+#: templates/client/new_order_form.html:621
+msgid "Rental"
+msgstr "إيجار"
+
+#: templates/client/new_order_form.html:622
+msgid "Installation"
+msgstr "تركيب"
+
+#: templates/client/new_order_form.html:623
+msgid "Maintenance"
+msgstr "صيانة"
+
+#: templates/client/new_order_form.html:643
+msgid "Grab from Preferences"
+msgstr "جلب من التفضيلات"
+
+#: templates/client/new_order_form.html:652
+msgid "Add Product"
+msgstr "إضافة منتج"
+
+#: templates/client/new_order_form.html:658
+msgid "Smart Feature"
+msgstr "ميزة ذكية"
+
+#: templates/client/new_order_form.html:658
+msgid ""
+"All products you add to orders are automatically saved to your "
+"preferences for future use"
+msgstr ""
+"جميع المنتجات التي تضيفها إلى الطلبات يتم حفظها تلقائياً في تفضيلاتك "
+"للاستخدام المستقبلي"
+
+#: templates/client/new_order_form.html:666
+#: templates/company/bill_detail.html:272
+msgid "Product"
+msgstr "المنتج"
+
+#: templates/client/new_order_form.html:679
+#: templates/client/simple_test_form.html:163
+msgid "Product Name"
+msgstr "اسم المنتج"
+
+#: templates/client/new_order_form.html:682
+#: templates/client/simple_test_form.html:165
+msgid "Enter product name"
+msgstr "أدخل اسم المنتج"
+
+#: templates/client/new_order_form.html:688
+#: templates/client/order_detail.html:707
+msgid "Technical Specifications"
+msgstr "المواصفات التقنية"
+
+#: templates/client/new_order_form.html:691
+msgid "Enter technical specifications"
+msgstr "أدخل المواصفات التقنية"
+
+#: templates/client/new_order_form.html:697
+#: templates/client/new_order_form.html:700
+#: templates/client/simple_test_form.html:171
+#: templates/client/simple_test_form.html:173
+#: templates/company/bill_detail.html:273
+msgid "Quantity"
+msgstr "الكمية"
+
+#: templates/client/new_order_form.html:706
+#: templates/client/order_detail.html:696
+msgid "Unit"
+msgstr "الوحدة"
+
+#: templates/client/new_order_form.html:709
+msgid "Piece"
+msgstr ""
+
+#: templates/client/new_order_form.html:710
+msgid "Kilo"
+msgstr ""
+
+#: templates/client/new_order_form.html:711
+#, fuzzy
+msgid "Meter"
+msgstr "مكتمل"
+
+#: templates/client/new_order_form.html:712
+#, fuzzy
+msgid "Liter"
+msgstr "التوصيل"
+
+#: templates/client/new_order_form.html:718
+#, fuzzy
+msgid "Max Price Per Unit (Optional)"
+msgstr "السعر الأقصى للوحدة"
+
+#: templates/client/new_order_form.html:721
+#, fuzzy
+msgid "Enter maximum price"
+msgstr "أدخل السعر الأقصى للوحدة"
+
+#: templates/client/new_order_form.html:727
+#, fuzzy
+msgid "Product Code (Optional)"
+msgstr "رمز المنتج"
+
+#: templates/client/new_order_form.html:730
+msgid "Enter product code"
+msgstr "أدخل رمز المنتج"
+
+#: templates/client/new_order_form.html:736
+#, fuzzy
+msgid "Best Supplier (Optional)"
+msgstr "أفضل مورد"
+
+#: templates/client/new_order_form.html:739
+msgid "Enter best supplier"
+msgstr "أدخل أفضل مورد"
+
+#: templates/client/new_order_form.html:745
+#, fuzzy
+msgid "Upload File (Optional)"
+msgstr "رفع ملف"
+
+#: templates/client/new_order_form.html:761
+msgid "Delivery Information"
+msgstr "معلومات التوصيل"
+
+#: templates/client/new_order_form.html:769
+#: templates/client/new_order_form.html:1021
+#: templates/client/new_order_form.html:1307
+#: templates/client/order_detail.html:462
+msgid "Delivery Date"
+msgstr "تاريخ التوصيل"
+
+#: templates/client/new_order_form.html:777
+#: templates/client/order_detail.html:468
+#: templates/client/order_detail.html:926
+msgid "Delivery Time"
+msgstr "وقت التوصيل"
+
+#: templates/client/new_order_form.html:785
+msgid "Delivery Address"
+msgstr "عنوان التوصيل"
+
+#: templates/client/new_order_form.html:787
+msgid "Enter delivery address"
+msgstr "أدخل عنوان التوصيل"
+
+#: templates/client/new_order_form.html:793
+msgid "Delivery Notes"
+msgstr "ملاحظات التوصيل"
+
+#: templates/client/new_order_form.html:795
+msgid "Enter delivery notes"
+msgstr "أدخل ملاحظات التوصيل"
+
+#: templates/client/new_order_form.html:801
+#, fuzzy
+msgid "Receiver Information"
+msgstr "معلومات التوصيل"
+
+#: templates/client/new_order_form.html:807
+#, fuzzy
+msgid "Enter receiver full name"
+msgstr "أدخل اسم الطلب"
+
+#: templates/client/new_order_form.html:815
+#, fuzzy
+msgid "Enter receiver phone number"
+msgstr "أدخل اسم الطلب"
+
+#: templates/client/new_order_form.html:828
+#, fuzzy
+msgid "Payment System"
+msgstr "شروط الدفع"
+
+#: templates/client/new_order_form.html:836
+#, fuzzy
+msgid "Payment Step"
+msgstr "إضافة خطوة دفع"
+
+#: templates/client/new_order_form.html:841
+#, fuzzy
+msgid "Remove"
+msgstr "إزالة المنتج"
+
+#: templates/client/new_order_form.html:848
+msgid "Payment Method"
+msgstr "طريقة الدفع"
+
+#: templates/client/new_order_form.html:851
+#, fuzzy
+msgid "Select Method"
+msgstr "اختر القطاع"
+
+#: templates/client/new_order_form.html:852
+msgid "Cash"
+msgstr "نقداً"
+
+#: templates/client/new_order_form.html:853
+msgid "Bank Transfer"
+msgstr "تحويل بنكي"
+
+#: templates/client/new_order_form.html:854
+#, fuzzy
+msgid "Deferred Payment"
+msgstr "إضافة خطوة دفع"
+
+#: templates/client/new_order_form.html:855
+#, fuzzy
+msgid "Installments"
+msgstr "تركيب"
+
+#: templates/client/new_order_form.html:861
+#, fuzzy
+msgid "Payment Timing"
+msgstr "شروط الدفع"
+
+#: templates/client/new_order_form.html:863
+#, fuzzy
+msgid "Enter payment timing"
+msgstr "شروط الدفع"
+
+#: templates/client/new_order_form.html:869
+#, fuzzy
+msgid "Percentage"
+msgstr "إيجار"
+
+#: templates/client/new_order_form.html:871
+#, fuzzy
+msgid "Enter percentage"
+msgstr "أدخل اسم المنتج"
+
+#: templates/client/new_order_form.html:887
+#, fuzzy
+msgid "Add Another Payment"
+msgstr "إضافة خطوة دفع"
+
+#: templates/client/new_order_form.html:893
+#, fuzzy
+msgid "Payment Summary"
+msgstr "شروط الدفع"
+
+#: templates/client/new_order_form.html:895
+msgid "Total Steps"
+msgstr ""
+
+#: templates/client/new_order_form.html:896
+msgid "Total Percentage"
+msgstr ""
+
+#: templates/client/new_order_form.html:911
+#, fuzzy
+msgid "Order Settings"
+msgstr "حالة الطلب"
+
+#: templates/client/new_order_form.html:917
+msgid "Activate Direct Negotiation"
+msgstr ""
+
+#: templates/client/new_order_form.html:920
+#: templates/client/new_order_form.html:930
+#: venv/lib/python3.13/site-packages/flask_admin/model/widgets.py:116
+msgid "No"
+msgstr ""
+
+#: templates/client/new_order_form.html:921
+#: templates/client/new_order_form.html:931
+#: venv/lib/python3.13/site-packages/flask_admin/model/widgets.py:117
+msgid "Yes"
+msgstr ""
+
+#: templates/client/new_order_form.html:927
+#, fuzzy
+msgid "Accept Unregistered Suppliers"
+msgstr "أدخل أفضل مورد"
+
+#: templates/client/new_order_form.html:937
+msgid "Maximum Number of Suppliers"
+msgstr ""
+
+#: templates/client/new_order_form.html:940
+#, fuzzy
+msgid "Enter maximum suppliers"
+msgstr "أدخل أفضل مورد"
+
+#: templates/client/new_order_form.html:951
+msgid "Order Preview & Summary"
+msgstr "معاينة الطلب والملخص"
+
+#: templates/client/new_order_form.html:952
+msgid "Review your order details before submission"
+msgstr "راجع تفاصيل طلبك قبل الإرسال"
+
+#: templates/client/new_order_form.html:1022
+#: templates/client/new_order_form.html:1239
+#: templates/client/new_order_form.html:1454
+#: templates/client/suppliers.html:449
+msgid "Not specified"
+msgstr "غير محدد"
+
+#: templates/client/new_order_form.html:1099
+#: templates/client/suppliers.html:555
+msgid "Previous"
+msgstr "السابق"
+
+#: templates/client/new_order_form.html:1106
+#: templates/client/suppliers.html:556
+msgid "Next"
+msgstr "التالي"
+
+#: templates/client/new_order_form.html:1176
+msgid "Order Print Preview"
+msgstr "معاينة طباعة الطلب"
+
+#: templates/client/new_order_form.html:1182
+msgid "Generate PDF (Server-Side Arabic Support)"
+msgstr "إنشاء PDF (دعم عربي من جانب الخادم)"
+
+#: templates/client/new_order_form.html:1188
+msgid "Print"
+msgstr "طباعة"
+
+#: templates/client/new_order_form.html:1191 templates/client/profile.html:665
+msgid "Close"
+msgstr "إغلاق"
+
+#: templates/client/new_order_form.html:1297
+msgid "Order Preview"
+msgstr "معاينة الطلب"
+
+#: templates/client/new_order_form.html:1604
+msgid ""
+"Please fill in all required fields: Order Name, Sector, Order Type, and "
+"Delivery Date"
+msgstr ""
+"يرجى ملء جميع الحقول المطلوبة: اسم الطلب، القطاع، نوع الطلب، وتاريخ "
+"التوصيل"
+
+#: templates/client/new_order_form.html:1618
+msgid "Please add at least one product with a product name"
+msgstr "يرجى إضافة منتج واحد على الأقل مع اسم المنتج"
+
+#: templates/client/order_detail.html:7 templates/client/order_detail.html:239
+#: templates/company/notifications.html:250
+#, fuzzy
+msgid "Order"
+msgstr "الطلبات"
+
+#: templates/client/order_detail.html:7
+#, fuzzy
+msgid "Details"
+msgstr "تفاصيل الطلب"
+
+#: templates/client/order_detail.html:7 templates/client/suppliers.html:10
+msgid "B2B Platform"
+msgstr "منصة B2B"
+
+#: templates/client/order_detail.html:98
+msgid "Chats"
+msgstr "المحادثات"
+
+#: templates/client/order_detail.html:302
+#, fuzzy
+msgid "Order Accepted!"
+msgstr "الطلبات المنشأة"
+
+#: templates/client/order_detail.html:304
+#, fuzzy
+msgid "Awaiting Response"
+msgstr "في انتظار الرد"
+
+#: templates/client/order_detail.html:306
+#, fuzzy
+msgid "Order Submitted"
+msgstr "نوع الطلب"
+
+#: templates/client/order_detail.html:311
+msgid "Your order has been accepted by"
+msgstr ""
+
+#: templates/client/order_detail.html:311
+msgid "company(ies). You can now proceed with the next steps."
+msgstr ""
+
+#: templates/client/order_detail.html:313
+msgid "company(ies) have submitted offers. Review and respond to their proposals."
+msgstr ""
+
+#: templates/client/order_detail.html:315
+msgid ""
+"Your order is being reviewed by companies. You'll receive notifications "
+"when offers are submitted."
+msgstr ""
+
+#: templates/client/order_detail.html:327 templates/client/stocks.html:520
+#: templates/company/stocks.html:618
+#, fuzzy
+msgid "View Offers"
+msgstr "عرض العروض"
+
+#: templates/client/order_detail.html:334
+#: templates/client/order_detail.html:1043
+#, fuzzy
+msgid "Back to Orders"
+msgstr "إجمالي الطلبات"
+
+#: templates/client/order_detail.html:408
+#, fuzzy
+msgid "Overview"
+msgstr "خدمة"
+
+#: templates/client/order_detail.html:414
+#: templates/company/notifications.html:218
+#, fuzzy
+msgid "Offers"
+msgstr "عروضي"
+
+#: templates/client/order_detail.html:442
+#, fuzzy
+msgid "Order Information"
+msgstr "معلومات التوصيل"
+
+#: templates/client/order_detail.html:526
+#, fuzzy
+msgid "Order Statistics"
+msgstr "حالة الطلب"
+
+#: templates/client/order_detail.html:537
+#, fuzzy
+msgid "Items requested"
+msgstr "العناصر جاهزة"
+
+#: templates/client/order_detail.html:551
+#, fuzzy
+msgid "Accepted Offers"
+msgstr "العروض المستلمة"
+
+#: templates/client/order_detail.html:552
+msgid "Ready to proceed"
+msgstr ""
+
+#: templates/client/order_detail.html:566
+#, fuzzy
+msgid "Pending Offers"
+msgstr "الطلبات المعلقة"
+
+#: templates/client/order_detail.html:567 templates/company/stocks.html:544
+msgid "Awaiting response"
+msgstr "في انتظار الرد"
+
+#: templates/client/order_detail.html:581
+#: templates/client/order_detail.html:776 templates/client/stocks.html:504
+#: templates/client/stocks.html:711 templates/company/stocks.html:603
+msgid "Total Offers"
+msgstr "إجمالي العروض"
+
+#: templates/client/order_detail.html:582
+msgid "All submissions"
+msgstr ""
+
+#: templates/client/order_detail.html:663
+#, fuzzy
+msgid "Requested Products"
+msgstr "عرض المنتجات"
+
+#: templates/client/order_detail.html:664
+msgid "item(s) in this order"
+msgstr ""
+
+#: templates/client/order_detail.html:686
+msgid "Qty"
+msgstr ""
+
+#: templates/client/order_detail.html:770
+#, fuzzy
+msgid "Offers Received"
+msgstr "العروض المستلمة"
+
+#: templates/client/order_detail.html:771
+msgid "company(ies) have submitted offers for your order"
+msgstr ""
+
+#: templates/client/order_detail.html:814
+#, fuzzy
+msgid "Compare Offers"
+msgstr "عروضي"
+
+#: templates/client/order_detail.html:833
+msgid "Submitted"
+msgstr ""
+
+#: templates/client/order_detail.html:876
+#, fuzzy
+msgid "Offer Description"
+msgstr "الوصف"
+
+#: templates/client/order_detail.html:910
+#: templates/client/submit_complaint.html:301
+#, fuzzy
+msgid "Total Price"
+msgstr "إجمالي الطلبات"
+
+#: templates/client/order_detail.html:988
+#, fuzzy
+msgid "Accept Offer"
+msgstr "مع العروض"
+
+#: templates/client/order_detail.html:997
+msgid "Reject"
+msgstr ""
+
+#: templates/client/order_detail.html:1003
+#, fuzzy
+msgid "Offer Accepted"
+msgstr "العروض المستلمة"
+
+#: templates/client/order_detail.html:1005
+#, fuzzy
+msgid "Offer Rejected"
+msgstr "العروض المستلمة"
+
+#: templates/client/order_detail.html:1015
+#, fuzzy
+msgid "Chat with Company"
+msgstr "تواصل مع الشركة"
+
+#: templates/client/order_detail.html:1037
+#, fuzzy
+msgid "No Offers Yet"
+msgstr "إجمالي العروض"
+
+#: templates/client/order_detail.html:1038
+msgid ""
+"Companies are reviewing your order and will submit offers soon. You'll "
+"receive notifications when new offers arrive."
+msgstr ""
+
+#: templates/client/orders.html:221 templates/client/orders.html:377
+#: templates/client/stocks.html:1084
+msgid "Search orders..."
+msgstr "البحث في الطلبات..."
+
+#: templates/client/orders.html:341
+msgid "Orders Management"
+msgstr "إدارة الطلبات"
+
+#: templates/client/orders.html:342
+msgid "Track and manage all your purchase orders"
+msgstr "تتبع وإدارة جميع طلبات الشراء الخاصة بك"
+
+#: templates/client/orders.html:350
+msgid "Hide Filters"
+msgstr "إخفاء الفلاتر"
+
+#: templates/client/orders.html:350
+msgid "Show Filters"
+msgstr "إظهار الفلاتر"
+
+#: templates/client/orders.html:355
+#, fuzzy
+msgid "Export"
+msgstr "التالي"
+
+#: templates/client/orders.html:376
+#, fuzzy
+msgid "Search"
+msgstr "خدمة"
+
+#: templates/client/orders.html:420 templates/company/notifications.html:290
+msgid "Clear Filters"
+msgstr "مسح الفلاتر"
+
+#: templates/client/orders.html:436 templates/client/orders.html:685
+#: templates/client/stocks.html:1017 templates/client/stocks.html:1141
+#, fuzzy
+msgid "Order #"
+msgstr "رقم الطلب"
+
+#: templates/client/orders.html:443 templates/client/orders.html:687
+#, fuzzy
+msgid "Created Date"
+msgstr "إنشاء طلب"
+
+#: templates/client/orders.html:678 templates/client/profile.html:121
+#: templates/client/supplier_orders.html:8
+#: templates/client/supplier_orders.html:128
+#, fuzzy
+msgid "Supplier Orders"
+msgstr "طلبات الموردين"
+
+#: templates/client/orders.html:692 templates/client/suppliers.html:376
+msgid "Actions"
+msgstr "الإجراءات"
+
+#: templates/client/orders.html:751 templates/client/stocks.html:670
+#: templates/client/stocks.html:1175 templates/client/suppliers.html:461
+#: templates/company/balance.html:452 templates/company/stocks.html:559
+msgid "Pending"
+msgstr "قيد الانتظار"
+
+#: templates/client/orders.html:755
+msgid "Accepted"
+msgstr ""
+
+#: templates/client/orders.html:759
+msgid "Rejected"
+msgstr "مرفوض"
+
+#: templates/client/orders.html:786 templates/client/submit_complaint.html:10
+#: templates/client/submit_complaint.html:253
+#: templates/client/submit_complaint.html:513
+msgid "Submit Complaint"
+msgstr "تقديم شكوى"
+
+#: templates/client/profile.html:418 templates/client/profile.html:471
+msgid "Edit"
+msgstr "تحرير"
+
+#: templates/client/profile.html:426
+msgid "Personal Information"
+msgstr "المعلومات الشخصية"
+
+#: templates/client/profile.html:431
+msgid "First Name"
+msgstr "الاسم الأول"
+
+#: templates/client/profile.html:441
+msgid "Email address"
+msgstr "عنوان البريد الإلكتروني"
+
+#: templates/client/profile.html:451 templates/client/profile.html:650
+msgid "Phone"
+msgstr "رقم الهاتف"
+
+#: templates/client/profile.html:459 templates/client/profile.html:656
+msgid "Bio"
+msgstr "نبذة شخصية"
+
+#: templates/client/profile.html:480
+msgid "Security Settings"
+msgstr "إعدادات الأمان"
+
+#: templates/client/profile.html:485
+msgid "Password Status"
+msgstr "حالة كلمة المرور"
+
+#: templates/client/profile.html:488
+msgid "Last changed"
+msgstr "آخر تغيير"
+
+#: templates/client/profile.html:488
+msgid "Recently"
+msgstr "مؤخراً"
+
+#: templates/client/profile.html:493
+msgid "Two-Factor Auth"
+msgstr "المصادقة الثنائية"
+
+#: templates/client/profile.html:496
+msgid "Not enabled"
+msgstr "غير مفعل"
+
+#: templates/client/profile.html:501
+msgid ""
+"Keep your account secure by regularly updating your password and enabling"
+" additional security features."
+msgstr "حافظ على أمان حسابك من خلال تحديث كلمة المرور بانتظام وتفعيل ميزات الأمان الإضافية."
+
+#: templates/client/profile.html:509 templates/client/profile.html:747
+#: templates/client/profile.html:785
+msgid "Reset Password"
+msgstr "إعادة تعيين كلمة المرور"
+
+#: templates/client/profile.html:518
+msgid "Address"
+msgstr "العنوان"
+
+#: templates/client/profile.html:523
+msgid "Country"
+msgstr "البلد"
+
+#: templates/client/profile.html:531
+msgid "City/State"
+msgstr "المدينة/المحافظة"
+
+#: templates/client/profile.html:539
+msgid "Postal Code"
+msgstr "الرمز البريدي"
+
+#: templates/client/profile.html:547
+msgid "TAX ID"
+msgstr "الرقم الضريبي"
+
+#: templates/client/profile.html:586
+msgid "Edit Personal Information"
+msgstr "تعديل المعلومات الشخصية"
+
+#: templates/client/profile.html:589 templates/client/profile.html:690
+msgid "Update your details to keep your profile up-to-date."
+msgstr "حدث بياناتك للحفاظ على ملفك الشخصي محدثاً."
+
+#: templates/client/profile.html:596
+msgid "Social Links"
+msgstr "الروابط الاجتماعية"
+
+#: templates/client/profile.html:601
+msgid "Facebook"
+msgstr "فيسبوك"
+
+#: templates/client/profile.html:607
+msgid "X.com"
+msgstr "إكس"
+
+#: templates/client/profile.html:613
+msgid "Linkedin"
+msgstr "لينكد إن"
+
+#: templates/client/profile.html:619
+msgid "Instagram"
+msgstr "إنستغرام"
+
+#: templates/client/profile.html:668
+msgid "Save Changes"
+msgstr "حفظ التغييرات"
+
+#: templates/client/profile.html:687
+msgid "Edit Address"
+msgstr "تعديل العنوان"
+
+#: templates/client/profile.html:750
+msgid "Enter your current password and choose a new secure password."
+msgstr "أدخل كلمة المرور الحالية واختر كلمة مرور جديدة آمنة."
+
+#: templates/client/profile.html:759
+msgid "Current Password"
+msgstr "كلمة المرور الحالية"
+
+#: templates/client/profile.html:765
+msgid "New Password"
+msgstr "كلمة المرور الجديدة"
+
+#: templates/client/profile.html:769
+msgid "Password must be at least 8 characters long"
+msgstr "يجب أن تكون كلمة المرور 8 أحرف على الأقل"
+
+#: templates/client/profile.html:774
+msgid "Confirm New Password"
+msgstr "تأكيد كلمة المرور الجديدة"
+
+#: templates/client/simple_test_form.html:10
+#: templates/client/simple_test_form.html:115
+#: templates/client/simple_test_form.html:131
+msgid "Simple Test Form"
+msgstr "نموذج اختبار بسيط"
+
+#: templates/client/simple_test_form.html:181
+#, fuzzy
+msgid "Submit Order"
+msgstr "طلبات الموردين"
+
+#: templates/client/stocks.html:12
+#, fuzzy
+msgid "Client Dashboard"
+msgstr "لوحة تحكم العميل"
+
+#: templates/client/stocks.html:302 templates/client/suppliers.html:226
+msgid "العربية"
+msgstr ""
+
+#: templates/client/stocks.html:316 templates/company/stocks.html:389
+#, fuzzy
+msgid "Switch Role"
+msgstr "مع العروض"
+
+#: templates/client/stocks.html:322 templates/company/stocks.html:395
+#, fuzzy
+msgid "Client View"
+msgstr "الملف الحالي"
+
+#: templates/client/stocks.html:330 templates/company/stocks.html:403
+#, fuzzy
+msgid "Company View"
+msgstr "معرف الشركة"
+
+#: templates/client/stocks.html:437 templates/client/stocks.html:681
+#: templates/company/stocks.html:512
+msgid "Total Orders"
+msgstr "إجمالي الطلبات"
+
+#: templates/client/stocks.html:440
+#, fuzzy
+msgid "All time orders"
+msgstr "جميع الطلبات"
+
+#: templates/client/stocks.html:449
+#, fuzzy
+msgid "Orders created"
+msgstr "الطلبات المنشأة"
+
+#: templates/client/stocks.html:456
+#, fuzzy
+msgid "New Order"
+msgstr "طلب جديد"
+
+#: templates/client/stocks.html:472 templates/client/stocks.html:696
+#: templates/company/stocks.html:541
+msgid "Pending Orders"
+msgstr "الطلبات المعلقة"
+
+#: templates/client/stocks.html:475 templates/client/stocks.html:698
+msgid "Awaiting offers"
+msgstr "في انتظار العروض"
+
+#: templates/client/stocks.html:484
+#, fuzzy
+msgid "Orders pending"
+msgstr "الطلبات المعلقة"
+
+#: templates/client/stocks.html:488
+#, fuzzy
+msgid "View All"
+msgstr "عرض الكل"
+
+#: templates/client/stocks.html:507
+msgid "Received offers"
+msgstr "العروض المستلمة"
+
+#: templates/client/stocks.html:516
+msgid "Offers received"
+msgstr "العروض المستلمة"
+
+#: templates/client/stocks.html:536
+msgid "Cart Items"
+msgstr "عناصر السلة"
+
+#: templates/client/stocks.html:539
+#, fuzzy
+msgid "Products in cart"
+msgstr "المنتجات في السلة"
+
+#: templates/client/stocks.html:548
+#, fuzzy
+msgid "Items ready"
+msgstr "العناصر جاهزة"
+
+#: templates/client/stocks.html:552
+#, fuzzy
+msgid "Checkout"
+msgstr "شيك"
+
+#: templates/client/stocks.html:659
+msgid "Recent Orders Summary"
+msgstr "ملخص الطلبات الحديثة"
+
+#: templates/client/stocks.html:662
+msgid "Overview of your latest orders and their status"
+msgstr "نظرة عامة على أحدث طلباتك وحالتها"
+
+#: templates/client/stocks.html:673
+msgid "With Offers"
+msgstr "مع العروض"
+
+#: templates/client/stocks.html:683
+msgid "All time"
+msgstr "طوال الوقت"
+
+#: templates/client/stocks.html:713
+#, fuzzy
+msgid "Received"
+msgstr "مستلم"
+
+#: templates/client/stocks.html:728
+msgid "Trending Companies"
+msgstr "الشركات الرائجة"
+
+#: templates/client/stocks.html:781 templates/client/stocks.html:821
+#: templates/client/stocks.html:861 templates/client/stocks.html:901
+#: templates/client/stocks.html:941
+#, fuzzy
+msgid "More details"
+msgstr "تفاصيل الطلب"
+
+#: templates/client/stocks.html:783 templates/client/stocks.html:823
+#: templates/client/stocks.html:863 templates/client/stocks.html:903
+#: templates/client/stocks.html:943
+msgid "Contact company"
+msgstr "تواصل مع الشركة"
+
+#: templates/client/stocks.html:957
+msgid "Dividend"
+msgstr "الأرباح"
+
+#: templates/client/stocks.html:986
+#, fuzzy
+msgid "My order list"
+msgstr "قائمة طلباتي"
+
+#: templates/client/stocks.html:1020
+msgid "No Category"
+msgstr "لا توجد فئة"
+
+#: templates/client/stocks.html:1055 templates/client/stocks.html:1215
+#, fuzzy
+msgid "No orders found"
+msgstr "لم يتم العثور على موردين"
+
+#: templates/client/stocks.html:1072
+msgid "Latest Transactions"
+msgstr "أحدث المعاملات"
+
+#: templates/client/stocks.html:1095
+msgid "Name"
+msgstr "الاسم"
+
+#: templates/client/stocks.html:1109
 #, fuzzy
 msgid "Price"
 msgstr "السعر"
 
-#: templates/client/stocks.html:1050
+#: templates/client/stocks.html:1116
 #, fuzzy
 msgid "Category"
 msgstr "الفئة"
 
-#: templates/client/stocks.html:1057
-msgid "Status"
-msgstr "الحالة"
+#: templates/client/stocks.html:1203 templates/company/notifications.html:237
+#: templates/company/notifications.html:349
+#, fuzzy
+msgid "Delete"
+msgstr "وقت التوصيل"
+
+#: templates/client/submit_complaint.html:255
+msgid "Submit a complaint about offer"
+msgstr ""
+
+#: templates/client/submit_complaint.html:269
+#, fuzzy
+msgid "Back to Complaints"
+msgstr "تواصل مع الشركة"
+
+#: templates/client/submit_complaint.html:285
+#, fuzzy
+msgid "Offer Information"
+msgstr "معلومات التوصيل"
+
+#: templates/client/submit_complaint.html:293
+#, fuzzy
+msgid "Offer ID"
+msgstr "العروض المستلمة"
+
+#: templates/client/submit_complaint.html:297
+#: templates/client/suppliers.html:370
+msgid "Company"
+msgstr "الشركة"
+
+# Company Status page translations
+#: templates/client/submit_complaint.html:338
+#, fuzzy
+msgid "Complaint Details"
+msgstr "حالة الشركة"
+
+#: templates/client/submit_complaint.html:349
+#, fuzzy
+msgid "Complaint Title"
+msgstr "الملف الشخصي للشركة"
+
+#: templates/client/submit_complaint.html:355
+msgid "Brief description of the issue"
+msgstr ""
+
+#: templates/client/submit_complaint.html:374
+#, fuzzy
+msgid "Detailed Description"
+msgstr "الوصف"
+
+#: templates/client/submit_complaint.html:380
+msgid ""
+"Please provide a detailed description of your complaint, including any "
+"relevant details, dates, and specific issues you encountered."
+msgstr ""
+
+#: templates/client/submit_complaint.html:383
+msgid "Be as specific as possible to help us resolve your issue quickly."
+msgstr ""
+
+#: templates/client/submit_complaint.html:407
+#, fuzzy
+msgid "Complaint Type"
+msgstr "الشركة"
+
+#: templates/client/submit_complaint.html:412
+msgid "General Complaint"
+msgstr ""
+
+#: templates/client/submit_complaint.html:413
+msgid "Quality Issue"
+msgstr ""
+
+#: templates/client/submit_complaint.html:414
+#, fuzzy
+msgid "Delivery Problem"
+msgstr "ملاحظات التوصيل"
+
+#: templates/client/submit_complaint.html:415
+#, fuzzy
+msgid "Service Issue"
+msgstr "خدمة"
+
+#: templates/client/submit_complaint.html:416
+#, fuzzy
+msgid "Communication Problem"
+msgstr "الملف الشخصي للشركة"
+
+#: templates/client/submit_complaint.html:417
+msgid "Pricing Issue"
+msgstr ""
+
+#: templates/client/submit_complaint.html:424
+msgid "Priority Level"
+msgstr ""
+
+#: templates/client/submit_complaint.html:429
+msgid "Low - Minor issue, not urgent"
+msgstr ""
+
+#: templates/client/submit_complaint.html:430
+msgid "Normal - Standard priority"
+msgstr ""
+
+#: templates/client/submit_complaint.html:431
+msgid "High - Important issue"
+msgstr ""
+
+#: templates/client/submit_complaint.html:432
+msgid "Urgent - Critical issue requiring immediate attention"
+msgstr ""
+
+#: templates/client/submit_complaint.html:482
+msgid "What happens next?"
+msgstr ""
+
+#: templates/client/submit_complaint.html:485
+msgid ""
+"Your complaint will be reviewed by our team and forwarded to the relevant"
+" company. They will respond within 24-48 hours with a resolution plan."
+msgstr ""
+
+#: templates/client/supplier_orders.html:306
+msgid "Orders created from supplier product selections"
+msgstr ""
+
+#: templates/client/suppliers.html:179
+msgid "Type to search..."
+msgstr "اكتب للبحث..."
+
+#: templates/client/suppliers.html:277
+msgid "Suppliers Directory"
+msgstr "دليل الموردين"
+
+#: templates/client/suppliers.html:279
+msgid "Browse and connect with verified suppliers"
+msgstr "تصفح وتواصل مع الموردين المعتمدين"
+
+#: templates/client/suppliers.html:289
+msgid "Filters"
+msgstr "المرشحات"
+
+#: templates/client/suppliers.html:296
+msgid "Export List"
+msgstr "تصدير القائمة"
+
+#: templates/client/suppliers.html:307
+msgid "Search Suppliers"
+msgstr "البحث عن الموردين"
+
+#: templates/client/suppliers.html:308
+msgid "Company name, email..."
+msgstr "اسم الشركة، البريد الإلكتروني..."
+
+#: templates/client/suppliers.html:327
+msgid "Location"
+msgstr "الموقع"
+
+#: templates/client/suppliers.html:328
+msgid "City, country..."
+msgstr "المدينة، البلد..."
+
+#: templates/client/suppliers.html:342
+msgid "Verified and registered suppliers in our platform"
+msgstr "الموردين المعتمدين والمسجلين في منصتنا"
+
+#: templates/client/suppliers.html:371
+msgid "Contact"
+msgstr "جهة الاتصال"
+
+#: templates/client/suppliers.html:374
+msgid "Rating"
+msgstr "التقييم"
+
+#: templates/client/suppliers.html:519
+msgid "View Products"
+msgstr "عرض المنتجات"
+
+#: templates/client/suppliers.html:538
+msgid "No suppliers found"
+msgstr "لم يتم العثور على موردين"
+
+#: templates/client/suppliers.html:540
+msgid "No suppliers match your current filters."
+msgstr "لا يوجد موردين يطابقون المرشحات الحالية."
+
+#: templates/client/suppliers.html:561
+msgid "Showing"
+msgstr "عرض"
+
+#: templates/client/suppliers.html:561
+msgid "to"
+msgstr "إلى"
+
+#: templates/client/suppliers.html:561
+msgid "results"
+msgstr "نتيجة"
+
+#: templates/company/add_employee.html:86 templates/company/add_product.html:88
+#: templates/company/analytics.html:80 templates/company/balance.html:139
+#: templates/company/chat.html:86 templates/company/chat_view.html:133
+#: templates/company/edit_employee.html:84
+#: templates/company/edit_product.html:86 templates/company/employees.html:77
+#: templates/company/form_layout.html:85
+#: templates/company/hidden_orders.html:86
+#: templates/company/import_products.html:88
+#: templates/company/import_products_preview.html:86
+#: templates/company/inventory.html:88 templates/company/make_offer.html:195
+#: templates/company/new_orders_by_sector.html:86
+#: templates/company/offers.html:87 templates/company/order_detail.html:86
+#: templates/company/order_details.html:86
+#: templates/company/order_management.html:85 templates/company/orders.html:184
+#: templates/company/packages.html:66 templates/company/stocks.html:200
+#: templates/company/stocks.html:668
+msgid "Company Profile"
+msgstr "الملف الشخصي للشركة"
+
+#: templates/company/add_employee.html:107
+#: templates/company/add_product.html:109 templates/company/analytics.html:101
+#: templates/company/balance.html:155 templates/company/bills.html:163
+#: templates/company/chat.html:107 templates/company/chat_view.html:154
+#: templates/company/edit_employee.html:105
+#: templates/company/edit_product.html:107 templates/company/employees.html:98
+#: templates/company/form_layout.html:106
+#: templates/company/hidden_orders.html:107
+#: templates/company/import_products.html:109
+#: templates/company/import_products_preview.html:107
+#: templates/company/inventory.html:109 templates/company/make_offer.html:216
+#: templates/company/new_orders_by_sector.html:107
+#: templates/company/notifications.html:101 templates/company/offers.html:108
+#: templates/company/order_detail.html:107
+#: templates/company/order_details.html:107
+#: templates/company/order_management.html:106 templates/company/orders.html:8
+#: templates/company/orders.html:205 templates/company/packages.html:87
+#: templates/company/stocks.html:221
+msgid "Manage Orders"
+msgstr "إدارة الطلبات"
+
+#: templates/company/add_employee.html:118
+#: templates/company/add_product.html:120 templates/company/analytics.html:112
+#: templates/company/balance.html:163 templates/company/bills.html:174
+#: templates/company/chat.html:118 templates/company/chat_view.html:165
+#: templates/company/edit_employee.html:116
+#: templates/company/edit_product.html:118 templates/company/employees.html:109
+#: templates/company/form_layout.html:117
+#: templates/company/hidden_orders.html:118
+#: templates/company/import_products.html:120
+#: templates/company/import_products_preview.html:118
+#: templates/company/inventory.html:120 templates/company/make_offer.html:227
+#: templates/company/new_orders_by_sector.html:118
+#: templates/company/offers.html:119 templates/company/order_detail.html:118
+#: templates/company/order_details.html:118
+#: templates/company/order_management.html:117
+#: templates/company/orders.html:216 templates/company/packages.html:98
+#: templates/company/stocks.html:232
+msgid "My Offers"
+msgstr "عروضي"
+
+#: templates/company/add_employee.html:129
+#: templates/company/add_product.html:131 templates/company/analytics.html:123
+#: templates/company/balance.html:171 templates/company/bills.html:185
+#: templates/company/chat.html:129 templates/company/chat_view.html:176
+#: templates/company/edit_employee.html:127
+#: templates/company/edit_product.html:129 templates/company/employees.html:120
+#: templates/company/form_layout.html:128
+#: templates/company/hidden_orders.html:129
+#: templates/company/import_products.html:131
+#: templates/company/import_products_preview.html:129
+#: templates/company/inventory.html:131 templates/company/make_offer.html:238
+#: templates/company/new_orders_by_sector.html:129
+#: templates/company/notifications.html:253 templates/company/offers.html:130
+#: templates/company/order_detail.html:129
+#: templates/company/order_details.html:129
+#: templates/company/order_management.html:128
+#: templates/company/orders.html:227 templates/company/packages.html:109
+#: templates/company/stocks.html:243
+msgid "Inventory"
+msgstr "المخزون"
+
+#: templates/company/add_employee.html:140
+#: templates/company/add_product.html:142 templates/company/analytics.html:134
+#: templates/company/balance.html:179 templates/company/bills.html:207
+#: templates/company/chat.html:140 templates/company/chat_view.html:187
+#: templates/company/edit_employee.html:138
+#: templates/company/edit_product.html:140 templates/company/employees.html:131
+#: templates/company/form_layout.html:139
+#: templates/company/hidden_orders.html:140
+#: templates/company/import_products.html:142
+#: templates/company/import_products_preview.html:140
+#: templates/company/inventory.html:142 templates/company/make_offer.html:249
+#: templates/company/new_orders_by_sector.html:140
+#: templates/company/offers.html:141 templates/company/order_detail.html:140
+#: templates/company/order_details.html:140
+#: templates/company/order_management.html:139
+#: templates/company/orders.html:238 templates/company/packages.html:120
+#: templates/company/stocks.html:254
+msgid "Employee Management"
+msgstr "إدارة الموظفين"
+
+#: templates/company/add_employee.html:151
+#: templates/company/add_product.html:153 templates/company/analytics.html:145
+#: templates/company/balance.html:187 templates/company/bills.html:218
+#: templates/company/chat.html:151 templates/company/chat_view.html:198
+#: templates/company/edit_employee.html:149
+#: templates/company/edit_product.html:151 templates/company/employees.html:142
+#: templates/company/form_layout.html:150
+#: templates/company/hidden_orders.html:151
+#: templates/company/import_products.html:153
+#: templates/company/import_products_preview.html:151
+#: templates/company/inventory.html:153 templates/company/make_offer.html:260
+#: templates/company/new_orders_by_sector.html:151
+#: templates/company/offers.html:152 templates/company/order_detail.html:151
+#: templates/company/order_details.html:151
+#: templates/company/order_management.html:150
+#: templates/company/orders.html:249 templates/company/packages.html:131
+#: templates/company/stocks.html:265
+msgid "Client Chats"
+msgstr "دردشات العملاء"
+
+#: templates/company/add_employee.html:170
+#: templates/company/add_product.html:172 templates/company/analytics.html:176
+#: templates/company/balance.html:211 templates/company/bills.html:240
+#: templates/company/chat.html:171 templates/company/chat_view.html:217
+#: templates/company/edit_employee.html:169
+#: templates/company/edit_product.html:170 templates/company/employees.html:172
+#: templates/company/form_layout.html:170
+#: templates/company/hidden_orders.html:170
+#: templates/company/import_products.html:172
+#: templates/company/import_products_preview.html:171
+#: templates/company/inventory.html:192 templates/company/make_offer.html:280
+#: templates/company/new_orders_by_sector.html:171
+#: templates/company/offers.html:172 templates/company/order_detail.html:170
+#: templates/company/order_details.html:170
+#: templates/company/order_management.html:169
+#: templates/company/orders.html:280 templates/company/packages.html:161
+#: templates/company/stocks.html:284
+#, fuzzy
+msgid "Packages"
+msgstr "الصفحة"
+
+#: templates/company/add_employee.html:180
+#: templates/company/add_product.html:182 templates/company/analytics.html:186
+#: templates/company/balance.html:219 templates/company/bills.html:251
+#: templates/company/chat.html:181 templates/company/chat_view.html:227
+#: templates/company/edit_employee.html:179
+#: templates/company/edit_product.html:180 templates/company/employees.html:182
+#: templates/company/form_layout.html:180
+#: templates/company/hidden_orders.html:180
+#: templates/company/import_products.html:182
+#: templates/company/import_products_preview.html:181
+#: templates/company/inventory.html:202 templates/company/make_offer.html:290
+#: templates/company/new_orders_by_sector.html:181
+#: templates/company/offers.html:182 templates/company/order_detail.html:180
+#: templates/company/order_details.html:180
+#: templates/company/order_management.html:179
+#: templates/company/orders.html:290 templates/company/packages.html:171
+#: templates/company/stocks.html:294
+msgid "Analytics"
+msgstr ""
+
+#: templates/company/balance.html:10 templates/company/balance.html:262
+#: templates/company/balance.html:311
+#, fuzzy
+msgid "Company Balance & Transactions"
+msgstr "أحدث المعاملات"
+
+#: templates/company/balance.html:203
+msgid "AI Analytics"
+msgstr ""
+
+#: templates/company/balance.html:272
+#, fuzzy
+msgid "Company Account"
+msgstr "اسم الشركة"
+
+#: templates/company/balance.html:289
+#, fuzzy
+msgid "Account Settings"
+msgstr "الإعدادات"
+
+#: templates/company/balance.html:294
+#, fuzzy
+msgid "Log Out"
+msgstr "تسجيل الخروج"
+
+#: templates/company/balance.html:350
+#, fuzzy
+msgid "Total Revenue"
+msgstr "إجمالي الطلبات"
+
+#: templates/company/balance.html:365
+#, fuzzy
+msgid "Total Expenses"
+msgstr "إجمالي الطلبات"
+
+#: templates/company/balance.html:454
+#, fuzzy
+msgid "Failed"
+msgstr "اختر ملف"
+
+#: templates/company/balance.html:471
+msgid "Export PDF Statement"
+msgstr ""
+
+#: templates/company/bill_detail.html:7
+#, fuzzy
+msgid "Bill Details"
+msgstr "تفاصيل الطلب"
+
+#: templates/company/bill_detail.html:238
+#, fuzzy
+msgid "Client"
+msgstr "دردشات العملاء"
+
+#: templates/company/bill_detail.html:239
+#: templates/company/bill_detail.html:260
+msgid "N/A"
+msgstr ""
+
+#: templates/company/bill_detail.html:243
+msgid "Issue Date"
+msgstr ""
+
+#: templates/company/bill_detail.html:248
+#, fuzzy
+msgid "Due Date"
+msgstr "تاريخ التوصيل"
+
+#: templates/company/bill_detail.html:253
+#, fuzzy
+msgid "Order Reference"
+msgstr "معاينة الطلب"
+
+#: templates/company/bill_detail.html:268
+#, fuzzy
+msgid "Bill Items"
+msgstr "عناصر السلة"
+
+#: templates/company/bill_detail.html:274
+#, fuzzy
+msgid "Unit Price"
+msgstr "السعر"
+
+#: templates/company/bill_detail.html:275
+#: templates/company/notifications.html:182
+msgid "Total"
+msgstr ""
+
+#: templates/company/bill_detail.html:294
+#, fuzzy
+msgid "Total Amount"
+msgstr "إجمالي المنتجات:"
+
+#: templates/company/bill_detail.html:301
+msgid "Back to Bills"
+msgstr ""
+
+#: templates/company/bill_detail.html:305
+msgid "Download PDF"
+msgstr ""
+
+#: templates/company/bill_detail.html:310
+#, fuzzy
+msgid "Mark as Paid"
+msgstr "تحديد الكل كمقروء"
+
+#: templates/company/bill_detail.html:318
+msgid "Are you sure you want to mark this bill as paid?"
+msgstr ""
+
+#: templates/company/bill_detail.html:332
+#: templates/company/bill_detail.html:337
+#, fuzzy
+msgid "Error updating bill status"
+msgstr "خطأ في تحديث الحقل"
+
+#: templates/company/bills.html:141 templates/company/inventory.html:180
+#: templates/company/orders.html:169 templates/company/stocks.html:185
+#, fuzzy
+msgid "AI Agent"
+msgstr "المساعد الذكي"
+
+#: templates/company/bills.html:196
+msgid "Bills"
+msgstr ""
+
+#: templates/company/notifications.html:74
+#, fuzzy
+msgid "Company Portal"
+msgstr "الملف الشخصي للشركة"
+
+#: templates/company/notifications.html:119
+#: templates/company/notifications.html:176
+#: templates/partials/notification_dropdown.html:41
+msgid "Notifications"
+msgstr "الإشعارات"
+
+#: templates/company/notifications.html:153
+#, fuzzy
+msgid "Company Notifications"
+msgstr "لا توجد إشعارات"
+
+#: templates/company/notifications.html:177
+msgid "Stay updated with your company activities and system updates"
+msgstr ""
+
+#: templates/company/notifications.html:186
+#: templates/company/notifications.html:212
+msgid "Unread"
+msgstr ""
+
+#: templates/company/notifications.html:199
+#, fuzzy
+msgid "Search notifications..."
+msgstr "الإشعارات"
+
+#: templates/company/notifications.html:209
+msgid "All"
+msgstr ""
+
+#: templates/company/notifications.html:221
+#: templates/company/notifications.html:254
+#, fuzzy
+msgid "System"
+msgstr "الخطوة"
+
+#: templates/company/notifications.html:227
+#, fuzzy
+msgid "Advanced Filters"
+msgstr "إخفاء الفلاتر"
+
+#: templates/company/notifications.html:234
+#, fuzzy
+msgid "Mark as Read"
+msgstr "تحديد الكل كمقروء"
+
+#: templates/company/notifications.html:249
+#, fuzzy
+msgid "All Types"
+msgstr "النوع القانوني"
+
+#: templates/company/notifications.html:251
+#, fuzzy
+msgid "Offer"
+msgstr "عروضي"
+
+#: templates/company/notifications.html:255
+msgid "Financial"
+msgstr ""
+
+#: templates/company/notifications.html:261
+#, fuzzy
+msgid "Priority"
+msgstr "طباعة"
+
+#: templates/company/notifications.html:263
+#, fuzzy
+msgid "All Priorities"
+msgstr "جميع الطلبات"
+
+#: templates/company/notifications.html:264
+#, fuzzy
+msgid "Urgent"
+msgstr "إيجار"
+
+#: templates/company/notifications.html:265
+msgid "High"
+msgstr ""
+
+#: templates/company/notifications.html:266
+#, fuzzy
+msgid "Normal"
+msgstr "عام"
+
+#: templates/company/notifications.html:267
+msgid "Low"
+msgstr ""
+
+#: templates/company/notifications.html:273
+#, fuzzy
+msgid "From Date"
+msgstr "التاريخ"
+
+#: templates/company/notifications.html:279
+#, fuzzy
+msgid "To Date"
+msgstr "التاريخ"
+
+#: templates/company/notifications.html:325
+msgid "New"
+msgstr ""
+
+#: templates/company/notifications.html:344
+#, fuzzy
+msgid "Mark as read"
+msgstr "تحديد الكل كمقروء"
+
+#: templates/company/notifications.html:364
+#, fuzzy
+msgid "No notifications found"
+msgstr "لا توجد إشعارات"
+
+#: templates/company/notifications.html:365
+msgid "Try adjusting your filters or search terms."
+msgstr ""
+
+#: templates/company/notifications.html:398
+msgid "Are you sure you want to delete this notification?"
+msgstr ""
+
+#: templates/company/notifications.html:454
+msgid "Are you sure you want to delete"
+msgstr ""
+
+#: templates/company/notifications.html:454
+#, fuzzy
+msgid "notifications?"
+msgstr "الإشعارات"
+
+#: templates/company/stocks.html:515
+msgid "Received from clients"
+msgstr "مستلمة من العملاء"
+
+#: templates/company/stocks.html:527
+msgid "View Orders"
+msgstr "عرض الطلبات"
+
+#: templates/company/stocks.html:572
+msgid "Completed Orders"
+msgstr "الطلبات المكتملة"
+
+#: templates/company/stocks.html:575
+msgid "Successfully delivered"
+msgstr "تم التسليم بنجاح"
+
+#: templates/company/stocks.html:606
+msgid "Made by your company"
+msgstr "مقدمة من شركتكم"
+
+#: templates/company/stocks.html:632
+msgid "Inventory Summary"
+msgstr "ملخص المخزون"
+
+#: templates/company/stocks.html:635
+msgid "Products & Categories"
+msgstr "المنتجات والفئات"
+
+#: templates/company/stocks.html:641
+msgid "Total Products:"
+msgstr "إجمالي المنتجات:"
+
+#: templates/company/stocks.html:645
+msgid "Active Categories:"
+msgstr "الفئات النشطة:"
+
+#: templates/company/stocks.html:649
+msgid "Low Stock Items:"
+msgstr "المواد منخفضة المخزون"
+
+#: templates/company/stocks.html:655
+msgid "Manage Inventory"
+msgstr "إدارة المخزون"
+
+#: templates/company/stocks.html:671
+msgid "Manage your company"
+msgstr "إدارة شركتكم"
+
+#: templates/company/stocks.html:683
+msgid "Edit Profile"
+msgstr "تعديل الملف الشخصي"
+
+#: templates/partials/notification_dropdown.html:42
+#, fuzzy
+msgid "notifications"
+msgstr "الإشعارات"
+
+#: templates/partials/notification_dropdown.html:56
+msgid "Mark all read"
+msgstr "تحديد الكل كمقروء"
+
+#: templates/partials/notification_dropdown.html:194
+#, fuzzy
+msgid "No more notifications"
+msgstr "لا توجد إشعارات"
+
+#: templates/partials/notification_dropdown.html:204
+msgid "No notifications"
+msgstr "لا توجد إشعارات"
+
+#: templates/partials/notification_dropdown.html:205
+msgid "You're all caught up!"
+msgstr "لقد قرأت كل شيء!"
+
+#: templates/partials/notification_dropdown.html:215
+msgid "View all notifications"
+msgstr "عرض جميع الإشعارات"
 
 #: venv/lib/python3.13/site-packages/click/_termui_impl.py:600
 #, python-brace-format
@@ -930,6 +3327,15 @@ msgstr "الإجراءات"
 
 #: venv/lib/python3.13/site-packages/click/core.py:1202
 #, python-brace-format
+msgid "Got unexpected extra argument ({args})"
+msgid_plural "Got unexpected extra arguments ({args})"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
 #: venv/lib/python3.13/site-packages/click/core.py:1221
 #, python-brace-format
 msgid "DeprecationWarning: The command {name!r} is deprecated.{extra_message}"
@@ -958,9 +3364,20 @@ msgstr ""
 
 #: venv/lib/python3.13/site-packages/click/core.py:2324
 #, python-brace-format
+msgid "Takes {nargs} values but 1 was given."
+msgid_plural "Takes {nargs} values but {len} were given."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
 #: venv/lib/python3.13/site-packages/click/core.py:2404
 #, python-brace-format
-msgid "DeprecationWarning: The {param_type} {name!r} is deprecated.{extra_message}"
+msgid ""
+"DeprecationWarning: The {param_type} {name!r} is "
+"deprecated.{extra_message}"
 msgstr ""
 
 #: venv/lib/python3.13/site-packages/click/core.py:2807
@@ -1044,6 +3461,15 @@ msgstr ""
 
 #: venv/lib/python3.13/site-packages/click/exceptions.py:235
 #, python-brace-format
+msgid "Did you mean {possibility}?"
+msgid_plural "(Possible options: {possibilities})"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
 #: venv/lib/python3.13/site-packages/click/exceptions.py:282
 msgid "unknown error"
 msgstr ""
@@ -1069,6 +3495,15 @@ msgstr ""
 
 #: venv/lib/python3.13/site-packages/click/parser.py:444
 #, python-brace-format
+msgid "Option {name!r} requires an argument."
+msgid_plural "Option {name!r} requires {nargs} arguments."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
 #: venv/lib/python3.13/site-packages/click/shell_completion.py:326
 msgid "Shell completion is not supported for Bash versions older than 4.4."
 msgstr ""
@@ -1105,13 +3540,33 @@ msgstr ""
 
 #: venv/lib/python3.13/site-packages/click/types.py:332
 #, python-brace-format
-msgid "Choose from:\n\t{choices}"
+msgid ""
+"Choose from:\n"
+"\t{choices}"
 msgstr ""
 
 #: venv/lib/python3.13/site-packages/click/types.py:369
 #, python-brace-format
+msgid "{value!r} is not {choice}."
+msgid_plural "{value!r} is not one of {choices}."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
 #: venv/lib/python3.13/site-packages/click/types.py:460
 #, python-brace-format
+msgid "{value!r} does not match the format {format}."
+msgid_plural "{value!r} does not match the formats {formats}."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
 #: venv/lib/python3.13/site-packages/click/types.py:482
 #, python-brace-format
 msgid "{value!r} is not a valid {number_type}."
@@ -1177,6 +3632,15 @@ msgstr ""
 
 #: venv/lib/python3.13/site-packages/click/types.py:1055
 #, python-brace-format
+msgid "{len_type} values are required, but {len_value} was given."
+msgid_plural "{len_type} values are required, but {len_value} were given."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
 #: venv/lib/python3.13/site-packages/flask_admin/contrib/rediscli.py:113
 msgid "Cli: Invalid command."
 msgstr ""
@@ -1374,7 +3838,16 @@ msgstr ""
 #: venv/lib/python3.13/site-packages/flask_admin/contrib/pymongo/view.py:396
 #: venv/lib/python3.13/site-packages/flask_admin/contrib/sqla/view.py:1254
 #: venv/lib/python3.13/site-packages/flask_admin/model/base.py:2238
-#, python-format
+#, fuzzy, python-format
+msgid "Record was successfully deleted."
+msgid_plural "%(count)s records were successfully deleted."
+msgstr[0] "تم التسليم بنجاح"
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
 #: venv/lib/python3.13/site-packages/flask_admin/contrib/mongoengine/view.py:682
 #: venv/lib/python3.13/site-packages/flask_admin/contrib/peewee/view.py:538
 #: venv/lib/python3.13/site-packages/flask_admin/contrib/pymongo/view.py:401
@@ -1397,6 +3870,15 @@ msgstr ""
 
 #: venv/lib/python3.13/site-packages/flask_admin/contrib/sqla/validators.py:64
 #, python-format
+msgid "At least %(num)d item is required"
+msgid_plural "At least %(num)d items are required"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
 #: venv/lib/python3.13/site-packages/flask_admin/contrib/sqla/validators.py:79
 msgid "Not a valid ISO currency code (e.g. USD, EUR, CNY)."
 msgstr ""
@@ -1490,6 +3972,26 @@ msgstr "اختر القطاع"
 msgid "Please select model"
 msgstr ""
 
+#: venv/lib/python3.13/site-packages/flask_wtf/file.py:55
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:293
+#: venv/lib/python3.13/site-packages/wtforms/validators.py:323
+msgid "This field is required."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_wtf/file.py:94
+#, python-brace-format
+msgid "File does not have an approved extension: {extensions}"
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_wtf/file.py:101
+msgid "File does not have an approved extension."
+msgstr ""
+
+#: venv/lib/python3.13/site-packages/flask_wtf/file.py:140
+#, python-brace-format
+msgid "File must be between {min_size} and {max_size} bytes."
+msgstr ""
+
 #: venv/lib/python3.13/site-packages/wtforms/validators.py:86
 #, python-format
 msgid "Invalid field name '%s'."
@@ -1502,10 +4004,37 @@ msgstr ""
 
 #: venv/lib/python3.13/site-packages/wtforms/validators.py:146
 #, python-format
+msgid "Field must be at least %(min)d character long."
+msgid_plural "Field must be at least %(min)d characters long."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
 #: venv/lib/python3.13/site-packages/wtforms/validators.py:152
 #, python-format
+msgid "Field cannot be longer than %(max)d character."
+msgid_plural "Field cannot be longer than %(max)d characters."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
 #: venv/lib/python3.13/site-packages/wtforms/validators.py:158
 #, python-format
+msgid "Field must be exactly %(max)d character long."
+msgid_plural "Field must be exactly %(max)d characters long."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
 #: venv/lib/python3.13/site-packages/wtforms/validators.py:164
 #, python-format
 msgid "Field must be between %(min)d and %(max)d characters long."
@@ -1524,11 +4053,6 @@ msgstr ""
 #: venv/lib/python3.13/site-packages/wtforms/validators.py:222
 #, python-format
 msgid "Number must be between %(min)s and %(max)s."
-msgstr ""
-
-#: venv/lib/python3.13/site-packages/wtforms/validators.py:293
-#: venv/lib/python3.13/site-packages/wtforms/validators.py:323
-msgid "This field is required."
 msgstr ""
 
 #: venv/lib/python3.13/site-packages/wtforms/validators.py:358
@@ -1609,6 +4133,15 @@ msgstr ""
 
 #: venv/lib/python3.13/site-packages/wtforms/fields/choices.py:212
 #, python-format
+msgid "'%(value)s' is not a valid choice for this field."
+msgid_plural "'%(value)s' are not valid choices for this field."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+msgstr[3] ""
+msgstr[4] ""
+msgstr[5] ""
+
 #: venv/lib/python3.13/site-packages/wtforms/fields/datetime.py:52
 msgid "Not a valid datetime value."
 msgstr ""
@@ -1638,427 +4171,60 @@ msgstr ""
 msgid "Not a valid float value."
 msgstr ""
 
-# Missing translations for client dashboard
-msgid "create order"
-msgstr "إنشاء طلب"
-
-msgid "Company Registration"
-msgstr "تسجيل الشركة"
-
-msgid "Page"
-msgstr "الصفحة"
-
-msgid "Simple Test Form"
-msgstr "نموذج اختبار بسيط"
-
-msgid "General"
-msgstr "عام"
-
-msgid "No Category"
-msgstr "لا توجد فئة"
-
-msgid "B2B Platform"
-msgstr "منصة B2B"
-
-msgid "Suppliers Directory"
-msgstr "دليل الموردين"
-
-msgid "Browse and connect with verified suppliers"
-msgstr "تصفح وتواصل مع الموردين المعتمدين"
-
-msgid "Filters"
-msgstr "المرشحات"
-
-msgid "Export List"
-msgstr "تصدير القائمة"
-
-msgid "Search Suppliers"
-msgstr "البحث عن الموردين"
-
-msgid "Company name, email..."
-msgstr "اسم الشركة، البريد الإلكتروني..."
-
-msgid "All Status"
-msgstr "جميع الحالات"
-
-msgid "Approved"
-msgstr "معتمد"
-
-msgid "All Sectors"
-msgstr "جميع القطاعات"
-
-msgid "Technology"
-msgstr "التكنولوجيا"
-
-msgid "Manufacturing"
-msgstr "التصنيع"
-
-msgid "Healthcare"
-msgstr "الرعاية الصحية"
-
-msgid "Food & Beverage"
-msgstr "الأغذية والمشروبات"
-
-msgid "Textiles"
-msgstr "المنسوجات"
-
-msgid "Chemicals"
-msgstr "المواد الكيميائية"
-
-msgid "Energy"
-msgstr "الطاقة"
-
-msgid "Location"
-msgstr "الموقع"
-
-msgid "City, country..."
-msgstr "المدينة، البلد..."
-
-msgid "Verified and registered suppliers in our platform"
-msgstr "الموردين المعتمدين والمسجلين في منصتنا"
-
-msgid "Sort by Name"
-msgstr "ترتيب حسب الاسم"
-
-msgid "Sort by Sector"
-msgstr "ترتيب حسب القطاع"
-
-msgid "Sort by Date"
-msgstr "ترتيب حسب التاريخ"
-
-msgid "Company"
-msgstr "الشركة"
-
-msgid "Contact"
-msgstr "جهة الاتصال"
-
-msgid "Rating"
-msgstr "التقييم"
-
-msgid "Actions"
-msgstr "الإجراءات"
-
-msgid "Not provided"
-msgstr "غير متوفر"
-
-msgid "View Products"
-msgstr "عرض المنتجات"
-
-msgid "No suppliers found"
-msgstr "لم يتم العثور على موردين"
-
-msgid "No suppliers match your current filters."
-msgstr "لا يوجد موردين يطابقون المرشحات الحالية."
-
-msgid "Showing"
-msgstr "عرض"
-
-msgid "to"
-msgstr "إلى"
-
-msgid "results"
-msgstr "نتيجة"
-
 #~ msgid "Dark Mode"
 #~ msgstr "الوضع المظلم"
-msgid "Type to search..."
-msgstr "اكتب للبحث..."
 
-# Company Status page translations
-msgid "Company Status"
-msgstr "حالة الشركة"
+#~ msgid "Offer submitted successfully!"
+#~ msgstr ""
 
-msgid "View the current status of your registered company"
-msgstr "عرض الحالة الحالية لشركتك المسجلة"
+#~ msgid "Electronics"
+#~ msgstr "الإلكترونيات"
 
-msgid "Company ID"
-msgstr "معرف الشركة"
+#~ msgid "Automotive"
+#~ msgstr "السيارات"
 
-msgid "Sector not specified"
-msgstr "القطاع غير محدد"
+#~ msgid "Construction"
+#~ msgstr "البناء"
 
-msgid "Check your registration progress"
-msgstr "تحقق من تقدم تسجيلك"
+#~ msgid "Medical"
+#~ msgstr "الطبي"
 
-msgid "Approval Status"
-msgstr "حالة الموافقة"
+#~ msgid "Other"
+#~ msgstr "أخرى"
 
-msgid "Your company has been approved and is now active!"
-msgstr "تمت الموافقة على شركتك وهي نشطة الآن!"
+#~ msgid "All Sectors"
+#~ msgstr "جميع القطاعات"
 
-msgid "Pending Review"
-msgstr "في انتظار المراجعة"
+#~ msgid "Technology"
+#~ msgstr "التكنولوجيا"
 
-msgid "Your registration is under review (24-48 hours)."
-msgstr "تسجيلك قيد المراجعة (24-48 ساعة)."
+#~ msgid "Manufacturing"
+#~ msgstr "التصنيع"
 
-msgid "Active Status"
-msgstr "حالة النشاط"
+#~ msgid "Healthcare"
+#~ msgstr "الرعاية الصحية"
 
-msgid "Your company is currently active!"
-msgstr "شركتك نشطة حالياً!"
+#~ msgid "Food & Beverage"
+#~ msgstr "الأغذية والمشروبات"
 
-msgid "Inactive"
-msgstr "غير نشطة"
+#~ msgid "Textiles"
+#~ msgstr "المنسوجات"
 
-msgid "Your company is currently inactive."
-msgstr "شركتك غير نشطة حالياً."
+#~ msgid "Chemicals"
+#~ msgstr "المواد الكيميائية"
 
-msgid "Company Information"
-msgstr "معلومات الشركة"
+#~ msgid "Energy"
+#~ msgstr "الطاقة"
 
-msgid "Legal Type"
-msgstr "النوع القانوني"
+#~ msgid "Sort by Sector"
+#~ msgstr "ترتيب حسب القطاع"
 
-msgid "Enter legal type"
-msgstr "أدخل النوع القانوني"
+#~ msgid "Sort by Date"
+#~ msgstr "ترتيب حسب التاريخ"
 
-msgid "Commercial Registration"
-msgstr "السجل التجاري"
+#~ msgid "Choose file"
+#~ msgstr "اختر ملف"
 
-msgid "Enter commercial registration number"
-msgstr "أدخل رقم السجل التجاري"
-
-msgid "Contact Person"
-msgstr "شخص الاتصال"
-
-msgid "Enter contact person name"
-msgstr "أدخل اسم شخص الاتصال"
-
-msgid "Contact Position"
-msgstr "منصب الاتصال"
-
-msgid "Enter contact position"
-msgstr "أدخل منصب الاتصال"
-
-msgid "Owner Name"
-msgstr "اسم المالك"
-
-msgid "Enter owner name"
-msgstr "أدخل اسم المالك"
-
-msgid "Enter website URL"
-msgstr "أدخل رابط الموقع الإلكتروني"
-
-msgid "Office Phone"
-msgstr "هاتف المكتب"
-
-msgid "Enter office phone"
-msgstr "أدخل هاتف المكتب"
-
-msgid "Mobile Contact"
-msgstr "جهة الاتصال المحمول"
-
-msgid "Enter mobile contact"
-msgstr "أدخل جهة الاتصال المحمول"
-
-msgid "Tax ID"
-msgstr "الرقم الضريبي"
-
-msgid "Enter tax ID"
-msgstr "أدخل الرقم الضريبي"
-
-msgid "VAT Number"
-msgstr "رقم ضريبة القيمة المضافة"
-
-msgid "Enter VAT number"
-msgstr "أدخل رقم ضريبة القيمة المضافة"
-
-msgid "Founded Year"
-msgstr "سنة التأسيس"
-
-msgid "Enter founded year"
-msgstr "أدخل سنة التأسيس"
-
-msgid "Employees Count"
-msgstr "عدد الموظفين"
-
-msgid "Enter employees count"
-msgstr "أدخل عدد الموظفين"
-
-msgid "Registered Address"
-msgstr "العنوان المسجل"
-
-msgid "Enter registered address"
-msgstr "أدخل العنوان المسجل"
-
-msgid "Certifications"
-msgstr "الشهادات"
-
-msgid "Enter certifications"
-msgstr "أدخل الشهادات"
-
-msgid "Operating Countries"
-msgstr "البلدان العاملة"
-
-msgid "Enter operating countries"
-msgstr "أدخل البلدان العاملة"
-
-msgid "Banking Information"
-msgstr "المعلومات المصرفية"
-
-msgid "Bank Name"
-msgstr "اسم البنك"
-
-msgid "Enter bank name"
-msgstr "أدخل اسم البنك"
-
-msgid "Account Name"
-msgstr "اسم الحساب"
-
-msgid "Enter account name"
-msgstr "أدخل اسم الحساب"
-
-msgid "Account Number"
-msgstr "رقم الحساب"
-
-msgid "Enter account number"
-msgstr "أدخل رقم الحساب"
-
-msgid "Bank Branch"
-msgstr "فرع البنك"
-
-msgid "Enter bank branch"
-msgstr "أدخل فرع البنك"
-
-msgid "Document Uploads"
-msgstr "رفع المستندات"
-
-msgid "Commercial Registration Document"
-msgstr "مستند السجل التجاري"
-
-msgid "Uploaded"
-msgstr "تم الرفع"
-
-msgid "Not uploaded"
-msgstr "لم يتم الرفع"
-
-msgid "Upload new document"
-msgstr "رفع مستند جديد"
-
-msgid "Current file"
-msgstr "الملف الحالي"
-
-msgid "Choose file"
-msgstr "اختر ملف"
-
-msgid "Upload"
-msgstr "رفع"
-
-msgid "Cancel upload"
-msgstr "إلغاء الرفع"
-
-msgid "Field updated successfully!"
-msgstr "تم تحديث الحقل بنجاح!"
-
-msgid "Failed to update field"
-msgstr "فشل في تحديث الحقل"
-
-msgid "Document uploaded successfully!"
-msgstr "تم رفع المستند بنجاح!"
-
-msgid "Failed to upload document"
-msgstr "فشل في رفع المستند"
-
-msgid "Error updating field"
-msgstr "خطأ في تحديث الحقل"
-
-msgid "Error uploading document"
-msgstr "خطأ في رفع المستند"
-
-msgid "Company Name"
-msgstr "اسم الشركة"
-
-msgid "Company Dashboard"
-msgstr "لوحة تحكم الشركة"
-
-msgid "Company Profile"
-msgstr "الملف الشخصي للشركة"
-
-msgid "Manage Orders"
-msgstr "إدارة الطلبات"
-
-msgid "My Offers"
-msgstr "عروضي"
-
-msgid "Inventory"
-msgstr "المخزون"
-
-msgid "Employee Management"
-msgstr "إدارة الموظفين"
-
-msgid "Client Chats"
-msgstr "دردشات العملاء"
-
-msgid "Received from clients"
-msgstr "مستلمة من العملاء"
-
-msgid "Awaiting response"
-msgstr "في انتظار الرد"
-
-msgid "Successfully delivered"
-msgstr "تم التسليم بنجاح"
-
-msgid "Made by your company"
-msgstr "مقدمة من شركتكم"
-
-msgid "Inventory Summary"
-msgstr "ملخص المخزون"
-
-msgid "Products & Categories"
-msgstr "المنتجات والفئات"
-
-msgid "Total Products:"
-msgstr "إجمالي المنتجات:"
-
-msgid "Active Categories:"
-msgstr "الفئات النشطة:"
-
-msgid "Low Stock Items:"
-msgstr "المواد منخفضة المخزون"
-
-msgid "Manage your company"
-msgstr "إدارة شركتكم"
-
-msgid "Completed Orders"
-msgstr "الطلبات المكتملة"
-
-msgid "View Orders"
-msgstr "عرض الطلبات"
-
-msgid "Completed"
-msgstr "مكتمل"
-
-msgid "Manage Inventory"
-msgstr "إدارة المخزون"
-
-msgid "Edit Profile"
-msgstr "تعديل الملف الشخصي"
-
-msgid "Notifications"
-msgstr "الإشعارات"
-
-msgid "Mark all read"
-msgstr "تحديد الكل كمقروء"
-
-msgid "No notifications"
-msgstr "لا توجد إشعارات"
-
-msgid "You're all caught up!"
-msgstr "لقد قرأت كل شيء!"
-
-msgid "View all notifications"
-msgstr "عرض جميع الإشعارات"
-
-msgid "My Deliveries"
-msgstr "توصيلاتي"
-
-msgid "Balance"
-msgstr "الرصيد"
-
-msgid "AI Assistant"
-msgstr "المساعد الذكي"
-
-msgid "You"
-msgstr "أنت"
+#~ msgid "Date not available"
+#~ msgstr "التاريخ غير متوفر"
 

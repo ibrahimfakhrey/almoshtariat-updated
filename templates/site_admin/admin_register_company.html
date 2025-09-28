@@ -285,6 +285,16 @@
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}شهادات الجودة{% else %}Quality Certificates{% endif %}</label>
                                 <input type="file" name="quality_certificates_doc" accept=".pdf,.jpg,.jpeg,.png" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
                             </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}وثيقة الفاتورة الإلكترونية{% else %}Electronic Bill Document{% endif %}</label>
+                                <input type="file" name="electronic_bill_doc" accept=".pdf,.jpg,.jpeg,.png" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{% if request.cookies.get('language') == 'ar' %}صورة هوية المالك{% else %}Owner ID Photo Document{% endif %}</label>
+                                <input type="file" name="owner_id_photo_doc" accept=".pdf,.jpg,.jpeg,.png" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white">
+                            </div>
                         </div>
                     </div>
                     

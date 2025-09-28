@@ -129,10 +129,10 @@
     <div :class="sidebarToggle ? 'justify-center' : 'justify-between'" class="sidebar-header flex items-center gap-2 pt-8 pb-7">
      <a href="/">
       <span :class="sidebarToggle ? 'hidden' : ''" class="logo">
-       <img alt="Logo" class="dark:hidden" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
-       <img alt="Logo" class="hidden dark:block" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+       <img alt="Logo" class="dark:hidden" src="../static/image.png"/>
+       <img alt="Logo" class="hidden dark:block" src="../static/image.png"/>
       </span>
-      <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="https://img.icons8.com/?size=100&id=XnHBz2LnhELw&format=png&color=000000"/>
+      <img :class="sidebarToggle ? 'xl:block' : 'hidden'" alt="Logo" class="logo-icon" src="../static/image.png"/>
      </a>
     </div>
     <!-- SIDEBAR HEADER -->
@@ -377,6 +377,7 @@
         <!-- Language Toggle -->
         
         <!-- Role Switcher for Dual-Role Users -->
+        {% if current_user.dual %}
         <div x-data="roleSwitcher()" x-show="canSwitchRoles" class="relative">
           <button @click="toggleRoleSwitcher()" class="hover:text-blue-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-blue-200 bg-blue-50 text-blue-600 transition-colors hover:bg-blue-100 hover:text-blue-700 dark:border-blue-800 dark:bg-blue-900/20 dark:text-blue-400 dark:hover:bg-blue-800/30 dark:hover:text-blue-300">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -405,6 +406,7 @@
             </div>
           </div>
         </div>
+        {% endif %}
         
         <!-- Dark Mode Toggler -->
         <button onclick="toggleDarkMode()" class="hover:text-dark-900 relative flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white">

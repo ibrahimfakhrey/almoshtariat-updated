@@ -7,6 +7,8 @@ import random
 import csv
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
+from datetime import datetime
 from app_init import app, db, login_manager, gettext as _, get_locale, babel, csrf
 from models import User, Order, Purchase, Company, Offer, ProductOffer, Chat, Message, Product, Notification, \
     HiddenOrder, UserPreference, Cart, SupplierOrder, SupplierOrderProduct, Complaint, Package, Balance, Transaction, \
@@ -32,6 +34,66 @@ upload_folder = app.config.get('UPLOAD_FOLDER', 'uploads')
 
 # Initialize SocketIO for real-time notifications
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+
+# Helper functions for dual-role support
+def get_effective_user_role():
+    """Get the effective role for the current user (handles dual-role users)"""
+    if not current_user.is_authenticated:
+        return None
+    return current_user.get_current_role()
+
+def user_has_role(role):
+    """Check if current user has the specified role (considering active role for dual-role users)"""
+    if not current_user.is_authenticated:
+        return False
+    effective_role = get_effective_user_role()
+    return effective_role == role
+
+def check_company_access():
+    """Check if current user has company access (handles dual-role users)"""
+    return user_has_role('company')
+
+def user_has_any_role(roles):
+    """Check if current user has any of the specified roles"""
+    if not current_user.is_authenticated:
+        return False
+    effective_role = get_effective_user_role()
+    return effective_role in roles
+
+def require_role(role):
+    """Decorator to require a specific role (considering active role for dual-role users)"""
+    def decorator(f):
+        def decorated_function(*args, **kwargs):
+            if not user_has_role(role):
+                flash(f'Access denied. {role.title()} role required.', 'error')
+                return redirect(url_for('dash'))
+            return f(*args, **kwargs)
+        decorated_function.__name__ = f.__name__
+        return decorated_function
+    return decorator
+
+def require_any_role(roles):
+    """Decorator to require any of the specified roles"""
+    def decorator(f):
+        def decorated_function(*args, **kwargs):
+            if not user_has_any_role(roles):
+                roles_str = ' or '.join([r.title() for r in roles])
+                flash(f'Access denied. {roles_str} role required.', 'error')
+                return redirect(url_for('dash'))
+            return f(*args, **kwargs)
+        decorated_function.__name__ = f.__name__
+        return decorated_function
+    return decorator
+
+# Context processor to make effective role available in templates
+@app.context_processor
+def inject_effective_role():
+    """Make effective user role available in all templates"""
+    return {
+        'effective_role': get_effective_user_role() if current_user.is_authenticated else None,
+        'user_has_role': user_has_role,
+        'user_has_any_role': user_has_any_role
+    }
 
 # PDF Generation imports
 PDF_AVAILABLE = False
@@ -438,10 +500,10 @@ def confirm_delivery(package_id: int):
         
         # Check if user has permission
         # Companies can confirm packages they own, clients can confirm packages from their orders
-        if current_user.role == 'company':
+        if user_has_role('company'):
             if package.company_id != current_user.company_id:
                 return jsonify({'success': False, 'message': 'Access denied'}), 403
-        elif current_user.role == 'client':
+        elif user_has_role('client'):
             # Check if this package belongs to an order made by the current user
             order = db.session.get(Order, package.order_id)
             if not order or order.user_id != current_user.id:
@@ -800,9 +862,9 @@ def index():
 
     # If user is logged in, redirect to appropriate dashboard
     if current_user.is_authenticated:
-        if current_user.role == 'admin':
+        if user_has_role('admin'):
             return redirect(url_for('admin_dashboard'))
-        elif current_user.role == 'company':
+        elif user_has_role('company'):
             return redirect(url_for('company_dashboard'))
         else:
             return redirect(url_for('dash'))
@@ -1682,10 +1744,10 @@ def register_enhanced():
         # Create new user with enhanced fields
         password_hash = generate_password_hash(str(password) if password else '', method='pbkdf2:sha256')
 
-        # Determine company assignment based on account type
+        # Determine company assignment and role based on account type
+        dual=False
         if account_type == 'client':
             # Client users get assigned to default client company
-            from models import Company
             default_client_company = Company.query.filter_by(company_type='client').first()
             if not default_client_company:
                 # Create default client company if it doesn't exist
@@ -1702,9 +1764,33 @@ def register_enhanced():
 
             company_id = default_client_company.id
             role = 'client'
-        else:
+            active_role = 'client'
+            available_roles = 'client'
+            
+        elif account_type == 'both':
+            # Dual role users get assigned to default client company initially but can switch
+            default_client_company = Company.query.filter_by(company_type='client').first()
+            if not default_client_company:
+                # Create default client company if it doesn't exist
+                default_client_company = Company()
+                default_client_company.name_ar = 'شركة العميل الافتراضية'
+                default_client_company.name_en = 'Default Client Company'
+                default_client_company.email = 'clients@almoshtariat.com'
+                default_client_company.company_type = 'client'
+                default_client_company.is_approved = True
+                default_client_company.is_active = True
+                default_client_company.sector = 'General'
+                db.session.add(default_client_company)
+                db.session.commit()
+
+            company_id = default_client_company.id
+            role = 'company'  # Set role to 'both' for dual users
+            active_role = 'client'  # Start with client as active role
+            available_roles = 'client,company'  # Both roles available
+            dual=True
+            
+        else:  # supplier/company
             # Company users get assigned to default supplier company initially
-            from models import Company
             default_supplier_company = Company.query.filter_by(company_type='supplier').first()
             if not default_supplier_company:
                 # Create default supplier company if it doesn't exist
@@ -1721,6 +1807,8 @@ def register_enhanced():
 
             company_id = default_supplier_company.id
             role = 'company'
+            active_role = 'company'
+            available_roles = 'company'
 
         new_user = User()
         new_user.username = username
@@ -1737,20 +1825,30 @@ def register_enhanced():
         new_user.account_type = account_type or 'client'
         new_user.uploaded_file = uploaded_file_path
         new_user.role = role
+        new_user.active_role = active_role
+        new_user.available_roles = available_roles
         new_user.company_id = company_id
+        new_user.is_verified = False
+        new_user.dual=dual
 
         try:
             db.session.add(new_user)
             db.session.commit()
 
-            # Process purchase preferences file if it's a client
-            if account_type == 'client' and 'purchase_preferences_file' in request.files:
+            # Process purchase preferences file if it's a client or both
+            if account_type in ['client', 'both'] and 'purchase_preferences_file' in request.files:
                 preferences_file = request.files['purchase_preferences_file']
-                if preferences_file and preferences_file.filename != '':
+                if preferences_file and preferences_file.filename != '' and preferences_file.filename is not None:
                     try:
-                        # Check file size (max 10MB)
-                        if len(preferences_file.read()) > 10 * 1024 * 1024:  # 10MB
+                        # Read file content for size check
+                        file_content = preferences_file.read()
+                        if len(file_content) > 10 * 1024 * 1024:  # 10MB
                             flash('File size too large. Please upload a file smaller than 10MB.', 'error')
+                            return render_template('register_enhanced.html')
+                        
+                        # Check if file has content
+                        if len(file_content) == 0:
+                            flash('The uploaded file is empty. Please upload a valid file.', 'warning')
                             return render_template('register_enhanced.html')
 
                         # Reset file pointer
@@ -1763,29 +1861,33 @@ def register_enhanced():
                         file_path = os.path.join(upload_folder, filename)
                         preferences_file.save(file_path)
 
-                        # Process the file and extract preferences
-                        preferences = process_purchase_preferences_file(file_path, new_user.id)
+                        # Process the file and extract preferences (if function exists)
+                        try:
+                            preferences = process_purchase_preferences_file(file_path, new_user.id)
+                            if preferences:
+                                # Add preferences to database
+                                for preference in preferences:
+                                    db.session.add(preference)
+                                db.session.commit()
 
-                        if preferences:
-                            # Add preferences to database
-                            for preference in preferences:
-                                db.session.add(preference)
+                                # Create notification about preferences (if function exists)
+                                try:
+                                    create_notification(
+                                        title="Purchase Preferences Imported!",
+                                        description=f"Successfully imported {len(preferences)} purchase preferences from your file. We'll use this data to provide better product suggestions.",
+                                        notification_type='system',
+                                        priority='normal',
+                                        user_id=new_user.id
+                                    )
+                                except Exception:
+                                    pass  # Notification creation failed, continue
 
-                            db.session.commit()
-
-                            # Create notification about preferences
-                            create_notification(
-                                title="Purchase Preferences Imported!",
-                                description=f"Successfully imported {len(preferences)} purchase preferences from your file. We'll use this data to provide better product suggestions.",
-                                notification_type='system',
-                                priority='normal',
-                                user_id=new_user.id
-                            )
-
-                            flash(f'Successfully imported {len(preferences)} purchase preferences!', 'success')
-                        else:
-                            flash('No purchase preferences could be extracted from the file. Please check the format.',
-                                  'warning')
+                                flash(f'Successfully imported {len(preferences)} purchase preferences!', 'success')
+                            else:
+                                flash('No purchase preferences could be extracted from the file. Please check the format.', 'warning')
+                        except (NameError, AttributeError):
+                            # Function doesn't exist, skip processing
+                            flash('Purchase preferences processing is not available at this time.', 'info')
 
                     except ValueError as e:
                         flash(f'File format error: {str(e)}. Please check the column names and data format.', 'error')
@@ -1818,7 +1920,10 @@ def register_enhanced():
                     welcome_notification = Notification()
                     welcome_notification.user_id = new_user.id
                     welcome_notification.title = "Welcome to B2B Platform!"
-                    welcome_notification.description = f"Thank you for registering, {name}! Please check your email to verify your account."
+                    if account_type == 'both':
+                        welcome_notification.description = f"Thank you for registering, {name or username}! You have dual access as both client and supplier. Please check your email to verify your account."
+                    else:
+                        welcome_notification.description = f"Thank you for registering, {name or username}! Please check your email to verify your account."
                     welcome_notification.notification_type = 'system'
                     welcome_notification.priority = 'normal'
                     welcome_notification.is_read = False
@@ -1827,7 +1932,10 @@ def register_enhanced():
                 except Exception as e:
                     print(f"Failed to create notification: {e}")
                 
-                flash(_('Registration successful! Please check your email for verification code.'), 'success')
+                if account_type == 'both':
+                    flash(_('Registration successful! You now have dual access as both client and supplier. Please check your email for verification code.'), 'success')
+                else:
+                    flash(_('Registration successful! Please check your email for verification code.'), 'success')
                 return redirect(url_for('verify_email', email=email))
             except Exception as e:
                 print(f"Failed to send verification email: {e}")
@@ -2007,7 +2115,7 @@ def company_management():
 @app.route('/new_purchase', methods=['GET', 'POST'])
 @login_required
 def new_purchase():
-    if current_user.role != 'client':
+    if current_user.role != 'client' and current_user.role != 'both':
         flash('Only clients can create purchases.', 'error')
         return redirect(url_for('index'))
 
@@ -2384,12 +2492,12 @@ def offer_details(offer_id):
     offer = Offer.query.get_or_404(offer_id)
 
     # Check if user has access to this offer
-    if current_user.role == 'client':
+    if user_has_role('client'):
         # Client can only view offers for their own orders
         if offer.order.user_id != current_user.id:
             flash('Access denied. You can only view offers for your own orders.', 'error')
             return redirect(url_for('index'))
-    elif current_user.role == 'company':
+    elif user_has_role('company'):
         # Company can only view their own offers
         if offer.company_id != current_user.company_id:
             flash('Access denied. You can only view your own offers.', 'error')
@@ -2400,7 +2508,7 @@ def offer_details(offer_id):
 
     # Check if the order already has an accepted offer
     order_has_accepted_offer = False
-    if current_user.role == 'client':
+    if user_has_role('client'):
         # Check if any offer for this order is already accepted
         accepted_offers = Offer.query.filter_by(
             order_id=offer.order.id,
@@ -2430,7 +2538,7 @@ def offer_details(offer_id):
             break
 
     # Render different templates based on user role and offer status
-    if current_user.role == 'company' and offer.status == 'accepted':
+    if current_user.role == 'company'  and offer.status == 'accepted':
         # Company viewing their accepted offer - show order management interface
         return render_template('company/order_management.html',
                                offer=offer,
@@ -2462,12 +2570,12 @@ def update_order_status():
     offer = Offer.query.get_or_404(offer_id)
 
     # Check if user has access to this offer
-    if current_user.role == 'client':
+    if user_has_role('client'):
         # Client can only update status for their own orders
         if offer.order.user_id != current_user.id:
             flash('Access denied. You can only update status for your own orders.', 'error')
             return redirect(url_for('my_orders'))
-    elif current_user.role == 'company':
+    elif user_has_role('company'):
         # Company can only update status for their own offers
         if offer.company_id != current_user.company_id:
             flash('Access denied. You can only update status for your own offers.', 'error')
@@ -2511,7 +2619,7 @@ def logout():
 @app.route("/profile")
 @login_required
 def profile():
-    if current_user.role == 'client':
+    if user_has_any_role(['client', 'both']):
         return render_template('client/profile.html')
     else:
         return render_template('admin/profile.html')
@@ -2592,11 +2700,11 @@ def view_order(order_id):
     if order:
         # Found a regular order
         # If user is a company (supplier), redirect to company order details view
-        if current_user.role == "company":
+        if user_has_role('company'):
             return redirect(url_for('order_details', order_id=order_id))
 
         # If user is a client, check if they own this order
-        if current_user.role == "client":
+        if user_has_role('client'):
             if order.user_id != current_user.id:
                 flash("You are not authorized to view this order.", "error")
                 return redirect(url_for('index'))
@@ -2610,7 +2718,7 @@ def view_order(order_id):
     if supplier_order:
         # Found a supplier order
         # If user is a client, check if they own this supplier order
-        if current_user.role == "client":
+        if user_has_role('client'):
             if supplier_order.user_id != current_user.id:
                 flash("You are not authorized to view this order.", "error")
                 return redirect(url_for('index'))
@@ -2619,7 +2727,7 @@ def view_order(order_id):
             return render_template('client/supplier_order_detail.html', supplier_order=supplier_order)
 
         # If user is a company, redirect to company supplier order details view
-        elif current_user.role == "company":
+        elif user_has_role('company'):
             return redirect(url_for('supplier_order_details', order_id=order_id))
 
     # If neither order type found, return 404
@@ -2902,7 +3010,7 @@ def download_purchase_preferences_template_csv():
 @app.route("/chat")
 @login_required
 def chat():
-    if current_user.role != 'client':
+    if current_user.role != 'client'and current_user.role != 'both':
         flash('Only clients can access chat.', 'error')
         return redirect(url_for('index'))
 
@@ -3053,7 +3161,7 @@ def get_messages(chat_id):
 @app.route("/suppliers")
 @login_required
 def suppliers():
-    if current_user.role != 'client':
+    if current_user.role != 'client' and current_user.role != 'both':
         flash('Only clients can access suppliers directory.', 'error')
         return redirect(url_for('index'))
 
@@ -3159,7 +3267,7 @@ def generate_delivery_code(package_id):
         
         # Check if the current user has permission to generate code for this package
         # Only the client who ordered the package can generate the code
-        if current_user.role == 'client':
+        if current_user.role == 'client' :
             order = db.session.get(Order, package.order_id)
             if not order or order.user_id != current_user.id:
                 return jsonify({'success': False, 'message': 'Access denied'}), 403
@@ -3191,7 +3299,8 @@ def generate_delivery_code(package_id):
 @app.route('/company_dashboard')
 @login_required
 def company_dashboard():
-    if current_user.role != "company":
+    if not check_company_access():
+        app.logger.debug(f'Access denied to company dashboard for user {current_user.id} with role {current_user.role}, active_role={getattr(current_user, "active_role", "N/A")}')
         flash(_('Access denied. Company role required.'), 'error')
         return redirect(url_for('dash'))
 
@@ -4381,7 +4490,7 @@ def new_orders_by_sector():
 def order_details(order_id):
     order = Order.query.get_or_404(order_id)
 
-    if current_user.role == "company":
+    if user_has_role('company'):
         # Check if company has already made an offer on this order
         company = Company.query.filter_by(id=current_user.company_id).first()
         existing_offer = None
@@ -5036,7 +5145,7 @@ def confirm_import():
 @login_required
 def notifications():
     """Display user's notifications"""
-    if current_user.role == 'client':
+    if current_user.role == 'client' :
         notifications_raw = get_user_notifications(current_user.id, limit=50)
         notifications_list = [{
             'id': n.id,
@@ -5049,7 +5158,7 @@ def notifications():
         } for n in notifications_raw]
         print(notifications_list)
         return render_template('client/notifications.html', notifications=notifications_list)
-    elif current_user.role == 'company':
+    elif current_user.role == 'company' :
         company = Company.query.filter_by(id=current_user.company_id).first()
         if company:
             notifications_raw = get_company_notifications(company.id, limit=50)
@@ -5074,9 +5183,9 @@ def notifications():
 @login_required
 def unread_notifications():
     """Get unread notifications count for AJAX requests"""
-    if current_user.role == 'client':
+    if current_user.role == 'client' :
         unread_count = Notification.query.filter_by(user_id=current_user.id, is_read=False).count()
-    elif current_user.role == 'company':
+    elif current_user.role == 'company' :
         company = Company.query.filter_by(id=current_user.company_id).first()
         unread_count = Notification.query.filter_by(company_id=company.id, is_read=False).count() if company else 0
     else:
@@ -5090,10 +5199,10 @@ def unread_notifications():
 def notification_count():
     """Get notification count for real-time updates"""
     try:
-        if current_user.role == 'client':
+        if current_user.role == 'client' :
             total_count = Notification.query.filter_by(user_id=current_user.id).count()
             unread_count = Notification.query.filter_by(user_id=current_user.id, is_read=False).count()
-        elif current_user.role == 'company':
+        elif current_user.role == 'company' :
             company = Company.query.filter_by(id=current_user.company_id).first()
             if company:
                 total_count = Notification.query.filter_by(company_id=company.id).count()
@@ -5119,10 +5228,10 @@ def notification_count():
 def real_time_notification_update():
     """Get real-time notification updates for the notification dropdown"""
     try:
-        if current_user.role == 'client':
+        if current_user.role == 'client' :
             notifications = get_user_notifications(current_user.id, limit=5, unread_only=False)
             unread_count = Notification.query.filter_by(user_id=current_user.id, is_read=False).count()
-        elif current_user.role == 'company':
+        elif current_user.role == 'company' :
             company = Company.query.filter_by(id=current_user.company_id).first()
             if company:
                 notifications = get_company_notifications(company.id, limit=5, unread_only=False)
@@ -5159,11 +5268,11 @@ def real_time_notification_update():
 def debug_notifications():
     """Debug route to check notification system"""
     try:
-        if current_user.role == 'client':
+        if current_user.role == 'client' :
             notifications = get_user_notifications(current_user.id, limit=10, unread_only=False)
             unread_count = Notification.query.filter_by(user_id=current_user.id, is_read=False).count()
             total_count = Notification.query.filter_by(user_id=current_user.id).count()
-        elif current_user.role == 'company':
+        elif current_user.role == 'company' :
             company = Company.query.filter_by(id=current_user.company_id).first()
             if company:
                 notifications = get_company_notifications(company.id, limit=10, unread_only=False)
@@ -5196,7 +5305,7 @@ def debug_notifications():
             } for n in notifications],
             'context_processor_data': {
                 'user_notifications': len(get_user_notifications(current_user.id, limit=5,
-                                                                 unread_only=False)) if current_user.role == 'client' else 0,
+                                                                 unread_only=False)) if current_user.role == 'client'  else 0,
                 'unread_notifications_count': unread_count
             }
         })
@@ -5209,9 +5318,9 @@ def debug_notifications():
 @login_required
 def mark_notification_read_route(notification_id):
     """Mark a notification as read"""
-    if current_user.role == 'client':
+    if current_user.role == 'client' :
         success = mark_notification_read(notification_id, current_user.id)
-    elif current_user.role == 'company':
+    elif current_user.role == 'company' :
         success = mark_notification_read(notification_id)
     else:
         success = False
@@ -5259,7 +5368,7 @@ def get_notifications():
             except ValueError:
                 pass
         
-        if current_user.role == 'client':
+        if current_user.role == 'client' :
             notifications = get_user_notifications(
                 current_user.id, 
                 limit=limit, 
@@ -5273,7 +5382,7 @@ def get_notifications():
                 user_id=current_user.id,
                 is_read=False
             ).count()
-        elif current_user.role == 'company':
+        elif current_user.role == 'company' :
             company = Company.query.filter_by(id=current_user.company_id).first()
             if company:
                 notifications = get_company_notifications(
@@ -5326,12 +5435,12 @@ def get_notifications():
 def mark_all_notifications_read():
     """Mark all notifications as read for the current user/company"""
     try:
-        if current_user.role == 'client':
+        if current_user.role == 'client' :
             Notification.query.filter_by(user_id=current_user.id, is_read=False).update({
                 'is_read': True,
                 'read_at': datetime.utcnow()
             })
-        elif current_user.role == 'company':
+        elif current_user.role == 'company' :
             company = Company.query.filter_by(id=current_user.company_id).first()
             if company:
                 Notification.query.filter_by(company_id=company.id, is_read=False).update({
@@ -5358,10 +5467,10 @@ def delete_notification(notification_id):
             return {'success': False, 'error': 'Notification not found'}, 404
 
         # Check if user has permission to delete this notification
-        if current_user.role == 'client':
+        if current_user.role == 'client' :
             if notification.user_id != current_user.id:
                 return {'success': False, 'error': 'Access denied'}, 403
-        elif current_user.role == 'company':
+        elif current_user.role == 'company' :
             company = Company.query.filter_by(id=current_user.company_id).first()
             if not company or notification.company_id != company.id:
                 return {'success': False, 'error': 'Access denied'}, 403
@@ -5408,11 +5517,11 @@ def inject_notifications():
     """Inject user notifications into all templates"""
     try:
         if current_user.is_authenticated:
-            if current_user.role == 'client':
+            if current_user.role == 'client' :
                 notifications = get_user_notifications(current_user.id, limit=5, unread_only=False)
                 unread_count = Notification.query.filter_by(user_id=current_user.id, is_read=False).count()
                 print(f"DEBUG: Client {current_user.id} has {len(notifications)} notifications, {unread_count} unread")
-            elif current_user.role == 'company':
+            elif current_user.role == 'company' :
                 company = Company.query.filter_by(id=current_user.company_id).first()
                 if company:
                     notifications = get_company_notifications(company.id, limit=5, unread_only=False)
@@ -6800,7 +6909,7 @@ def submit_complaint(offer_id):
         offer = Offer.query.get_or_404(offer_id)
 
         # Check if user has access to this offer
-        if current_user.role == 'client':
+        if current_user.role == 'client' :
             # Client can only submit complaints for their own orders
             if offer.order.user_id != current_user.id:
                 flash('Access denied. You can only submit complaints for your own orders.', 'error')
@@ -6851,10 +6960,10 @@ def submit_complaint(offer_id):
 def view_complaints():
     """View all complaints for the current user"""
     try:
-        if current_user.role == 'client':
+        if current_user.role == 'client' :
             # Clients see their own complaints
             complaints = Complaint.query.filter_by(user_id=current_user.id).order_by(Complaint.created_at.desc()).all()
-        elif current_user.role == 'company':
+        elif current_user.role == 'company' :
             # Companies see complaints about their offers
             complaints = Complaint.query.filter_by(company_id=current_user.company_id).order_by(
                 Complaint.created_at.desc()).all()
@@ -6877,10 +6986,10 @@ def view_complaint(complaint_id):
         complaint = Complaint.query.get_or_404(complaint_id)
 
         # Check access
-        if current_user.role == 'client' and complaint.user_id != current_user.id:
+        if current_user.role == 'client'  and complaint.user_id != current_user.id:
             flash('Access denied', 'error')
             return redirect(url_for('view_complaints'))
-        elif current_user.role == 'company' and complaint.company_id != current_user.company_id:
+        elif current_user.role == 'company'  and complaint.company_id != current_user.company_id:
             flash('Access denied', 'error')
             return redirect(url_for('view_complaints'))
 
@@ -6947,7 +7056,7 @@ def compare_offers_page(order_id):
         print(f"DEBUG: Found order: {order.id}, user_id: {order.user_id}")
 
         # Check if user owns this order
-        if current_user.role == 'client' and order.user_id != current_user.id:
+        if current_user.role == 'client'  and order.user_id != current_user.id:
             flash(_('Access denied. You can only compare offers for your own orders.'), 'error')
             return redirect(url_for('orders'))
 
@@ -8970,9 +9079,9 @@ def api_user_notifications():
                 return jsonify({'error': 'Invalid date_to format. Use YYYY-MM-DD'}), 400
         
         # Build base query based on user role
-        if current_user.role == 'client':
+        if current_user.role == 'client' :
             base_query = Notification.query.filter_by(user_id=current_user.id)
-        elif current_user.role == 'company':
+        elif current_user.role == 'company' :
             company = Company.query.filter_by(id=current_user.company_id).first()
             if not company:
                 return jsonify({'error': 'Company not found'}), 404
@@ -9002,7 +9111,7 @@ def api_user_notifications():
         )
         
         # Get unread count for current user
-        if current_user.role == 'client':
+        if current_user.role == 'client' :
             unread_count = Notification.query.filter_by(
                 user_id=current_user.id, is_read=False
             ).count()
@@ -9091,9 +9200,9 @@ def api_v2_user_notifications():
         sort_order = request.args.get('sort_order', 'desc')
         
         # Build base query based on user role
-        if current_user.role == 'client':
+        if current_user.role == 'client' :
             base_query = Notification.query.filter_by(user_id=current_user.id)
-        elif current_user.role == 'company':
+        elif current_user.role == 'company' :
             company = Company.query.filter_by(id=current_user.company_id).first()
             if not company:
                 return jsonify({'error': 'Company not found'}), 404
@@ -9167,7 +9276,7 @@ def api_v2_user_notifications():
         )
         
         # Get statistics
-        if current_user.role == 'client':
+        if current_user.role == 'client' :
             stats_query = Notification.query.filter_by(user_id=current_user.id)
         else:
             stats_query = Notification.query.filter_by(company_id=company.id)
@@ -9258,12 +9367,12 @@ def api_v2_bulk_notification_actions():
             return jsonify({'success': False, 'error': 'Action and notification_ids required'}), 400
         
         # Verify user owns these notifications
-        if current_user.role == 'client':
+        if current_user.role == 'client' :
             base_query = Notification.query.filter(
                 Notification.id.in_(notification_ids),
                 Notification.user_id == current_user.id
             )
-        elif current_user.role == 'company':
+        elif current_user.role == 'company' :
             company = Company.query.filter_by(id=current_user.company_id).first()
             if not company:
                 return jsonify({'success': False, 'error': 'Company not found'}), 404
@@ -9497,7 +9606,7 @@ def create_package_page(offer_id):
     offer = Offer.query.get_or_404(offer_id)
     
     # Check if user has access to this offer
-    if current_user.role == 'company':
+    if current_user.role == 'company' :
         if offer.company_id != current_user.company_id:
             flash('Access denied. You can only create packages for your own offers.', 'error')
             return redirect(url_for('company_offers'))
@@ -9596,7 +9705,7 @@ def dash():
     
     if current_user.role == 'admin':
         return render_template('site_admin/index.html')
-    elif current_user.role == 'company':
+    elif current_user.role == 'company' :
         return redirect(url_for('company_packages'))
     else:
         # Get only the 3 most recent orders
@@ -10081,7 +10190,7 @@ def package_details(package_id):
     package = Package.query.get_or_404(package_id)
     
     # Check permissions
-    if current_user.role == 'company':
+    if current_user.role == 'company' :
         # Company users can only view their own packages
         if package.company_id != current_user.company_id:
             flash('Access denied.', 'error')
@@ -10106,9 +10215,9 @@ def update_receiver_info(order_id):
         order = Order.query.get_or_404(order_id)
         
         # Check if user has permission to update this order
-        if current_user.role == 'client' and order.user_id != current_user.id:
+        if current_user.role == 'client'  and order.user_id != current_user.id:
             return jsonify({'success': False, 'message': 'Access denied'}), 403
-        elif current_user.role == 'company':
+        elif current_user.role == 'company' :
             # Companies can update orders they have packages for
             package = Package.query.filter_by(order_id=order_id, company_id=current_user.company_id).first()
             if not package:
@@ -10165,7 +10274,7 @@ def handle_connect():
     """Handle client connection"""
     if current_user.is_authenticated:
         # Join user to their personal room for notifications
-        if hasattr(current_user, 'role') and current_user.role == 'company':
+        if hasattr(current_user, 'role') and current_user.role == 'company' :
             join_room(f'company_{current_user.id}')
         else:
             join_room(f'user_{current_user.id}')
@@ -10175,7 +10284,7 @@ def handle_connect():
 def handle_disconnect():
     """Handle client disconnection"""
     if current_user.is_authenticated:
-        if hasattr(current_user, 'role') and current_user.role == 'company':
+        if hasattr(current_user, 'role') and current_user.role == 'company' :
             leave_room(f'company_{current_user.id}')
         else:
             leave_room(f'user_{current_user.id}')
@@ -10185,7 +10294,7 @@ def handle_disconnect():
 def handle_join_notifications():
     """Manually join notification room"""
     if current_user.is_authenticated:
-        if hasattr(current_user, 'role') and current_user.role == 'company':
+        if hasattr(current_user, 'role') and current_user.role == 'company' :
             join_room(f'company_{current_user.id}')
         else:
             join_room(f'user_{current_user.id}')
@@ -10204,7 +10313,7 @@ def emit_notification_to_company(company_id, notification_data):
 @login_required
 def client_ai_chat():
     """Client AI chat page"""
-    if hasattr(current_user, 'role') and current_user.role == 'company':
+    if hasattr(current_user, 'role') and current_user.role == 'company' :
         return redirect(url_for('company_ai_chat'))
     return render_template('client/ai_chat.html')
 
@@ -10212,7 +10321,7 @@ def client_ai_chat():
 @login_required
 def company_ai_chat():
     """Company AI chat page"""
-    if not (hasattr(current_user, 'role') and current_user.role == 'company'):
+    if not (hasattr(current_user, 'role') and current_user.role == 'company' ):
         return redirect(url_for('client_ai_chat'))
     return render_template('company/ai_chat.html')
 
@@ -10263,7 +10372,7 @@ def api_company_ai_chat():
     """API endpoint for company AI chat"""
     try:
         # Check if user is a company
-        if not (hasattr(current_user, 'role') and current_user.role == 'company'):
+        if not (hasattr(current_user, 'role') and current_user.role == 'company' ):
             return jsonify({'error': 'Access denied'}), 403
         
         data = request.get_json()
@@ -10548,7 +10657,7 @@ def create_ai_agent_task():
     """Create a new AI agent task"""
     try:
         # Check if user is a company
-        if not (hasattr(current_user, 'role') and current_user.role == 'company'):
+        if not (hasattr(current_user, 'role') and current_user.role == 'company' ):
             return jsonify({'error': 'Access denied'}), 403
         
         data = request.get_json()
@@ -10588,7 +10697,7 @@ def execute_ai_agent_task(task_id):
     """Execute an AI agent task"""
     try:
         # Check if user is a company
-        if not (hasattr(current_user, 'role') and current_user.role == 'company'):
+        if not (hasattr(current_user, 'role') and current_user.role == 'company' ):
             return jsonify({'error': 'Access denied'}), 403
         
         # Execute the task
@@ -10609,7 +10718,7 @@ def get_ai_agent_task_status(task_id):
     """Get the status of an AI agent task"""
     try:
         # Check if user is a company
-        if not (hasattr(current_user, 'role') and current_user.role == 'company'):
+        if not (hasattr(current_user, 'role') and current_user.role == 'company' ):
             return jsonify({'error': 'Access denied'}), 403
         
         # Get task status
@@ -10630,7 +10739,7 @@ def get_company_ai_agent_tasks():
     """Get all AI agent tasks for the current company"""
     try:
         # Check if user is a company
-        if not (hasattr(current_user, 'role') and current_user.role == 'company'):
+        if not (hasattr(current_user, 'role') and current_user.role == 'company' ):
             return jsonify({'error': 'Access denied'}), 403
         
         limit = request.args.get('limit', 50, type=int)
@@ -10653,7 +10762,7 @@ def get_ai_agent_task_types():
     """Get available AI agent task types"""
     try:
         # Check if user is a company
-        if not (hasattr(current_user, 'role') and current_user.role == 'company'):
+        if not (hasattr(current_user, 'role') and current_user.role == 'company' ):
             return jsonify({'error': 'Access denied'}), 403
         
         language = request.args.get('language', 'en')
@@ -10673,7 +10782,7 @@ def get_ai_agent_task_types():
 @login_required
 def company_ai_agent():
     """Company AI Agent page"""
-    if not (hasattr(current_user, 'role') and current_user.role == 'company'):
+    if not (hasattr(current_user, 'role') and current_user.role == 'company' ):
         return redirect(url_for('login'))
     return render_template('company/ai_agent.html')
 
@@ -10683,7 +10792,7 @@ def get_ai_agent_metrics():
     """Get AI agent performance metrics"""
     try:
         # Check if user is a company
-        if not (hasattr(current_user, 'role') and current_user.role == 'company'):
+        if not (hasattr(current_user, 'role') and current_user.role == 'company' ):
             return jsonify({'error': 'Access denied'}), 403
         
         # Get performance metrics
@@ -10703,7 +10812,7 @@ def get_ai_agent_task_history():
     """Get AI agent task history for company"""
     try:
         # Check if user is a company
-        if not (hasattr(current_user, 'role') and current_user.role == 'company'):
+        if not (hasattr(current_user, 'role') and current_user.role == 'company' ):
             return jsonify({'error': 'Access denied'}), 403
         
         company_id = current_user.id
@@ -11421,7 +11530,7 @@ def save_chat_history():
         user_id = None
         company_id = None
         
-        if hasattr(current_user, 'role') and current_user.role == 'company':
+        if hasattr(current_user, 'role') and current_user.role == 'company' :
             company_id = current_user.company_id
         else:
             user_id = current_user.id
@@ -11457,7 +11566,7 @@ def get_chat_history(session_id):
     """Get chat history for a specific session"""
     try:
         # Determine user_id or company_id based on user role
-        if hasattr(current_user, 'role') and current_user.role == 'company':
+        if hasattr(current_user, 'role') and current_user.role == 'company' :
             chat_history = ChatHistory.query.filter_by(
                 session_id=session_id,
                 company_id=current_user.company_id
@@ -11499,7 +11608,7 @@ def clear_chat_history():
             return jsonify({'error': 'Session ID is required'}), 400
         
         # Determine user_id or company_id based on user role
-        if hasattr(current_user, 'role') and current_user.role == 'company':
+        if hasattr(current_user, 'role') and current_user.role == 'company' :
             ChatHistory.query.filter_by(
                 session_id=session_id,
                 company_id=current_user.company_id
@@ -11528,7 +11637,7 @@ def get_chat_sessions():
     """Get list of chat sessions for current user/company"""
     try:
         # Determine user_id or company_id based on user role
-        if hasattr(current_user, 'role') and current_user.role == 'company':
+        if hasattr(current_user, 'role') and current_user.role == 'company' :
             sessions = db.session.query(
                 ChatHistory.session_id,
                 db.func.max(ChatHistory.created_at).label('last_message_at'),
@@ -11567,40 +11676,37 @@ def switch_role():
     """Switch active role for dual-role users"""
     try:
         data = request.get_json()
-        new_role = data.get('role')
+        new_role = data.get('role') if data else None
         
         if not new_role:
             return jsonify({'success': False, 'message': 'Role is required'}), 400
         
-        # Check if user can switch roles
-        if not current_user.can_switch_roles:
-            return jsonify({'success': False, 'message': 'User does not have dual role permissions'}), 403
-        
-        # Validate the new role
-        if new_role not in ['client', 'company']:
+        # Validate role
+        valid_roles = ['client', 'company']
+        if new_role not in valid_roles:
             return jsonify({'success': False, 'message': 'Invalid role specified'}), 400
         
-        # Switch the role
-        if current_user.switch_active_role(new_role):
-            db.session.commit()
-            
-            # Determine redirect URL based on new role
-            if new_role == 'company':
-                redirect_url = url_for('company_packages')
-            else:
-                redirect_url = url_for('dash')
-            
-            return jsonify({
-                'success': True, 
-                'message': f'Successfully switched to {new_role} role',
-                'new_role': new_role,
-                'redirect_url': redirect_url
-            })
-        else:
-            return jsonify({'success': False, 'message': 'Failed to switch role'}), 400
-            
+        # Update user role and active_role directly
+        current_user.role = new_role
+        current_user.active_role = new_role
+        db.session.commit()
+        
+        # Determine redirect URL based on new role
+        if new_role == 'company':
+            redirect_url = url_for('company_dashboard')
+        else:  # client or other roles
+            redirect_url = url_for('dash')
+        
+        return jsonify({
+            'success': True,
+            'message': f'Successfully switched to {new_role} role',
+            'new_role': new_role,
+            'redirect_url': redirect_url
+        })
+        
     except Exception as e:
         db.session.rollback()
+        app.logger.error(f'Switch role error: {str(e)}')
         return jsonify({'success': False, 'message': f'Error switching role: {str(e)}'}), 500
 
 
@@ -11708,6 +11814,125 @@ def pricing():
     """Display pricing page"""
     return render_template('pricing.html')
 
+@app.route("/p")
+def p():
+    current_user.role="client"
+    current_user.dual=True
+    current_user.available_roles="client,company"
+    print(current_user.role)
+    db.session.commit()
+    return "d"
+
+@app.route('/create_test_user', methods=['POST'])
+@csrf.exempt
+def create_test_user():
+    """
+    Create a test user with Grade 1, Section B specifications
+    Returns the created user object in JSON format
+    """
+    try:
+        from werkzeug.security import generate_password_hash
+        import secrets
+        import uuid
+        
+        # Generate unique test data
+        unique_id = str(uuid.uuid4())[:8]
+        test_username = f"test_user_{unique_id}"
+        test_email = f"test_{unique_id}@example.com"
+        test_password = secrets.token_urlsafe(12)
+        
+        # Validate that user doesn't already exist
+        existing_user = User.query.filter_by(username=test_username).first()
+        if existing_user:
+            return jsonify({
+                'success': False,
+                'error': 'User with this username already exists'
+            }), 400
+            
+        existing_email = User.query.filter_by(email=test_email).first()
+        if existing_email:
+            return jsonify({
+                'success': False,
+                'error': 'User with this email already exists'
+            }), 400
+        
+        # Get or create default company for client users
+        default_company = Company.query.filter_by(company_type='client').first()
+        if not default_company:
+            # Create default client company if it doesn't exist
+            default_company = Company(
+                name_ar="شركة العملاء الافتراضية",
+                name_en="Default Client Company",
+                email="default@client.com",
+                company_type='client',
+                is_active=True,
+                is_approved=True
+            )
+            db.session.add(default_company)
+            db.session.flush()  # Get the ID
+        
+        # Create the test user with all necessary fields
+        test_user = User(
+            username=test_username,
+            email=test_email,
+            password_hash=generate_password_hash(test_password, method='pbkdf2:sha256'),
+            role='client',
+            active_role='client',
+            available_roles='client',
+            dual=False,
+            company_id=default_company.id,
+            is_verified=True,  # Auto-verify test users
+            terms_accepted=True,
+            name=f"Test User Grade 1 Section B {unique_id}",
+            country="Egypt",
+            city="Cairo",
+            phone_number=f"+201{secrets.randbelow(100000000):08d}",
+            account_type='client',
+            # Grade 1, Section B specific fields (stored as custom attributes)
+            sector="Education",
+            subsector="Grade 1 - Section B"
+        )
+        
+        # Add and commit the user
+        db.session.add(test_user)
+        db.session.commit()
+        
+        # Prepare response data (excluding sensitive information)
+        user_data = {
+            'id': test_user.id,
+            'username': test_user.username,
+            'email': test_user.email,
+            'name': test_user.name,
+            'role': test_user.role,
+            'grade': 1,
+            'section': 'B',
+            'country': test_user.country,
+            'city': test_user.city,
+            'phone_number': test_user.phone_number,
+            'account_type': test_user.account_type,
+            'sector': test_user.sector,
+            'subsector': test_user.subsector,
+            'is_verified': test_user.is_verified,
+            'terms_accepted': test_user.terms_accepted,
+            'company_id': test_user.company_id,
+            'created_at': test_user.id,  # Using ID as creation indicator
+            'temporary_password': test_password  # Include for testing purposes only
+        }
+        
+        return jsonify({
+            'success': True,
+            'message': 'Test user created successfully',
+            'user': user_data
+        }), 201
+        
+    except Exception as e:
+        # Rollback any changes if error occurs
+        db.session.rollback()
+        
+        return jsonify({
+            'success': False,
+            'error': f'Failed to create test user: {str(e)}'
+        }), 500
 
 if __name__ == '__main__':
     with app.app_context():
